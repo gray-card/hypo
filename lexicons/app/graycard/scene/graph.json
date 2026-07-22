@@ -1,0 +1,25 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.scene.graph",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Container binding a set of scene nodes and edges to a subject (a photo AT-URI or a graycard artifact). Nodes and edges reference this record. schemaVersion pins the panproto theory for round-trip migration.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["subject", "createdAt"],
+        "properties": {
+          "subject": { "type": "string", "format": "at-uri", "description": "A photo (AT-URI) or app.graycard.artifact this graph describes." },
+          "ontologies": { "type": "array", "items": { "type": "string", "format": "at-uri" }, "description": "Ontologies whose terms this graph uses." },
+          "schemaVersion": { "type": "string", "maxLength": 64 },
+          "label": { "type": "string", "maxLength": 128 },
+          "temporal": { "type": "ref", "ref": "app.graycard.defs#temporalRef" },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

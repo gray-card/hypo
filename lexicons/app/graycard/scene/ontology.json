@@ -1,0 +1,47 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.scene.ontology",
+  "defs": {
+    "typeDecl": {
+      "type": "object",
+      "description": "Declares one node type or one edge (relation) type in the vocabulary. For edge types: inverse/symmetric/transitive/reflexive/functional record the relation's algebra; domain/range are ASSERTED selectional preferences (the source/target node types the relation is intended to relate); domainIncludes/rangeIncludes are OBSERVED, non-exhaustive witnesses collected from the instance scene graphs — the true domain/codomain may be a supertype or a sum (union) of the witnessed types, so these are defeasible evidence, not hard constraints. sameAs aligns the term to external authorities (Wikidata, WordNet, SKOS).",
+      "required": ["id", "label"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "description": "Local term id, unique within this ontology." },
+        "label": { "type": "string", "maxLength": 128 },
+        "definition": { "type": "string", "maxLength": 1000 },
+        "domain": { "type": "array", "items": { "type": "string" }, "description": "For edge types: ASSERTED allowed source node-type ids (selectional preference)." },
+        "range": { "type": "array", "items": { "type": "string" }, "description": "For edge types: ASSERTED allowed target node-type ids (selectional preference)." },
+        "domainIncludes": { "type": "array", "items": { "type": "string" }, "description": "For edge types: OBSERVED source node-type witnesses from instance edges (non-exhaustive; the real domain may be a supertype or a sum of these). Not a hard constraint." },
+        "rangeIncludes": { "type": "array", "items": { "type": "string" }, "description": "For edge types: OBSERVED target node-type witnesses from instance edges (non-exhaustive; see domainIncludes)." },
+        "inverse": { "type": "string", "maxLength": 128, "description": "For edge types: id of the CONVERSE edge type -- swap the arguments (A rel B <-> B inverse A), e.g. part-of <-> has-part, above <-> below. A symmetric relation is its own inverse." },
+        "opposite": { "type": "string", "maxLength": 128, "description": "For edge types: id of the directional ANTONYM -- SAME arguments, reversed path/orientation (e.g. into <-> out-of, up <-> down). Distinct from inverse, which swaps the arguments." },
+        "symmetric": { "type": "boolean", "description": "For edge types: A rel B implies B rel A." },
+        "transitive": { "type": "boolean", "description": "For edge types: A rel B and B rel C implies A rel C." },
+        "reflexive": { "type": "boolean", "description": "For edge types: A rel A always holds." },
+        "functional": { "type": "boolean", "description": "For edge types: each source relates to at most one target." },
+        "sameAs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.defs#externalId" } }
+      }
+    },
+    "main": {
+      "type": "record",
+      "description": "An open, shareable, forkable VOCABULARY (the typed-multigraph schema) for scene graphs: `nodeTypes` are its concept types and `edgeTypes` are its relation types (each carrying algebra, asserted domain/range, and observed domainIncludes/rangeIncludes witnesses). It deliberately does NOT assert type-to-type relation EDGES: a relation observed between two instances is an existential token (the instances are its witnesses) and licenses only a soft domain/codomain witness on the relation type, never a type-level relational axiom -- lifting it would be quantifier promotion (cf. the KL-ONE terminological/assertional split). The instance layer (scene.node/scene.edge) carries actual relations; this record is the schema they instantiate. Types and relations are data here, not baked into a lexicon, so any ontology (Visual Genome, WordNet, a research schema) can be expressed. schemaVersion pins the theory identity for migration.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "createdAt"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 128 },
+          "description": { "type": "string", "maxLength": 2000 },
+          "schemaVersion": { "type": "string", "maxLength": 64, "description": "Identity/version of the underlying panproto theory this vocabulary realizes." },
+          "nodeTypes": { "type": "array", "items": { "type": "ref", "ref": "#typeDecl" }, "description": "The concept (node) types in the vocabulary." },
+          "edgeTypes": { "type": "array", "items": { "type": "ref", "ref": "#typeDecl" }, "description": "The relation (edge) types in the vocabulary, with algebra and domain/codomain (asserted preferences + observed witnesses)." },
+          "imports": { "type": "array", "items": { "type": "string", "format": "at-uri" }, "description": "Other ontologies composed into this one." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

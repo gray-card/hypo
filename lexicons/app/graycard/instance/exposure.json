@@ -1,0 +1,41 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.exposure",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A single logged exposure (a shot). Works for film (references a roll + frame number) and digital (no roll). Optionally belongs to a shoot and links to a published photo by AT-URI. Everything except createdAt is optional so shots can be logged fast in the field.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["createdAt"],
+        "properties": {
+          "shoot": { "type": "string", "format": "at-uri", "description": "Optional app.graycard.session.capture this exposure belongs to." },
+          "roll": { "type": "string", "format": "at-uri", "description": "Optional app.graycard.instance.filmRoll (film shots)." },
+          "frameNumber": { "type": "integer", "minimum": 0, "description": "Position on the roll (film). Optional. Several exposures may share one frameNumber: that is a multiple exposure on a single physical frame." },
+          "multipleExposure": { "type": "boolean", "description": "True when this exposure is one of several deliberately stacked on the same physical frame (double/multiple exposure). All sub-exposures of the frame carry this flag and share roll + frameNumber." },
+          "frameExposureIndex": { "type": "integer", "minimum": 1, "description": "1-based order of this sub-exposure within a multiple-exposure frame (1 for the first)." },
+          "camera": { "type": "string", "format": "at-uri", "description": "Optional app.graycard.instance.camera used." },
+          "lens": { "type": "string", "format": "at-uri", "description": "Optional app.graycard.instance.lens used." },
+          "filter": { "type": "string", "format": "at-uri", "description": "Optional app.graycard.instance.filter used." },
+          "aperture": { "type": "string", "maxLength": 16, "description": "Chosen f-number as shown on the dial, e.g. '5.6', '8', '3.4'." },
+          "shutterSpeed": { "type": "string", "maxLength": 16, "description": "Chosen shutter speed as shown, e.g. '1/500', '1s', 'B'." },
+          "exposureCompensation": { "type": "string", "maxLength": 16, "description": "Exposure compensation in EV, e.g. '-0.5', '+1', '0'." },
+          "focalLength": { "type": "integer", "minimum": 1, "description": "Focal length used in mm (for zoom lenses)." },
+          "focusDistance": { "type": "string", "maxLength": 32, "description": "Focus distance, e.g. '1.5m', 'inf'." },
+          "meteringMode": { "type": "ref", "ref": "app.graycard.defs#meteringMode" },
+          "exposureProgram": { "type": "ref", "ref": "app.graycard.defs#exposureProgram" },
+          "flash": { "type": "boolean", "description": "Whether flash fired." },
+          "shotAtIso": { "type": "integer", "minimum": 1, "description": "Exposure index this frame was rated at, if it differs from the roll/stock speed." },
+          "location": { "type": "ref", "ref": "app.graycard.defs#geoLocation" },
+          "photo": { "type": "string", "format": "at-uri", "description": "Optional photo (AT-URI) this exposure was scanned/published as, e.g. a social.grain.photo." },
+          "takenAt": { "type": "string", "format": "datetime", "description": "When the exposure was made." },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance", "description": "How this exposure's data was asserted — e.g. manually logged vs imported from EXIF." },
+          "note": { "type": "string", "maxLength": 1000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

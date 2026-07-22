@@ -1,0 +1,100 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.workflow.template",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "name",
+          "medium",
+          "createdAt"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "medium": {
+            "type": "ref",
+            "ref": "app.graycard.workflow.defs#medium"
+          },
+          "defaultCamera": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "defaultLens": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "defaultFilmRoll": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "defaultDeveloper": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "defaultScanner": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "defaultScanProfile": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "defaultLab": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "stageKinds": {
+            "type": "array",
+            "description": "Suggested stage sequence (capture, develop, digitize, …).",
+            "items": {
+              "type": "string"
+            }
+          },
+          "stageDefaults": {
+            "type": "array",
+            "description": "Per-stage default process session fields saved with the template.",
+            "items": {
+              "type": "object",
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "maxLength": 64,
+                  "description": "Stage kind this default applies to (matches a value in stageKinds)."
+                },
+                "fields": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "links": {
+            "type": "ref",
+            "ref": "app.graycard.defs#catalogLinks"
+          }
+        }
+      },
+      "description": "A reusable workflow template: an ordered list of stage kinds with per-stage default settings."
+    }
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.process.developSession",
+  "defs": {
+    "step": {
+      "type": "object",
+      "description": "One chemical bath in a multi-step process (e.g. C-41 developer/blix/stabilizer, E-6 first/color developer).",
+      "required": [
+        "role"
+      ],
+      "properties": {
+        "role": {
+          "type": "ref",
+          "ref": "app.graycard.defs#chemistryRole"
+        },
+        "chemistry": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "app.graycard.instance.chemistry used for this bath."
+        },
+        "dilution": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "temperature": {
+          "type": "ref",
+          "ref": "app.graycard.defs#measure"
+        },
+        "timeSeconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "agitation": {
+          "type": "string",
+          "maxLength": 256
+        }
+      }
+    },
+    "main": {
+      "type": "record",
+      "description": "One development event. References developer/chemistry and optionally film roll instances. steps captures the ordered bath sequence for multi-step chemistry.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "process",
+          "createdAt"
+        ],
+        "properties": {
+          "developer": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.developer (working solution)."
+          },
+          "chemistry": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.chemistry (primary working solution)."
+          },
+          "filmRolls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "at-uri"
+            },
+            "description": "app.graycard.instance.filmRoll(s) developed in this session (one or more)."
+          },
+          "process": {
+            "type": "ref",
+            "ref": "app.graycard.defs#filmProcess"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "ref",
+              "ref": "#step"
+            }
+          },
+          "dilution": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Primary developer dilution (when not using steps)."
+          },
+          "temperature": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure"
+          },
+          "timeSeconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "agitation": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "tankType": { "type": "ref", "ref": "app.graycard.defs#tankType" },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "pushPull": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Push/pull in stops (unit: stop)."
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "labService": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Free-text lab name when the roll was developed by a lab."
+          },
+          "lab": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.labAccount that developed the roll (structured alternative to labService)."
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "stopBath": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "stopBathChemistry": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "fixer": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "fixerChemistry": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "bleachFix": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    }
+  }
+}

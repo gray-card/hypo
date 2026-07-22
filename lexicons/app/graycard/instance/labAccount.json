@@ -1,0 +1,44 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.labAccount",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "lab",
+          "createdAt"
+        ],
+        "properties": {
+          "lab": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "nickname": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "accountId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      },
+      "description": "The user's account/relationship with a photo lab. References catalog.lab."
+    }
+  }
+}

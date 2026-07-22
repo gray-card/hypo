@@ -1,0 +1,36 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.cameraType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Camera model/type (e.g. Nikon F2). Instances reference this record. Projected into a photo's EXIF (e.g. social.grain.photo.exif) make/model when associated with a photo.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["make", "model", "createdAt"],
+        "properties": {
+          "make": { "type": "string", "maxLength": 128 },
+          "model": { "type": "string", "maxLength": 128 },
+          "category": { "type": "ref", "ref": "app.graycard.defs#cameraCategory" },
+          "mount": { "type": "ref", "ref": "app.graycard.defs#mount" },
+          "format": { "type": "ref", "ref": "app.graycard.defs#captureFormat" },
+          "minShutterSpeed": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Fastest shutter (shortest exposure), in seconds at 1e6 scale — e.g. 1/8000 s." },
+          "maxShutterSpeed": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Slowest shutter (longest exposure), in seconds at 1e6 scale — e.g. 30 s." },
+          "shutterSpeedSteps": {
+            "type": "array",
+            "description": "Exact shutter speeds for the shot logger dial, in seconds at 1e6 scale. When present, overrides min/max and stop-fraction generation.",
+            "items": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" }
+          },
+          "shutterStopIncrement": { "type": "ref", "ref": "app.graycard.defs#stopFraction", "description": "Default stop fraction when generating shutter options from min/max (shot logger may override when steps are absent)." },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

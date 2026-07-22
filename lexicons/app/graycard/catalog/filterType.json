@@ -1,0 +1,28 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.filterType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A lens filter model (catalog). Filter instances reference this record.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "createdAt"],
+        "properties": {
+          "make": { "type": "string", "maxLength": 128, "description": "Manufacturer, e.g. Tiffen, B+W, Hoya." },
+          "name": { "type": "string", "maxLength": 128, "description": "Model, e.g. 'Red #25', 'Yellow #6', 'Circular Polarizer', 'ND8'." },
+          "filterKind": { "type": "ref", "ref": "app.graycard.defs#filterKind" },
+          "factorStops": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Light loss in stops (unit: stop)." },
+          "threadDiameterMm": { "type": "integer", "minimum": 1, "description": "Nominal filter thread diameter in mm (e.g. 52, 67, 77)." },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

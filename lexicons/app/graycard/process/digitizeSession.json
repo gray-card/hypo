@@ -1,0 +1,46 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.process.digitizeSession",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "One digitization event (scan, copy-stand capture, lab scan, file import).",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["method", "createdAt"],
+        "properties": {
+          "method": { "type": "ref", "ref": "app.graycard.workflow.defs#digitizeMethod" },
+          "filmRolls": {
+            "type": "array",
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "app.graycard.instance.filmRoll(s) digitized in this session."
+          },
+          "photos": {
+            "type": "array",
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Resulting photo records (e.g. social.grain.photo) produced by the scan."
+          },
+          "scanner": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.scanner" },
+          "camera": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.camera for copy-stand capture." },
+          "lens": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.lens for copy-stand capture." },
+          "scanProfile": { "type": "string", "format": "at-uri", "description": "app.graycard.catalog.scanProfile applied." },
+          "software": { "type": "string", "maxLength": 128 },
+          "driver": { "type": "string", "maxLength": 128 },
+          "resolution": { "type": "ref", "ref": "app.graycard.defs#measure" },
+          "bitDepth": { "type": "integer", "minimum": 1 },
+          "colorProfile": { "type": "string", "maxLength": 128 },
+          "fileFormat": { "type": "string", "maxLength": 32 },
+          "inversionMethod": { "type": "ref", "ref": "app.graycard.defs#inversionMethod" },
+          "labService": { "type": "string", "maxLength": 128 },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "startedAt": { "type": "string", "format": "datetime" },
+          "finishedAt": { "type": "string", "format": "datetime" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

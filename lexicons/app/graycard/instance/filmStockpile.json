@@ -1,0 +1,45 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.filmStockpile",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Unshot film held in reserve: a count of identical rolls of one stock, kept in some storage. Loading a roll decrements the quantity and spawns an app.graycard.instance.filmRoll.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["stock", "quantity", "createdAt"],
+        "properties": {
+          "stock": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.catalog.filmStock this reserve is made of."
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many unshot rolls of this stock are on hand."
+          },
+          "format": { "type": "ref", "ref": "app.graycard.defs#captureFormat" },
+          "storage": { "type": "ref", "ref": "app.graycard.defs#storage" },
+          "storageLocation": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.instance.storageLocation where the reserve is kept."
+          },
+          "expiresAt": { "type": "string", "format": "datetime" },
+          "emulsionBatch": { "type": "string", "maxLength": 64 },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" },
+          "image": {
+            "type": "blob",
+            "accept": ["image/png", "image/jpeg", "image/webp"],
+            "maxSize": 3000000,
+            "description": "Optional photo; falls back to the stock's catalog image."
+          }
+        }
+      }
+    }
+  }
+}

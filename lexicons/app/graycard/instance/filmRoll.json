@@ -1,0 +1,143 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.filmRoll",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "One physical roll of film. References app.graycard.catalog.filmStock. Unshot reserves live in app.graycard.instance.filmStockpile; exposed frames link via app.graycard.instance.filmFrame.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "stock",
+          "createdAt"
+        ],
+        "properties": {
+          "stock": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.catalog.filmStock"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "serialNumber": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "emulsionBatch": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "rollNumber": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "manufacturedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "status": {
+            "type": "ref",
+            "ref": "app.graycard.defs#rollStatus"
+          },
+          "storage": {
+            "type": "ref",
+            "ref": "app.graycard.defs#storage"
+          },
+          "format": {
+            "type": "ref",
+            "ref": "app.graycard.defs#captureFormat"
+          },
+          "exposuresTotal": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "exposuresUsed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "DEPRECATED: reserve counts now live in app.graycard.instance.filmStockpile. Retained only to read legacy rolls; a filmRoll is one physical roll."
+          },
+          "shotAtIso": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Exposure index the roll was actually rated at (push/pull), if it differs from the stock's box speed."
+          },
+          "developedWith": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.instance.developer used to process the roll."
+          },
+          "lab": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.instance.labAccount that developed the roll (when lab-developed rather than home-developed)."
+          },
+          "stockpile": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.instance.filmStockpile this roll was split from."
+          },
+          "cassetteType": {
+            "type": "string",
+            "knownValues": [
+              "factory",
+              "plastic-reload",
+              "metal-reload",
+              "sheet-holder",
+              "other"
+            ]
+          },
+          "camera": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.camera when loaded."
+          },
+          "loadedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "labNotes": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "image": {
+            "type": "blob",
+            "accept": [
+              "image/png",
+              "image/jpeg",
+              "image/webp"
+            ],
+            "maxSize": 3000000,
+            "description": "Optional user photo of this specific item; falls back to the catalog type's stock image."
+          }
+        }
+      }
+    }
+  }
+}

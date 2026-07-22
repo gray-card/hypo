@@ -1,0 +1,131 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.workflow.stage",
+  "defs": {
+    "captureStage": {
+      "type": "object",
+      "required": ["$type", "input", "output"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#captureStage"] },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }, "description": "Additional inputs for multi-input stages." },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "session": { "type": "string", "format": "at-uri", "description": "app.graycard.process.captureSession" },
+        "shoot": { "type": "string", "format": "at-uri", "description": "app.graycard.session.capture" },
+        "camera": { "type": "string", "format": "at-uri" },
+        "lens": { "type": "string", "format": "at-uri" },
+        "filmRoll": { "type": "string", "format": "at-uri" },
+        "frameIndex": { "type": "integer", "minimum": 1 },
+        "temporal": { "type": "ref", "ref": "app.graycard.defs#temporalRef" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "developStage": {
+      "type": "object",
+      "required": ["$type", "input", "output", "session"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#developStage"] },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" } },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "session": { "type": "string", "format": "at-uri" },
+        "intermediate": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.intermediate" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "digitizeStage": {
+      "type": "object",
+      "required": ["$type", "input", "output", "session"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#digitizeStage"] },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" } },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "session": { "type": "string", "format": "at-uri" },
+        "scanProfile": { "type": "string", "format": "at-uri" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "digitalStage": {
+      "type": "object",
+      "required": ["$type", "input", "output", "session"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#digitalStage"] },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" } },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "session": { "type": "string", "format": "at-uri" },
+        "sourceFile": { "type": "ref", "ref": "app.graycard.defs#sourceFile" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "printStage": {
+      "type": "object",
+      "required": ["$type", "input", "output", "session"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#printStage"] },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }, "description": "Extra inputs, e.g. a mask or a second negative for a composite." },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "session": { "type": "string", "format": "at-uri" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "editStage": {
+      "type": "object",
+      "required": ["$type", "input", "output", "session"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#editStage"] },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" } },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "session": { "type": "string", "format": "at-uri" },
+        "recipe": { "type": "string", "format": "at-uri", "description": "app.graycard.edit.recipe applied at this stage." },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "outputStage": {
+      "type": "object",
+      "required": ["$type", "input"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#outputStage"] },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "target": { "type": "ref", "ref": "app.graycard.workflow.defs#publishTarget", "description": "Preferred: abstract publish target." },
+        "photo": { "type": "string", "format": "at-uri", "description": "Deprecated convenience: published photo AT-URI (e.g. social.grain.photo). Prefer target." },
+        "temporal": { "type": "ref", "ref": "app.graycard.defs#temporalRef" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "otherStage": {
+      "type": "object",
+      "description": "Escape hatch for a stage kind not yet in the closed set (e.g. wet-plate collodion coating, toning, mounting). kind names it; params carries typed fields.",
+      "required": ["$type", "kind", "input", "output"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#otherStage"] },
+        "kind": { "type": "string", "maxLength": 64 },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" } },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "session": { "type": "string", "format": "at-uri" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "main": {
+      "type": "record",
+      "description": "One workflow step (discriminated union).",
+      "key": "tid",
+      "record": {
+        "type": "union",
+        "refs": ["#captureStage", "#developStage", "#digitizeStage", "#digitalStage", "#printStage", "#editStage", "#outputStage", "#otherStage"]
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.workflow.run",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Ordered workflow from source to a published photo (e.g. social.grain.photo). Optional branches for multi-export.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["photo", "medium", "stages", "createdAt"],
+        "properties": {
+          "photo": { "type": "string", "format": "at-uri" },
+          "medium": { "type": "ref", "ref": "app.graycard.workflow.defs#medium" },
+          "stages": {
+            "type": "array",
+            "items": { "type": "ref", "ref": "app.graycard.workflow.defs#stageLink" }
+          },
+          "branches": {
+            "type": "array",
+            "items": { "type": "ref", "ref": "app.graycard.workflow.defs#branchLink" }
+          },
+          "label": { "type": "string", "maxLength": 128 },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

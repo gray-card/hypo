@@ -1,0 +1,63 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.camera",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A specific camera body (e.g. one of two Nikon F2s). References app.graycard.catalog.cameraType.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "type",
+          "createdAt"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.catalog.cameraType"
+          },
+          "nickname": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "serialNumber": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "shutterCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "purchasedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "image": {
+            "type": "blob",
+            "accept": [
+              "image/png",
+              "image/jpeg",
+              "image/webp"
+            ],
+            "maxSize": 3000000,
+            "description": "Optional user photo of this specific item; falls back to the catalog type's stock image."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.enlargerType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "An enlarger model (catalog). instance.enlarger references this.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["createdAt"],
+        "properties": {
+          "make": { "type": "string", "maxLength": 128 },
+          "model": { "type": "string", "maxLength": 128 },
+          "maxFormat": { "type": "ref", "ref": "app.graycard.defs#negativeFormat", "description": "Largest negative the enlarger accepts." },
+          "headType": {
+            "type": "string",
+            "description": "Illumination system.",
+            "knownValues": ["condenser", "diffusion", "cold-cathode", "dichroic-color", "led", "point-source", "other"]
+          },
+          "colorHead": { "type": "boolean", "description": "Has built-in dichroic colour/VC filtration." },
+          "lensMount": { "type": "string", "maxLength": 64, "description": "Lens board thread, e.g. 'M39 (Leica)', '25mm'." },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

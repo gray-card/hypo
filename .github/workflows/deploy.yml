@@ -1,0 +1,64 @@
+name: Deploy Hypo to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # weekly: refresh the lensfun + Wikidata gear catalogs, then redeploy
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      # On the weekly cron (or manual run) pull fresh lensfun data, resolve
+      # Wikidata QIDs, and commit any changes back to main. The build below
+      # uses the freshly generated files even if the commit itself is a no-op.
+      - name: Refresh gear catalog from lensfun + Wikidata
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: node scripts/build-catalog.mjs --fetch --wikidata
+      - name: Commit refreshed catalog
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "Hypo Bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add src/data/lensfun-lenses.json src/data/lensfun-cameras.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(catalog): weekly lensfun + Wikidata refresh ($(date -u +%F))"
+            git push
+          else
+            echo "catalog unchanged"
+          fi
+
+      - run: npm run build
+      - run: cp dist/index.html dist/404.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

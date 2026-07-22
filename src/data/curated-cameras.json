@@ -1,0 +1,6287 @@
+{
+  "_source": "curated from Wikipedia + Wikidata, authored in data/curated-cameras/*.jsonl",
+  "_license": "facts (names/specs) are not copyrightable; prose/images per Wikipedia CC-BY-SA 4.0 & Wikidata CC0. See src/data/CATALOG_ATTRIBUTION.md",
+  "_generated": "2026-07-22T13:27:20.219Z",
+  "cameras": [
+    {
+      "make": "Canon",
+      "model": "F-1",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q63083",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_new_F-1-Camera.jpg?width=320",
+      "source": "wikipedia:Canon F-1"
+    },
+    {
+      "make": "Canon",
+      "model": "F-1N",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q65640347",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_new_F-1-Camera.jpg?width=320",
+      "source": "wikipedia:Canon F-1N"
+    },
+    {
+      "make": "Canon",
+      "model": "New F-1",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q63091",
+      "image": null,
+      "source": "wikipedia:Canon New F-1"
+    },
+    {
+      "make": "Canon",
+      "model": "FX",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1033533",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_FX.jpg?width=320",
+      "source": "wikipedia:Canon FX"
+    },
+    {
+      "make": "Canon",
+      "model": "FT QL",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1033534",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Vintage_Canon_FT_QL_35mm_SLR_Film_Camera%2C_Made_In_Japan%2C_Circa_1966_-_1972_%2813473210395%29.jpg?width=320",
+      "source": "wikipedia:Canon FT QL"
+    },
+    {
+      "make": "Canon",
+      "model": "Pellix",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1033535",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_pellix.jpg?width=320",
+      "source": "wikipedia:Canon Pellix"
+    },
+    {
+      "make": "Canon",
+      "model": "FTb",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q63101",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_FTb.jpg?width=320",
+      "source": "wikipedia:Canon FTb"
+    },
+    {
+      "make": "Canon",
+      "model": "AE-1",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q55674",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_AE-1_front_with_50mm_lens.jpg?width=320",
+      "source": "wikipedia:Canon AE-1"
+    },
+    {
+      "make": "Canon",
+      "model": "AE-1 Program",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q63008",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_AE-1_Program_D_Barthel.jpg?width=320",
+      "source": "wikipedia:Canon AE-1 Program"
+    },
+    {
+      "make": "Canon",
+      "model": "A-1",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q62997",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_A-1.jpg?width=320",
+      "source": "wikipedia:Canon A-1"
+    },
+    {
+      "make": "Canon",
+      "model": "AT-1",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q62983",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_AT-1-_50mm.jpg?width=320",
+      "source": "wikipedia:Canon AT-1"
+    },
+    {
+      "make": "Canon",
+      "model": "AV-1",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q63001",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_AV-1_front_web.jpg?width=320",
+      "source": "wikipedia:Canon AV-1"
+    },
+    {
+      "make": "Canon",
+      "model": "AL-1",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q63019",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_AL-1_film_camera.jpg?width=320",
+      "source": "wikipedia:Canon AL-1"
+    },
+    {
+      "make": "Canon",
+      "model": "T50",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q63107",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_T50.jpg?width=320",
+      "source": "wikipedia:Canon T50"
+    },
+    {
+      "make": "Canon",
+      "model": "T70",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q63164",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_T70_3815.jpg?width=320",
+      "source": "wikipedia:Canon T70"
+    },
+    {
+      "make": "Canon",
+      "model": "T90",
+      "mount": "Canon FD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q63226",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/T90front.jpg?width=320",
+      "source": "wikipedia:Canon T90"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 650",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q67627",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_650.jpg?width=320",
+      "source": "wikipedia:Canon EOS 650"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 620",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4035821",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_620.jpg?width=320",
+      "source": "wikipedia:Canon EOS 620"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS RT",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q69700",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_RT.jpg?width=320",
+      "source": "wikipedia:Canon EOS RT"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS-1",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q5033226",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS-1_front-left_2016_Canon_Plaza_S.jpg?width=320",
+      "source": "wikipedia:Canon EOS-1"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS-1N",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1033525",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS-1N_camera.jpg?width=320",
+      "source": "wikipedia:Canon EOS-1N"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS-1N RS",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q124034251",
+      "image": null,
+      "source": "wikipedia:Canon EOS-1N"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS-1v",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q69711",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_1V_HS_-01.jpg?width=320",
+      "source": "wikipedia:Canon EOS-1V"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS-3",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q5033227",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS-3.jpg?width=320",
+      "source": "wikipedia:Canon EOS-3"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 5",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q5033229",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_5_01.jpg?width=320",
+      "source": "wikipedia:Canon EOS 5"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 100",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q5033228",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/CanonEOS100with50mmLens.jpg?width=320",
+      "source": "wikipedia:Canon EOS Elan"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 10 QD",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q22076032",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_10_QD_front-left_2016_Canon_Plaza_S.jpg?width=320",
+      "source": "wikipedia:Canon EOS 10"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 30",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4035823",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/EOS30_CRW_9668.jpg?width=320",
+      "source": "wikipedia:Canon EOS Elan 7"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 300",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q613986",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/CanonEOS300.png?width=320",
+      "source": "wikipedia:Canon EOS Rebel"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 300V",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q2936452",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_300V.jpg?width=320",
+      "source": "wikipedia:Canon EOS Rebel"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 500",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q5033230",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_500.jpg?width=320",
+      "source": "wikipedia:Canon EOS Rebel"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 500N",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1033527",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_500N_%26_Carton_135mm_f2.8.jpg?width=320",
+      "source": "wikipedia:Canon EOS Rebel"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 1000",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q117715379",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/EOS_Rebel_body.jpg?width=320",
+      "source": "wikipedia:Canon EOS Rebel"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS Rebel GII",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q117477693",
+      "image": null,
+      "source": "wikipedia:Canon EOS Rebel"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 3000N",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4035820",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_3000n_-_Analogfilm_Kamera_-_01.jpg?width=320",
+      "source": "wikipedia:Canon EOS Rebel"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 3000V",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q7486100",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/EOS_3000V.jpg?width=320",
+      "source": "wikipedia:Canon EOS Rebel"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS 5000",
+      "mount": "Canon EF",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q85750494",
+      "image": null,
+      "source": "wikipedia:Canon EOS Rebel"
+    },
+    {
+      "make": "Canon",
+      "model": "EOS IX",
+      "mount": "Canon EF",
+      "format": "other",
+      "category": "film",
+      "wikidata": "Q4035824",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_IX_E_Austin_Calhoon_Photograph.jpg?width=320",
+      "source": "wikipedia:Canon EOS IX"
+    },
+    {
+      "make": "Canon",
+      "model": "II",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q5033243",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_IIB_IMG_0372.jpg?width=320",
+      "source": "wikipedia:Canon II"
+    },
+    {
+      "make": "Canon",
+      "model": "VT",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q5033273",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_img_1866.jpg?width=320",
+      "source": "wikipedia:Canon VT"
+    },
+    {
+      "make": "Canon",
+      "model": "7",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q5033173",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_7_with_50mm_f0.95_IMG_0374.JPG?width=320",
+      "source": "wikipedia:Canon 7"
+    },
+    {
+      "make": "Canon",
+      "model": "7s",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q65554976",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_7s_with_50mm_f_0.95_lens_%28281049983%29.jpg?width=320",
+      "source": "wikipedia:Canon 7s"
+    },
+    {
+      "make": "Canon",
+      "model": "P",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Canon P (camera)"
+    },
+    {
+      "make": "Canon",
+      "model": "IV",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Canon rangefinder cameras"
+    },
+    {
+      "make": "Canon",
+      "model": "VI-L",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Canon rangefinder cameras"
+    },
+    {
+      "make": "Canon",
+      "model": "Canonet QL17 GIII",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q2936498",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canonet_GIII_QL17.jpg?width=320",
+      "source": "wikipedia:Canonet"
+    },
+    {
+      "make": "Canon",
+      "model": "AF35M",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q5033180",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_AF35M.jpg?width=320",
+      "source": "wikipedia:Canon Sure Shot"
+    },
+    {
+      "make": "Contax",
+      "model": "RTS",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q39048743",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax%20RTS%20mit%20PMD.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "RTS II",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax%20RTS%20II%20mit%20Distagon%2025%20mm.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "RTS III",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax%20RTS%20III%20with%201.4%2C%2050mm%20lens.JPG?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "137 MD",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "137 MA",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "139 Quartz",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax%20139%20mit%20Distagon%2018%20mm.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "159 MM",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax159mm1.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "167 MT",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax167mt%2028mm.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "S2",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/ContaxS2%2050mm.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "S2b",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax%20S2b.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "RX",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax%20RX.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "RX II",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "AX",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax%20ax%20with%20planar1%2C4%2050mm%20jp.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "Aria",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "ST",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/CONTAX%20ST.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "G1",
+      "mount": "Contax G",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax%20G1%20Rangefinder.jpg?width=320",
+      "source": "wikipedia:Contax_G"
+    },
+    {
+      "make": "Contax",
+      "model": "G2",
+      "mount": "Contax G",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax%20G2%20Blk.jpg?width=320",
+      "source": "wikipedia:Contax_G"
+    },
+    {
+      "make": "Contax",
+      "model": "645",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q1128525",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax%20645.tif?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "N1",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Contax%20N1%20IMG%205341.JPG?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "NX",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1128522",
+      "image": null,
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "N Digital",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q5164925",
+      "image": null,
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "T",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q60753801",
+      "image": null,
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "T2",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/CONTAX%20T2.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "T3",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/CONTAX%20T3.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "TVS",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/CONTAX-TVS.JPG?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Contax",
+      "model": "Tix",
+      "mount": "fixed",
+      "format": "other",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/CONTAX%20Tix%28Silver%29.jpg?width=320",
+      "source": "wikipedia:Contax"
+    },
+    {
+      "make": "Yashica",
+      "model": "FX-1",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "FX-2",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q124080257",
+      "image": null,
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "FX-3",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q124079730",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Yashica%20FX-3.jpg?width=320",
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "FX-3 Super 2000",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/YASHICA%20FX-3%20SUPER%202000.jpg?width=320",
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "FX-7",
+      "mount": "Contax/Yashica",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/YASHICA%20FX-7%20SUPER.jpg?width=320",
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "TL Electro",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1439771",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Yashica%20TL%20Electro%20X.jpg?width=320",
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "Electro 35 GSN",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Yashica%20Electro%2035%20GSN%20%2813647971965%29.jpg?width=320",
+      "source": "wikipedia:Yashica_Electro_35"
+    },
+    {
+      "make": "Yashica",
+      "model": "Electro 35 GTN",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Yashica%20Electro%2035%20GTN%20%28167070115%29.jpg?width=320",
+      "source": "wikipedia:Yashica_Electro_35"
+    },
+    {
+      "make": "Yashica",
+      "model": "Electro 35 GT",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Yashica_Electro_35"
+    },
+    {
+      "make": "Yashica",
+      "model": "Electro 35 GL",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Yashica_Electro_35"
+    },
+    {
+      "make": "Yashica",
+      "model": "Mat-124",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "Mat-124G",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q4022576",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Yashica%20mat%20124G%20-%20ouvert.JPG?width=320",
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "D",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Yashica-D%20front.jpg?width=320",
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "T3",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Yashica%20t3%20super%20%287425139768%29.jpg?width=320",
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "T4",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Yashica%20T4.jpg?width=320",
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "T5",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Yashica",
+      "model": "Samurai",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/111230-Yashica-Samurai.jpg?width=320",
+      "source": "wikipedia:Yashica"
+    },
+    {
+      "make": "Fujica",
+      "model": "ST701",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fujica_ST701_%2813460657405%29.jpg?width=320",
+      "source": "wikipedia:Fujica"
+    },
+    {
+      "make": "Fujica",
+      "model": "ST801",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/003_2019_12_14_Spiegel.jpg?width=320",
+      "source": "wikipedia:Fujica"
+    },
+    {
+      "make": "Fujica",
+      "model": "ST901",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Fujica"
+    },
+    {
+      "make": "Fujica",
+      "model": "AZ-1",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Fujica"
+    },
+    {
+      "make": "Fujica",
+      "model": "STX-1",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fujica_STX-1_Fotokamera.jpg?width=320",
+      "source": "wikipedia:Fujica"
+    },
+    {
+      "make": "Fujica",
+      "model": "AX-3",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Vintage_Fujica_AX-3_35mm_SLR_Film_Camera%2C_Made_In_Japan%2C_Circa_1980s_%2835201708650%29.jpg?width=320",
+      "source": "wikipedia:Fujica"
+    },
+    {
+      "make": "Fujica",
+      "model": "AX-5",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Fujica"
+    },
+    {
+      "make": "Fujica",
+      "model": "GS645",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q111941807",
+      "image": null,
+      "source": "wikipedia:Fuji GS645"
+    },
+    {
+      "make": "Fujica",
+      "model": "GS645W",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Fuji GS645"
+    },
+    {
+      "make": "Fujica",
+      "model": "GS645S",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Fuji GS645"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Mini 7s",
+      "mount": "fixed",
+      "format": "instax-mini",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/CB8_7908_%286356746759%29.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Mini 8",
+      "mount": "fixed",
+      "format": "instax-mini",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Instax_Mini_8.png?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Mini 9",
+      "mount": "fixed",
+      "format": "instax-mini",
+      "category": "instant",
+      "wikidata": "Q54936061",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Instax_Instant_Camera_%2849400971416%29_%28cropped%29.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Mini 25",
+      "mount": "fixed",
+      "format": "instax-mini",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Instax_mini_25.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Mini 40",
+      "mount": "fixed",
+      "format": "instax-mini",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fuji_Instax_Mini_40.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Mini 50",
+      "mount": "fixed",
+      "format": "instax-mini",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Mini 70",
+      "mount": "fixed",
+      "format": "instax-mini",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fujifilm_Instax_mini_70_-_yellow.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Mini 90",
+      "mount": "fixed",
+      "format": "instax-mini",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fujifilm_Instax_mini_90.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Mini Evo",
+      "mount": "fixed",
+      "format": "instax-mini",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Mini LiPlay",
+      "mount": "fixed",
+      "format": "instax-mini",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fuji_Instax_mini_LiPlay_instant_camera.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Mini 12",
+      "mount": "fixed",
+      "format": "instax-mini",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fujifilm_Instax_Mini_12_-_Instant_Film_Camera_%2852950271338%29.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Wide 100",
+      "mount": "fixed",
+      "format": "instax-wide",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fujifilm_Instax_100_camera.JPG?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Wide 210",
+      "mount": "fixed",
+      "format": "instax-wide",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fuji_Instax_210_wide_instant_camera.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Square SQ1",
+      "mount": "fixed",
+      "format": "instax-square",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/%D7%9E%D7%A6%D7%9C%D7%9E%D7%AA_%D7%90%D7%99%D7%A0%D7%A1%D7%98%D7%A7%D7%A1_SQUARE_SQ1.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Square SQ6",
+      "mount": "fixed",
+      "format": "instax-square",
+      "category": "instant",
+      "wikidata": "Q55712981",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fuji-Instax-SQ6_%28cropped%29.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Square SQ10",
+      "mount": "fixed",
+      "format": "instax-square",
+      "category": "instant",
+      "wikidata": "Q55712976",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fujifilm_Instax_Square_SQ10_%28cropped%29.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Square SQ20",
+      "mount": "fixed",
+      "format": "instax-square",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fujifilm_Instax_SQUARE_SQ20_28_nov_2018.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instax Square SQ40",
+      "mount": "fixed",
+      "format": "instax-square",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Polaroid",
+      "model": "SX-70",
+      "mount": "fixed",
+      "format": "polaroid-sx70",
+      "category": "instant",
+      "wikidata": "Q3394062",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Polaroid_SX-70_%284462345243%29.jpg?width=320",
+      "source": "wikipedia:Polaroid SX-70"
+    },
+    {
+      "make": "Polaroid",
+      "model": "SX-70 Sonar",
+      "mount": "fixed",
+      "format": "polaroid-sx70",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Polaroid_SX-70_Sonar_One_Step_%284665242131%29.jpg?width=320",
+      "source": "wikipedia:Polaroid SX-70"
+    },
+    {
+      "make": "Polaroid",
+      "model": "SLR680",
+      "mount": "fixed",
+      "format": "polaroid-sx70",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "SLR690",
+      "mount": "fixed",
+      "format": "polaroid-sx70",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Polaroid_SLR690.jpg?width=320",
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "600",
+      "mount": "fixed",
+      "format": "polaroid-600",
+      "category": "instant",
+      "wikidata": "Q137910605",
+      "image": null,
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "Impulse",
+      "mount": "fixed",
+      "format": "polaroid-600",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Poloroid_Impulse.jpg?width=320",
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "OneStep 600",
+      "mount": "fixed",
+      "format": "polaroid-600",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "OneStep 2",
+      "mount": "fixed",
+      "format": "polaroid-i-type",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "OneStep+",
+      "mount": "fixed",
+      "format": "polaroid-i-type",
+      "category": "instant",
+      "wikidata": "Q105543917",
+      "image": null,
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "Now",
+      "mount": "fixed",
+      "format": "polaroid-i-type",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "Now Gen 2",
+      "mount": "fixed",
+      "format": "polaroid-i-type",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "I-2",
+      "mount": "fixed",
+      "format": "polaroid-i-type",
+      "category": "instant",
+      "wikidata": "Q136086701",
+      "image": null,
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "Spectra",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Polaroid_Spectra_QPS.jpg?width=320",
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "Image",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": "Q137927428",
+      "image": null,
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "Land Camera Model 95",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Polaroid_Land_Camera_Model_95_-_MIT_Museum_-_DSC03766.JPG?width=320",
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "Automatic 350",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Polaroid_Automatic_350_instant_camera.jpg?width=320",
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "Colorpack 80",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Polaroid_Colorpack_80.jpg?width=320",
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Polaroid",
+      "model": "Go",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Polaroid instant cameras"
+    },
+    {
+      "make": "Lomography",
+      "model": "Lomo'Instant",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Lomo%27instant%21_%28cropped%29.jpg?width=320",
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Lomography",
+      "model": "Lomo'Instant Automat",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Lomography",
+      "model": "Lomo'Instant Wide",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Lomography",
+      "model": "Lomo'Instant Square",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Lomography Lomo'Instant Square Glass"
+    },
+    {
+      "make": "MiNT",
+      "model": "InstantFlex TL70",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Shop_instantflex-tl70_b1%28c%29.jpg?width=320",
+      "source": "wikipedia:Instant camera"
+    },
+    {
+      "make": "MiNT",
+      "model": "InstantKon RF70",
+      "mount": "fixed",
+      "format": "other",
+      "category": "instant",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Instax cameras and printers"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "1600F",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q1588641",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Hasselblad_1600F.jpg?width=320",
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "1000F",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q1588640",
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "500C",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Hasselblad_500_c_camera.jpg?width=320",
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "500C/M",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q60040531",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Hasselblad_500_CM.jpg?width=320",
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "501C",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "501CM",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "503CX",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "503CW",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Hasselblad_503CW_V96C.jpg?width=320",
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "503CXi",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "500EL",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q65719180",
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "500EL/M",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q131701429",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Hasselblad_500_EL-M_camera_with_motor_drive_used_in_the_Apollo_space_program.jpg?width=320",
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "553ELX",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "555ELD",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "SWC",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "903SWC",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "905SWC",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "2000FC",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Hasselblad_2000_FC_M_with_Zeiss_Planar_80mm_f2.8_T%2A_lens.jpg?width=320",
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "2000FC/M",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "2000FCW",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "2003FCW",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "201F",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "203FE",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "205FCC",
+      "mount": "Hasselblad V",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "Xpan",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q9646270",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Hasselblad_Xpan.jpg?width=320",
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "Xpan II",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "H1",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Hasselblad",
+      "model": "H2",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Hasselblad"
+    },
+    {
+      "make": "Rolleiflex",
+      "model": "2.8F",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Rolleiflex_f2-8-F.jpg?width=320",
+      "source": "wikipedia:Rolleiflex"
+    },
+    {
+      "make": "Rolleiflex",
+      "model": "3.5F",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Rolleiflex"
+    },
+    {
+      "make": "Rolleiflex",
+      "model": "3.5E",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Rolleiflex"
+    },
+    {
+      "make": "Rolleiflex",
+      "model": "T",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Rolleiflex"
+    },
+    {
+      "make": "Rolleiflex",
+      "model": "Automat",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Rolleiflex"
+    },
+    {
+      "make": "Rolleiflex",
+      "model": "MX",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Rolleiflex"
+    },
+    {
+      "make": "Rolleiflex",
+      "model": "Rolleicord",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q373858",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Rolleicord_sst.jpg?width=320",
+      "source": "wikipedia:Rollei"
+    },
+    {
+      "make": "Rollei",
+      "model": "SL66",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q7360998",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Rollei-Rolleiflex_SL66.jpg?width=320",
+      "source": "wikipedia:Rolleiflex SL66"
+    },
+    {
+      "make": "Rollei",
+      "model": "SL66E",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Rollei_SL_66E_linke_Seite_14.jpg?width=320",
+      "source": "wikipedia:Rolleiflex SL66"
+    },
+    {
+      "make": "Rollei",
+      "model": "SL66SE",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Rolleiflex SL66"
+    },
+    {
+      "make": "Rollei",
+      "model": "6006",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Rolleiflex 6000 System"
+    },
+    {
+      "make": "Rollei",
+      "model": "6008",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Rolleiflex-6008-2-rr.jpg?width=320",
+      "source": "wikipedia:Rolleiflex 6000 System"
+    },
+    {
+      "make": "Rollei",
+      "model": "35",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q315368",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Rollei_35_Camera_(7169624013).jpg?width=320",
+      "source": "wikipedia:Rollei 35"
+    },
+    {
+      "make": "Rollei",
+      "model": "35S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q7360996",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Rollei_35_S_-_side.jpg?width=320",
+      "source": "wikipedia:Rollei 35"
+    },
+    {
+      "make": "Rollei",
+      "model": "35SE",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Rollei 35"
+    },
+    {
+      "make": "Rollei",
+      "model": "35T",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Rollei_35T_Singapore_front.jpg?width=320",
+      "source": "wikipedia:Rollei 35"
+    },
+    {
+      "make": "Leica",
+      "model": "I",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q6964436",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/LEI0060_186_Leica_I_Sn.5193_1927_Originalzustand_Front_side-FS_5632-Bearbeitet.jpg?width=320",
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "Standard",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4042737",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/LEI0190_188_Leica_Standard_Chrom_Sn._244297_1937_-38-M39_Front_view-5809_hf.jpg?width=320",
+      "source": "wikipedia:Leica Camera"
+    },
+    {
+      "make": "Leica",
+      "model": "II",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4042731",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/LEI0150_198_Leica_II_schwarz_-_Sn._67777_1931-M39_front_view_Umbau_von_Ic-0.jpg?width=320",
+      "source": "wikipedia:Leica II"
+    },
+    {
+      "make": "Leica",
+      "model": "III",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q3229141",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/LEI0221_199_Leica_III_schwarz_Umbau_von_Leica_I_-_Sn._25629_1930-M39_Front_view-6395_hf-Bearbeitet.jpg?width=320",
+      "source": "wikipedia:Leica III"
+    },
+    {
+      "make": "Leica",
+      "model": "IIIa",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/LEI0260_197_Leica_IIIa_-_Sn._206617_1936-M39_Front_view-Bearbeitet.jpg?width=320",
+      "source": "wikipedia:Leica III"
+    },
+    {
+      "make": "Leica",
+      "model": "IIIb",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q17635372",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_IIIb_1940_with_1949_Summitar_%2832944283166%29.jpg?width=320",
+      "source": "wikipedia:Leica III"
+    },
+    {
+      "make": "Leica",
+      "model": "IIIc",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/LEI0320_189_Leica_IIIc_chrome_-_Sn._384761_1941-M39_Front_view-Bearbeitet.jpg?width=320",
+      "source": "wikipedia:Leica III"
+    },
+    {
+      "make": "Leica",
+      "model": "IIIf",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/LEI0431_191_Leica_IIIf_chrome_1954_-_Sn._692358_M39_Front_view_Vorlaufwerk-6710_hf.jpg?width=320",
+      "source": "wikipedia:Leica III"
+    },
+    {
+      "make": "Leica",
+      "model": "IIIg",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_IIIg_img_1881.jpg?width=320",
+      "source": "wikipedia:Leica III"
+    },
+    {
+      "make": "Leica",
+      "model": "If",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Leica II"
+    },
+    {
+      "make": "Leica",
+      "model": "IIf",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Old_Leica.jpg?width=320",
+      "source": "wikipedia:Leica II"
+    },
+    {
+      "make": "Leica",
+      "model": "Ig",
+      "mount": "Leica screw (LTM)",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Leica III"
+    },
+    {
+      "make": "Leica",
+      "model": "M3",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q15266940",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_M3_mg_3853.jpg?width=320",
+      "source": "wikipedia:Leica M3"
+    },
+    {
+      "make": "Leica",
+      "model": "M2",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q313935",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_M2.jpg?width=320",
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "M1",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q313944",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_M1-IMG_5850-gradient.jpg?width=320",
+      "source": "wikipedia:Leica M1"
+    },
+    {
+      "make": "Leica",
+      "model": "M4",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q313954",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_M4_with_35mm_and_gogles.jpg?width=320",
+      "source": "wikipedia:Leica M4"
+    },
+    {
+      "make": "Leica",
+      "model": "M4-2",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q17635374",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_M4-2_img_1870.jpg?width=320",
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "M4-P",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q17635377",
+      "image": null,
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "M5",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q313963",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_M5_50mm_f2_Summicron.jpg?width=320",
+      "source": "wikipedia:Leica M5"
+    },
+    {
+      "make": "Leica",
+      "model": "M6",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q313990",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_M6_2301050876_ecf639c427_o.jpg?width=320",
+      "source": "wikipedia:Leica M6"
+    },
+    {
+      "make": "Leica",
+      "model": "M6 TTL",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q113458527",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_M6_TTL_front.jpg?width=320",
+      "source": "wikipedia:Leica M6"
+    },
+    {
+      "make": "Leica",
+      "model": "M7",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q314013",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica-M7-p1020464.jpg?width=320",
+      "source": "wikipedia:Leica M7"
+    },
+    {
+      "make": "Leica",
+      "model": "MP",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q313999",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_MP_IMG_2702.jpg?width=320",
+      "source": "wikipedia:Leica MP"
+    },
+    {
+      "make": "Leica",
+      "model": "M-A",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q76701603",
+      "image": null,
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "CL",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q313978",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_CL_avec_Summicron-C.JPG?width=320",
+      "source": "wikipedia:Leica CL"
+    },
+    {
+      "make": "Leica",
+      "model": "MD",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "MDa",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4042733",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_MDa_IMG_1951.jpg?width=320",
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "MD-2",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "Leicaflex",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leitz_Camera.svg?width=320",
+      "source": "wikipedia:Leicaflex"
+    },
+    {
+      "make": "Leica",
+      "model": "Leicaflex SL",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leicaflex_SL_SL2_Mot_Family_01.jpg?width=320",
+      "source": "wikipedia:Leicaflex"
+    },
+    {
+      "make": "Leica",
+      "model": "Leicaflex SL2",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Leicaflex"
+    },
+    {
+      "make": "Leica",
+      "model": "R3",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q12061132",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_R3_img_1877.jpg?width=320",
+      "source": "wikipedia:Leica R3"
+    },
+    {
+      "make": "Leica",
+      "model": "R4",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Leica R4-R7"
+    },
+    {
+      "make": "Leica",
+      "model": "R4s",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Leica R4-R7"
+    },
+    {
+      "make": "Leica",
+      "model": "R5",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q3229142",
+      "image": null,
+      "source": "wikipedia:Leica R4-R7"
+    },
+    {
+      "make": "Leica",
+      "model": "R6",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Leica R4-R7"
+    },
+    {
+      "make": "Leica",
+      "model": "R6.2",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Leica R4-R7"
+    },
+    {
+      "make": "Leica",
+      "model": "R7",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Leica R4-R7"
+    },
+    {
+      "make": "Leica",
+      "model": "R8",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_R8_top.jpg?width=320",
+      "source": "wikipedia:Leica R8-R9"
+    },
+    {
+      "make": "Leica",
+      "model": "R9",
+      "mount": "Leica R",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_R8_2934.jpg?width=320",
+      "source": "wikipedia:Leica R8-R9"
+    },
+    {
+      "make": "Leica",
+      "model": "Minilux",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "Minilux Zoom",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "CM",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_CM.gif?width=320",
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "C1",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/LEI0010_200_Leica_AF-C1_Produziert_von_Minolta_Front_view-9756-Bearbeitet.jpg?width=320",
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "C2",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "C3",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "mini",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Leica",
+      "model": "mini II",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Leica Camera models"
+    },
+    {
+      "make": "Mamiya",
+      "model": "RB67 Professional",
+      "mount": "Mamiya RB/RZ",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya%20RB%2067%20ProSD.jpg?width=320",
+      "source": "wikipedia:Mamiya RB67"
+    },
+    {
+      "make": "Mamiya",
+      "model": "RB67 Pro-S",
+      "mount": "Mamiya RB/RZ",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya%20RB%2067%20Pro%20S%20%2B%2090mm.jpg?width=320",
+      "source": "wikipedia:Mamiya RB67"
+    },
+    {
+      "make": "Mamiya",
+      "model": "RB67 Pro-SD",
+      "mount": "Mamiya RB/RZ",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya%20RB67%207911a.jpg?width=320",
+      "source": "wikipedia:Mamiya RB67"
+    },
+    {
+      "make": "Mamiya",
+      "model": "RZ67 Professional",
+      "mount": "Mamiya RB/RZ",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q16625459",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya%20RZ67%20Professional%20body.jpg?width=320",
+      "source": "wikipedia:Mamiya RZ67"
+    },
+    {
+      "make": "Mamiya",
+      "model": "RZ67 Professional II",
+      "mount": "Mamiya RB/RZ",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q137806392",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya%20RZ67%20Professional%20II%20body.jpg?width=320",
+      "source": "wikipedia:Mamiya RZ67"
+    },
+    {
+      "make": "Mamiya",
+      "model": "RZ67 Professional IID",
+      "mount": "Mamiya RB/RZ",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Mamiya RZ67"
+    },
+    {
+      "make": "Mamiya",
+      "model": "M645",
+      "mount": "Mamiya 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya_M645_1000S_with_Sekor_C_80mm_F1.9_lens_mounted%2C_and_Sekor_C_45mm_F2.8_lens.jpg?width=320",
+      "source": "wikipedia:Mamiya 645"
+    },
+    {
+      "make": "Mamiya",
+      "model": "M645 1000S",
+      "mount": "Mamiya 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya%20645%201000S%20001.JPG?width=320",
+      "source": "wikipedia:Mamiya 645"
+    },
+    {
+      "make": "Mamiya",
+      "model": "M645J",
+      "mount": "Mamiya 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Mamiya 645"
+    },
+    {
+      "make": "Mamiya",
+      "model": "645 Super",
+      "mount": "Mamiya 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya_645_Super.jpg?width=320",
+      "source": "wikipedia:Mamiya 645"
+    },
+    {
+      "make": "Mamiya",
+      "model": "645 Pro",
+      "mount": "Mamiya 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Mamiya 645"
+    },
+    {
+      "make": "Mamiya",
+      "model": "645 Pro TL",
+      "mount": "Mamiya 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Mamiya 645"
+    },
+    {
+      "make": "Mamiya",
+      "model": "645AF",
+      "mount": "Mamiya 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Mamiya 645"
+    },
+    {
+      "make": "Mamiya",
+      "model": "645AFD",
+      "mount": "Mamiya 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya_645AFD_camera_with_Arsat_30mm_lens.jpg?width=320",
+      "source": "wikipedia:Mamiya 645"
+    },
+    {
+      "make": "Mamiya",
+      "model": "645AFD II",
+      "mount": "Mamiya 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Mamiya 645"
+    },
+    {
+      "make": "Mamiya",
+      "model": "645AFD III",
+      "mount": "Mamiya 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Mamiya 645"
+    },
+    {
+      "make": "Mamiya",
+      "model": "7",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q6745697",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya_7camera.jpg?width=320",
+      "source": "wikipedia:Mamiya 7"
+    },
+    {
+      "make": "Mamiya",
+      "model": "7 II",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Mamiya 7"
+    },
+    {
+      "make": "Mamiya",
+      "model": "6",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q17118798",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/0217_Mamiya_6_75mm_f3.5_lens_%285255033524%29.jpg?width=320",
+      "source": "wikipedia:Mamiya 6"
+    },
+    {
+      "make": "Mamiya",
+      "model": "6 MF",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Mamiya 6"
+    },
+    {
+      "make": "Mamiya",
+      "model": "C3",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya%20C3%200963.jpg?width=320",
+      "source": "wikipedia:Mamiya C"
+    },
+    {
+      "make": "Mamiya",
+      "model": "C33",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya%20C33%200962.jpg?width=320",
+      "source": "wikipedia:Mamiya C"
+    },
+    {
+      "make": "Mamiya",
+      "model": "C220",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q6745699",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya%20C220%20120%20film%20TLR%20camera.jpg?width=320",
+      "source": "wikipedia:Mamiya C"
+    },
+    {
+      "make": "Mamiya",
+      "model": "C330",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q12061455",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya%20C330%20TLR%20camera%20with%2080mm%20F2.8%20interchangable%20lens.jpg?width=320",
+      "source": "wikipedia:Mamiya C"
+    },
+    {
+      "make": "Mamiya",
+      "model": "C330f",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Mamiya C"
+    },
+    {
+      "make": "Mamiya",
+      "model": "C330s",
+      "mount": "fixed",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mamiya%20C330%20Professional%20S%20%282139895985%29.jpg?width=320",
+      "source": "wikipedia:Mamiya C"
+    },
+    {
+      "make": "Mamiya",
+      "model": "Press",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q6745703",
+      "image": null,
+      "source": "wikipedia:Mamiya Press"
+    },
+    {
+      "make": "Mamiya",
+      "model": "Press Super 23",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/0289%20Mamiya%20Press%20Super%2023%20Sports%20Finder%20%285461774072%29.jpg?width=320",
+      "source": "wikipedia:Mamiya Press"
+    },
+    {
+      "make": "Mamiya",
+      "model": "Universal",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q1888228",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/0251%20Mamiya%20Universal%20100mm%20f3.5%206x9%20Polaroid%20PANDA.jpg?width=320",
+      "source": "wikipedia:Mamiya Press"
+    },
+    {
+      "make": "Bronica",
+      "model": "SQ",
+      "mount": "Bronica SQ",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Bronica%20SQ%20M3355.jpg?width=320",
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "SQ-A",
+      "mount": "Bronica SQ",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q130388259",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Zenza%20Bronica%20SQ-A.jpg?width=320",
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "SQ-Am",
+      "mount": "Bronica SQ",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "SQ-Ai",
+      "mount": "Bronica SQ",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Bronica%20SQAi.jpg?width=320",
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "SQ-B",
+      "mount": "Bronica SQ",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "ETR",
+      "mount": "Bronica ETR",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q125560521",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Bronica%20ETR.jpg?width=320",
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "ETRS",
+      "mount": "Bronica ETR",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Zenza%20Bronica%20ETRS%20with%20Bronica%20Zenzanon%2075mm%20f2.8%20EII%20lens.jpg?width=320",
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "ETRSi",
+      "mount": "Bronica ETR",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q136940735",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Bronica%20ERT-Si.jpg?width=320",
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "ETRC",
+      "mount": "Bronica ETR",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "GS-1",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q125907180",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/0431%20Zenza%20Bronica%20GS-1%20Full%20Set%20%285872935669%29.jpg?width=320",
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "RF645",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "S",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "S2",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Zenza%20BRONICA%20S2%20with%20ZENZANON%20100mm%20F2.8.JPG?width=320",
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "S2A",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "C",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "EC",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "EC-TL",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Bronica",
+      "model": "EC-TL II",
+      "mount": "medium format",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Bronica"
+    },
+    {
+      "make": "Minolta",
+      "model": "SR-2",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4044329",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_SR-2A.JPG?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "SR-1",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_SR1.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "SR-3",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_SR-3.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "SR-7",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4044327",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_SR-7%28a%29_%2813705953664%29.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "SR-1s",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "SR-T101",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q737724",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_srt_101_IMGP3035_wp.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "SR-T100",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_SRT_100_frontal.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "SRM",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_SR-M.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "SR-T102",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Appareil_photo_Minolta_SR-T_303_avec_50_mm_f1.7_0343.JPG?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "SR-T202",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_srt_303b_rokkor_2_5_100mm_IMGP0544.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "SR-T201",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_srT101b_CLC.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "SR-T200",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Vintage_Minolta_SRT200_35mm_SLR_Film_Camera%2C_Made_In_Japan%2C_Circa_1975_%2836324423080%29.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "XK",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_X1_01_kln.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "XE",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q13581352",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/MINOLTA_XE_BLK.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "XE-5",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q6869034",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_MD_50-1.7_XE-5_%285736079445%29.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "XK Motor",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Xm-motor2.JPG?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "XD",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_XD-11.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "XG-7",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_XG_2_%2813507148615%29.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "XG-1",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q109045156",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_XG1.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "XD-5",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_XD-5.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "XG-9",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q130240280",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_XG_9_-_02.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "X-700",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4044333",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_X700_45degree.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "X-7",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Vintage_Minolta_XG-A_35mm_SLR_Film_Camera%2C_Last_Member_Of_The_XG_Family%2C_Export_Model_For_The_North_American_Market_Being_Introduced_In_1982%2C_Made_In_Japan_%2835634232985%29.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "XG-M",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q6869036",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_X-GM_series_camera_-front.JPG?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "X-570",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q6869031",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_X-570.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "X-600",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/MINOLTA_X-600.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "X-370",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Vintage_Minolta_35mm_SLR_Camera%2C_Model_X-370%2C_Made_In_Japan%2C_Circa_1984_-_1990_bbbbb_%2835285128095%29.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "X-9",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_X_300S_%283842687466%29.jpg?width=320",
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "X-370s",
+      "mount": "Minolta MD",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta SR-mount cameras"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 9000",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 7000",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 5000",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q11781558",
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 7000i",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 3000i",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 5000i",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q6868995",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_Maxxum_5000i_SLR.jpg?width=320",
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 8000i",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 7xi",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 3xi",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum SPxi",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 9xi",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 5xi",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 2xi",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 700si",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 400si",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 600si",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 500si",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 300si",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 800si",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Appareil_photo_Dynax_800si_Minolta_%281%29_0329.JPG?width=320",
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 9",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta A-mount system"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum XTsi",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum HTsi",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 9Ti",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta A-mount system"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum STsi",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum QTsi",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 7",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_Dynax_7_1.jpg?width=320",
+      "source": "wikipedia:Minolta A-mount system"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 5",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Maxxum_5.jpg?width=320",
+      "source": "wikipedia:Minolta A-mount system"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 4",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q6869022",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Maxxum4_onTripod.jpg?width=320",
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 3",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Minolta products"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 70",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta A-mount system"
+    },
+    {
+      "make": "Minolta",
+      "model": "Maxxum 50",
+      "mount": "Minolta A",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta A-mount system"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q6869020",
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic 7",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic 7S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic 9",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic 11",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic C",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic 5",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic E",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic F",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/The_Hi-Matic_F_of_1972.jpg?width=320",
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic G",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic G2",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic 7SII",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_HiMatic_7sII.JPG?width=320",
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic SD",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic S2",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic SD2",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic AF",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_Hi-Matic_AF.jpg?width=320",
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic AF2",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_Hi-Matic_AF2_camera.jpg?width=320",
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "Hi-Matic GF",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_Hi-Matic_GF.jpg?width=320",
+      "source": "wikipedia:Minolta Hi-Matic"
+    },
+    {
+      "make": "Minolta",
+      "model": "TC-1",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q6869027",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_TC-1_Front_%284393144127%29.jpg?width=320",
+      "source": "wikipedia:Minolta TC-1"
+    },
+    {
+      "make": "Minolta",
+      "model": "CLE",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q354247",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Minolta_CLE_2629939638_107c07ce16_o.jpg?width=320",
+      "source": "wikipedia:Minolta CLE"
+    },
+    {
+      "make": "Minolta",
+      "model": "CL",
+      "mount": "Leica M",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Leica_CL_avec_Summicron-C.JPG?width=320",
+      "source": "wikipedia:Leica CL"
+    },
+    {
+      "make": "Nikon",
+      "model": "F",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1931209",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F_Eye_Level.jpg?width=320",
+      "source": "wikipedia:Nikon F"
+    },
+    {
+      "make": "Nikon",
+      "model": "F2",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q788315",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F2_DE1.jpg?width=320",
+      "source": "wikipedia:Nikon F2"
+    },
+    {
+      "make": "Nikon",
+      "model": "F3",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1470486",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/F3big.jpg?width=320",
+      "source": "wikipedia:Nikon F3"
+    },
+    {
+      "make": "Nikon",
+      "model": "F4",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1384459",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F4_1.jpg?width=320",
+      "source": "wikipedia:Nikon F4"
+    },
+    {
+      "make": "Nikon",
+      "model": "F5",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1510216",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/16-04-09_Nikon_F5_RalfR_WAT_6948.jpg?width=320",
+      "source": "wikipedia:Nikon F5"
+    },
+    {
+      "make": "Nikon",
+      "model": "F6",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1510460",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F6_face.jpg?width=320",
+      "source": "wikipedia:Nikon F6"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikkormat FT",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q56322804",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_Nikomat_FT_01.JPG?width=320",
+      "source": "wikipedia:Nikkormat"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikkormat FTn",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikomat_IMG_5356.JPG?width=320",
+      "source": "wikipedia:Nikkormat"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikkormat FT2",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Nikkormat"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikkormat FT3",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Nikkormat"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikkormat EL",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikkormat_el_japanese_analog_camera_with_35mm_lens.jpg?width=320",
+      "source": "wikipedia:Nikkormat"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikkormat EL2",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Nikkormat"
+    },
+    {
+      "make": "Nikon",
+      "model": "FM",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q3341825",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_FM.jpg?width=320",
+      "source": "wikipedia:Nikon FM"
+    },
+    {
+      "make": "Nikon",
+      "model": "FM2",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1352089",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_FM2_black.jpg?width=320",
+      "source": "wikipedia:Nikon FM2"
+    },
+    {
+      "make": "Nikon",
+      "model": "FM2n",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/NIKON_FM2n_NIKKOR_Q.jpg?width=320",
+      "source": "wikipedia:Nikon FM2"
+    },
+    {
+      "make": "Nikon",
+      "model": "FM3A",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q655249",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/NikonFM3A.jpg?width=320",
+      "source": "wikipedia:Nikon FM3A"
+    },
+    {
+      "make": "Nikon",
+      "model": "FE",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q2308014",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_FE_%26_Nikkor_50_mm_f1.4.jpg?width=320",
+      "source": "wikipedia:Nikon FE"
+    },
+    {
+      "make": "Nikon",
+      "model": "FE2",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q3341827",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/NikonFE2blkfrt50f14.jpg?width=320",
+      "source": "wikipedia:Nikon FE2"
+    },
+    {
+      "make": "Nikon",
+      "model": "FA",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1457619",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/NikonFAblkfrt35f2.jpg?width=320",
+      "source": "wikipedia:Nikon FA"
+    },
+    {
+      "make": "Nikon",
+      "model": "FG",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q3341826",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_FG_1982_8872836.jpg?width=320",
+      "source": "wikipedia:Nikon FG"
+    },
+    {
+      "make": "Nikon",
+      "model": "FG-20",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q11040975",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/FG-20.JPG?width=320",
+      "source": "wikipedia:Nikon FG-20"
+    },
+    {
+      "make": "Nikon",
+      "model": "EM",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q2263095",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_EM_%28balance_adjust%29.jpg?width=320",
+      "source": "wikipedia:Nikon EM"
+    },
+    {
+      "make": "Nikon",
+      "model": "FM10",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1654201",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_FM10.jpg?width=320",
+      "source": "wikipedia:Nikon FM10"
+    },
+    {
+      "make": "Nikon",
+      "model": "F-301",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q951843",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F301.jpg?width=320",
+      "source": "wikipedia:Nikon F-301"
+    },
+    {
+      "make": "Nikon",
+      "model": "F-501",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1992006",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F-501-Nikkor.jpg?width=320",
+      "source": "wikipedia:Nikon F-501"
+    },
+    {
+      "make": "Nikon",
+      "model": "F-801",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1984095",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/N8008_front.jpg?width=320",
+      "source": "wikipedia:Nikon F-801"
+    },
+    {
+      "make": "Nikon",
+      "model": "F90",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q7036525",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_N90s_body_MB10.JPG?width=320",
+      "source": "wikipedia:Nikon F90"
+    },
+    {
+      "make": "Nikon",
+      "model": "F90X",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q12040937",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F90x.jpg?width=320",
+      "source": "wikipedia:Nikon F90"
+    },
+    {
+      "make": "Nikon",
+      "model": "F100",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q3341816",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F100.png?width=320",
+      "source": "wikipedia:Nikon F100"
+    },
+    {
+      "make": "Nikon",
+      "model": "F80",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1068333",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F80_T.jpg?width=320",
+      "source": "wikipedia:Nikon F80"
+    },
+    {
+      "make": "Nikon",
+      "model": "F75",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q378703",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F75_01.jpg?width=320",
+      "source": "wikipedia:Nikon F75"
+    },
+    {
+      "make": "Nikon",
+      "model": "F65",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q3078788",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_N65_%28lower_contrast%29.jpg?width=320",
+      "source": "wikipedia:Nikon F65"
+    },
+    {
+      "make": "Nikon",
+      "model": "F60",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q489172",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon-f60-2.jpg?width=320",
+      "source": "wikipedia:Nikon F60"
+    },
+    {
+      "make": "Nikon",
+      "model": "F70",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q3341822",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F70_BL_%28filter_retouch%29.jpg?width=320",
+      "source": "wikipedia:Nikon F70"
+    },
+    {
+      "make": "Nikon",
+      "model": "F50",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q3078442",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F50_5914.jpeg?width=320",
+      "source": "wikipedia:Nikon F50"
+    },
+    {
+      "make": "Nikon",
+      "model": "F-601",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q3341820",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F601_D.jpg?width=320",
+      "source": "wikipedia:Nikon F-601"
+    },
+    {
+      "make": "Nikon",
+      "model": "F-401",
+      "mount": "Nikon F",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1992003",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/F-401_401-S_401-X.jpg?width=320",
+      "source": "wikipedia:Nikon F-401"
+    },
+    {
+      "make": "Nikon",
+      "model": "S",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_S_with_NIKKOR_H.C_2_f%3D5cm_lens.jpg?width=320",
+      "source": "wikipedia:Nikon I, M and S"
+    },
+    {
+      "make": "Nikon",
+      "model": "S2",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q124802074",
+      "image": null,
+      "source": "wikipedia:Nikon I, M and S"
+    },
+    {
+      "make": "Nikon",
+      "model": "S3",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q7036542",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/S3-400.jpg?width=320",
+      "source": "wikipedia:Nikon S3"
+    },
+    {
+      "make": "Nikon",
+      "model": "S4",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q7036545",
+      "image": null,
+      "source": "wikipedia:Nikon I, M and S"
+    },
+    {
+      "make": "Nikon",
+      "model": "SP",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q7036548",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_SP_chrome_with_exposure_meter_and_NIKKOR-S_1%2C4_f%3D5cm.JPG?width=320",
+      "source": "wikipedia:Nikon SP"
+    },
+    {
+      "make": "Nikon",
+      "model": "S3M",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/S3-2000.jpg?width=320",
+      "source": "wikipedia:Nikon S3"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikonos I",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_front_2016_Nikon_Museum.jpg?width=320",
+      "source": "wikipedia:Nikonos"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikonos II",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_II_front-left_2016_Nikon_Museum.jpg?width=320",
+      "source": "wikipedia:Nikonos"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikonos III",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_III_front_2015_Nikon_Museum.jpg?width=320",
+      "source": "wikipedia:Nikonos"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikonos IV-A",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_IV-A_front-right_2015_Nikon_Museum.jpg?width=320",
+      "source": "wikipedia:Nikonos"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikonos V",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q745343",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_V_front_2015_Nikon_Museum.jpg?width=320",
+      "source": "wikipedia:Nikonos"
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikonos RS",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_RS_AF_front-left_2016_Nikon_Museum.jpg?width=320",
+      "source": "wikipedia:Nikonos"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-1",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q913757",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-1_MD_Chrome.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-1n",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-1_MD_Chrome.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-1 MD",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-1_MD_Chrome.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-2",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1424472",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-2_with_Zuiko_50mm_f1.8.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-2n",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-2_with_Zuiko_50mm_f1.8.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-2 SP",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-2_SP.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-3",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1768918",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/olympusom3.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-3Ti",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-4",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1378140",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM4_01_kln_web.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-4Ti",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q2022920",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM4_ti_01.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-4T",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/OM-4T-1.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-10",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1971044",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-10_without_lens.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-20",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q14545266",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-20.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-G",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-20.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-30",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q11292701",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-30.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-F",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-30.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-40",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-40_with_clear_random_shutter_pattern.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-PC",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_OM-40_with_clear_random_shutter_pattern.jpg?width=320",
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-2000",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-707",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-77AF",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-101",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "OM-88",
+      "mount": "Olympus OM",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_OM_system"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen",
+      "mount": "fixed",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_Pen.jpg?width=320",
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen S",
+      "mount": "fixed",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen D",
+      "mount": "fixed",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen D2",
+      "mount": "fixed",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen D3",
+      "mount": "fixed",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pen_D3.jpg?width=320",
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen EE",
+      "mount": "fixed",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen EE-2",
+      "mount": "fixed",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen EE-3",
+      "mount": "fixed",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_pen_ee3.jpg?width=320",
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen EES",
+      "mount": "fixed",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_pen_ees.jpg?width=320",
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen W",
+      "mount": "fixed",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen F",
+      "mount": "other",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": "Q7089248",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_PenF.jpg?width=320",
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen FT",
+      "mount": "other",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_PenF.jpg?width=320",
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "Pen FV",
+      "mount": "other",
+      "format": "half-frame",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_PenF.jpg?width=320",
+      "source": "wikipedia:Olympus_Pen"
+    },
+    {
+      "make": "Olympus",
+      "model": "XA",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q7089262",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_XA_7889.jpg?width=320",
+      "source": "wikipedia:Olympus_XA"
+    },
+    {
+      "make": "Olympus",
+      "model": "XA1",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympu_XA1.jpg?width=320",
+      "source": "wikipedia:Olympus_XA"
+    },
+    {
+      "make": "Olympus",
+      "model": "XA2",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_XA2_7890.jpg?width=320",
+      "source": "wikipedia:Olympus_XA"
+    },
+    {
+      "make": "Olympus",
+      "model": "XA3",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_XA3_7891.jpg?width=320",
+      "source": "wikipedia:Olympus_XA"
+    },
+    {
+      "make": "Olympus",
+      "model": "XA4",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_XA4_Macro_%282388651901%29.jpg?width=320",
+      "source": "wikipedia:Olympus_XA"
+    },
+    {
+      "make": "Olympus",
+      "model": "Trip 35",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4045741",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_Trip_35_2.jpg?width=320",
+      "source": "wikipedia:Olympus_Trip_35"
+    },
+    {
+      "make": "Olympus",
+      "model": "35 SP",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q7089207",
+      "image": null,
+      "source": "wikipedia:List_of_Olympus_products"
+    },
+    {
+      "make": "Olympus",
+      "model": "35 RC",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1826732",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Olympus_35_RC_img_1850.jpg?width=320",
+      "source": "wikipedia:List_of_Olympus_products"
+    },
+    {
+      "make": "Olympus",
+      "model": "35 RD",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q7089204",
+      "image": null,
+      "source": "wikipedia:List_of_Olympus_products"
+    },
+    {
+      "make": "Olympus",
+      "model": "35 DC",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List_of_Olympus_products"
+    },
+    {
+      "make": "Olympus",
+      "model": "Mju",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Olympus_mju"
+    },
+    {
+      "make": "Olympus",
+      "model": "Mju-III Wide 100",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List_of_Olympus_products"
+    },
+    {
+      "make": "Olympus",
+      "model": "Infinity S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List_of_Olympus_products"
+    },
+    {
+      "make": "Olympus",
+      "model": "Superzoom 70",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List_of_Olympus_products"
+    },
+    {
+      "make": "Olympus",
+      "model": "AF-1",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List_of_Olympus_products"
+    },
+    {
+      "make": "Olympus",
+      "model": "AF-10",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List_of_Olympus_products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Asahiflex I",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Asahiflex IA",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Asahiflex IIB",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Asahiflex_IIb_Model_I.jpg?width=320",
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "Asahiflex IIA",
+      "mount": "other",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Asahi Pentax",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Asahi Pentax S",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Asahi Pentax K",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "H2",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "H3",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "H1",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "SV",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "H1a",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Spotmatic",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4046655",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_Spotmatic_camera_1.jpg?width=320",
+      "source": "wikipedia:Pentax Spotmatic"
+    },
+    {
+      "make": "Pentax",
+      "model": "Spotmatic SL",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Spotmatic SP500",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Spotmatic II",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "Spotmatic IIa",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Electro-Spotmatic",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "Spotmatic ES",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Spotmatic SP1000",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Spotmatic F",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "Spotmatic ES II",
+      "mount": "M42",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "K2",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "K2 DMD",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "K1000",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q639521",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_K1000.jpg?width=320",
+      "source": "wikipedia:Pentax K1000"
+    },
+    {
+      "make": "Pentax",
+      "model": "ME",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q176072",
+      "image": null,
+      "source": "wikipedia:Pentax ME"
+    },
+    {
+      "make": "Pentax",
+      "model": "MX",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q639530",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_MX_camera.jpg?width=320",
+      "source": "wikipedia:Pentax MX"
+    },
+    {
+      "make": "Pentax",
+      "model": "MV",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "MV1",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "ME Super",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q674055",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_ME_Super_-_front-angle.jpg?width=320",
+      "source": "wikipedia:Pentax ME Super"
+    },
+    {
+      "make": "Pentax",
+      "model": "ME F",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q1346599",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_ME-F.jpg?width=320",
+      "source": "wikipedia:Pentax ME F"
+    },
+    {
+      "make": "Pentax",
+      "model": "MG",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4046622",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/PENTAX_MG.jpg?width=320",
+      "source": "wikipedia:Pentax MG"
+    },
+    {
+      "make": "Pentax",
+      "model": "LX",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q824877",
+      "image": null,
+      "source": "wikipedia:Pentax LX"
+    },
+    {
+      "make": "Pentax",
+      "model": "Super A",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4046665",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_Super-A_on_white_bg.jpg?width=320",
+      "source": "wikipedia:Pentax Super-A"
+    },
+    {
+      "make": "Pentax",
+      "model": "Program A",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "A3",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "A3000",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "P3",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "P30",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "P5",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "P50",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "P3n",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "P30n",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "P30T",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "SFX",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4046648",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_SFX.jpg?width=320",
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "SFXn",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "SF7",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4046651",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax-SF7.jpg?width=320",
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "Z-1",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "Z-10",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Z-20",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "Z-50",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "Z-50p",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Z-5",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Z-5p",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Z-1p",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "Z-70",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "MZ-3",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "MZ-5",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "MZ-5n",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "MZ-10",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "MZ-7",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "MZ-6",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "MZ-M",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "MZ-50",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "MZ-30",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "MZ-60",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "MZ-S",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": "Q4046634",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_MZ-S.jpg?width=320",
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "*ist",
+      "mount": "Pentax K",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:Pentax cameras"
+    },
+    {
+      "make": "Pentax",
+      "model": "645",
+      "mount": "Pentax 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q4046598",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax645.jpg?width=320",
+      "source": "wikipedia:Pentax 645"
+    },
+    {
+      "make": "Pentax",
+      "model": "645N",
+      "mount": "Pentax 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q4046598",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax645n.jpg?width=320",
+      "source": "wikipedia:Pentax 645"
+    },
+    {
+      "make": "Pentax",
+      "model": "645NII",
+      "mount": "Pentax 645",
+      "format": "120",
+      "category": "film",
+      "wikidata": "Q4046598",
+      "image": null,
+      "source": "wikipedia:Pentax 645"
+    },
+    {
+      "make": "Pentax",
+      "model": "6x7",
+      "mount": "Pentax 67",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "67",
+      "mount": "Pentax 67",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "67II",
+      "mount": "Pentax 67",
+      "format": "120",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Auto 110",
+      "mount": "other",
+      "format": "110",
+      "category": "film",
+      "wikidata": "Q4046604",
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_Auto_110.jpg?width=320",
+      "source": "wikipedia:Pentax Auto 110"
+    },
+    {
+      "make": "Pentax",
+      "model": "Auto 110 Super",
+      "mount": "other",
+      "format": "110",
+      "category": "film",
+      "wikidata": "Q4046604",
+      "image": null,
+      "source": "wikipedia:Pentax Auto 110"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 24EW",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 60S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_Espio_60S_1.jpg?width=320",
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 60V",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 70",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 70E",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 80",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 80E",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 90MC",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 95S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 105G",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 105Mi",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 105S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 105SW",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 105WR",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 110",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 115",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 115G",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 115M",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 120SW",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 120SW II",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 130M",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 135M",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 140",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 140M",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 140V",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 145M Super",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 150SL",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 160",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 170SL",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 200",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 628",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 738",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 738G",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 738S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 838",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 838G",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 838S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 928",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio 928M",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio Junior",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio Mini",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio P",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "Espio W",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 28W",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 60",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 60R",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 60S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 70",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 70XL",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 80E",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 80G",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 80S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 90MC",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 90WR",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 95S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 95WR",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 105 Super",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 105R",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 105S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 105SW",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 105WR",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 110",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 115",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 115G",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 115M",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 115S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 120",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 120Mi",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_Espio_120Mi_img_1322.jpg?width=320",
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 120SW",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 130M",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 135M",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 140",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 140M",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 140M Super",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 150SL",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 160",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 170SL",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 200",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 700",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 735",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 835",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 900",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 928",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom 928M",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom EZY",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom EZY-80",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom EZY-R",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Pentax_IQZoom_EZY-R.jpg?width=320",
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "IQ-Zoom EZY-S",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    },
+    {
+      "make": "Pentax",
+      "model": "PC35AF",
+      "mount": "fixed",
+      "format": "35mm",
+      "category": "film",
+      "wikidata": null,
+      "image": null,
+      "source": "wikipedia:List of Pentax products"
+    }
+  ]
+}

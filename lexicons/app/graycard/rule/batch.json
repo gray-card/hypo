@@ -1,0 +1,63 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.rule.batch",
+  "defs": {
+    "comparison": {
+      "type": "object",
+      "description": "A leaf predicate over a dotted field path (e.g. exif.make, alt, gallery.title, capture.camera, index).",
+      "required": ["field", "op"],
+      "properties": {
+        "field": { "type": "string", "maxLength": 256 },
+        "op": {
+          "type": "string",
+          "knownValues": ["empty", "notEmpty", "exists", "notExists", "eq", "neq", "matches", "contains", "startsWith", "endsWith", "gt", "gte", "lt", "lte", "in"]
+        },
+        "value": { "type": "unknown" },
+        "pattern": { "type": "string", "maxLength": 512, "description": "Regex source for op=matches." },
+        "flags": { "type": "string", "maxLength": 8 }
+      }
+    },
+    "booleanGroup": {
+      "type": "object",
+      "description": "A boolean combination of conditions. For 'not', supply a single operand.",
+      "required": ["operator", "operands"],
+      "properties": {
+        "operator": { "type": "string", "knownValues": ["and", "or", "not"] },
+        "operands": { "type": "array", "items": { "type": "union", "refs": ["#comparison", "#booleanGroup"] } }
+      }
+    },
+    "action": {
+      "type": "object",
+      "description": "A single mutation applied when the condition holds. value supports {{field.path}} template substitution.",
+      "required": ["op"],
+      "properties": {
+        "op": {
+          "type": "string",
+          "knownValues": ["setAlt", "setGalleryDescription", "setExif", "projectCaptureToExif", "associateCamera", "associateLens", "setField", "clearField", "applyWorkflowTemplate", "addToGallery", "linkInstance", "tag"]
+        },
+        "field": { "type": "string", "maxLength": 256 },
+        "value": { "type": "unknown" },
+        "ref": { "type": "string", "format": "at-uri" },
+        "mode": { "type": "string", "knownValues": ["fill", "overwrite", "ifEmpty"] }
+      }
+    },
+    "main": {
+      "type": "record",
+      "description": "Saved conditional batch rule for gallery-wide edits, with a typed predicate/action DSL so any client interprets it the same way.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "when", "actions", "createdAt"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 128 },
+          "scope": { "type": "string", "knownValues": ["gallery", "selection", "account"] },
+          "when": { "type": "union", "refs": ["#comparison", "#booleanGroup"] },
+          "actions": { "type": "array", "items": { "type": "ref", "ref": "#action" } },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

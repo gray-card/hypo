@@ -1,0 +1,108 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.scene.defs",
+  "defs": {
+    "regionKind": {
+      "type": "string",
+      "description": "How a region is grounded onto the image plane. Covers the representations common in modern CV (detection, instance/panoptic segmentation, keypoints, oriented detection, 3D).",
+      "knownValues": [
+        "whole",
+        "bbox",
+        "rotated-bbox",
+        "polygon",
+        "multipolygon",
+        "mask",
+        "rle-mask",
+        "point",
+        "keypoints",
+        "contour",
+        "cuboid",
+        "depth-plane",
+        "other"
+      ]
+    },
+    "bbox": {
+      "type": "object",
+      "description": "Axis-aligned bounding box in normalized [0,1] coordinates scaled by 1,000,000 (origin top-left; x,y = top-left, w,h = size \u2014 COCO-style).",
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "properties": {
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "w": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "h": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "term": {
+      "type": "object",
+      "description": "A reference to a node or edge type declared in an ontology. Either an in-repo ontology term (ontology AT-URI + local id) or an external CURIE/URI.",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Local term id within the ontology, a CURIE (e.g. wd:Q7378), or a URI."
+        },
+        "ontology": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "app.graycard.scene.ontology declaring this term."
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Human-readable label for the term (e.g. the Wikidata entity label)."
+        }
+      }
+    },
+    "rbox": {
+      "type": "object",
+      "description": "Rotated / oriented bounding box (OBB). Center + size in normalized [0,1] scaled by 1,000,000; angleDeg in degrees scaled by 1,000,000 (counter-clockwise).",
+      "required": [
+        "cx",
+        "cy",
+        "w",
+        "h"
+      ],
+      "properties": {
+        "cx": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cy": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "w": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "h": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "angleDeg": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

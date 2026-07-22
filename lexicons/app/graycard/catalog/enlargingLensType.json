@@ -1,0 +1,29 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.enlargingLensType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "An enlarging (darkroom) lens model — distinct from camera lenses (e.g. Rodagon, Componon-S, EL-Nikkor). instance.enlargingLens references this.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["createdAt"],
+        "properties": {
+          "make": { "type": "string", "maxLength": 128 },
+          "model": { "type": "string", "maxLength": 128 },
+          "focalLengthMm": { "type": "integer", "minimum": 1, "description": "e.g. 50 (35mm), 80 (6x6), 105-150 (4x5)." },
+          "maxAperture": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Maximum aperture (unit: f-number)." },
+          "mount": { "type": "string", "maxLength": 64, "description": "Thread mount, e.g. 'M39 (Leica)', 'M25', 'M42'." },
+          "coversFormat": { "type": "ref", "ref": "app.graycard.defs#negativeFormat", "description": "Largest negative format the lens covers." },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

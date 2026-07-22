@@ -1,0 +1,54 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.devRecipe",
+  "defs": {
+    "tempPoint": {
+      "type": "object",
+      "description": "A published development time at one temperature. Times are only ever shown for temperatures a manufacturer datasheet supports (interpolated within published points, never extrapolated).",
+      "required": ["tempC10", "timeSec"],
+      "properties": {
+        "tempC10": { "type": "integer", "description": "Temperature in tenths of a degree Celsius (20.0 C = 200)." },
+        "timeSec": { "type": "integer", "minimum": 0, "description": "Development time in seconds at this temperature." }
+      }
+    },
+    "agitation": {
+      "type": "object",
+      "description": "Agitation scheme, structured so a timer can drive a metronome.",
+      "properties": {
+        "initialSec": { "type": "integer", "minimum": 0, "description": "Continuous agitation at the start of the step." },
+        "everySec": { "type": "integer", "minimum": 0, "description": "Agitation cycle period (e.g. 60 = once a minute)." },
+        "forSec": { "type": "integer", "minimum": 0, "description": "Agitation duration within each cycle (e.g. 10s)." },
+        "note": { "type": "string", "maxLength": 256, "description": "Free-text scheme (e.g. '4 inversions', 'continuous')." }
+      }
+    },
+    "main": {
+      "type": "record",
+      "description": "A development recipe: the time(s) to develop a given film at a given exposure index in a given developer/dilution, sourced from a manufacturer datasheet. Bundled curated recipes and user-saved personal recipes share this shape.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["developerMake", "developerName", "filmMake", "filmName", "process", "temps", "source"],
+        "properties": {
+          "developerMake": { "type": "string", "maxLength": 128 },
+          "developerName": { "type": "string", "maxLength": 128 },
+          "dilution": { "type": "string", "maxLength": 64, "description": "e.g. 'stock', '1+1', '1+31'." },
+          "filmMake": { "type": "string", "maxLength": 128 },
+          "filmName": { "type": "string", "maxLength": 128 },
+          "ei": { "type": "integer", "minimum": 1, "description": "Exposure index the time is for; push/pull rows are separate recipes." },
+          "process": { "type": "ref", "ref": "app.graycard.defs#filmProcess" },
+          "temps": {
+            "type": "array",
+            "description": "One or more published (temperature, time) points. Multiple points enable interpolation between them.",
+            "items": { "type": "ref", "ref": "#tempPoint" }
+          },
+          "agitation": { "type": "ref", "ref": "#agitation" },
+          "tankType": { "type": "ref", "ref": "app.graycard.defs#tankType" },
+          "source": { "type": "string", "maxLength": 512, "description": "URL of the manufacturer datasheet this recipe was transcribed from." },
+          "notes": { "type": "string", "maxLength": 1000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

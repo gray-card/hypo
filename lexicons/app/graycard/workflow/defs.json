@@ -1,0 +1,74 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.workflow.defs",
+  "defs": {
+    "artifactKind": {
+      "type": "string",
+      "description": "The canonical taxonomy of things that flow through a workflow. Shared by workflow stages, app.graycard.artifact, and app.graycard.instance.intermediate.",
+      "knownValues": [
+        "scene", "digital-raw", "digital-raster",
+        "film-roll-latent", "film-negative", "film-slide", "paper-negative",
+        "glass-plate", "instant-print", "physical-print", "alt-process-print",
+        "contact-sheet", "internegative", "interpositive",
+        "video-clip", "video-frame", "other"
+      ]
+    },
+    "medium": {
+      "type": "string",
+      "knownValues": ["digital", "film", "instant", "motion-picture", "alt-process", "scan-of-print", "scan-of-negative", "scan-of-slide", "other"]
+    },
+    "digitizeMethod": {
+      "type": "string",
+      "knownValues": [
+        "direct-digital", "tethered-capture", "file-import", "raw-export",
+        "dslr-copy-stand", "mirrorless-copy-stand", "flatbed-negative", "flatbed-print",
+        "dedicated-film-scanner", "drum-scanner", "lab-scan", "smartphone", "other"
+      ]
+    },
+    "publishTarget": {
+      "type": "object",
+      "description": "A terminal destination a workflow publishes to. Abstracts the publish target (e.g. social.grain.photo) so other targets can be added without a contract change.",
+      "required": ["service"],
+      "properties": {
+        "service": {
+          "type": "string",
+          "knownValues": ["social.grain", "other"]
+        },
+        "ref": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "The published record, e.g. a social.grain.photo AT-URI."
+        },
+        "label": { "type": "string", "maxLength": 256 }
+      }
+    },
+    "artifactRef": {
+      "type": "object",
+      "description": "A reference to an artifact flowing through a stage. ref may point at an app.graycard.artifact record (preferred) or any AT-URI; kind names its taxonomy slot.",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "type": "ref", "ref": "#artifactKind" },
+        "ref": { "type": "string", "format": "at-uri" },
+        "label": { "type": "string", "maxLength": 256 },
+        "temporal": { "type": "ref", "ref": "app.graycard.defs#temporalRef" }
+      }
+    },
+    "stageLink": {
+      "type": "object",
+      "required": ["stage", "position"],
+      "properties": {
+        "stage": { "type": "string", "format": "at-uri" },
+        "position": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "branchLink": {
+      "type": "object",
+      "required": ["fromStage", "toStage", "label"],
+      "properties": {
+        "fromStage": { "type": "string", "format": "at-uri" },
+        "toStage": { "type": "string", "format": "at-uri" },
+        "label": { "type": "string", "maxLength": 128 }
+      }
+    }
+  }
+}

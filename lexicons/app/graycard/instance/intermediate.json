@@ -1,0 +1,62 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.intermediate",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Persistent intermediate artifact (negative strip, slide mount, glass plate, print). kind uses the shared artifact taxonomy.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "kind",
+          "createdAt"
+        ],
+        "properties": {
+          "kind": {
+            "type": "ref",
+            "ref": "app.graycard.workflow.defs#artifactKind"
+          },
+          "filmRoll": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "frameIndex": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "storageLocation": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "image": {
+            "type": "blob",
+            "accept": [
+              "image/png",
+              "image/jpeg",
+              "image/webp"
+            ],
+            "maxSize": 3000000,
+            "description": "Optional user photo of this specific item; falls back to the catalog type's stock image."
+          }
+        }
+      }
+    }
+  }
+}

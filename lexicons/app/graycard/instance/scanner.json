@@ -1,0 +1,55 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.scanner",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A specific scanner or copy-stand rig. References app.graycard.catalog.scannerType.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "type",
+          "createdAt"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.catalog.scannerType"
+          },
+          "nickname": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "serialNumber": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "image": {
+            "type": "blob",
+            "accept": [
+              "image/png",
+              "image/jpeg",
+              "image/webp"
+            ],
+            "maxSize": 3000000,
+            "description": "Optional user photo of this specific item; falls back to the catalog type's stock image."
+          }
+        }
+      }
+    }
+  }
+}

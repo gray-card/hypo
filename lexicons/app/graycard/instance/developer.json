@@ -1,0 +1,87 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.developer",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A specific working solution or kit batch (e.g. this bottle of HC-110 dilution B). References app.graycard.catalog.developerType. Counters track cumulative use.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "type",
+          "createdAt"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.catalog.developerType"
+          },
+          "nickname": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "dilution": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Actual mix for this instance (1+31, stock, etc.)."
+          },
+          "mixedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "volumeMl": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "volumeRemainingMl": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rollsProcessed": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Total rolls (or equivalent) run through this working solution."
+          },
+          "sessionsUsed": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of develop sessions using this instance."
+          },
+          "maxRollsRecommended": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Manufacturer or user limit before replenishment/discarding."
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "image": {
+            "type": "blob",
+            "accept": [
+              "image/png",
+              "image/jpeg",
+              "image/webp"
+            ],
+            "maxSize": 3000000,
+            "description": "Optional user photo of this specific item; falls back to the catalog type's stock image."
+          }
+        }
+      }
+    }
+  }
+}

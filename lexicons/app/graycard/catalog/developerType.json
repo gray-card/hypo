@@ -1,0 +1,31 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.developerType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Developer product/type (e.g. Kodak HC-110, Ilford ID-11). Developer instances reference this record.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "process", "createdAt"],
+        "properties": {
+          "brand": { "type": "string", "maxLength": 128 },
+          "name": { "type": "string", "maxLength": 128 },
+          "process": { "type": "ref", "ref": "app.graycard.defs#filmProcess" },
+          "form": { "type": "ref", "ref": "app.graycard.defs#developerForm" },
+          "defaultDilution": { "type": "string", "maxLength": 64, "description": "Typical mix (1+31, stock, etc.)." },
+          "defaultTemperature": { "type": "ref", "ref": "app.graycard.defs#measure" },
+          "defaultTimeSeconds": { "type": "integer", "minimum": 0 },
+          "catalogNumber": { "type": "string", "maxLength": 64 },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.chemistryType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Chemistry product type: developer, stop, fixer, blix, stabilizer, wetting agent, toner.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "role", "createdAt"],
+        "properties": {
+          "brand": { "type": "string", "maxLength": 128 },
+          "name": { "type": "string", "maxLength": 128 },
+          "role": { "type": "ref", "ref": "app.graycard.defs#chemistryRole" },
+          "process": { "type": "ref", "ref": "app.graycard.defs#filmProcess" },
+          "form": { "type": "ref", "ref": "app.graycard.defs#developerForm" },
+          "defaultDilution": { "type": "string", "maxLength": 64 },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

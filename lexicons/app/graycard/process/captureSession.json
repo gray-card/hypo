@@ -1,0 +1,56 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.process.captureSession",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "createdAt"
+        ],
+        "properties": {
+          "pictureProfile": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "filmSimulation": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "meteringMode": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "exposureCompensation": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Exposure compensation (unit: ev)."
+          },
+          "intendedSettings": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "provenance": {
+            "type": "ref",
+            "ref": "app.graycard.defs#provenance"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      },
+      "description": "A capture (shooting) event, the process-side record of making exposures."
+    }
+  }
+}

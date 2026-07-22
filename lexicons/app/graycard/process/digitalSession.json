@@ -1,0 +1,58 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.process.digitalSession",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Digital processing event (RAW development, export, in-camera JPEG).",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "createdAt"
+        ],
+        "properties": {
+          "rawFormat": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "software": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "preset": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "colorSpace": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "exportFormat": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "inCameraProcessing": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "provenance": {
+            "type": "ref",
+            "ref": "app.graycard.defs#provenance"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "client_id": "https://hypo.graycard.app/client-metadata.json",
+  "client_name": "Hypo",
+  "client_uri": "https://hypo.graycard.app/",
+  "logo_uri": "https://hypo.graycard.app/icon.svg",
+  "redirect_uris": [
+    "https://hypo.graycard.app/"
+  ],
+  "scope": "atproto repo:app.graycard.catalog.cameraType repo:app.graycard.catalog.lensType repo:app.graycard.catalog.filmStock repo:app.graycard.catalog.filterType repo:app.graycard.catalog.developerType repo:app.graycard.catalog.scannerType repo:app.graycard.catalog.chemistryType repo:app.graycard.catalog.lab repo:app.graycard.catalog.scanProfile repo:app.graycard.catalog.paperType repo:app.graycard.catalog.enlargerType repo:app.graycard.catalog.printerType repo:app.graycard.catalog.lightSourceType repo:app.graycard.catalog.enlargingLensType repo:app.graycard.instance.camera repo:app.graycard.instance.lens repo:app.graycard.instance.filter repo:app.graycard.instance.filmRoll repo:app.graycard.instance.filmStockpile repo:app.graycard.instance.exposure repo:app.graycard.instance.developer repo:app.graycard.instance.scanner repo:app.graycard.instance.chemistry repo:app.graycard.instance.labAccount repo:app.graycard.instance.storageLocation repo:app.graycard.instance.enlarger repo:app.graycard.instance.printer repo:app.graycard.instance.lightSource repo:app.graycard.instance.enlargingLens repo:app.graycard.instance.intermediate repo:app.graycard.process.developSession repo:app.graycard.process.digitizeSession repo:app.graycard.process.maintenanceSession repo:app.graycard.session.capture repo:app.graycard.workflow.template repo:app.graycard.workflow.run repo:app.graycard.workflow.stage repo:app.graycard.photo.capture repo:app.graycard.photo.workflow repo:app.graycard.gallery.defaults repo:app.graycard.rule.batch repo:app.graycard.scene.graph repo:app.graycard.scene.node repo:app.graycard.scene.edge repo:app.graycard.scene.region repo:app.graycard.setup repo:social.grain.gallery repo:social.grain.photo repo:social.grain.gallery.item repo:social.grain.photo.exif blob:*/*",
+  "grant_types": [
+    "authorization_code",
+    "refresh_token"
+  ],
+  "response_types": [
+    "code"
+  ],
+  "token_endpoint_auth_method": "none",
+  "application_type": "web",
+  "dpop_bound_access_tokens": true
+}

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Hypo social card">
+  <rect width="1200" height="630" fill="#0d0c0b"/>
+  <text x="88" y="330" font-family="'Space Grotesk',sans-serif" font-size="172" font-weight="600" letter-spacing="-5" fill="#ece8e1">Hypo</text>
+  <circle cx="590" cy="314" r="16" fill="#ff9a3d"/>
+  <text x="100" y="412" font-family="'Space Grotesk',sans-serif" font-size="42" fill="#b8b5ac">Metadata for photography workflows.</text>
+  <g>
+    <rect x="0"    y="600" width="120" height="30" fill="#1b1813"/>
+    <rect x="120"  y="600" width="120" height="30" fill="#28241d"/>
+    <rect x="240"  y="600" width="120" height="30" fill="#353029"/>
+    <rect x="360"  y="600" width="120" height="30" fill="#443e34"/>
+    <rect x="480"  y="600" width="120" height="30" fill="#544d41"/>
+    <rect x="600"  y="600" width="120" height="30" fill="#665e4e"/>
+    <rect x="720"  y="600" width="120" height="30" fill="#7c7360"/>
+    <rect x="840"  y="600" width="120" height="30" fill="#948a75"/>
+    <rect x="960"  y="600" width="120" height="30" fill="#b0a692"/>
+    <rect x="1080" y="600" width="120" height="30" fill="#cfc8ba"/>
+  </g>
+</svg>

@@ -1,0 +1,223 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.defs",
+  "defs": {
+    "scaledInteger": {
+      "type": "integer",
+      "description": "Fixed-point number scaled by 1,000,000. Used for values projected into a photo's EXIF record (e.g. social.grain.photo.exif), which stores numerics at this fixed scale. Prefer #measure for graycard-native quantities."
+    },
+    "measure": {
+      "type": "object",
+      "description": "Self-describing scaled quantity. The real value is value / scale; scale defaults to 1 when absent. unit names the physical unit (e.g. celsius, dpi, stop, ev, mm, second, ml).",
+      "required": ["value", "unit"],
+      "properties": {
+        "value": { "type": "integer" },
+        "unit": { "type": "string", "maxLength": 32 },
+        "scale": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "geoLocation": {
+      "type": "object",
+      "description": "A geographic location. latitude/longitude are integer degrees scaled by 1e7 (real value = value / 1e7); altitude and accuracy are integer millimetres (real metres = value / 1000). placemark is an optional reverse-geocoded address. Storing scaled integers keeps atproto-native precision (~1cm) without a float type.",
+      "properties": {
+        "latitude": { "type": "integer", "description": "Degrees north, scaled by 1e7." },
+        "longitude": { "type": "integer", "description": "Degrees east, scaled by 1e7." },
+        "altitude": { "type": "integer", "description": "Metres above sea level, in millimetres (scaled by 1000)." },
+        "accuracy": { "type": "integer", "description": "Horizontal accuracy in millimetres (scaled by 1000)." },
+        "capturedAt": { "type": "string", "format": "datetime" },
+        "placemark": { "type": "ref", "ref": "#placemark" }
+      }
+    },
+    "placemark": {
+      "type": "object",
+      "description": "A human-readable, reverse-geocoded address for a geoLocation.",
+      "properties": {
+        "name": { "type": "string", "maxLength": 256, "description": "Street/place name, e.g. '230 Klink Rd'." },
+        "locality": { "type": "string", "maxLength": 128, "description": "City or town." },
+        "subLocality": { "type": "string", "maxLength": 128, "description": "Neighbourhood/district." },
+        "administrativeArea": { "type": "string", "maxLength": 128, "description": "State/province, e.g. 'NY'." },
+        "postalCode": { "type": "string", "maxLength": 32 },
+        "country": { "type": "string", "maxLength": 128 },
+        "isoCountryCode": { "type": "string", "maxLength": 8 }
+      }
+    },
+    "temporalRef": {
+      "type": "object",
+      "description": "Optional temporal grounding for video-readiness. When absent the subject is a single still frame; when present it selects a frame or time range within a clip.",
+      "properties": {
+        "frame": { "type": "integer", "minimum": 0 },
+        "timeStartMs": { "type": "integer", "minimum": 0 },
+        "timeEndMs": { "type": "integer", "minimum": 0 },
+        "fps": { "type": "ref", "ref": "#measure" }
+      }
+    },
+    "externalId": {
+      "type": "object",
+      "description": "A link to a canonical identifier in an external ontology or database.",
+      "required": ["scheme", "value"],
+      "properties": {
+        "scheme": {
+          "type": "string",
+          "knownValues": ["wikidata", "camera-wiki", "lens-db", "getty-aat", "wikipedia", "uri", "other"]
+        },
+        "value": { "type": "string", "maxLength": 512 }
+      }
+    },
+    "catalogLinks": {
+      "type": "object",
+      "description": "Optional links relating a catalog type to equivalents elsewhere and to external ontologies. Makes every type shareable, forkable, and dedupable across repos.",
+      "properties": {
+        "sameAs": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "Equivalent catalog type in another repo."
+        },
+        "forkedFrom": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "Catalog type this record was copied from."
+        },
+        "externalIds": {
+          "type": "array",
+          "description": "Canonical identifiers in external ontologies (Wikidata, camera-wiki, Getty AAT, etc.).",
+          "items": { "type": "ref", "ref": "#externalId" }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "description": "How and when a value was asserted.",
+      "properties": {
+        "source": {
+          "type": "string",
+          "knownValues": ["manual", "imported-exif", "inferred", "analysis", "batch-rule", "workflow-template"]
+        },
+        "confidence": {
+          "type": "string",
+          "knownValues": ["certain", "likely", "guess"]
+        },
+        "assertedAt": { "type": "string", "format": "datetime" },
+        "assertedBy": { "type": "string", "format": "did" },
+        "note": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "fieldProvenance": {
+      "type": "object",
+      "description": "Provenance for a single named field within a record, so make can come from EXIF while aperture is entered by hand.",
+      "required": ["field", "provenance"],
+      "properties": {
+        "field": { "type": "string", "maxLength": 128 },
+        "provenance": { "type": "ref", "ref": "#provenance" }
+      }
+    },
+    "sourceFile": {
+      "type": "object",
+      "description": "External source file (RAW, TIFF) not stored in the photo blob.",
+      "properties": {
+        "label": { "type": "string", "maxLength": 256 },
+        "cid": { "type": "string", "format": "cid" },
+        "mimeType": { "type": "string", "maxLength": 128 },
+        "hash": { "type": "string", "maxLength": 128 }
+      }
+    },
+    "assetRef": {
+      "type": "object",
+      "description": "Reference to an asset that belongs to a catalog type: a product photo, a datasheet. Exactly one of url / file / record should be set. A url is preferred: it points at the publisher's own copy, so third-party material (manufacturer product photography, datasheet PDFs) is linked rather than redistributed. Use file only for assets you may lawfully host (your own photograph, a permissively licensed one); use record to point at another atproto record holding the asset.",
+      "properties": {
+        "url": { "type": "string", "format": "uri", "maxLength": 2048, "description": "Link to the asset where its publisher hosts it (preferred)." },
+        "file": { "type": "blob", "accept": ["image/png", "image/jpeg", "image/webp", "application/pdf"], "maxSize": 10000000, "description": "The asset itself, uploaded to this repo. Only for content you may lawfully host." },
+        "record": { "type": "string", "format": "at-uri", "description": "Another atproto record holding the asset." },
+        "mimeType": { "type": "string", "maxLength": 128, "description": "Media type, useful when a url or record does not advertise one." },
+        "title": { "type": "string", "maxLength": 256, "description": "Human label, e.g. \"Tri-X 400 technical data\"." },
+        "source": { "type": "string", "maxLength": 256, "description": "Who published the asset (e.g. \"Eastman Kodak Company\"), for attribution." },
+        "license": { "type": "string", "maxLength": 128, "description": "License or usage terms of the asset, when known." }
+      }
+    },
+    "filterKind": {
+      "type": "string",
+      "knownValues": ["uv", "skylight", "protection", "nd", "nd-variable", "graduated-nd", "polarizer-circular", "polarizer-linear", "color", "gradient-color", "contrast", "warming", "cooling", "infrared", "ir-pass", "ir-cut", "uv-pass", "close-up", "split-diopter", "diffusion", "black-mist", "mist", "soft-focus", "center-spot", "star", "prism", "night", "didymium", "other"]
+    },
+    "meteringMode": {
+      "type": "string",
+      "knownValues": ["matrix", "center-weighted", "spot", "partial", "average", "multi-spot", "highlight-weighted", "unknown", "other"]
+    },
+    "exposureProgram": {
+      "type": "string",
+      "knownValues": ["manual", "program", "aperture-priority", "shutter-priority", "creative", "action", "portrait", "landscape", "bulb", "auto", "other"]
+    },
+    "captureFormat": {
+      "type": "string",
+      "description": "The physical format/size of the recorded frame. Open list — grouped: film roll, sheet, instant, cine, digital sensor.",
+      "knownValues": [
+        "135", "half-frame", "120", "220", "127", "126", "110", "620", "828", "70mm", "aps", "16mm-still", "minox", "disc",
+        "4x5", "5x7", "8x10", "9x12cm", "13x18cm", "6.5x9cm", "11x14", "ultra-large",
+        "instax-mini", "instax-square", "instax-wide", "polaroid-i-type", "polaroid-600", "polaroid-sx70", "polaroid-spectra", "peel-apart", "instant-8x10",
+        "super8", "regular8", "16mm-cine", "35mm-cine", "65mm",
+        "full-frame-digital", "aps-c-digital", "aps-h-digital", "medium-format-digital", "micro-four-thirds-digital", "one-inch-digital", "foveon-digital",
+        "other"
+      ]
+    },
+    "mount": { "type": "string", "maxLength": 64 },
+    "filmProcess": {
+      "type": "string",
+      "knownValues": ["bw", "monobath", "c41", "e6", "ecn2", "reversal-bw", "other"]
+    },
+    "tankType": {
+      "type": "string",
+      "description": "How the film/paper was agitated in processing.",
+      "knownValues": ["tank", "tray", "rotary", "dip-and-dunk", "roller-transport", "other"]
+    },
+    "negativeFormat": {
+      "type": "string",
+      "description": "A negative size, as used by enlargers and enlarging lenses.",
+      "knownValues": ["35mm", "6x4.5", "6x6", "6x7", "6x9", "4x5", "5x7", "8x10", "other"]
+    },
+    "inversionMethod": {
+      "type": "string",
+      "description": "How a scanned negative was inverted to a positive.",
+      "knownValues": ["none", "hardware", "software-auto", "software-manual", "preset", "other"]
+    },
+    "projectMode": {
+      "type": "string",
+      "description": "How defaulted/derived metadata is applied to a record.",
+      "knownValues": ["fill", "overwrite", "ifEmpty"]
+    },
+    "filmType": {
+      "type": "string",
+      "knownValues": ["color-negative", "color-slide", "bw-negative", "bw-slide", "chromogenic-bw", "other"]
+    },
+    "storage": {
+      "type": "string",
+      "knownValues": ["room", "cool-dark", "fridge", "freezer", "dry-cabinet", "other"]
+    },
+    "rollStatus": {
+      "type": "string",
+      "knownValues": ["loaded", "partial", "exposed", "at-lab", "developing", "developed", "scanned", "archived"]
+    },
+    "lensTypeKind": {
+      "type": "string",
+      "knownValues": ["prime", "zoom", "macro", "fisheye", "tilt-shift", "other"]
+    },
+    "cameraCategory": {
+      "type": "string",
+      "knownValues": ["film", "digital", "instant", "motion-picture", "other"]
+    },
+    "stopFraction": {
+      "type": "string",
+      "description": "Exposure dial increment as a fraction of a full stop (aperture or shutter).",
+      "knownValues": ["1", "1/2", "1/3"]
+    },
+    "scannerKind": {
+      "type": "string",
+      "knownValues": ["flatbed", "dedicated-film", "drum", "lab-minilab", "dslr-copy-stand", "mirrorless-copy-stand", "smartphone", "other"]
+    },
+    "developerForm": {
+      "type": "string",
+      "knownValues": ["liquid-concentrate", "liquid-ready", "powder", "tablet", "kit", "other"]
+    },
+    "chemistryRole": {
+      "type": "string",
+      "knownValues": ["pre-soak", "developer", "first-developer", "color-developer", "reversal-bath", "stop", "bleach", "fixer", "blix", "monobath", "stabilizer", "wash-aid", "hardener", "toner", "wetting-agent", "final-rinse", "other"]
+    }
+  }
+}

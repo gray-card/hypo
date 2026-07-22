@@ -1,0 +1,61 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.process.maintenanceSession",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "subject",
+          "kind",
+          "createdAt"
+        ],
+        "properties": {
+          "subject": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Camera or lens instance."
+          },
+          "kind": {
+            "type": "string",
+            "knownValues": [
+              "cla",
+              "sensor-clean",
+              "shutter-service",
+              "fungus-clean",
+              "calibration",
+              "other"
+            ]
+          },
+          "performedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "shutterCountAfter": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "provenance": {
+            "type": "ref",
+            "ref": "app.graycard.defs#provenance"
+          }
+        }
+      },
+      "description": "One equipment-maintenance event (CLA, sensor clean, shutter service, calibration) on a piece of gear."
+    }
+  }
+}

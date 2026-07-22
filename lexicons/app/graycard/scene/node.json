@@ -1,0 +1,25 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.scene.node",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A typed vertex in a scene graph (panproto Entity/Event/Region/etc.). Its type references an ontology term; attrs carries an open attribute bundle.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["scene", "type", "createdAt"],
+        "properties": {
+          "scene": { "type": "string", "format": "at-uri", "description": "app.graycard.scene.graph this node belongs to." },
+          "type": { "type": "ref", "ref": "app.graycard.scene.defs#term" },
+          "label": { "type": "string", "maxLength": 256 },
+          "region": { "type": "string", "format": "at-uri", "description": "app.graycard.scene.region grounding this node." },
+          "attrs": { "type": "unknown", "description": "Open attribute bundle keyed by ontology attribute terms." },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

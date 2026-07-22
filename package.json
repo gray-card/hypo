@@ -1,0 +1,35 @@
+{
+  "name": "hypo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Hypo: the graycard web tool that writes app.graycard.* provenance, workflow, and scene-graph records to your atproto PDS and integrates with grain.social. Static, no backend.",
+  "license": "MIT",
+  "author": "Aaron Steven White",
+  "homepage": "https://hypo.graycard.app",
+  "repository": { "type": "git", "url": "https://github.com/gray-card/hypo.git" },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build:catalog": "node scripts/build-catalog.mjs --wikidata",
+    "build:tokenizer": "node --max-old-space-size=24576 scripts/build-tokenizer.mjs",
+    "build:caption-idf": "node --max-old-space-size=4096 scripts/build-caption-idf.mjs",
+    "eval:tokenizer": "node scripts/eval-tokenizer.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@atproto/api": "^0.20.0",
+    "@atproto/oauth-client-browser": "^0.4.0",
+    "@fontsource-variable/jetbrains-mono": "^5.1.1",
+    "@fontsource-variable/space-grotesk": "^5.1.1",
+    "exifr": "^7.1.3",
+    "maplibre-gl": "^5.24.0"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.0",
+    "vite": "^7.0.0",
+    "vitest": "^3.0.0"
+  }
+}

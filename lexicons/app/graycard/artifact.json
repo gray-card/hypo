@@ -1,0 +1,28 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.artifact",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A first-class artifact node: a concrete thing that flows through a workflow (a RAW file, a negative strip, a print, a video clip). Reifying artifacts turns a workflow into a true provenance DAG where stages are edges and artifacts are nodes, and supports multi-input stages (a print from a negative plus a mask).",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["kind", "createdAt"],
+        "properties": {
+          "kind": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactKind" },
+          "label": { "type": "string", "maxLength": 256 },
+          "photo": { "type": "string", "format": "at-uri", "description": "The published photo AT-URI, when this artifact is a published photo (e.g. social.grain.photo)." },
+          "intermediate": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.intermediate, when the artifact is a persistent physical object." },
+          "sourceFile": { "type": "ref", "ref": "app.graycard.defs#sourceFile" },
+          "parents": { "type": "array", "items": { "type": "string", "format": "at-uri" }, "description": "Artifacts this one was derived from (lineage edges)." },
+          "producedBy": { "type": "string", "format": "at-uri", "description": "The app.graycard.process.* session that produced this artifact." },
+          "temporal": { "type": "ref", "ref": "app.graycard.defs#temporalRef" },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

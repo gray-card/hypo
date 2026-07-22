@@ -1,0 +1,31 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.lightSourceType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A UV / contact-printing exposure light source (for alternative processes and contact printing). instance.lightSource references this. (Enlarger illumination lives on enlargerType.headType instead.)",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["createdAt"],
+        "properties": {
+          "make": { "type": "string", "maxLength": 128 },
+          "model": { "type": "string", "maxLength": 128 },
+          "lightTechnology": {
+            "type": "string",
+            "knownValues": ["uv-led", "uv-fluorescent", "metal-halide", "mercury-vapor", "led", "tungsten", "sunlight", "other"]
+          },
+          "peakWavelengthNm": { "type": "integer", "minimum": 1, "description": "Peak UV wavelength (e.g. 365, 395); alt processes want ~350-400nm." },
+          "integrator": { "type": "boolean", "description": "Has a light integrator (exposure measured in units, compensating for lamp aging)." },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.scanProfile",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A reusable scan profile (resolution, method, inversion) applied when digitizing.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "createdAt"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 128 },
+          "method": { "type": "ref", "ref": "app.graycard.workflow.defs#digitizeMethod" },
+          "resolution": { "type": "ref", "ref": "app.graycard.defs#measure" },
+          "software": { "type": "string", "maxLength": 128 },
+          "inversionMethod": { "type": "ref", "ref": "app.graycard.defs#inversionMethod" },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

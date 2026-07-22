@@ -1,0 +1,30 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.filter",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A physical lens filter the user owns. References app.graycard.catalog.filterType.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["type", "createdAt"],
+        "properties": {
+          "type": { "type": "string", "format": "at-uri", "description": "app.graycard.catalog.filterType" },
+          "nickname": { "type": "string", "maxLength": 128 },
+          "serialNumber": { "type": "string", "maxLength": 128 },
+          "threadSize": { "type": "integer", "minimum": 1, "description": "This copy's thread size in mm, if it differs from the catalog default." },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" },
+          "image": {
+            "type": "blob",
+            "accept": ["image/png", "image/jpeg", "image/webp"],
+            "maxSize": 3000000,
+            "description": "Optional photo of this filter; falls back to the catalog type's image."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.photo.derivative",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "photo",
+          "parentPhoto",
+          "createdAt"
+        ],
+        "properties": {
+          "photo": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "parentPhoto": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "editSession": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      },
+      "description": "A derivative file produced from a photo (crop, export, or web version)."
+    }
+  }
+}

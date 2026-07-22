@@ -1,0 +1,48 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.setup",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A publicly discoverable photography setup. Opting in writes one of these to the user's own repo; its `registry` field links to a well-known discovery anchor so a shared backlink index (Constellation) can enumerate every published setup across the network without any backend.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["registry", "name", "createdAt"],
+        "properties": {
+          "registry": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 512,
+            "description": "Discovery anchor. MUST equal the frozen HYPO_REGISTRY constant; it is the link Constellation indexes to find this setup."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 300,
+            "maxGraphemes": 100,
+            "description": "Short human title for the setup, shown on its Discover card."
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 3000,
+            "maxGraphemes": 1000,
+            "description": "Optional longer description of the setup."
+          },
+          "gallery": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional social.grain.gallery this setup features."
+          },
+          "gear": {
+            "type": "array",
+            "maxLength": 200,
+            "description": "Optional AT-URIs of the author's app.graycard.* library items (cameras, lenses, film, scanners) to highlight.",
+            "items": { "type": "string", "format": "at-uri" }
+          },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.scannerType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Scanner or digitization device model/type. Scanner instances reference this record.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["model", "createdAt"],
+        "properties": {
+          "make": { "type": "string", "maxLength": 128 },
+          "model": { "type": "string", "maxLength": 128 },
+          "scannerKind": { "type": "ref", "ref": "app.graycard.defs#scannerKind" },
+          "maxResolution": { "type": "ref", "ref": "app.graycard.defs#measure" },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

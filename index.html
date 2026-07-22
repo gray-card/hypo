@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hypo</title>
+    <meta
+      name="description"
+      content="Hypo fixes graycard metadata, workflow, and scene-graph records into your atproto PDS and integrates with grain.social. No backend."
+    />
+    <meta name="theme-color" content="#0d0c0b" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f2ede3" media="(prefers-color-scheme: light)" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <meta property="og:title" content="Hypo" />
+    <meta
+      property="og:description"
+      content="Fix your grain.social metadata into your own PDS. Provenance, workflow, and scene graphs. No backend."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hypo.graycard.app/" />
+    <meta property="og:image" content="https://hypo.graycard.app/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://hypo.graycard.app/og.png" />
+    <!-- set theme before first paint to avoid a flash -->
+    <script>
+      try {
+        var t = localStorage.getItem("hypo:theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+        if (localStorage.getItem("hypo:density") === "compact") document.documentElement.setAttribute("data-density", "compact");
+      } catch (e) {}
+    </script>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="safelight-amb" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Hypo home">
+        <span class="brand-mark">Hypo<i class="safelight" aria-hidden="true"></i></span>
+      </a>
+      <nav id="primary-nav" class="primary-nav hidden" aria-label="Primary">
+        <button class="nav-tab" data-section="setup" type="button">Setup</button>
+        <button class="nav-tab" data-section="galleries" type="button">Galleries</button>
+        <button class="nav-tab" data-section="discover" type="button">Discover</button>
+      </nav>
+      <div class="topbar-actions">
+        <button id="theme-toggle" class="icon-btn" type="button" title="Toggle light / dark" aria-label="Toggle light or dark theme"></button>
+        <button id="shortcuts-btn" class="icon-btn" type="button" title="Keyboard shortcuts" aria-label="Keyboard shortcuts"></button>
+        <div id="session" class="session hidden"></div>
+      </div>
+    </header>
+
+    <main id="app">
+      <!-- login view -->
+      <section id="login-view" class="login-view hidden">
+        <div class="card login-card">
+        <h2>Log in with your atmosphere account</h2>
+        <p class="muted">
+          Use the atproto account you already have across the atmosphere (the
+          same one you use on Bluesky, grain.social, and more).
+        </p>
+        <form id="login-form">
+          <div class="handle-wrap">
+            <input
+              id="handle"
+              type="text"
+              placeholder="you.bsky.social or did:plc:…"
+              autocomplete="off"
+              spellcheck="false"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded="false"
+              aria-controls="handle-suggestions"
+            />
+            <ul
+              id="handle-suggestions"
+              class="handle-suggestions hidden"
+              role="listbox"
+            ></ul>
+          </div>
+          <button type="submit">Sign in</button>
+        </form>
+        <p id="login-error" class="error"></p>
+        <p class="muted small login-learn">
+          <a href="https://atmosphereaccount.com/" target="_blank" rel="noopener">What is an atmosphere account? &#8599;</a>
+        </p>
+        </div>
+      </section>
+
+      <!-- galleries (your grain.social galleries to edit) -->
+      <section id="list-view" class="hidden">
+        <div class="row between view-head">
+          <div>
+            <h2>Your galleries</h2>
+            <p class="view-sub muted small">Add gear, provenance, and scene detail on top of grain.social.</p>
+          </div>
+          <div class="row">
+            <button id="new-gallery" class="small-btn" title="Upload a new gallery to grain.social">New gallery</button>
+            <button id="reload-galleries" class="ghost small-btn" title="Reload from your PDS">Reload</button>
+          </div>
+        </div>
+        <p id="list-status" class="muted"></p>
+        <input
+          id="gallery-search"
+          class="search-input hidden"
+          type="search"
+          placeholder="Filter galleries…"
+          aria-label="Filter galleries"
+          autocomplete="off"
+        />
+        <ul id="gallery-list" class="gallery-list"></ul>
+      </section>
+
+      <!-- setup: your gear library -->
+      <section id="library-view" class="hidden">
+        <div class="row between view-head">
+          <div>
+            <h2>Your setup</h2>
+            <p class="view-sub muted small">The gear you shoot, develop, and scan with.</p>
+          </div>
+          <div class="row">
+            <button id="guided-setup" class="small-btn" title="Add gear step by step">Guided setup</button>
+            <button id="library-reload" class="ghost small-btn" title="Reload from your PDS">Reload</button>
+          </div>
+        </div>
+        <div id="library-body"></div>
+      </section>
+
+      <!-- discover: other people's setups -->
+      <section id="profile-view" class="hidden">
+        <div class="view-head row between">
+          <h2 id="profile-heading">Discover setups</h2>
+          <div id="profile-search"></div>
+        </div>
+        <div id="profile-body"></div>
+      </section>
+
+      <!-- gallery editor view -->
+      <section id="editor-view" class="hidden">
+        <div class="view-head">
+          <button id="back" class="ghost">&larr; Back to galleries</button>
+        </div>
+        <div id="editor-hero" class="editor-hero hidden" aria-hidden="true"></div>
+        <div id="editor-body"></div>
+      </section>
+    </main>
+
+    <!-- mobile bottom navigation -->
+    <nav id="bottom-nav" class="bottom-nav hidden" aria-label="Primary">
+      <button class="nav-item" data-section="setup" type="button"><span class="nav-ico"></span><span class="nav-label">Setup</span></button>
+      <button class="nav-item" data-section="galleries" type="button"><span class="nav-ico"></span><span class="nav-label">Galleries</span></button>
+      <button class="nav-item" data-section="discover" type="button"><span class="nav-ico"></span><span class="nav-label">Discover</span></button>
+      <button class="nav-item" id="bottom-account" type="button"><span class="nav-ico"></span><span class="nav-label">More</span></button>
+    </nav>
+
+    <!-- account / settings menu (populated in JS) -->
+    <div id="account-menu" class="account-menu hidden" role="menu" aria-label="Account and settings"></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

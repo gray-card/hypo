@@ -1,0 +1,57 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.process.editSession",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "software",
+          "createdAt"
+        ],
+        "properties": {
+          "software": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "preset": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "parentPhoto": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "recipe": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.edit.recipe capturing the reproducible edit graph."
+          },
+          "paramsHash": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "provenance": {
+            "type": "ref",
+            "ref": "app.graycard.defs#provenance"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      },
+      "description": "One editing event — software and adjustments applied to a photo."
+    }
+  }
+}

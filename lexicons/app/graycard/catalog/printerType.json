@@ -1,0 +1,36 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.printerType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A photographic printer model — inkjet, dye-sublimation, or digital-lab (Lightjet/Chromira). instance.printer references this.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["createdAt"],
+        "properties": {
+          "make": { "type": "string", "maxLength": 128 },
+          "model": { "type": "string", "maxLength": 128 },
+          "printerTechnology": {
+            "type": "string",
+            "knownValues": ["inkjet", "dye-sublimation", "laser-c-print", "thermal", "other"]
+          },
+          "inkType": {
+            "type": "string",
+            "knownValues": ["pigment", "dye", "other"]
+          },
+          "inkChannels": { "type": "integer", "minimum": 1, "description": "Number of ink channels (e.g. 10, 12)." },
+          "maxMediaWidthMm": { "type": "integer", "minimum": 1, "description": "Widest media, in mm (13\" = 330, 17\" = 432, 24\" = 610, 44\" = 1118)." },
+          "monochrome": { "type": "boolean", "description": "Dedicated B&W ink set (e.g. Piezography)." },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

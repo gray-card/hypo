@@ -1,0 +1,72 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.scene.region",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A grounded region on a photo (the panproto 'grounds' target). Supports bounding boxes, rotated boxes, polygons, raster/RLE masks, points, keypoints, and 3D cuboids so any CV output can attach to a scene node.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "photo",
+          "kind",
+          "createdAt"
+        ],
+        "properties": {
+          "photo": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "A photo (AT-URI) or app.graycard.artifact grounded onto."
+          },
+          "kind": {
+            "type": "ref",
+            "ref": "app.graycard.scene.defs#regionKind"
+          },
+          "bbox": {
+            "type": "ref",
+            "ref": "app.graycard.scene.defs#bbox"
+          },
+          "geometry": {
+            "type": "unknown",
+            "description": "Open geometry for kinds not covered by bbox/rbox: polygon `points:[[x,y],...]`, multipolygon `polygons:[[[x,y],...],...]`, RLE `rle:{size:[h,w],counts}`, keypoints `keypoints:[[x,y,v],...]`, cuboid corners, etc. Coordinates normalized [0,1] scaled by 1e6 unless the `format` says otherwise."
+          },
+          "maskBlob": {
+            "type": "blob",
+            "accept": [
+              "image/png",
+              "application/octet-stream"
+            ],
+            "maxSize": 8000000,
+            "description": "Optional raster mask."
+          },
+          "confidence": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure"
+          },
+          "temporal": {
+            "type": "ref",
+            "ref": "app.graycard.defs#temporalRef"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "rbox": {
+            "type": "ref",
+            "ref": "app.graycard.scene.defs#rbox"
+          },
+          "format": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Source encoding hint for consumers, e.g. coco-polygon, coco-rle, yolo-obb, sam-mask, sam2-masklet, labelme-polygon, graycard-polygon."
+          }
+        }
+      }
+    }
+  }
+}

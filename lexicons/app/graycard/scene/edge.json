@@ -1,0 +1,25 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.scene.edge",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A typed relation between two scene nodes (panproto 'relates'). Its type references an ontology edge term.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["scene", "type", "from", "to", "createdAt"],
+        "properties": {
+          "scene": { "type": "string", "format": "at-uri" },
+          "type": { "type": "ref", "ref": "app.graycard.scene.defs#term" },
+          "from": { "type": "string", "format": "at-uri", "description": "Source app.graycard.scene.node." },
+          "to": { "type": "string", "format": "at-uri", "description": "Target app.graycard.scene.node." },
+          "attrs": { "type": "unknown" },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

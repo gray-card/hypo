@@ -1,0 +1,82 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.chemistry",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "type",
+          "createdAt"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "nickname": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "dilution": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "mixedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "volumeMl": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "volumeRemainingMl": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rollsProcessed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sessionsUsed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "storageLocation": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "image": {
+            "type": "blob",
+            "accept": [
+              "image/png",
+              "image/jpeg",
+              "image/webp"
+            ],
+            "maxSize": 3000000,
+            "description": "Optional user photo of this specific item; falls back to the catalog type's stock image."
+          }
+        }
+      },
+      "description": "A specific chemistry working solution the user mixed or owns (developer, stop, fixer, toner, …). References catalog.chemistryType."
+    }
+  }
+}

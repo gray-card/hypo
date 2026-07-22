@@ -1,0 +1,29 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.session.capture",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A shoot: a shooting session that gathers the gear used and the exposures made under shared context. Supports multiple cameras (each with their lenses) and, for film cameras, multiple rolls. Exposures reference the shoot via app.graycard.instance.exposure#shoot.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["label", "createdAt"],
+        "properties": {
+          "label": { "type": "string", "maxLength": 128 },
+          "startedAt": { "type": "string", "format": "datetime" },
+          "endedAt": { "type": "string", "format": "datetime" },
+          "cameras": { "type": "array", "items": { "type": "string", "format": "at-uri" }, "description": "app.graycard.instance.camera bodies used in this shoot." },
+          "lenses": { "type": "array", "items": { "type": "string", "format": "at-uri" }, "description": "app.graycard.instance.lens lenses available in this shoot." },
+          "rolls": { "type": "array", "items": { "type": "string", "format": "at-uri" }, "description": "app.graycard.instance.filmRoll rolls loaded/shot in this shoot (film cameras)." },
+          "filters": { "type": "array", "items": { "type": "string", "format": "at-uri" }, "description": "app.graycard.instance.filter filters available in this shoot." },
+          "places": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.defs#geoLocation" }, "description": "Manually added locations for the shoot. The shoot's effective locations are these plus the locations of its exposures (inherited, not duplicated here)." },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

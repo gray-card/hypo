@@ -1,0 +1,54 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.filmStock",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Film emulsion type (catalog). Rolls reference this record.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "createdAt"],
+        "properties": {
+          "brand": { "type": "string", "maxLength": 128 },
+          "name": { "type": "string", "maxLength": 128 },
+          "iso": { "type": "integer", "minimum": 1, "description": "Box speed (ISO/ASA)." },
+          "filmType": { "type": "ref", "ref": "app.graycard.defs#filmType" },
+          "process": { "type": "ref", "ref": "app.graycard.defs#filmProcess" },
+          "format": { "type": "ref", "ref": "app.graycard.defs#captureFormat", "description": "Primary/legacy format. Prefer `formats` for the full list." },
+          "formats": {
+            "type": "array",
+            "description": "All formats this emulsion is sold in (from the datasheet).",
+            "items": { "type": "ref", "ref": "app.graycard.defs#captureFormat" }
+          },
+          "base": {
+            "type": "string",
+            "description": "Film base material, per the datasheet.",
+            "knownValues": ["acetate", "triacetate", "polyester", "other"]
+          },
+          "spectralSensitivity": {
+            "type": "string",
+            "knownValues": ["panchromatic", "orthochromatic", "extended-red", "infrared", "other"]
+          },
+          "grainRms": { "type": "integer", "description": "RMS granularity as printed, scaled ×10 (e.g. 10.0 → 100)." },
+          "resolvingPowerLpMm": { "type": "integer", "minimum": 1, "description": "Resolving power in lines/mm at high contrast (1000:1), per datasheet." },
+          "exposureLatitude": { "type": "string", "maxLength": 64, "description": "e.g. '-1 to +3 stops'." },
+          "reciprocity": { "type": "string", "maxLength": 512, "description": "Reciprocity-failure guidance from the datasheet." },
+          "dxNumber": { "type": "string", "maxLength": 16 },
+          "discontinued": { "type": "boolean" },
+          "releasedYear": { "type": "integer" },
+          "datasheetUrl": { "type": "string", "maxLength": 512, "description": "URL of the official manufacturer datasheet this record was farmed from." },
+          "exposuresPerRoll": { "type": "integer", "minimum": 1 },
+          "catalogNumber": { "type": "string", "maxLength": 64 },
+          "aka": { "type": "array", "maxLength": 12, "description": "Other names the SAME emulsion is sold under (e.g. a rebrand: Ektacolor Pro 400 is Portra 400). Facts, not AT-URIs, so two brandings can be treated as one film even before both exist as records.", "items": { "type": "string", "maxLength": 128 } },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

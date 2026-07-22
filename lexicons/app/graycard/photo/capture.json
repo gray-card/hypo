@@ -1,0 +1,30 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.photo.capture",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Per-photo graycard capture metadata (gear, film, frame, location) layered onto a grain photo.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["photo", "createdAt"],
+        "properties": {
+          "photo": { "type": "string", "format": "at-uri" },
+          "medium": { "type": "ref", "ref": "app.graycard.workflow.defs#medium" },
+          "shoot": { "type": "string", "format": "at-uri" },
+          "camera": { "type": "string", "format": "at-uri" },
+          "lens": { "type": "string", "format": "at-uri" },
+          "filmRoll": { "type": "string", "format": "at-uri" },
+          "frameIndex": { "type": "integer", "minimum": 1 },
+          "location": { "type": "ref", "ref": "app.graycard.defs#geoLocation" },
+          "projectMode": { "type": "ref", "ref": "app.graycard.defs#projectMode" },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "notes": { "type": "string", "maxLength": 1000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

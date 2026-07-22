@@ -1,0 +1,60 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.lab",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "name",
+          "createdAt"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "website": {
+            "type": "string",
+            "format": "uri"
+          },
+          "location": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Human-readable location label, e.g. 'Rochester, NY'."
+          },
+          "geo": {
+            "type": "ref",
+            "ref": "app.graycard.defs#geoLocation",
+            "description": "Precise map location of the lab, set via the map picker."
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "links": {
+            "type": "ref",
+            "ref": "app.graycard.defs#catalogLinks"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      },
+      "description": "A photo lab (catalog): name, website, and location."
+    }
+  }
+}

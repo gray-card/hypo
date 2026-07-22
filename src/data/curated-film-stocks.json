@@ -1,0 +1,1870 @@
+{
+  "_source": "film emulsion specs transcribed from official manufacturer datasheets, authored in data/curated-film-stocks/*.jsonl; each record carries its own datasheetUrl",
+  "_license": "individual specs are non-copyrightable facts; our own compilation built from primary datasheets",
+  "_generated": "2026-07-22T13:27:20.232Z",
+  "stocks": [
+    {
+      "brand": "Adox",
+      "name": "CHS 100 II",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "orthopanchromatic",
+      "grainRms": null,
+      "datasheetUrl": "https://www.fotoimpex.de/shop/images/products/media/44450_5_PDF-Datasheet.pdf",
+      "notes": "Classic single-layer emulsion made from two emulsions; sensitization optimized for greyscale separation and large exposure latitude. Coated on clear archival PET (100 micron for 135 and 120; 175 micron for sheetfilm). Can be reversal processed. AHU plus backside AH/NC layer in 135 and 120; backside AH/NC layer only in sheetfilm. Made in Germany. Datasheet hosted by Fotoimpex, authored by ADOX Fotowerke GmbH.",
+      "image": "https://www.adox.de/wp-content/uploads/2021/06/CHS100IIFilm-01-01.png",
+      "productUrl": "https://www.adox.de/adox-filme-2/adox-chs-100-typ-ii/"
+    },
+    {
+      "brand": "Adox",
+      "name": "CMS 20 II",
+      "iso": 20,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "orthopanchromatic",
+      "grainRms": null,
+      "datasheetUrl": "https://www.fotoimpex.de/shop/images/products/media/62175_4_PDF-Datenblatt.pdf",
+      "notes": "Ultra-high-resolution monodisperse emulsion resolving up to 800 lp/mm. Rated 20 ASA in dedicated ADOTECH developer (pictorial); up to 80 ASA for high contrast; 3-6 ASA in non-dedicated low-contrast developers. AHU anti-halation layer between emulsion and base; totally transparent base. Reciprocity: +1/2 stop at 1s and at 1/1000s. Datasheet hosted by Fotoimpex, authored by ADOX Fotowerke GmbH.",
+      "image": "https://www.adox.de/wp-content/uploads/2021/06/CMS20II-FIlm-01.png",
+      "productUrl": "https://www.adox.de/adox-filme-2/adox-cms-20/"
+    },
+    {
+      "brand": "Adox",
+      "name": "HR-50",
+      "iso": 50,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "superpanchromatic",
+      "grainRms": null,
+      "datasheetUrl": "https://www.fotoimpex.de/shop/images/products/media/63360_5_PDF-Datasheet.pdf",
+      "notes": "High-resolution film based on a technical emulsion; speed boosted to 50 ASA (ISO 50/17°) via ADOX SPEED BOOST technology, gamma reduced for pictorial use. Resolution up to 280 lp/mm at 1000:1 image contrast. Base 0.1mm PET; combined AHU/NC anti-halation. Usable as an infrared film and responds strongly to filtration. Datasheet hosted by Fotoimpex, authored by ADOX Fotowerke GmbH.",
+      "image": "https://www.adox.de/wp-content/uploads/2021/06/HR-50Film-01.png",
+      "productUrl": "https://www.adox.de/adox-hr-50/"
+    },
+    {
+      "brand": "Adox",
+      "name": "Scala 160",
+      "iso": 160,
+      "filmType": "bw-slide",
+      "process": "reversal-bw",
+      "formats": [
+        "135"
+      ],
+      "base": "triacetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": null,
+      "datasheetUrl": "https://www.fotoimpex.de/shop/images/products/media/59440_5_PDF-Datasheet.pdf",
+      "notes": "Black and white reversal (slide) film designed specifically for reversal processing at 160 ASA; dedicated ADOX SCALA reversal kit available. Coated on 120 micron clear triacetate with increased silver content, yielding DMAX of 3.6 or higher. Anti-halation layer between emulsion and base. Not DX coded. When shot as a negative, expose at 80-100 ASA. Reciprocity: +1/2 from 1s, +1 from 10s, +2 from 100s. No standalone PDF; specifications published on official ADOX product page.",
+      "image": "https://www.adox.de/wp-content/uploads/2021/06/SCALA160-01.png",
+      "productUrl": "https://www.adox.de/adox-scala-160/"
+    },
+    {
+      "brand": "Adox",
+      "name": "Scala 50",
+      "iso": 50,
+      "filmType": "bw-slide",
+      "process": "reversal-bw",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "superpanchromatic",
+      "grainRms": null,
+      "datasheetUrl": "https://www.fotoimpex.de/shop/images/products/media/64170_5_PDF-Datasheet.pdf",
+      "notes": "High-resolution B&W slide film based on a technical emulsion; speed boosted to 50 ASA (ISO 50/17°) with gamma reduced for pictorial use. Resolution up to 280 lp/mm at 1000:1 image contrast. Base 0.1mm PET; combined AHU/NC anti-halation. Processed as a slide in the dedicated ADOX SCALA reversal kit; can also be processed as a negative using HR-50 times. Usable as an infrared film. No standalone PDF; specifications published on official ADOX product page.",
+      "image": "https://www.adox.de/wp-content/uploads/2021/06/Scala50Film-01.png",
+      "productUrl": "https://www.adox.de/scala-50/"
+    },
+    {
+      "brand": "Adox",
+      "name": "Silvermax 100",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135"
+      ],
+      "base": "triacetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": null,
+      "datasheetUrl": "https://www.fotoimpex.de/shop/images/products/media/42205_5_PDF-Datasheet.pdf",
+      "notes": "Currently discontinued (ADOX recommends CHS 100 II / Scala 50 as alternatives). APX 100 recipe with finer grain, slightly lower speed and ~30% higher silver content. Achieves up to 14 stops copy range in dedicated Silvermax developer. Coated on 120 micron clear triacetate; anti-halation layer between emulsion and base; can optionally be reversal-processed to a B&W slide (ADOX Scala). Not DX coded. Reciprocity: +1/2 from 1s, +1 from 10s, +2 from 100s. Made in Germany. Datasheet hosted by Fotoimpex, authored by ADOX Fotowerke GmbH.",
+      "image": "https://www.adox.de/wp-content/uploads/2021/06/SILVERMAX-Kopie.png",
+      "productUrl": "https://www.adox.de/adox-filme-2/adox-silvermax/"
+    },
+    {
+      "brand": "Adox",
+      "name": "PAN-X Reverso Super 8",
+      "iso": 100,
+      "filmType": "bw-slide",
+      "process": "reversal-bw",
+      "formats": [
+        "super8"
+      ],
+      "base": "triacetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": null,
+      "datasheetUrl": "https://www.adox.de/films/pan-x-reverso-super8-en/",
+      "notes": "True B&W Super 8 reversal film, projectable right after development; positioned as a replacement for the discontinued Kodak Plus-X. Currently unavailable. Silver-rich emulsion with full shadow detail at 100 ASA and DMAX above 3.0; anti-halation layer between base and emulsion; clear triacetate base. 15 meters (~3 min 20 s). Standard developing in Kodak D-94A process; expose at 64 or 100 ASA (best results at 64 ASA); cartridge notched 100 ASA Tungsten. No standalone PDF; specifications published on official ADOX product page.",
+      "image": "https://www.adox.de/wp-content/uploads/2021/06/PAN-X1.png",
+      "productUrl": "https://www.adox.de/adox-filme-2/adox-pan-x-reverso-super8-2/"
+    },
+    {
+      "brand": "CineStill",
+      "name": "50D",
+      "iso": 50,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "daylight",
+      "datasheetUrl": "https://cinestillfilm.com/products/50daylight-36exp-135-fine-grain-color-film-35mm-roll",
+      "notes": "Daylight-balanced (5500K) color negative motion picture emulsion (Kodak 50D-derived), remjet removed for safe C-41 processing. EI 50/18deg; usable EI 12-100 without push. World's finest grain color negative film per manufacturer. Acetate base with halation effect.",
+      "image": "https://cinestillfilm.com/cdn/shop/files/image_696ec43a-eab5-4131-bf4b-d3fdf66fa558.jpg",
+      "productUrl": "https://cinestillfilm.com/products/50daylight-36exp-135-fine-grain-color-film-35mm-roll"
+    },
+    {
+      "brand": "CineStill",
+      "name": "400D",
+      "iso": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "daylight",
+      "datasheetUrl": "https://cinestillfilm.com/products/400dynamic-35mm",
+      "notes": "400Dynamic. Daylight-balanced color negative motion picture emulsion, remjet removed for C-41. Base ISO 400, rateable 200-800 without push, push up to 3 stops. Process-surviving anti-static lubricant coating. Halation at overexposed highlights.",
+      "image": "https://cinestillfilm.com/cdn/shop/files/MOD06156-Edit_a6034f68-d446-4988-94d4-103206a51956.jpg",
+      "productUrl": "https://cinestillfilm.com/products/400dynamic-35mm"
+    },
+    {
+      "brand": "CineStill",
+      "name": "800T",
+      "iso": 800,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "tungsten",
+      "datasheetUrl": "https://cinestillfilm.com/products/800tungsten-high-speed-color-film-120-format-retail",
+      "notes": "800Tungsten. Tungsten-balanced color negative motion picture emulsion, remjet (remjet backing) removed for safe C-41 photo-lab processing. Push up to 3200 ISO. Acetate base; characteristic halation. Also processable in ECN-2/Cs2.",
+      "image": "https://cinestillfilm.com/cdn/shop/files/image_7598b71a-b224-433e-92b4-a40ce40eb701.jpg",
+      "productUrl": "https://cinestillfilm.com/products/800tungsten-c41-36exp-35mm-high-speed-color-negative-135"
+    },
+    {
+      "brand": "CineStill",
+      "name": "BwXX",
+      "iso": 250,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "datasheetUrl": "https://cinestillfilm.com/products/bwxx-double-x-36exp-135-black-and-white-motion-picture-negative-film",
+      "notes": "Rebranded Kodak Double-X 5222 motion picture B&W stock. Panchromatic. Variable base sensitivity: ISO 250 daylight (5500K) / ISO 200 tungsten (3200K); rateable up to EI 1600 with push. Acetate base, DX-coded 135.",
+      "image": "https://cinestillfilm.com/cdn/shop/files/MOD01388-Edit_24af5dbe-2baa-4ff8-939c-a2f22b3bc8ec.jpg",
+      "productUrl": "https://cinestillfilm.com/products/bwxx-double-x-36exp-135-black-and-white-motion-picture-negative-film"
+    },
+    {
+      "brand": "Lomography",
+      "name": "Color Negative 100",
+      "iso": 100,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/color-negative-100-film-guide.pdf",
+      "notes": "Color Negative 100. Standard C-41. Extra-fine grain, low ISO, vivid colors. Offered in 35 mm and 120.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/c/n/cn100-135-film__packing-with-film__front.jpg",
+      "productUrl": "https://shop.lomography.com/us/lomography-color-negative-35-mm-iso-100"
+    },
+    {
+      "brand": "Lomography",
+      "name": "Color Negative 400",
+      "iso": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/color-negative-400-film-guide.pdf",
+      "notes": "Color Negative 400. Standard C-41. Fine grain, versatile. Offered in 35 mm and 120.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/c/n/cn-400-135-film_box_and_film_23022022_1.jpg",
+      "productUrl": "https://shop.lomography.com/us/lomography-color-negative-35-mm-iso-400"
+    },
+    {
+      "brand": "Lomography",
+      "name": "Color Negative 800",
+      "iso": 800,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/color-negative-800-film-guide.pdf",
+      "notes": "Color Negative 800. Standard C-41. High-speed, good low-light performance. Offered in 35 mm and 120.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/c/n/cn800-135-film__packaging-with-film__front.jpg",
+      "productUrl": "https://shop.lomography.com/us/lomography-color-negative-35-mm-iso-800"
+    },
+    {
+      "brand": "Lomography",
+      "name": "Lady Grey 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135"
+      ],
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/lady-grey-film-guide.pdf",
+      "notes": "Lady Grey B&W ISO 400, 35 mm. Rebranded emulsion (re-spooled other manufacturer's B&W emulsion); Lomography does not name the parent stock.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/l/a/ladylgrey-bw-135-film_box_and_film_front.jpg",
+      "productUrl": "https://shop.lomography.com/us/lady-grey-b-w-35-mm-iso-400"
+    },
+    {
+      "brand": "Lomography",
+      "name": "Earl Grey 100",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135"
+      ],
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/earl-grey-film-guide.pdf",
+      "notes": "Earl Grey B&W ISO 100, 35 mm. Rebranded emulsion (re-spooled other manufacturer's B&W emulsion); Lomography does not name the parent stock.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/e/a/earlgrey-bw-135-film_box_and_film_front_1_.jpg",
+      "productUrl": "https://shop.lomography.com/us/earl-grey-b-w-35-mm-iso-100"
+    },
+    {
+      "brand": "Lomography",
+      "name": "Berlin Kino 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/berlin-kino-film-guide.pdf",
+      "notes": "Berlin Kino B&W ISO 400. Panchromatic cine emulsion; pushable to 800/1600/3200 per manufacturer. Suited to color filters. Offered in 35 mm and 120.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/b/e/berlin-kino_front-with-canister_1.jpg",
+      "productUrl": "https://shop.lomography.com/us/berlin-kino-b-w-35-mm-iso-400"
+    },
+    {
+      "brand": "Lomography",
+      "name": "Potsdam Kino 100",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "triacetate",
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/potsdam-kino-film-guide.pdf",
+      "notes": "Potsdam Kino B&W ISO 100. Triacetate-based B&W cine emulsion, medium speed, heavy silver-halide composition. Offered in 35 mm and 120.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/p/o/potsdamkino-bw-135-film__front.jpg",
+      "productUrl": "https://shop.lomography.com/us/potsdam-kino-b-w-35-mm-iso-100"
+    },
+    {
+      "brand": "Lomography",
+      "name": "Fantome Kino 8",
+      "iso": 8,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135"
+      ],
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/fantome-kino-film-guide.pdf",
+      "notes": "Fantome Kino B&W ISO 8, 35 mm. High-contrast B&W cine emulsion. Part of Lomography Kino B&W film family.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/f/a/fantomekino-bw-135-film__front.jpg",
+      "productUrl": "https://shop.lomography.com/us/fantome-kino-b-w-35-mm-iso-8"
+    },
+    {
+      "brand": "Lomography",
+      "name": "LomoChrome Metropolis",
+      "iso": 100,
+      "isoMax": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120",
+        "110"
+      ],
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/lomochrome-metropolis-film-guide.pdf",
+      "notes": "2021 LomoChrome Metropolis. Experimental color-shift color negative film, extended EI 100-400, standard C-41. Punchy contrast, desaturated muted tones with pops of color. Offered in 35 mm, 120, 110.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/m/e/metropolis-135-film_2021-formular_box_roll_front.jpg",
+      "productUrl": "https://shop.lomography.com/us/2021-lomochrome-metropolis-35-mm-iso-100-400"
+    },
+    {
+      "brand": "Lomography",
+      "name": "LomoChrome Purple",
+      "iso": 100,
+      "isoMax": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120",
+        "110"
+      ],
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/lomochrome-purple-film-guide.pdf",
+      "notes": "2021 LomoChrome Purple Petillant. Color-shift color negative film (green-to-purple infrared-like shift), extended EI 100-400, standard C-41. Offered in 35 mm, 120, 110.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/l/o/lomochrome_purple_film_35mm_box-2021cannister_1.jpg",
+      "productUrl": "https://shop.lomography.com/us/lomochrome-purple-35-mm-iso-100-400-2021-formula"
+    },
+    {
+      "brand": "Lomography",
+      "name": "LomoChrome Turquoise",
+      "iso": 100,
+      "isoMax": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120",
+        "110"
+      ],
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/turquoise-film-guide.pdf",
+      "notes": "2021 LomoChrome Turquoise. Color-shift color negative film, extended EI 100-400, standard C-41 (non-DX-coded, 36 exp). Fine grain. Offered in 35 mm, 120, 110.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/l/o/lomochrome-turtuoise-135-film_2021-formular_box_roll.jpg",
+      "productUrl": "https://shop.lomography.com/us/2021-lomochrome-turquoise-35-mm-iso-100-400"
+    },
+    {
+      "brand": "Lomography",
+      "name": "Redscale XR 50-200",
+      "iso": 50,
+      "isoMax": 200,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/redscale-film-guide.pdf",
+      "notes": "Redscale XR. Redscale color negative film (film wound emulsion-reversed), extended EI 50-200, standard C-41. Glowing red/orange/yellow tones. Offered in 35 mm and 120.",
+      "image": "https://cdn.shop.lomography.com/media/catalog/product/x/r/xr-35-film_mockups-withj-cardriges-on-grey.jpg",
+      "productUrl": "https://shop.lomography.com/us/lomography-redscale-xr-35-mm-iso-50-200"
+    },
+    {
+      "brand": "Foma",
+      "name": "Fomapan 100",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "9x12cm",
+        "10x15cm",
+        "12x16.5cm",
+        "13x18cm",
+        "18x24cm",
+        "24x30cm",
+        "4x5",
+        "5x7",
+        "8x10"
+      ],
+      "base": "triacetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 135,
+      "resolvingPowerLpMm": 110,
+      "datasheetUrl": "https://www.foma.cz/en/fomapan-100",
+      "notes": "Fomapan 100 Classic. RMS 13.5 (Microphen 20C, gamma 0.6, D=1.0). 135 uses gray/gray-blue cellulose triacetate base; 120 and sheet use clear polyester base with antihalo backing. Wide latitude: usable at EI 50-400. Can also be reversal-processed.",
+      "image": "https://www.foma.cz/ew/ew_images/image?EwImage=5eefb10b-ded1-4601-a156-cd82ce3fbd6d&Filter=77c1217a-447d-4780-83bd-af3cc79a9487",
+      "productUrl": "https://www.foma.cz/en/catalogue-fomapan-100-classic-detail-406"
+    },
+    {
+      "brand": "Foma",
+      "name": "Fomapan 200",
+      "iso": 200,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "10x15cm",
+        "13x18cm",
+        "18x24cm"
+      ],
+      "base": "triacetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 140,
+      "resolvingPowerLpMm": 110,
+      "datasheetUrl": "https://www.foma.cz/en/fomapan-200",
+      "notes": "Fomapan 200 Creative. T-crystal emulsion for high resolution and low granularity. RMS 14.0 (Microphen 20C, gamma 0.6, D=1.0). 135 base is gray/gray-blue cellulose triacetate; 120 and sheet use clear polyester base with antihalo backing. Wide latitude EI 100-800.",
+      "image": "https://www.foma.cz/ew/ew_images/image?EwImage=70282aaa-f33a-4df1-a7ab-ba2880f986bb&Filter=77c1217a-447d-4780-83bd-af3cc79a9487",
+      "productUrl": "https://www.foma.cz/en/catalogue-fomapan-200-creative-detail-271"
+    },
+    {
+      "brand": "Foma",
+      "name": "Fomapan 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "10x15cm",
+        "13x18cm",
+        "18x24cm"
+      ],
+      "base": "triacetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 175,
+      "resolvingPowerLpMm": 90,
+      "datasheetUrl": "https://www.foma.cz/en/fomapan-400",
+      "notes": "Fomapan 400 Action. RMS 17.5 (Microphen 20C, gamma 0.6, D=1.0). 135 base is gray/gray-blue cellulose triacetate; 120 and sheet use clear polyester base with antihalo backing. Wide latitude EI 200-1600. Can also be reversal-processed.",
+      "image": "https://www.foma.cz/ew/ew_images/image?EwImage=d5be146b-ea33-4cb0-ba22-e9f659e3b48f&Filter=77c1217a-447d-4780-83bd-af3cc79a9487",
+      "productUrl": "https://www.foma.cz/en/catalogue-fomapan-400-action-detail-272"
+    },
+    {
+      "brand": "Foma",
+      "name": "Retropan 320 Soft",
+      "iso": 320,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "sheet"
+      ],
+      "base": "triacetate",
+      "spectralSensitivity": "panchromatic",
+      "datasheetUrl": "https://www.foma.cz/en/retropan320",
+      "notes": "Retropan 320 soft. Special negative film with wide range of half tones and soft light. Wide latitude EI 160-1250. Recommended developer: Retro Special Developer. 135 base is gray/gray-blue cellulose triacetate; 120 and sheet use clear polyester base with antihalo backing. Sheet film offered in various sizes (box of 50). Datasheet gives no numeric resolving power or RMS granularity value.",
+      "image": "https://www.foma.cz/ew/ew_images/image?EwImage=a6e68b52-d851-432e-9aca-9ae8cd196ca5&Filter=77c1217a-447d-4780-83bd-af3cc79a9487",
+      "productUrl": "https://www.foma.cz/en/catalogue-retropan-320-soft-detail-1767"
+    },
+    {
+      "brand": "Foma",
+      "name": "Fomapan R100",
+      "iso": 100,
+      "filmType": "bw-slide",
+      "process": "reversal-bw",
+      "formats": [
+        "135",
+        "16mm"
+      ],
+      "base": "triacetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 130,
+      "resolvingPowerLpMm": 115,
+      "datasheetUrl": "https://www.foma.cz/en/fomapan-R-100",
+      "notes": "Fomapan R (Fomapan R100) black-and-white reversal film. ISO 100/21 when processed in R-100 Process. RMS 13.0 (measured at gamma 1.1, Process R-100). Cellulose triacetate safety base 0.125 mm. Supplied as 135-36 and 16mm cine (single/double perf, 2x8 Standard, DS8 super).",
+      "image": "https://www.foma.cz/ew/ew_images/image?EwImage=d35eaeac-edb3-4e5e-98b7-735dec03569a&Filter=77c1217a-447d-4780-83bd-af3cc79a9487",
+      "productUrl": "https://www.foma.cz/en/catalogue-fomapan-r-100-detail-273"
+    },
+    {
+      "brand": "Foma",
+      "name": "Ortho 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "sheet"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "orthochromatic",
+      "grainRms": 175,
+      "resolvingPowerLpMm": 85,
+      "datasheetUrl": "https://www.foma.cz/en/fomaortho",
+      "notes": "FOMA Ortho 400. Orthochromatic; high green sensitivity. RMS 17.5 (Microphen 20C, gamma 0.6, D=1.0). Wide latitude EI 160-1600. 120 uses bluish polyester base without antihalo layer; 135 uses gray/gray-blue cellulose triacetate; sheet uses clear polyester with antihalo backing. Can be handled briefly under 585nm+ (orange) safelight.",
+      "image": "https://www.foma.cz/ew/ew_images/image?EwImage=8af6621f-0246-4bb4-b2f0-31ff64ad77f3&Filter=77c1217a-447d-4780-83bd-af3cc79a9487",
+      "productUrl": "https://www.foma.cz/en/catalogue-foma-ortho-400-detail-1875"
+    },
+    {
+      "brand": "Fujifilm",
+      "name": "Acros 100 II",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "orthopanchromatic",
+      "grainRms": 7,
+      "resolvingPowerLpMm": 200,
+      "datasheetUrl": "https://asset.fujifilm.com/www/us/files/2020-08/73080443d0289b1a7b116add14a9bdfc/films_neopan100acros2_135_01_0.pdf",
+      "notes": "ISO 100/21. Orthopanchromatic. Base: TAC (cellulose triacetate), gray base, 0.134 mm (135). Diffuse RMS granularity value 7 (processed in Microfine, 48 um aperture, density 1.0 above D-min). Resolving power 200 lp/mm at 1000:1, 60 lp/mm at 1.6:1. Datasheet AF3-0258E is the 135 sheet; a separate 120 datasheet exists at asset.fujifilm.com. grainRms field holds Fuji diffuse RMS granularity value as published (not RMS x10).",
+      "image": "https://asset.fujifilm.com/www/us/files/2020-04/74c0cafcd8abccb3498ad334f5182806/acros-100II-36.jpg",
+      "productUrl": "https://www.fujifilm.com/us/en/business/professional-photography/film/neopan-100-acros-ii"
+    },
+    {
+      "brand": "Fujifilm",
+      "name": "Provia 100F",
+      "iso": 100,
+      "filmType": "color-slide",
+      "process": "e6",
+      "formats": [
+        "135",
+        "120",
+        "220",
+        "4x5",
+        "8x10"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 8,
+      "resolvingPowerLpMm": 140,
+      "datasheetUrl": "https://asset.fujifilm.com/www/us/files/2020-03/dc6e1c21c643f82b7fb393cef94d524a/Provia100FAF3-036E.pdf",
+      "notes": "FUJICHROME PROVIA 100F Professional [RDP III], daylight-type ISO 100/21. Process E-6 (also CR-56/C6R). Base: cellulose triacetate. Diffuse RMS granularity value 8 (48 um aperture, density 1.0 above D-min). Resolving power 140 lp/mm at 1000:1, 60 lp/mm at 1.6:1. Also QuickLoad 4x5 and 11x14 sheet in some markets. grainRms holds Fuji diffuse RMS granularity value as published.",
+      "image": "https://asset.fujifilm.com/www/us/files/2020-04/2f58d86dc2b5c2f5b064b6e657108637/provia-100f.png",
+      "productUrl": "https://www.fujifilm.com/us/en/business/professional-photography/film/provia-100f"
+    },
+    {
+      "brand": "Fujifilm",
+      "name": "Velvia 50",
+      "iso": 50,
+      "filmType": "color-slide",
+      "process": "e6",
+      "formats": [
+        "135",
+        "120",
+        "220",
+        "4x5",
+        "8x10"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 9,
+      "resolvingPowerLpMm": 160,
+      "datasheetUrl": "https://asset.fujifilm.com/www/us/files/2020-03/742f83fe2440fce58fbcc08f7370a7e6/AF3-0221E2Velvia50PIB.pdf",
+      "notes": "FUJICHROME Velvia 50 Professional [RVP50], daylight-type ISO 50/18. Process E-6 (also CR-56/PR06). Base: cellulose triacetate for rolls, polyester for sheets. Diffuse RMS granularity value 9 (48 um aperture, density 1.0 above D-min). Resolving power 160 lp/mm at 1000:1, 80 lp/mm at 1.6:1. grainRms holds Fuji diffuse RMS granularity value as published.",
+      "image": "https://asset.fujifilm.com/www/us/files/2020-04/cb1931fd6c4c8f5907bb5449891868c3/film-velvia50.png",
+      "productUrl": "https://www.fujifilm.com/us/en/business/professional-photography/film/velvia-50"
+    },
+    {
+      "brand": "Fujifilm",
+      "name": "Velvia 100",
+      "iso": 100,
+      "filmType": "color-slide",
+      "process": "e6",
+      "formats": [
+        "135",
+        "120",
+        "220",
+        "4x5",
+        "8x10"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 8,
+      "resolvingPowerLpMm": 160,
+      "datasheetUrl": "https://asset.fujifilm.com/www/us/files/2020-03/0a569e6e2a9921af89a81a75a526611c/AF3-202E.pdf",
+      "notes": "FUJICHROME Velvia 100 Professional [RVP100], daylight-type ISO 100/21. Process E-6 (also CR-56). Base: cellulose triacetate for rolls, polyester for sheets. Diffuse RMS granularity value 8 (48 um aperture, density 1.0 above D-min). Resolving power 160 lp/mm at 1000:1, 80 lp/mm at 1.6:1. grainRms holds Fuji diffuse RMS granularity value as published.",
+      "image": "https://asset.fujifilm.com/www/us/files/2020-04/00deb9edf49f3ebec9cc96c34b584c41/velvia100.png",
+      "productUrl": "https://www.fujifilm.com/us/en/business/professional-photography/film/velvia-100"
+    },
+    {
+      "brand": "Fujifilm",
+      "name": "Fujicolor C200",
+      "iso": 200,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 4,
+      "resolvingPowerLpMm": 125,
+      "datasheetUrl": "https://asset.fujifilm.com/master/emea/files/2020-10/98c3d5087c253f51c132a5d46059f131/films_c200_datasheet_01.pdf",
+      "notes": "FUJICOLOR C200, daylight-type ISO 200/24. Process C-41 (also Fujifilm CN-16 series). Base: cellulose triacetate, 122 um (135). Diffuse RMS granularity value 4 (48 um aperture, density 1.0 above D-min; Fuji notes color-negative RMS not comparable to reversal film). Resolving power 125 lp/mm at 1000:1, 50 lp/mm at 1.6:1. Datasheet AF3-0249E. grainRms holds Fuji diffuse RMS granularity value as published."
+    },
+    {
+      "brand": "Fujifilm",
+      "name": "Superia X-TRA 400",
+      "iso": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 4,
+      "resolvingPowerLpMm": 125,
+      "datasheetUrl": "https://asset.fujifilm.com/master/emea/files/2020-10/9a958fdcc6bd1442a06f71e134b811f6/films_superia-xtra400_datasheet_01.pdf",
+      "notes": "FUJICOLOR SUPERIA X-TRA 400 [CH], daylight-type ISO 400/27. Process C-41 (also Fujifilm CN-16 series). Base: cellulose triacetate, 122 um (135). Diffuse RMS granularity value 4 (48 um aperture, density 1.0 above D-min; Fuji notes not comparable to reversal film). Resolving power 125 lp/mm at 1000:1, 50 lp/mm at 1.6:1. Datasheet AF3-0217E. grainRms holds Fuji diffuse RMS granularity value as published.",
+      "image": "https://asset.fujifilm.com/www/br/files/2020-12/2b1f514be3aae4943816f4ad94ff4ac3/thumb_films_negative-and-reversal_02.jpg",
+      "productUrl": "https://www.fujifilm.com/br/en/consumer/films/consumer-film/superia-400"
+    },
+    {
+      "brand": "Fujifilm",
+      "name": "Pro 400H",
+      "iso": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120",
+        "220"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 4,
+      "resolvingPowerLpMm": 125,
+      "discontinued": true,
+      "datasheetUrl": "https://asset.fujifilm.com/www/us/files/2020-04/12ed29db8d4d8bb45563ecdd668b0894/films_pro-400h_datasheet_01.pdf",
+      "notes": "FUJICOLOR PRO 400H PROFESSIONAL, daylight-type ISO 400/27, 4th color layer. Discontinued 2021; official archived datasheet AF3-176E. Process C-41 (also Fujifilm CN-16). Base: cellulose triacetate, 122 um (135) / 98 um (120,220). Diffuse RMS granularity value 4 (48 um aperture, density +1.0 above D-min; Fuji notes not comparable to reversal film). Resolving power 125 lp/mm at 1000:1, 50 lp/mm at 1.6:1. grainRms holds Fuji diffuse RMS granularity value as published.",
+      "image": "https://asset.fujifilm.com/www/us/files/2020-04/b68591e5841891a66544806993c5e95d/product-listing-provia400h.png",
+      "productUrl": "https://www.fujifilm.com/us/en/business/professional-photography/film/pro-400h"
+    },
+    {
+      "brand": "Fujifilm",
+      "name": "instax mini",
+      "iso": 800,
+      "filmType": "color-negative",
+      "process": "other",
+      "formats": [
+        "instax-mini"
+      ],
+      "spectralSensitivity": "panchromatic",
+      "grainRms": null,
+      "resolvingPowerLpMm": null,
+      "datasheetUrl": "https://www.fujifilm.com/us/en/consumer/instax/film/mini",
+      "notes": "Instant film, no user development. Hi-Speed ISO 800 (per official Fujifilm/Instax product spec). Credit-card size film 5.4 x 8.6 cm; image (picture) size 62 x 46 mm (per instax mini camera spec). 10 exposures per pack. Emulsion rated 5C to 40C. Fujifilm does not publish an engineering datasheet (no RMS/resolving-power figures) for instant film; ISO and sizes are from official product/spec pages, not a datasheet PDF.",
+      "image": "https://asset.fujifilm.com/www/us/files/2022-06/7cb65eec6e2783dbfd751d6d01d74aaf/instax-film-mini-white-2-pack-ogp-01_new.png",
+      "productUrl": "https://www.fujifilm.com/us/en/consumer/instax/film/mini"
+    },
+    {
+      "brand": "Fujifilm",
+      "name": "instax SQUARE",
+      "iso": 800,
+      "filmType": "color-negative",
+      "process": "other",
+      "formats": [
+        "instax-square"
+      ],
+      "spectralSensitivity": "panchromatic",
+      "grainRms": null,
+      "resolvingPowerLpMm": null,
+      "datasheetUrl": "https://www.fujifilm.com/us/en/consumer/instax/film/square/white-2-pack",
+      "notes": "Instant film, no user development. Hi-Speed ISO 800 (per official Fujifilm/Instax product spec). Film size 86 x 72 mm; image (picture) size 62 x 62 mm. 10 exposures per pack. Fujifilm does not publish an engineering datasheet (no RMS/resolving-power figures) for instant film; ISO and sizes are from official product/spec pages, not a datasheet PDF.",
+      "image": "https://asset.fujifilm.com/www/us/files/2020-12/9744bf9b79362e24d8eaf90ef69c9854/square_white_2-pack_box_sp.png",
+      "productUrl": "https://www.fujifilm.com/us/en/consumer/instax/film/square/white-2-pack"
+    },
+    {
+      "brand": "Fujifilm",
+      "name": "instax WIDE",
+      "iso": 800,
+      "filmType": "color-negative",
+      "process": "other",
+      "formats": [
+        "instax-wide"
+      ],
+      "spectralSensitivity": "panchromatic",
+      "grainRms": null,
+      "resolvingPowerLpMm": null,
+      "datasheetUrl": "https://www.fujifilm.com/us/en/consumer/instax/film/wide/black",
+      "notes": "Instant film, no user development. Hi-Speed ISO 800 (per official Fujifilm/Instax product spec). Film size 10.6 x 8.4 cm; image (picture) size approx 99 x 62 mm. 10 exposures per pack. Emulsion rated 5C to 40C. Fujifilm does not publish an engineering datasheet (no RMS/resolving-power figures) for instant film; ISO and sizes are from official product/spec pages, not a datasheet PDF.",
+      "image": "https://asset.fujifilm.com/www/us/files/2022-06/25e56cf3df245cb97498071d0272830a/instax-film-wide-white-2-pack-ogp-new.png",
+      "productUrl": "https://www.fujifilm.com/us/en/consumer/instax/film/wide/2-pack"
+    },
+    {
+      "brand": "Ilford",
+      "name": "HP5 Plus",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "sheet"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "EI 400/27 box speed; usable at meter settings EI 400/27 to EI 3200/36 with extended development",
+      "datasheetUrl": "https://www.ilfordphoto.com/amfile/file/download/file/1903/product/691/",
+      "notes": "ISO 400/27. 35mm on 0.125mm acetate; 120 on 0.110mm acetate; sheet on 0.180mm polyester. Reciprocity Ta=Tm^1.31. Datasheet Nov 2018.",
+      "image": "https://www.ilfordphoto.com/media/catalog/product/h/p/hp5_135_36_c_b.jpg",
+      "productUrl": "https://www.ilfordphoto.com/hp5-plus-35mm"
+    },
+    {
+      "brand": "Ilford",
+      "name": "FP4 Plus",
+      "iso": 125,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "sheet"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "EI 125/22 box speed; good image quality EI 50/18 to EI 200/24; tolerates +6 stops over / -2 stops under",
+      "datasheetUrl": "https://www.ilfordphoto.com/amfile/file/download/file/1919/product/686/",
+      "notes": "ISO 125/22 (measured in ID-11). 35mm on 0.125mm acetate; 120 on 0.110mm acetate; sheet on 0.180mm polyester. Reciprocity Ta=Tm^1.26. Datasheet Nov 2018.",
+      "image": "https://www.ilfordphoto.com/media/catalog/product/f/p/fp4_135_36_c_b.jpg",
+      "productUrl": "https://www.ilfordphoto.com/fp4-plus-35mm"
+    },
+    {
+      "brand": "Ilford",
+      "name": "Pan F Plus",
+      "iso": 50,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "EI 50/18 box speed; good image quality also at EI 25/15",
+      "datasheetUrl": "https://www.ilfordphoto.com/amfile/file/download/file/1905/product/699/",
+      "notes": "ISO 50/18 (measured in ID-11). 35mm on 0.125mm acetate; 120 on 0.110mm acetate. Reciprocity Ta=Tm^1.33. Process within 3 months of exposure. Datasheet Dec 2018.",
+      "image": "https://www.ilfordphoto.com/media/catalog/product/p/a/panf_135_36_c_b.jpg",
+      "productUrl": "https://www.ilfordphoto.com/pan-f-plus-35mm"
+    },
+    {
+      "brand": "Ilford",
+      "name": "Delta 100",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "sheet"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "EI 100/21 box speed; good image quality EI 50/18 to EI 200/24",
+      "datasheetUrl": "https://www.ilfordphoto.com/amfile/file/download/file/3/product/679/",
+      "notes": "ISO 100/21. Full product name Delta 100 Professional. 35mm on 0.125mm acetate; 120 on 0.110mm acetate; sheet on 0.180mm polyester. Reciprocity Ta=Tm^1.26. Datasheet Apr 2023.",
+      "image": "https://www.ilfordphoto.com/media/catalog/product/d/p/dp100_135_36_c_b.jpg",
+      "productUrl": "https://www.ilfordphoto.com/delta-100-professional-35mm"
+    },
+    {
+      "brand": "Ilford",
+      "name": "Delta 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "EI 400/27 box speed; good image quality EI 200/24 to EI 3200/36 with extended development",
+      "datasheetUrl": "https://www.ilfordphoto.com/amfile/file/download/file/1915/product/684/",
+      "notes": "ISO 400/27 (measured in ID-11). Full product name Delta 400 Professional. 35mm on 0.125mm acetate; 120 on 0.110mm acetate. Normal contrast Gbar 0.62. Reciprocity Ta=Tm^1.41. Datasheet Nov 2018.",
+      "image": "https://www.ilfordphoto.com/media/catalog/product/d/p/dp400_135_36_c_b.jpg",
+      "productUrl": "https://www.ilfordphoto.com/delta-400-professional-35mm"
+    },
+    {
+      "brand": "Ilford",
+      "name": "Delta 3200",
+      "iso": 3200,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "Designed for EI 3200/36; good image quality EI 400/27 to EI 6400/39; usable up to EI 25000/45",
+      "datasheetUrl": "https://www.ilfordphoto.com/amfile/file/download/file/1913/product/682/",
+      "notes": "Box EI 3200/36; measured ISO speed 1000/31 to daylight (ID-11). Full product name Delta 3200 Professional. 35mm on 0.125mm acetate; 120 roll film. Reciprocity Ta=Tm^1.33. Datasheet Jun 2025.",
+      "image": "https://www.ilfordphoto.com/media/catalog/product/d/p/dp3200_135_36_c_b.jpg",
+      "productUrl": "https://www.ilfordphoto.com/delta-3200-professional-35mm"
+    },
+    {
+      "brand": "Ilford",
+      "name": "XP2 Super",
+      "iso": 400,
+      "filmType": "chromogenic-bw",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "EI 400/27 box speed; usable EI 50/18 to EI 800/30; finer grain when overexposed/downrated",
+      "datasheetUrl": "https://www.ilfordphoto.com/amfile/file/download/file/1909/product/703/",
+      "notes": "ISO 400/27 chromogenic black-and-white film processed in standard C41. 35mm on 0.125mm acetate; 120 on 0.110mm acetate. Push processing not recommended. Reciprocity Ta=Tm^1.31. Datasheet Nov 2018.",
+      "image": "https://www.ilfordphoto.com/media/catalog/product/x/p/xp2_135_36_c_b.jpg",
+      "productUrl": "https://www.ilfordphoto.com/xp2-super-35mm"
+    },
+    {
+      "brand": "Ilford",
+      "name": "SFX 200",
+      "iso": 200,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "extended-red",
+      "exposureLatitude": "EI 200/24 box speed; extended red sensitivity up to 740nm",
+      "datasheetUrl": "https://www.ilfordphoto.com/amfile/file/download/file/1907/product/701/",
+      "notes": "ISO 200/24 (measured in ID-11). Extended red sensitivity to 740nm plus full panchromatic sensitivity. Coated on 0.125mm grey acetate base. Datasheet Nov 2018.",
+      "image": "https://www.ilfordphoto.com/media/catalog/product/s/f/sfx_135_36_c_b.jpg",
+      "productUrl": "https://www.ilfordphoto.com/sfx-200-35mm"
+    },
+    {
+      "brand": "Ilford",
+      "name": "Ortho Plus",
+      "iso": 80,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "sheet"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "orthochromatic",
+      "exposureLatitude": "ISO 80/20 daylight, ISO 40/17 tungsten; 135 cassettes DX coded ISO 80",
+      "datasheetUrl": "https://www.ilfordphoto.com/amfile/file/download/file/1948/product/1650/",
+      "notes": "Orthochromatic (blue/green sensitive, no red). ISO 80/20 daylight, ISO 40/17 tungsten. 35mm and 120 on 0.125mm acetate; sheet on 0.180mm polyester. Deep-red safelight usable (ILFORD 906). Reciprocity Ta=Tm^1.25. Datasheet Oct 2019.",
+      "image": "https://www.ilfordphoto.com/media/catalog/product/o/r/ortho__1.jpg",
+      "productUrl": "https://www.ilfordphoto.com/ortho-plus-35mm"
+    },
+    {
+      "brand": "Kentmere",
+      "name": "Kentmere Pan 100",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "EI 100/21 box speed; development times given for EI 50/18 to EI 200/24",
+      "datasheetUrl": "https://www.ilfordphoto.com/amfile/file/download/file/1958/product/696/",
+      "notes": "ISO 100/21 (measured in ID-11). Coated on 0.125mm acetate base; 135 and 120. Reciprocity Ta=Tm^1.26. Datasheet Jul 2022.",
+      "image": "https://www.ilfordphoto.com/media/catalog/product/k/e/kentmere100_24s.jpg",
+      "productUrl": "https://www.ilfordphoto.com/kentmere-100-35mm"
+    },
+    {
+      "brand": "Kentmere",
+      "name": "Kentmere Pan 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "EI 400/27 box speed; development times given for EI 320/26 to EI 800/30",
+      "datasheetUrl": "https://www.ilfordphoto.com/amfile/file/download/file/1959/product/697/",
+      "notes": "ISO 400/27 (measured in ID-11). Coated on 0.125mm acetate base; 135 and 120. Reciprocity Ta=Tm^1.30. Datasheet Jul 2022.",
+      "image": "https://www.ilfordphoto.com/media/catalog/product/k/e/kentmere400_24s.jpg",
+      "productUrl": "https://www.ilfordphoto.com/kentmere-400-35mm"
+    },
+    {
+      "brand": "Harman",
+      "name": "Harman Phoenix 200",
+      "iso": 200,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "ISO 200/24 box speed; best results EI 100-200, many users prefer EI 160",
+      "datasheetUrl": "https://www.harmanphoto.co.uk/amfile/file/download/file/1963/product/2143/",
+      "notes": "Experimental ISO 200/24 C41 colour negative. High contrast, strong grain, no orange mask, limited antihalation (halation effects). Coated on 0.125mm acetate; 135 and 120. Push processing not recommended. Reciprocity Ta=Tm^1.31. Datasheet Sep 2024.",
+      "image": "https://www.harmanphoto.co.uk/media/catalog/product/1/3/135-box-and-cassette-web.jpg",
+      "productUrl": "https://www.harmanphoto.co.uk/harman-phoenix-200"
+    },
+    {
+      "brand": "Harman",
+      "name": "Harman Phoenix II",
+      "iso": 200,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "ISO 200/24 box speed; best results EI 100-200; wider latitude than original Phoenix",
+      "datasheetUrl": "https://www.harmanphoto.co.uk/amfile/file/download/file/1968/product/2208/",
+      "notes": "2nd-generation experimental ISO 200/24 C41 colour negative. More normal contrast/colour, finer grain than Phoenix 200; no orange mask. Coated on 0.125mm acetate; 135 and 120. Push processing not recommended. Reciprocity Ta=Tm^1.31. Datasheet Jul 2025.",
+      "image": "https://www.harmanphoto.co.uk/media/catalog/product/p/h/phoenix-2-135_cassette_cut_out.png",
+      "productUrl": "https://www.harmanphoto.co.uk/harman-phoenix-ii-35mm"
+    },
+    {
+      "brand": "Harman",
+      "name": "Harman Red 125",
+      "iso": 125,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "other",
+      "exposureLatitude": "EI 125 nominal; usable range EI 50-400; best results EI 100-200",
+      "datasheetUrl": "https://www.harmanphoto.co.uk/amfile/file/download/file/1965/product/2170/",
+      "notes": "C41-process redscale film (name on datasheet: HARMAN Red). EI 125/22 daylight (practical evaluation). Emulsion reversed/outermost - reverse orientation for processing. Coated on 0.125mm acetate; DX coded ISO 125; 135 and 120. Push processing not recommended. Datasheet Jun 2025.",
+      "image": "https://www.harmanphoto.co.uk/media/catalog/product/r/e/red-135-cassette-and-carton_1.jpg",
+      "productUrl": "https://www.harmanphoto.co.uk/harman-red-125-35mm"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Tri-X 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 170,
+      "resolvingPowerLpMm": 100,
+      "exposureLatitude": "-2 to +3 stops",
+      "reciprocity": "No correction 1/1000 to 1/10 s; at 1 s +1 stop, at 10 s +2 stops, at 100 s +3 stops",
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/f4017_trix_320400_0.pdf",
+      "notes": "F-4017; 400TX; contrast index 0.56 dev target; resolving power at TOC 1000:1",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-tri-x-film-400-135-36exp-box.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/professional/tri-x-400-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Tri-X 320",
+      "iso": 320,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "4x5",
+        "8x10"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 160,
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/f4017_trix_320400_0.pdf",
+      "notes": "F-4017; 320TXP; sheet film on 7-mil Estar Thick Base; excellent tone gradation",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-tri-x-film-320-sheet-4x5-10sh.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/professional/tri-x-320-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "T-Max 100",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "4x5",
+        "8x10"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 80,
+      "resolvingPowerLpMm": 200,
+      "reciprocity": "No correction 1/1000 to 1/10 s; at 1 s +1/3 stop, at 10 s +1/2 stop, at 100 s +1 stop",
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/f4016_TMax_100.pdf",
+      "notes": "F-4016; 100TMX; T-GRAIN emulsion; 63 lp/mm at TOC 1.6:1, 200 lp/mm at TOC 1000:1",
+      "productUrl": "https://kodakprofessional.com/photographers/film/black-white/kodak-professional-t-max-100-film/525"
+    },
+    {
+      "brand": "Kodak",
+      "name": "T-Max 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 100,
+      "resolvingPowerLpMm": 200,
+      "reciprocity": "No correction 1/10000 to 1 s; at 10 s +1/3 stop, at 100 s +1 1/2 stops",
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/f4043_TMax_400.pdf",
+      "notes": "F-4043; 400TMY; T-GRAIN emulsion; 50 lp/mm at TOC 1.6:1, 200 lp/mm at TOC 1000:1",
+      "productUrl": "https://kodakprofessional.com/photographers/film/black-white/kodak-professional-t-max-400-film/526"
+    },
+    {
+      "brand": "Kodak",
+      "name": "T-Max P3200",
+      "iso": 800,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 180,
+      "resolvingPowerLpMm": 125,
+      "reciprocity": "No correction 1/10000 to 1 s",
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/f4001_tmax_3200_0.pdf",
+      "notes": "F-4001; 3200TMZ; multi-speed, nominal EI 800 (EI 1000 in T-MAX dev); usable EI 400-25000; 40 lp/mm at TOC 1.6:1, 125 lp/mm at TOC 1000:1",
+      "productUrl": "https://kodakprofessional.com/photographers/film/black-white/kodak-professional-t-max-p3200-film/527"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Portra 160",
+      "iso": 160,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "base": "acetate",
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/2025-07/e4051.pdf",
+      "notes": "E-4051; codes 5059/6059/4059; sheets on Estar Thick Base; grain reported as Print Grain Index (28 at 4x6/135), not RMS",
+      "productUrl": "https://kodakprofessional.com/photographers/film/color/kodak-professional-portra-160-film/529"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Portra 400",
+      "iso": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "base": "acetate",
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/2025-07/e4050.pdf",
+      "notes": "E-4050; codes 5056/6056/4056; sheets on Estar Thick Base; grain reported as Print Grain Index (37 at 4x6/135), not RMS",
+      "productUrl": "https://kodakprofessional.com/photographers/film/color/kodak-professional-portra-400-film/516"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Portra 800",
+      "iso": 800,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "exposureLatitude": "push to EI 1600 (push 1) and EI 3200 (push 2)",
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/2025-07/e4040.pdf",
+      "notes": "E-4040; best-in-class underexposure latitude; grain reported as Print Grain Index (48 at 4x6/135), not RMS",
+      "productUrl": "https://kodakprofessional.com/photographers/film/color/kodak-professional-portra-800-film/528"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Ektar 100",
+      "iso": 100,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120",
+        "4x5",
+        "8x10"
+      ],
+      "base": "acetate",
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/2025-07/e4046.pdf",
+      "notes": "E-4046; codes 5110/6110; sheets on Estar Thick Base; finest-grain color negative; grain reported as Print Grain Index (<25 at 4x6/135), not RMS",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-ektar-film-100-135-36exp-box.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/professional/ektar-100-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Ektachrome E100",
+      "iso": 100,
+      "filmType": "color-slide",
+      "process": "e6",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 80,
+      "reciprocity": "No correction 1/10000 to 10 s; at 120 s add CC10R",
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/e4000_ektachrome_100.pdf",
+      "notes": "E-4000; color transparency film; T-GRAIN; RMS granularity 8 (read at gross diffuse visual density 1.0)",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-ektachrome-film-e100-135-36exp-box.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/professional/ektachrome-e100-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Gold 200",
+      "iso": 200,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "exposureLatitude": "-2 to +3 stops",
+      "reciprocity": "No correction 1/10000 to 1 s",
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/wysiwyg/E7022-1.pdf",
+      "notes": "E-7022; grain reported as Print Grain Index (44 at 4x6/135), not RMS",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-gold-film-200-135-36exp-box-left-facing.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/consumer/gold-200-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "UltraMax 400",
+      "iso": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135"
+      ],
+      "base": "acetate",
+      "reciprocity": "No correction 1/10000 to 1 s",
+      "discontinued": false,
+      "datasheetUrl": "https://kodakprofessional.com/sites/default/files/wysiwyg/KodakUltraMax400TechSheet-1.pdf",
+      "notes": "E-7023; KODAK ULTRA MAX 400; T-GRAIN; grain reported as Print Grain Index (46 at 4x6/135), not RMS",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-ultramax-film-400-135-36exp-box-left-facing.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/consumer/ultramax-400-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Double-X 5222",
+      "iso": 250,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "16mm-cine",
+        "35mm-cine"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 140,
+      "resolvingPowerLpMm": 100,
+      "reciprocity": "No correction 1/10000 to 1 s",
+      "discontinued": false,
+      "datasheetUrl": "https://www.kodak.com/content/products-brochures/motion-picture/EASTMAN-DOUBLE-X-technical-information.pdf",
+      "notes": "H-1-5222; EASTMAN DOUBLE-X 5222 (35mm)/7222 (16mm); grey acetate base; EI 250 daylight / 200 tungsten; 32 lp/mm at TOC 1.6:1, 100 lp/mm at TOC 1000:1; process D-96",
+      "image": "https://www.kodak.com/content/products-images/Film/_750x750_crop_center-center_41_line/EASTMAN-DOUBLE-X-5222-7222_180801-1.jpg",
+      "productUrl": "https://www.kodak.com/en/motion/product/camera-films/eastman-double-x-black-white-5222-7222/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Vision3 50D",
+      "iso": 50,
+      "filmType": "color-negative",
+      "process": "ecn2",
+      "formats": [
+        "16mm-cine",
+        "35mm-cine"
+      ],
+      "base": "acetate",
+      "discontinued": false,
+      "datasheetUrl": "https://www.kodak.com/content/pdfs/motion/KODAK-VISION3-50D-5203-7203-technical-information.pdf",
+      "notes": "H-1-5203; 5203 (35mm)/7203 (16mm); daylight-balanced EI 50 (12 tungsten w/80A); acetate base with rem-jet backing",
+      "image": "https://www.kodak.com/content/products-images/Film/_750x750_crop_center-center_41_line/VISION3-50D-Cans_round_022018_white-5.jpg",
+      "productUrl": "https://www.kodak.com/en/motion/product/camera-films/50d-5203-7203/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Vision3 250D",
+      "iso": 250,
+      "filmType": "color-negative",
+      "process": "ecn2",
+      "formats": [
+        "16mm-cine",
+        "35mm-cine"
+      ],
+      "base": "acetate",
+      "discontinued": false,
+      "datasheetUrl": "https://www.kodak.com/content/pdfs/motion/KODAK-VISION3-250D-5207-7207-technical-information.pdf",
+      "notes": "H-1-5207; 5207 (35mm)/7207 (16mm); daylight-balanced EI 250 (64 tungsten w/80A); acetate base with rem-jet backing",
+      "image": "https://www.kodak.com/content/products-images/Film/_750x750_crop_center-center_41_line/VISION3-250D_7207_190731-hi-res.jpg",
+      "productUrl": "https://www.kodak.com/en/motion/product/camera-films/250d-5207-7207/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Vision3 200T",
+      "iso": 200,
+      "filmType": "color-negative",
+      "process": "ecn2",
+      "formats": [
+        "16mm-cine",
+        "35mm-cine"
+      ],
+      "base": "acetate",
+      "discontinued": false,
+      "datasheetUrl": "https://www.kodak.com/content/pdfs/motion/KODAK-VISION3-200T-5213-7213-technical-information.pdf",
+      "notes": "H-1-5213; 5213 (35mm)/7213 (16mm); tungsten-balanced EI 200 (125 daylight w/85); acetate base with rem-jet backing",
+      "image": "https://www.kodak.com/content/products-images/Film/_750x750_crop_center-center_41_line/VISION-200T-filmcans_022018_white-4.jpg",
+      "productUrl": "https://www.kodak.com/en/motion/product/camera-films/200t-5213-7213/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Vision3 500T",
+      "iso": 500,
+      "filmType": "color-negative",
+      "process": "ecn2",
+      "formats": [
+        "16mm-cine",
+        "35mm-cine"
+      ],
+      "base": "acetate",
+      "discontinued": false,
+      "datasheetUrl": "https://www.kodak.com/content/pdfs/motion/KODAK-VISION3-500T-5219-7219-technical-information.pdf",
+      "notes": "H-1-5219; 5219 (35mm)/7219 (16mm); tungsten-balanced EI 500 (320 daylight w/85); acetate base with rem-jet backing",
+      "image": "https://www.kodak.com/content/products-images/Film/_750x750_crop_center-center_41_line/VISION3_5219_7219_filmcans_022018_white-2.jpg",
+      "productUrl": "https://www.kodak.com/en/motion/product/camera-films/500t-5219-7219/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Verita 200D",
+      "iso": 200,
+      "filmType": "color-negative",
+      "process": "ecn2",
+      "formats": [
+        "16mm-cine",
+        "35mm-cine",
+        "65mm"
+      ],
+      "base": "acetate",
+      "reciprocity": "No correction 1/1000 to 1 s",
+      "discontinued": false,
+      "releasedYear": 2026,
+      "datasheetUrl": "https://www.kodak.com/content/pdfs/motion/KODAK-VERITA-200D-5206-7206-technical-information.pdf",
+      "notes": "H-1-5206; 5206 (35mm/65mm)/7206 (16mm); daylight-balanced EI 200; acetate base (no rem-jet); shorter dynamic range than Vision3; motion-picture only, no still format",
+      "image": "https://www.kodak.com/content/images/_1920x1281_crop_center-center_line/verita-film-family-black.jpg",
+      "productUrl": "https://www.kodak.com/en/motion/product/camera-films/verita-200d-5206-7206/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Ektapan 100",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 80,
+      "resolvingPowerLpMm": 200,
+      "discontinued": false,
+      "releasedYear": 2026,
+      "datasheetUrl": "https://www.kodak.com/en/still-film/product/professional/ektapan/ektapan-100-film/",
+      "notes": "T-Grain B&W; the renamed KODAK T-MAX 100. Cat# 135-36 7519556, 35mm-100ft 7520885, 120 7519630, 4x5 7520828/7520836. Image-structure figures per T-Max 100 (F-4016).",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-ektapan-film-100-35mm.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/professional/ektapan/ektapan-100-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Ektapan 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 100,
+      "resolvingPowerLpMm": 125,
+      "discontinued": false,
+      "releasedYear": 2026,
+      "datasheetUrl": "https://www.kodak.com/en/still-film/product/professional/ektapan/ektapan-400-film/",
+      "notes": "T-Grain B&W; the renamed KODAK T-MAX 400. Cat# 135-36 7519564, 35mm-100ft 7520877, 120 7519622, 4x5 7520778/7520810. Image-structure figures per T-Max 400 (F-4043).",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-ektapan-film-400-35mm.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/professional/ektapan/ektapan-400-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Ektapan P3200",
+      "iso": 800,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135"
+      ],
+      "base": "acetate",
+      "spectralSensitivity": "panchromatic",
+      "exposureLatitude": "EI 800-3200 (push)",
+      "discontinued": false,
+      "releasedYear": 2026,
+      "datasheetUrl": "https://www.kodak.com/en/still-film/product/professional/ektapan/ektapan-p3200-film/",
+      "notes": "Multi-speed T-Grain push film (box P3200, nominal ISO ~800); the renamed KODAK T-MAX P3200. Cat# 135-36 7519572. See T-Max P3200 (F-4001).",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-ektapan-film-p3200-35mm.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/professional/ektapan/ektapan-p3200-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Ektacolor Pro 160",
+      "iso": 160,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120",
+        "4x5",
+        "8x10"
+      ],
+      "base": "acetate",
+      "discontinued": false,
+      "releasedYear": 2026,
+      "datasheetUrl": "https://www.kodak.com/en/still-film/product/professional/ektacolor/ektacolor-pro-160-film/",
+      "notes": "C-41; the renamed KODAK PORTRA 160. Cat# 135-36 7519549, 120 7519598, 4x5 7520794, 8x10 7523137. Portra uses Print Grain Index (not RMS); see E-4051.",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-ektacolor-film-pro-160-35mm.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/professional/ektacolor/ektacolor-pro-160-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Ektacolor Pro 400",
+      "iso": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "discontinued": false,
+      "releasedYear": 2026,
+      "datasheetUrl": "https://www.kodak.com/en/still-film/product/professional/ektacolor/ektacolor-pro-400-film/",
+      "notes": "C-41; the renamed KODAK PORTRA 400. Available in 135 and 120. See Portra 400 (E-4050).",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-ektacolor-film-pro-400-35mm.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/professional/ektacolor/ektacolor-pro-400-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Ektacolor Pro 800",
+      "iso": 800,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "acetate",
+      "discontinued": false,
+      "releasedYear": 2026,
+      "datasheetUrl": "https://www.kodak.com/en/still-film/product/professional/ektacolor/ektacolor-pro-800-film/",
+      "notes": "C-41; the renamed KODAK PORTRA 800. Cat# 135-36 7519531, 120 7519614. See Portra 800 (E-4040).",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodak-ektacolor-film-pro-800-35mm.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/professional/ektacolor/ektacolor-pro-800-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Kodacolor 100",
+      "iso": 100,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135"
+      ],
+      "discontinued": false,
+      "releasedYear": 2026,
+      "aka": [
+        "Pro Image 100"
+      ],
+      "datasheetUrl": "https://www.kodak.com/en/still-film/product/consumer/kodacolor-film/",
+      "notes": "C-41 consumer color negative; the renamed KODAK PRO IMAGE 100 (2026 Eastman Kodak consumer rebrand). No standalone PDF datasheet published; the product page is the official reference. Verified 135/36exp; other formats not confirmed.",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodacolor-film-100-36exp-box.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/consumer/kodacolor-film/"
+    },
+    {
+      "brand": "Kodak",
+      "name": "Kodacolor 200",
+      "iso": 200,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135"
+      ],
+      "discontinued": false,
+      "releasedYear": 2026,
+      "aka": [
+        "ColorPlus 200"
+      ],
+      "datasheetUrl": "https://www.kodak.com/en/still-film/product/consumer/kodacolor-film/",
+      "notes": "C-41 consumer color negative; the renamed KODAK COLORPLUS 200 (2026 Eastman Kodak consumer rebrand). No standalone PDF datasheet published; the product page is the official reference. Verified 135/36exp.",
+      "image": "https://www.kodak.com/content/images/_1680x1680_crop_center-center_41_line/kodacolor-film-200-36exp-box.jpg",
+      "productUrl": "https://www.kodak.com/en/still-film/product/consumer/kodacolor-film/"
+    },
+    {
+      "brand": "ORWO",
+      "name": "UN54",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "35mm",
+        "16mm"
+      ],
+      "base": "triacetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 120,
+      "datasheetUrl": "https://cdn.shopify.com/s/files/1/0549/7205/5650/files/Datasheet_UN54.pdf",
+      "notes": "ORWO Universal Negative Film UN 54. Panchromatic medium-speed B&W negative camera film; can be reversal-processed (ORWO instruction 4185) for direct positives. Grey triacetate safety base 135 um. RMS granularity 12 (net diffuse density 1.0, 48 um aperture). MTF factor m30 = 0.80. Negative processing per ORWO instruction 1182 (D96) to avg gradient 0.65. Also sold in 135/36exp as Wolfen UN54 (https://www.orwo.shop/en-us/products/wolfen-un54). Manufacturer: Filmotec GmbH, Wolfen.",
+      "image": "https://cdn.shopify.com/s/files/1/0549/7205/5650/files/UN54.png",
+      "productUrl": "https://www.orwo.shop/en-us/products/wolfen-un54"
+    },
+    {
+      "brand": "ORWO",
+      "name": "NC500",
+      "iso": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "35mm",
+        "16mm"
+      ],
+      "base": "triacetate",
+      "datasheetUrl": "https://cdn.shopify.com/s/files/1/0549/7205/5650/files/Data_sheet_Wolfen_NC500.pdf",
+      "notes": "Wolfen NC500 color negative film. Cinema negative stock without remjet backing, so develops in standard C-41; ECN2 gives a flatter gradation. 125 um grey triacetate base. ISO 400/27. Daylight-balanced; densitometry status M. Coated by InovisCoat GmbH. Product page: https://www.orwo.shop/en-us/products/orwo-nc500-colour-cine-35mm",
+      "image": "https://cdn.shopify.com/s/files/1/0549/7205/5650/files/NC500.png",
+      "productUrl": "https://www.orwo.shop/en-us/products/wolfen-nc500"
+    },
+    {
+      "brand": "ORWO",
+      "name": "NC400",
+      "iso": 400,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135",
+        "16mm"
+      ],
+      "base": "triacetate",
+      "datasheetUrl": "https://cdn.shopify.com/s/files/1/0549/7205/5650/files/Data_sheet_Wolfen_NC400.pdf",
+      "notes": "Wolfen NC400 color negative film. Kodak C-41 process. 125 um grey triacetate base. ISO 400/27. Daylight-balanced; densitometry status M. Coated by InovisCoat GmbH. Product pages: https://www.orwo.shop/en-us/products/wolfen-nc400-36exp and https://www.orwo.shop/en-us/products/orwo-16mm-nc400-colour-cine",
+      "image": "https://cdn.shopify.com/s/files/1/0549/7205/5650/files/nc400.png",
+      "productUrl": "https://www.orwo.shop/en-us/products/wolfen-nc400-36exp"
+    },
+    {
+      "brand": "Ferrania",
+      "name": "P30",
+      "iso": 80,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135"
+      ],
+      "spectralSensitivity": "panchromatic",
+      "datasheetUrl": "https://www.filmferrania.com/p30-info",
+      "notes": "FERRANIA P30. 80 ISO panchromatic B&W motion-picture-heritage film for still photography, high silver content, ultrafine grain. Shoot at box speed 80 ISO; not DX coded. Traditional B&W chemistry (best-practices PDF lists D-76, D-96, HC-110, Rodinal, XTOL). Best Practices PDF: https://www.filmferrania.com/s/P30_Best_Practices_v3.pdf . Base not stated on official sources; omitted. Sourced from filmferrania.com (the .it domain has lapsed and now serves unrelated content).",
+      "productUrl": "https://www.filmferrania.com/p30-info"
+    },
+    {
+      "brand": "Ferrania",
+      "name": "Orto",
+      "iso": 50,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "120"
+      ],
+      "spectralSensitivity": "orthochromatic",
+      "datasheetUrl": "https://www.filmferrania.com/products/ferrania-orto-120-50-iso",
+      "notes": "Ferrania Orto. 50 ISO orthochromatic B&W film, high silver content, practically imperceptible grain. New product developed with modern chemicals for a classic orthochromatic (blue-sensitive) aesthetic. Crafted in Cairo Montenotte, Italy. Official product page confirms 50 ISO / 120 / orthochromatic; base not stated. Sourced from filmferrania.com.",
+      "productUrl": "https://www.filmferrania.com/"
+    },
+    {
+      "brand": "Kosmo Foto",
+      "name": "Mono 100",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "spectralSensitivity": "panchromatic",
+      "datasheetUrl": "https://kosmofoto.com/product/kosmo-foto-mono-film/",
+      "notes": "Kosmo Foto Mono. 100-ISO panchromatic B&W film. Traditional B&W chemistry (not C-41 minilab compatible); can pull to ISO 50 or push to ISO 400. Rebadged emulsion from a European film producer, factory-fresh. 120 version at https://kosmofoto.com/product/kosmo-foto-mono-120-film/ . Base not officially stated.",
+      "image": "https://kosmofoto.com/wp-content/uploads/2019/10/kosmo_packshot_35mm_bwspaceman_crop.jpg",
+      "productUrl": "https://kosmofoto.com/product/kosmo-foto-mono-film/"
+    },
+    {
+      "brand": "Kosmo Foto",
+      "name": "Agent Shadow 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135"
+      ],
+      "spectralSensitivity": "panchromatic",
+      "datasheetUrl": "https://kosmofoto.com/product/kosmo-foto-agent-shadow-film/",
+      "notes": "Kosmo Foto Agent Shadow. 400-ISO panchromatic B&W film for 35mm. Push-processable four stops to ISO 6400. Fine-grained at box speed, more atmospheric grain and dramatic contrast when pushed. Existing emulsion from a company with over a century of film-making experience. Base not officially stated.",
+      "image": "https://kosmofoto.com/wp-content/uploads/2021/06/agent-shadow_render-e1706086133220.jpg",
+      "productUrl": "https://kosmofoto.com/product/kosmo-foto-agent-shadow-film/"
+    },
+    {
+      "brand": "Bergger",
+      "name": "Pancro 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "4x5",
+        "5x7",
+        "13x18cm",
+        "8x10",
+        "11x14",
+        "16x20"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "panchromatic",
+      "datasheetUrl": "https://bergger.com/index.php?controller=attachment&id_attachment=4",
+      "notes": "BERGGER Pancro 400. Two-emulsion panchromatic B&W film (silver bromide + silver iodide, differing grain sizes) for wide exposure latitude; nominal 400 ISO, usable 160-1600. Classical grain, variable with developer. Sheets coated on 175 um PET base with undercoated anti-halation layer and anti-curling layer. Datasheet PDF: https://bergger.com/en/index.php?controller=attachment&id_attachment=4 . 135 page: https://bergger.com/en/films-sheets/bergger-pancro-400-35-mm.html ; 120 page: https://bergger.com/en/films-sheets/bergger-pancro-400-rouleau-120.html",
+      "image": "https://bergger.com/201-zoom_default/bergger-pancro-400-35-mm.jpg",
+      "productUrl": "https://bergger.com/en/films-sheets/bergger-pancro-400-35-mm.html"
+    },
+    {
+      "brand": "Washi",
+      "name": "Washi S",
+      "iso": 50,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "sound-recording",
+      "spectralSensitivity": "panchromatic",
+      "datasheetUrl": "https://filmwashi.com/datasheet/S_en.pdf",
+      "notes": "Film Washi 'S' - 50 iso/18 - motion-picture sound-recording film. Polyester base 120 um; anti-halation layer placed between base and emulsion (defining feature). Panchromatic (max 620 nm; not fully red-sensitive). Fine grain, very strong contrast, industrial coating. Also offered on 30.5m bulk roll. Discontinued per Washi.",
+      "productUrl": "https://filmwashi.com/en/products/135_films/"
+    },
+    {
+      "brand": "Washi",
+      "name": "Washi F",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "x-ray",
+      "spectralSensitivity": "orthochromatic",
+      "datasheetUrl": "https://filmwashi.com/datasheet/F100_en.pdf",
+      "notes": "Film Washi 'F' - 100 iso/21 - medical fluorographic X-ray film. Polyester base 100 um, coated without anti-halation layer (high diffusion/halation effect). Orthochromatic (max 575 nm; red safelight). High grain, medium contrast, hand-coated.",
+      "productUrl": "https://filmwashi.com/en/products/specialty_films/"
+    },
+    {
+      "brand": "Washi",
+      "name": "Washi D",
+      "iso": 500,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135"
+      ],
+      "base": "aerial",
+      "spectralSensitivity": "panchromatic",
+      "datasheetUrl": "https://filmwashi.com/datasheet/D_en.pdf",
+      "notes": "Film Washi 'D' - 500 iso/28 - aerial surveillance/cartography film. Very thin polyester base 75 um. Panchromatic (max 690 nm; process in total darkness). Pushable to 1600; can also be processed as slide. Moderate grain, strong contrast, industrial coating. Offered in 36exp, 72exp, single-use camera, and 30.5m bulk. 135 production paused/discontinued per Washi.",
+      "productUrl": "https://filmwashi.com/en/products/135_films/"
+    },
+    {
+      "brand": "Washi",
+      "name": "Washi W",
+      "iso": 25,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "120",
+        "4x5"
+      ],
+      "base": "paper",
+      "spectralSensitivity": "orthochromatic",
+      "datasheetUrl": "https://filmwashi.com/datasheet/W25_en.pdf",
+      "notes": "Film Washi 'W' - 25 iso/15 - orthochromatic emulsion hand-coated on Kozo paper (28 g/m2, Moriki Paper Tosa Washi), medium transparency. Orthochromatic (max 545 nm; sensitive to blue, less green, no red; red 575 nm safelight). Datasheet gives usable range ~3/6 to 12/25 iso depending on developer/light; box max sensitivity 25 iso. Very strong texture and contrast, hand-coated.",
+      "productUrl": "https://filmwashi.com/en/products/handcrafted_products/"
+    },
+    {
+      "brand": "Washi",
+      "name": "Washi X",
+      "iso": 100,
+      "filmType": "color-negative",
+      "process": "c41",
+      "formats": [
+        "135"
+      ],
+      "datasheetUrl": "https://filmwashi.com/en/products/panchromatic_films/",
+      "notes": "Film Washi 'X' - 100 iso/21 - maskless color film (no orange mask). Per Washi's official product listing it can be processed in C-41 (negative) or E6 (slide). No dedicated datasheet PDF is published; only the product-listing text is authoritative. Base not stated. (Note: this is a 100-iso maskless color film, not a panchromatic BW stock.)",
+      "productUrl": "https://filmwashi.com/en/products/specialty_films/"
+    },
+    {
+      "brand": "Washi",
+      "name": "Washi V",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "paper",
+      "spectralSensitivity": "panchromatic",
+      "datasheetUrl": "https://filmwashi.com/datasheet/V100_en.pdf",
+      "notes": "Film Washi 'V' - 100 iso/21 - panchromatic emulsion hand-coated on Gampi paper (41 g/m2, Awagami Factory, Japan), high transparency. Panchromatic (max 640 nm; process in full darkness). Push/pull +/-2 stops. Medium texture, soft contrast, hand-coated. Production stopped (Gampi paper supply); discontinued per Washi.",
+      "productUrl": "https://filmwashi.com/en/products/120_films/"
+    },
+    {
+      "brand": "CatLABS",
+      "name": "X Film 80",
+      "iso": 80,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "120",
+        "4x5",
+        "8x10"
+      ],
+      "datasheetUrl": "https://www.catlabs.info/product/clxf80ii",
+      "notes": "CatLABS X FILM 80 MKII B&W negative film. Traditional fine-grain B&W film in the vein of Kodak Panatomic-X; very fine grain, moderate contrast, wide latitude, high silver content. IE 80 (expose at 80-100; rate 50 indoors; push to 800 in low light). Offered in 120 and 4x5/8x10 sheets. Base and spectral sensitivity not explicitly stated on official page.",
+      "image": "https://assets.bigcartel.com/product_images/376969018/IMG_9776.JPG",
+      "productUrl": "https://www.catlabs.info/product/clxf80ii"
+    },
+    {
+      "brand": "CatLABS",
+      "name": "X Film 320",
+      "iso": 320,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "datasheetUrl": "https://www.catlabs.info/product/catlabs-x-film-320",
+      "notes": "CatLABS X FILM 320 Pro B&W negative. EI 320 nominal (rate 200 in bright sun; push to 1600 in low light). Extended red / near-IR sensitivity to ~750 nm (use R72 IR filter at ISO 3-5 for IR effect). Exceptionally fine grain, extremely clear base. Non-DX. Offered in 35mm and 120. 35mm variant listing: https://www.catlabs.info/product/xpan320 . Base not stated.",
+      "productUrl": "https://www.catlabs.info/product/catlabs-x-film-320"
+    },
+    {
+      "brand": "Rollei",
+      "name": "RPX 25",
+      "iso": 25,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 8,
+      "resolvingPower": 260,
+      "datasheetUrl": "https://www.rolleianalog.com/wp-content/uploads/2021/07/RPX25_Data-Sheet_EN_R210701.pdf",
+      "notes": "Low-sensitivity panchromatic B&W film, ISO 25/15deg. Crystal-clear 100 micron polyester base. Layer thickness 5 micron, high silver content. Resolving power 260 lp/mm at 1000:1 contrast, RMS granularity 8 (x1000). Exposure latitude +/-1 f-stop. Suitable for B&W reversal.",
+      "image": "https://www.rollei.de/cdn/shop/files/83000_RPX25_135-36_01.png?v=1718891917&width=2000",
+      "productUrl": "https://www.rolleianalog.com/produkte/rollei-rpx-25/"
+    },
+    {
+      "brand": "Rollei",
+      "name": "RPX 100",
+      "iso": 100,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "triacetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 7,
+      "resolvingPower": 160,
+      "datasheetUrl": "https://www.rolleianalog.com/wp-content/uploads/2021/07/RPX100_Data-Sheet_EN_R210701.pdf",
+      "notes": "Medium-speed panchromatic B&W negative film, ISO 100/21deg. Triacetate base (120 micron) with light mask. Layer thickness 7 micron. Resolving power 160 lp/mm at 1000:1 contrast, RMS grain size 7 (x1000). Exposure latitude +/-2 f-stops. Pull-push 50-200 ISO. Suitable for B&W reversal.",
+      "image": "https://www.rollei.de/cdn/shop/files/83001_RPX_100_135_36_01.png?v=1718891979&width=2000",
+      "productUrl": "https://www.rolleianalog.com/produkte/rollei-rpx-100/"
+    },
+    {
+      "brand": "Rollei",
+      "name": "RPX 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "triacetate",
+      "spectralSensitivity": "panchromatic",
+      "grainRms": 14,
+      "resolvingPower": 110,
+      "datasheetUrl": "https://www.rolleianalog.com/wp-content/uploads/2021/07/RPX400_Data-Sheet_EN_R210701.pdf",
+      "notes": "Highly sensitive panchromatic B&W film, ISO 400/27deg, spectral sensitivity 380-660 nm. Triacetate carrier with light mask. Layer thickness 10 micron. Resolving power 110 lp/mm at 1000:1 contrast, RMS granularity 14 (x1000). Exposure latitude +/-2 f-stops. Push-pull ISO 200-3200. Suitable for B&W reversal.",
+      "image": "https://www.rollei.de/cdn/shop/files/83002_RPX_400_135-36_01.png?v=1718892033&width=2000",
+      "productUrl": "https://www.rolleianalog.com/produkte/rollei-rpx-400/"
+    },
+    {
+      "brand": "Rollei",
+      "name": "Retro 80S",
+      "iso": 80,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "superpanchromatic",
+      "grainRms": 14,
+      "resolvingPower": 180,
+      "datasheetUrl": "https://www.rolleianalog.com/wp-content/uploads/2021/07/Retro80S_Data-Sheet_EN_R210701.pdf",
+      "notes": "Superpanchromatic B&W film, ISO 80/20deg with extended red range up to 750 nm. Crystal-clear transparent PET base (usable as B&W slide film). Layer thickness 10 micron. Resolving power 180 lp/mm at 1000:1 contrast, RMS granularity 14 (x1000). Lower blue sensitivity. Extremely suitable for B&W reversal.",
+      "image": "https://www.rollei.de/cdn/shop/files/83004_Retro_80S_135_36_01_768a85d0-e745-490c-b356-1e43e7fd5dea.png",
+      "productUrl": "https://www.rolleianalog.com/produkte/rollei-retro-80s/"
+    },
+    {
+      "brand": "Rollei",
+      "name": "Retro 400S",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "superpanchromatic",
+      "grainRms": 11,
+      "resolvingPower": 160,
+      "datasheetUrl": "https://www.rolleianalog.com/wp-content/uploads/2021/07/Retro400S_Data-Sheet_EN_R210701.pdf",
+      "notes": "Highly sensitive panchromatic B&W negative film, ISO 400/27deg, spectral sensitivity 380-730 nm (extended red). Crystal-clear transparent PET base (usable as B&W slide film). Coating thickness 10 micron. Resolving power 160 lp/mm at 1000:1 contrast, RMS granularity 11 (x1000). Exposure latitude +/-2 f-stops, pushable to ISO 800/30deg. Very suitable for B&W reversal.",
+      "image": "https://www.rollei.de/cdn/shop/files/83005_Retro_400S_135-36_01_a8d7d02d-a4df-4281-80a6-81a64350c9d5.png",
+      "productUrl": "https://www.rolleianalog.com/produkte/rollei-retro-400s/"
+    },
+    {
+      "brand": "Rollei",
+      "name": "Superpan 200",
+      "iso": 200,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "superpanchromatic",
+      "grainRms": 14,
+      "resolvingPower": 180,
+      "datasheetUrl": "https://www.rolleianalog.com/wp-content/uploads/2021/07/SUPERPAN200_Data-Sheet_EN_R210701.pdf",
+      "notes": "High-sensitivity superpanchromatic B&W negative film, ISO 200/24deg +/-1 f-stop, pushable to ISO 400/27deg. Extended infrared range up to 750 nm (usable as IR film with IR filter). PET base 100 micron (usable as B&W slide film). Layer thickness 10 micron. Resolving power 180 lp/mm, RMS grain size 14 (x1000). Wide exposure latitude (125-250 ISO). Extremely suitable for B&W reversal.",
+      "image": "https://www.rolleianalog.com/wp-content/uploads/2019/07/superpan200.png",
+      "productUrl": "https://www.rolleianalog.com/produkte/rollei-superpan-200/"
+    },
+    {
+      "brand": "Rollei",
+      "name": "Infrared 400",
+      "iso": 400,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "4x5"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "hyperpanchromatic",
+      "grainRms": 11,
+      "resolvingPower": 160,
+      "datasheetUrl": "https://www.rolleianalog.com/wp-content/uploads/2025/06/230821_INFRARED_Datenblatt_EN_2025.pdf",
+      "notes": "Hyperpanchromatically sensitised B&W film, nominal sensitivity ISO 200/24deg to 400/27deg, IR range 650-750 nm (IR filter recommended 715-730 nm). 7.5 micron thin, silver-rich emulsion on crystal-clear 100 micron polyester (PET) base (usable as B&W slide film). Resolving power 160 lp/mm at 1000:1 contrast, RMS granularity 11 (x1000). Very high exposure latitude. Perfect for the wood effect. Very suitable for B&W reversal.",
+      "image": "https://www.rolleianalog.com/wp-content/uploads/2019/07/infrared.png",
+      "productUrl": "https://www.rolleianalog.com/produkte/rollei-infrared/"
+    },
+    {
+      "brand": "Rollei",
+      "name": "Ortho 25 Plus",
+      "iso": 25,
+      "filmType": "bw-negative",
+      "process": "bw",
+      "formats": [
+        "135",
+        "120",
+        "4x5",
+        "5x7",
+        "8x10"
+      ],
+      "base": "polyester",
+      "spectralSensitivity": "orthochromatic",
+      "grainRms": null,
+      "resolvingPower": null,
+      "datasheetUrl": "https://www.rolleianalog.com/wp-content/uploads/2021/07/Ortho25_Data-Sheet_EN_R210701.pdf",
+      "notes": "Low-sensitivity orthochromatic B&W film, ISO 25/15deg, blue-green sensitivity (handleable under red darkroom safelight). Polyester (PET) base, sheet film coated on 0.180 mm / 7 mil polyester (usable as B&W slide film). Very fine grain, very high sharpness. Exposure latitude up to +/-2 f-stops (development dependent). Technical/document emulsion for reproductions, astrophotography, halftone. Extremely suitable for B&W reversal.",
+      "image": "https://www.rollei.de/cdn/shop/files/83007_Ortho_25_plus_135_36_01.png?v=1718781651&width=2000",
+      "productUrl": "https://www.rolleianalog.com/produkte/rollei-ortho-25-plus/"
+    }
+  ]
+}

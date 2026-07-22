@@ -1,0 +1,39 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.lensType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Lens model/type. Instances reference this record. Focal-length and aperture fields use 1e6 scaling to match the photo EXIF projection.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["model", "createdAt"],
+        "properties": {
+          "make": { "type": "string", "maxLength": 128 },
+          "model": { "type": "string", "maxLength": 256 },
+          "mount": { "type": "ref", "ref": "app.graycard.defs#mount" },
+          "lensTypeKind": { "type": "ref", "ref": "app.graycard.defs#lensTypeKind" },
+          "focalLengthMin": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" },
+          "focalLengthMax": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" },
+          "focalLength35mm": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" },
+          "maxAperture": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Widest aperture (smallest f-number), e.g. f/2.8." },
+          "minAperture": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Smallest aperture (largest f-number), e.g. f/22." },
+          "maxApertureAtTele": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" },
+          "apertureSteps": {
+            "type": "array",
+            "description": "Exact f-numbers for the shot logger dial at 1e6 scale. When present, overrides min/max and stop-fraction generation.",
+            "items": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" }
+          },
+          "apertureStopIncrement": { "type": "ref", "ref": "app.graycard.defs#stopFraction", "description": "Default stop fraction when generating aperture options from min/max (shot logger may override when steps are absent)." },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}
