@@ -2,6 +2,17 @@
 
 Hypo's gear autocomplete is seeded from a few sources. Attribution and licenses:
 
+## License boundary
+
+Hypo's original curated datasets and database compilations are licensed under
+**CC BY-SA 4.0**; see [`data/LICENSE.md`](../../data/LICENSE.md). That license
+covers data only. The application and the scripts that collect, transform, and
+display the data remain under the repository's **MIT License**. More specific
+upstream notices continue to control third-party material, including Lensfun's
+CC BY-SA 3.0 database and the per-file licenses on linked Wikimedia Commons
+images. Manufacturer datasheets, pages, and product images are linked rather
+than copied and are not relicensed by Hypo.
+
 ## lensfun: lenses & digital cameras
 `src/data/lensfun-lenses.json` and `lensfun-cameras.json` are generated from the
 **lensfun** database (<https://github.com/lensfun/lensfun>, `data/db/`), which is

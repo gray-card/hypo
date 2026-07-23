@@ -8,7 +8,8 @@
 
 <p>
  <img src="https://img.shields.io/badge/built%20on-atproto-1185FE" alt="Built on atproto" />
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/code-MIT-blue.svg" alt="Code license: MIT" /></a>
+  <a href="data/LICENSE.md"><img src="https://img.shields.io/badge/data-CC_BY--SA_4.0-green.svg" alt="Data license: CC BY-SA 4.0" /></a>
 </p>
 
 <p>
@@ -101,7 +102,11 @@ scope in sync with `src/oauthScope.js` (`node scripts/gen-client-metadata.mjs`).
 
 Gear autocomplete is seeded from lensfun (CC-BY-SA 3.0), Wikidata (CC0), and curated
 lists. Product images and datasheets are **links** to the manufacturer's own copy, never
-re-hosted. See `src/data/CATALOG_ATTRIBUTION.md`. Refresh locally with:
+re-hosted. Hypo's original curated data and database compilations are licensed under
+[CC BY-SA 4.0](data/LICENSE.md); the vendored Lensfun database remains under
+[CC BY-SA 3.0](data/lensfun-db/NOTICE.md). These data licenses cover the data only,
+not the application or data-processing code. See [the data README](data/README.md) and
+`src/data/CATALOG_ATTRIBUTION.md`. Refresh locally with:
 
 ```bash
 npm run build:catalog
@@ -124,4 +129,9 @@ npm run build:catalog
 
 ## License
 
-[MIT](LICENSE) © Aaron Steven White
+The application and data-processing code are licensed under the [MIT License](LICENSE)
+© Aaron Steven White. Data has separate terms: original curated datasets and database
+compilations are [CC BY-SA 4.0](data/LICENSE.md), while the vendored Lensfun database
+remains [CC BY-SA 3.0](data/lensfun-db/NOTICE.md). The Creative Commons licenses cover
+data only; they do not change the code's MIT license. See [data/README.md](data/README.md)
+for the full boundary and third-party exceptions.
