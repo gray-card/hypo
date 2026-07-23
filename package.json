@@ -1,7 +1,7 @@
 {
   "name": "hypo",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Hypo: the graycard web tool that writes app.graycard.* provenance, workflow, and scene-graph records to your atproto PDS and integrates with grain.social. Static, no backend.",
   "license": "MIT",
