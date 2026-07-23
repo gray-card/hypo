@@ -1738,3 +1738,65 @@ button:focus-visible, .term-opt:focus-visible, .palette-item:focus-visible { out
 .type-asset-row { gap: 12px; align-items: flex-start; margin-bottom: 4px; }
 .type-asset-row .type-thumb { flex: 0 0 auto; width: 64px; height: 64px; }
 .type-asset-fields { flex: 1; min-width: 0; }
+.technical-specs {
+  margin: 14px 0 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--surface-2) 55%, transparent);
+}
+.technical-specs > summary,
+.technical-spec-edit > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+}
+.technical-spec-view { margin-top: 10px; }
+.technical-spec-list {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.75fr) minmax(0, 1.25fr);
+  gap: 6px 14px;
+  margin: 0;
+  font-size: 13px;
+}
+.technical-spec-list dt { color: var(--muted); }
+.technical-spec-list dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.technical-spec-structured {
+  white-space: pre-wrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.45;
+}
+.technical-spec-edit { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 9px; }
+.technical-spec-edit > summary { color: var(--muted); font-size: 12px; }
+.technical-spec-json {
+  width: 100%;
+  min-height: 150px;
+  resize: vertical;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.45;
+}
+@media (max-width: 480px) {
+  .technical-spec-list { grid-template-columns: 1fr; gap: 2px; }
+  .technical-spec-list dd { margin-bottom: 7px; }
+}
+.recipe-technical,
+.process-technical {
+  margin: 10px 0;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--surface-2) 55%, transparent);
+}
+.recipe-technical > summary,
+.process-technical > summary { cursor: pointer; color: var(--muted); font-size: 12px; font-weight: 600; }
+.recipe-technical .technical-spec-list { margin-top: 9px; }
+.devtimer-temperature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 480px) {
+  .devtimer-temperature-grid { grid-template-columns: 1fr; }
+}

@@ -13,6 +13,89 @@ import { searchFilms, recipesForFilm, recipeLabel, resolveTimeSec, publishedTemp
 
 const MIRROR = (did) => `hypo:devtimer:${did || "anon"}`;
 
+const recipeMeasure = (m) => m && typeof m.value === "number"
+  ? `${m.value / (m.scale || 1)} ${m.unit || ""}`.trim()
+  : null;
+const recipeAgitation = (ag) => {
+  if (!ag) return null;
+  const bits = [];
+  if (ag.continuous) bits.push("continuous");
+  if (ag.initialSec) bits.push(`first ${ag.initialSec}s`);
+  if (ag.everySec) bits.push(`every ${ag.everySec}s${ag.forSec ? ` for ${ag.forSec}s` : ""}`);
+  if (ag.inversions) bits.push(`${ag.inversions} inversions`);
+  if (ag.note) bits.push(ag.note);
+  return bits.join(" · ") || null;
+};
+const pushPullText = (r) => {
+  const m = recipeMeasure(r.pushPull);
+  if (m) return m;
+  return r.ei ? `EI ${r.ei}` : null;
+};
+const sourceDocumentUrl = (doc) => doc?.asset?.url || null;
+const recipeDocument = (r) => r.sourceDocument || (r.source ? {
+  kind: "technical-data",
+  asset: { url: r.source },
+  publisher: r.developerMake || undefined,
+  revision: r.sourceRevision || undefined,
+} : null);
+function recipeUri(store, recipe) {
+  const norm = (s) => String(s || "").trim().toLowerCase();
+  return (store?.catalog?.devRecipe || []).find(({ value: v }) =>
+    norm(v.filmMake) === norm(recipe.filmMake)
+    && norm(v.filmName) === norm(recipe.filmName)
+    && norm(v.developerMake) === norm(recipe.developerMake)
+    && norm(v.developerName) === norm(recipe.developerName)
+    && norm(v.dilution) === norm(recipe.dilution)
+    && (v.ei || null) === (recipe.ei || null))?.uri || null;
+}
+function recipeSourceSpec(r, document = recipeDocument(r)) {
+  if (r.specSources?.[0]) return {
+    ...r.specSources[0],
+    page: r.specSources[0].page || r.sourcePage || undefined,
+    table: r.specSources[0].table || r.sourceTable || undefined,
+  };
+  if (!document) return null;
+  return {
+    document,
+    fields: ["temps", "agitation", "tankType", "dilution"],
+    page: r.sourcePage || undefined,
+    table: r.sourceTable || undefined,
+    method: r.derived ? "derived" : "manual-transcription",
+  };
+}
+export function recipeTechnicalDetails(r) {
+  const rows = [];
+  const add = (label, value, node = null) => {
+    if (value == null || value === "" || (Array.isArray(value) && !value.length)) return;
+    rows.push(el("dt", {}, label), el("dd", {}, node || String(value)));
+  };
+  add("Exposure index / push-pull", pushPullText(r));
+  add("Dilution", r.dilution);
+  add("Published temperature/time points", (r.temps || []).map((p) => `${c10ToC(p.tempC10)}°C — ${fmtMMSS(p.timeSec)}`).join(", "));
+  add("Method", [r.tankType, r.rotaryRpm ? `${r.rotaryRpm} rpm` : null, r.methodNotes].filter(Boolean).join(" · "));
+  add("Agitation", recipeAgitation(r.agitation));
+  add("Contrast target", r.contrastTarget);
+  add("Gamma target", recipeMeasure(r.gammaTarget));
+  add("Recommendation", r.recommendationStatus);
+  const document = recipeDocument(r);
+  const sourceUrl = r.source || sourceDocumentUrl(document);
+  if (sourceUrl) add("Source", sourceUrl, el("a", { href: sourceUrl, target: "_blank", rel: "noopener" }, document?.publisher || "Manufacturer document"));
+  add("Document", [
+    document?.documentNumber,
+    r.sourceRevision || document?.revision,
+    r.sourcePage ? `p. ${r.sourcePage}` : null,
+    r.sourceTable ? `table ${r.sourceTable}` : null,
+  ].filter(Boolean).join(" · "));
+  if (r.interpolationAllowed || r.interpolationMethod && r.interpolationMethod !== "none") {
+    add("Interpolation", `Allowed${r.interpolationMethod ? ` · ${r.interpolationMethod}` : ""}`);
+  } else if (r.interpolationAllowed === false) add("Interpolation", "Not permitted by this recipe");
+  if (r.derived) add("Derived values", r.derivationNotes || "One or more values were calculated from the source.");
+  return el("details", { class: "recipe-technical" }, [
+    el("summary", {}, "Recipe details and source"),
+    el("dl", { class: "technical-spec-list" }, rows),
+  ]);
+}
+
 // default following steps (after the datasheet develop step) per process. Times
 // are editable defaults, not datasheet claims.
 function defaultChain(process, developStep) {
@@ -78,7 +161,7 @@ export function openDevTimer(ctx, opts = {}) {
 
   // -- setup phase -----------------------------------------------------------
   function renderSetup() {
-    const sel = { film: null, recipe: null, tempC10: null, steps: null, manualDevSec: null };
+    const sel = { film: null, recipe: null, tempC10: null, actualTempC10: null, steps: null, manualDevSec: null, publishedDevSec: null };
     body.replaceChildren();
     const head = el("div", { class: "logger-top row between" }, [
       el("strong", {}, "Start development"),
@@ -107,7 +190,10 @@ export function openDevTimer(ctx, opts = {}) {
       const recWrap = el("div", { class: "devtimer-list" });
       for (const r of recipes) {
         const temps = publishedTemps(r).map((t) => `${c10ToC(t)}°`).join(", ");
-        recWrap.append(el("button", { class: "devtimer-opt" + (sel.recipe === r ? " on" : ""), onclick: () => { sel.recipe = r; sel.tempC10 = defaultTemp(r); sel.manualDevSec = null; renderStage(); } },
+        recWrap.append(el("button", { class: "devtimer-opt" + (sel.recipe === r ? " on" : ""), onclick: () => {
+          sel.recipe = r; sel.tempC10 = defaultTemp(r); sel.actualTempC10 = sel.tempC10;
+          sel.manualDevSec = null; sel.publishedDevSec = null; renderStage();
+        } },
           [el("span", {}, recipeLabel(r)), el("span", { class: "muted small" }, `${r.process.toUpperCase()} · ${temps}`)]));
       }
       stage.append(el("h4", { class: "stat-h" }, "Recipe"), recWrap);
@@ -116,6 +202,8 @@ export function openDevTimer(ctx, opts = {}) {
       // temperature + resolved develop time
       const r = sel.recipe;
       const tempIn = el("input", { type: "number", step: "0.1", class: "date-input", value: String(c10ToC(sel.tempC10)) });
+      const actualTempIn = el("input", { type: "number", step: "0.1", class: "date-input", value: String(c10ToC(sel.actualTempC10 ?? sel.tempC10)) });
+      let actualTemperatureEdited = false;
       const devLine = el("div", { class: "devtimer-devtime" });
       const manualWrap = el("div");
       const manualIn = el("input", { type: "text", class: "date-input", placeholder: "m:ss (e.g. 6:45)" });
@@ -131,10 +219,12 @@ export function openDevTimer(ctx, opts = {}) {
         manualWrap.replaceChildren();
         if (datasheet != null) {
           sel.manualDevSec = datasheet;
+          sel.publishedDevSec = datasheet;
           devLine.className = "devtimer-devtime ok";
           devLine.textContent = `Develop ${fmtMMSS(datasheet)} at ${c10ToC(sel.tempC10)}°C (datasheet)`;
           startBtn.disabled = false;
         } else {
+          sel.publishedDevSec = null;
           const range = publishedTemps(r).map((t) => `${c10ToC(t)}°`).join(", ");
           devLine.className = "devtimer-devtime warn";
           devLine.textContent = `No datasheet time at ${c10ToC(sel.tempC10)}°C. Datasheet covers: ${range}. Enter your own time:`;
@@ -144,20 +234,38 @@ export function openDevTimer(ctx, opts = {}) {
           startBtn.disabled = parsed == null;
         }
       };
-      tempIn.addEventListener("input", recompute);
+      tempIn.addEventListener("input", () => {
+        recompute();
+        if (!actualTemperatureEdited) {
+          sel.actualTempC10 = sel.tempC10;
+          actualTempIn.value = String(c10ToC(sel.tempC10));
+        }
+      });
+      actualTempIn.addEventListener("input", () => {
+        actualTemperatureEdited = true;
+        sel.actualTempC10 = cToC10(parseFloat(actualTempIn.value) || c10ToC(sel.tempC10));
+      });
       manualIn.addEventListener("input", () => { sel.manualDevSec = parseMMSS(manualIn.value); startBtn.disabled = sel.manualDevSec == null; });
 
       startBtn.addEventListener("click", () => {
         cues.unlock();
         const developStep = { name: "Develop", role: "developer", seconds: sel.manualDevSec, agitation: r.agitation || null };
         const steps = defaultChain(r.process, developStep).map((s) => ({ ...s, actualSec: null }));
+        const document = recipeDocument(r);
         const state = {
           film: `${sel.film.make} ${sel.film.name}`,
           developer: recipeLabel(r),
           dilution: r.dilution || null,
           process: r.process,
           tempC10: sel.tempC10,
+          actualTempC10: sel.actualTempC10 ?? sel.tempC10,
+          publishedTimeSeconds: sel.publishedDevSec,
+          recipe: recipeUri(ctx.store, r),
           source: r.source,
+          sourceDocument: document,
+          sourceSpec: recipeSourceSpec(r, document),
+          pushPull: r.pushPull || null,
+          tankType: r.tankType || "tank",
           chemistry: chemSel.value || null,
           rolls: opts.rolls || [],
           steps, index: 0, running: false, endsAt: null, remaining: steps[0].seconds,
@@ -168,8 +276,12 @@ export function openDevTimer(ctx, opts = {}) {
 
       stage.append(
         el("h4", { class: "stat-h" }, "Temperature"),
-        el("div", { class: "row", style: "gap:10px;align-items:center" }, [tempIn, el("span", { class: "muted small" }, "°C")]),
+        el("div", { class: "devtimer-temperature-grid" }, [
+          el("label", { class: "field" }, [el("span", {}, "Recipe setpoint °C"), tempIn]),
+          el("label", { class: "field" }, [el("span", {}, "Actual temperature °C"), actualTempIn]),
+        ]),
         devLine, manualWrap,
+        recipeTechnicalDetails(r),
         chems.length ? el("label", { class: "field" }, [el("span", {}, "Chemistry (optional — tracks usage)"), chemSel]) : null,
         el("p", { class: "muted small" }, "Following steps (stop / fix / wash) are editable defaults, not datasheet times."),
         startBtn,
@@ -265,12 +377,21 @@ export function openDevTimer(ctx, opts = {}) {
       const dev = state.steps[0];
       const rec = {
         process: state.process,                 // faithful (bw / monobath / c41 / …)
-        temperature: { unit: "celsius", value: state.tempC10, scale: 10 },
+        recipe: state.recipe || undefined,
+        sourceDocument: state.sourceDocument || undefined,
+        sourceSpec: state.sourceSpec || undefined,
+        temperature: { unit: "celsius", value: state.actualTempC10 ?? state.tempC10, scale: 10 },
+        temperatureSetpoint: { unit: "celsius", value: state.tempC10, scale: 10 },
+        actualTemperature: { unit: "celsius", value: state.actualTempC10 ?? state.tempC10, scale: 10 },
         timeSeconds: dev.actualSec ?? dev.seconds,
+        publishedTimeSeconds: state.publishedTimeSeconds ?? undefined,
+        actualTimeSeconds: dev.actualSec ?? dev.seconds,
         dilution: state.dilution || undefined,
         chemistry: state.chemistry || undefined,
-        tankType: "tank",
+        tankType: state.tankType || "tank",
         agitation: dev.agitation?.note || undefined,
+        agitationScheme: dev.agitation || undefined,
+        pushPull: state.pushPull || undefined,
         filmRolls: state.rolls?.length ? state.rolls : undefined,
         startedAt: state.startedAt,
         finishedAt: new Date().toISOString(),

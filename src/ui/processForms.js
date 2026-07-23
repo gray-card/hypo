@@ -60,6 +60,18 @@ function readText(inputs) {
   return out;
 }
 
+function readJson(input, label) {
+  const text = input?.value?.trim();
+  if (!text) return undefined;
+  try {
+    const value = JSON.parse(text);
+    if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error();
+    return value;
+  } catch {
+    throw new Error(`${label} must be a valid JSON object`);
+  }
+}
+
 function readScaled(inputs, keys) {
   const out = {};
   for (const key of keys) {
@@ -130,6 +142,39 @@ export function buildProcessSessionForm(processKind, store, initial = {}) {
     inputs.tankType = el("select", {}, [el("option", { value: "" }, "(none)"), ...TANK_TYPES.map((v) => el("option", { value: v }, enumLabel(v)))]);
     inputs.tankType.value = initial.tankType || "";
     nodes.push(field("Tank type", inputs.tankType));
+
+    // Less commonly edited recipe provenance and observed-vs-published values
+    // stay available without crowding the normal manual-session form.
+    inputs.recipe = el("select", {}, [
+      el("option", { value: "" }, "(none)"),
+      ...(store.catalog?.devRecipe || []).map((item) => {
+        const r = item.value || {};
+        const film = [r.filmMake, r.filmName].filter(Boolean).join(" ");
+        const developer = [r.developerMake, r.developerName, r.dilution].filter(Boolean).join(" ");
+        return el("option", { value: item.uri }, `${film} — ${developer}${r.ei ? ` · EI ${r.ei}` : ""}`);
+      }),
+    ]);
+    inputs.recipe.value = initial.recipe || "";
+    const setpoint = inputField("Recipe setpoint °C", "temperatureSetpointC", measureToDisplay(initial.temperatureSetpoint || initial.temperature));
+    inputs.temperatureSetpointC = setpoint.input;
+    const actualTemp = inputField("Actual temperature °C", "actualTemperatureC", measureToDisplay(initial.actualTemperature || initial.temperature));
+    inputs.actualTemperatureC = actualTemp.input;
+    const publishedTime = inputField("Published time (seconds)", "publishedTimeSeconds", initial.publishedTimeSeconds ?? initial.timeSeconds ?? "");
+    inputs.publishedTimeSeconds = publishedTime.input;
+    const actualTime = inputField("Actual time (seconds)", "actualTimeSeconds", initial.actualTimeSeconds ?? initial.timeSeconds ?? "");
+    inputs.actualTimeSeconds = actualTime.input;
+    const agitationScheme = textareaField("Structured agitation (JSON)", "agitationScheme", initial.agitationScheme ? JSON.stringify(initial.agitationScheme, null, 2) : "");
+    inputs.agitationScheme = agitationScheme.input;
+    const sourceDocument = textareaField("Source document (JSON)", "sourceDocument", initial.sourceDocument ? JSON.stringify(initial.sourceDocument, null, 2) : "");
+    inputs.sourceDocument = sourceDocument.input;
+    const sourceSpec = textareaField("Exact source location (JSON)", "sourceSpec", initial.sourceSpec ? JSON.stringify(initial.sourceSpec, null, 2) : "");
+    inputs.sourceSpec = sourceSpec.input;
+    nodes.push(el("details", { class: "process-technical" }, [
+      el("summary", {}, "Recipe, source, and observed values"),
+      field("Recipe record", inputs.recipe),
+      setpoint.wrap, actualTemp.wrap, publishedTime.wrap, actualTime.wrap,
+      agitationScheme.wrap, sourceDocument.wrap, sourceSpec.wrap,
+    ]));
     inputs.stopBathChemistry = developerOrChemistrySelect(initial.stopBathChemistry || "", { roles: ["stop"] });
     nodes.push(field("Stop bath (chemistry)", inputs.stopBathChemistry));
     inputs.fixerChemistry = developerOrChemistrySelect(initial.fixerChemistry || "", { roles: ["fixer"] });
@@ -177,6 +222,15 @@ export function buildProcessSessionForm(processKind, store, initial = {}) {
       read() {
         const ws = inputs.workingSolution.value;
         if (!ws) throw new Error("Working solution is required");
+        const summaryTemperature = inputs.temperatureC.value.trim()
+          ? displayToMeasure(inputs.temperatureC.value.trim(), "celsius") : undefined;
+        const setpointTemperature = inputs.temperatureSetpointC.value.trim()
+          ? displayToMeasure(inputs.temperatureSetpointC.value.trim(), "celsius") : summaryTemperature;
+        const observedTemperature = inputs.actualTemperatureC.value.trim()
+          ? displayToMeasure(inputs.actualTemperatureC.value.trim(), "celsius") : summaryTemperature;
+        const summaryTime = parseInt(inputs.timeSeconds.value, 10);
+        const publishedTimeSeconds = parseInt(inputs.publishedTimeSeconds.value, 10);
+        const actualTimeSeconds = parseInt(inputs.actualTimeSeconds.value, 10);
         const steps = stepRows.map((r) => {
           const s = { role: r.role.value };
           if (r.chem.value) s.chemistry = r.chem.value;
@@ -191,12 +245,22 @@ export function buildProcessSessionForm(processKind, store, initial = {}) {
         return {
           ...resolveWorkingSolutionUri(ws, store),
           process: inputs.process.value,
+          recipe: inputs.recipe.value || undefined,
           filmRolls: inputs.filmRoll.value ? [inputs.filmRoll.value] : undefined,
           provenance: { source: "manual", assertedAt: new Date().toISOString() },
           dilution: inputs.dilution.value.trim() || undefined,
           ...readMeasure(inputs, { temperature: ["temperatureC", "celsius"] }),
           ...readInts(inputs, ["timeSeconds"]),
+          temperatureSetpoint: setpointTemperature,
+          actualTemperature: observedTemperature,
+          publishedTimeSeconds: Number.isFinite(publishedTimeSeconds)
+            ? publishedTimeSeconds : (Number.isFinite(summaryTime) ? summaryTime : undefined),
+          actualTimeSeconds: Number.isFinite(actualTimeSeconds)
+            ? actualTimeSeconds : (Number.isFinite(summaryTime) ? summaryTime : undefined),
           agitation: inputs.agitation.value.trim() || undefined,
+          agitationScheme: readJson(inputs.agitationScheme, "Structured agitation"),
+          sourceDocument: readJson(inputs.sourceDocument, "Source document"),
+          sourceSpec: readJson(inputs.sourceSpec, "Exact source location"),
           tankType: inputs.tankType.value || undefined,
           stopBathChemistry: inputs.stopBathChemistry.value || undefined,
           fixerChemistry: inputs.fixerChemistry.value || undefined,

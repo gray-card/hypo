@@ -21,6 +21,11 @@ import { captureGeolocation } from "../geo.js";
 import * as outbox from "../outbox.js";
 import { openDevTimer, activeDevRun } from "./devTimer.js";
 import { computeLintFindings } from "../lint.js";
+import cameraTypeLexicon from "../../lexicons/app/graycard/catalog/cameraType.json";
+import lensTypeLexicon from "../../lexicons/app/graycard/catalog/lensType.json";
+import filmStockLexicon from "../../lexicons/app/graycard/catalog/filmStock.json";
+import developerTypeLexicon from "../../lexicons/app/graycard/catalog/developerType.json";
+import chemistryTypeLexicon from "../../lexicons/app/graycard/catalog/chemistryType.json";
 import {
   buildApertureOptions, buildShutterOptions, STOP_FRACTIONS,
   usesExactApertureSteps, usesExactShutterSteps,
@@ -310,14 +315,14 @@ function typeAssetFields(typeKind, typeValue) {
       if (up) out.image = { file: up.blob, mimeType: up.mimeType };
       else if (url) out.image = { url };
       else if (typeValue?.image && !hadImageUrl) out.image = typeValue.image;   // keep an upload
-      else out.image = undefined;
+      else if (typeValue) out.image = undefined;
 
       const dup = await upload(dsFile, "application/pdf");
       const dsu = dsUrl.value.trim();
       if (dup) out.datasheet = { file: dup.blob, mimeType: dup.mimeType };
       else if (dsu) out.datasheet = { url: dsu };
       else if (typeValue?.datasheet && !hadSheetUrl) out.datasheet = typeValue.datasheet;
-      else out.datasheet = undefined;
+      else if (typeValue) out.datasheet = undefined;
       return out;
     },
   };
@@ -326,6 +331,174 @@ function typeAssetFields(typeKind, typeValue) {
 // the type fields that describe the model's assets rather than its identity
 const ASSET_KEYS = ["image", "datasheet"];
 const sameAsset = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+
+// Curated catalogs grow faster than the add/edit form. Keep the core identity
+// questions short, then make every other populated catalog property inspectable
+// here. The advanced JSON editor is deliberate: nested manufacturer structures
+// (reciprocity points, optical construction, bath sequences, source citations)
+// otherwise require a large, brittle form for each product family.
+const TECH_LOCAL_KEYS = new Set(["source", "wikidata"]);
+const TECH_SEPARATE_KEYS = new Set(["image", "datasheet", "datasheetUrl", "createdAt", "updatedAt"]);
+const TECH_SCHEMA_KEYS = Object.fromEntries(Object.entries({
+  cameraType: cameraTypeLexicon,
+  lensType: lensTypeLexicon,
+  filmStock: filmStockLexicon,
+  developerType: developerTypeLexicon,
+  chemistryType: chemistryTypeLexicon,
+}).map(([kind, lexicon]) => [kind, new Set(Object.keys(lexicon.defs.main.record.properties))]));
+const TECH_LABELS = {
+  aka: "Also sold as",
+  autofocusSystem: "Autofocus system",
+  batteryTypes: "Battery types",
+  capacity: "Capacity",
+  closestFocus: "Closest focusing distance",
+  cropFactor: "Crop factor",
+  diaphragmBladeCount: "Diaphragm blades",
+  dimensions: "Dimensions",
+  dilutions: "Supported dilutions",
+  discontinued: "Discontinued",
+  dxNumber: "DX number",
+  effectiveMegapixels: "Effective megapixels",
+  exposureCompensationMin: "Exposure compensation minimum",
+  exposureCompensationMax: "Exposure compensation maximum",
+  exposureLatitude: "Exposure latitude",
+  filterThreadDiameter: "Filter thread diameter",
+  flashSyncSpeed: "Flash sync speed",
+  grainRms: "RMS granularity",
+  imageCircleDiameter: "Image circle diameter",
+  kitBathSequence: "Kit bath sequence",
+  maxReproductionRatio: "Maximum reproduction ratio",
+  meteringModes: "Metering modes",
+  minimumConcentratePerRoll: "Minimum concentrate per roll",
+  mixingInstructions: "Mixing instructions",
+  mounts: "Available mounts",
+  rawFormats: "RAW formats",
+  reciprocityPoints: "Reciprocity corrections",
+  releasedYear: "Released",
+  resolvingPowerTests: "Resolving power",
+  shelfLife: "Shelf life",
+  shelfLives: "Shelf lives",
+  spectralRangeNm: "Spectral range",
+  spectralResponse: "Spectral response",
+  stabilizationStops: "Stabilization",
+  storageMedia: "Storage media",
+  storageTemperatureRange: "Storage temperature",
+  compatibleFilmTypes: "Compatible film types",
+  compatibleMaterials: "Compatible materials",
+  compatibleProcesses: "Compatible processes",
+  colorBalanceKelvin: "Color balance (K)",
+  granularityMeasurements: "Granularity measurements",
+  recommendedRecipes: "Recommended recipes",
+  sdsDocuments: "Safety data sheets",
+  spectralRangeMaxNm: "Spectral range maximum",
+  spectralRangeMinNm: "Spectral range minimum",
+  spectralSamples: "Spectral response samples",
+  technicalDocuments: "Technical documents",
+  temperatureRanges: "Temperature ranges",
+  viewfinderCoverage: "Viewfinder coverage",
+  viewfinderMagnification: "Viewfinder magnification",
+};
+const techLabel = (key) => TECH_LABELS[key] || key
+  .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+  .replace(/[_-]+/g, " ")
+  .replace(/^./, (c) => c.toUpperCase());
+const isPopulated = (value) => value != null
+  && value !== ""
+  && (!Array.isArray(value) || value.length > 0)
+  && (typeof value !== "object" || Array.isArray(value) || Object.keys(value).length > 0);
+const TECH_SCALED_KEYS = new Set([
+  "cropFactor", "effectiveMegapixels", "exposureCompensationMin", "exposureCompensationMax",
+  "maxReproductionRatio", "stabilizationStops", "viewfinderMagnification",
+]);
+const techValueText = (value, key) => {
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "number" && key === "flashSyncSpeed") return shutterScaledToDisplay(value);
+  if (typeof value === "number" && key === "viewfinderCoverage") return `${scaledToDisplay(value) * 100}%`;
+  if (typeof value === "number" && TECH_SCALED_KEYS.has(key)) return String(scaledToDisplay(value));
+  if (Array.isArray(value) && value.every((v) => v == null || typeof v !== "object")) {
+    return value.map((v) => String(v)).join(", ");
+  }
+  if (value && typeof value === "object") {
+    if (typeof value.value === "number" && value.unit) {
+      return `${value.value / (value.scale || 1)} ${enumLabel(value.unit)}`;
+    }
+    if (value.uri) return value.label ? `${value.label} (${value.uri})` : value.uri;
+    if (value.url) return value.url;
+    return JSON.stringify(value, null, 2);
+  }
+  return String(value);
+};
+function technicalPayload(typeKind, value = {}, schemaOnly = false) {
+  const identity = new Set((TYPE_IDENTITY[typeKind] || []).map(([key]) => key));
+  const schema = TECH_SCHEMA_KEYS[typeKind];
+  const out = {};
+  for (const [key, fieldValue] of Object.entries(value || {})) {
+    if (key.startsWith("$")) continue; // atproto discriminator/transport metadata
+    if (schemaOnly && schema && !schema.has(key)) continue;
+    if (identity.has(key) || TECH_SEPARATE_KEYS.has(key) || TECH_LOCAL_KEYS.has(key) || !isPopulated(fieldValue)) continue;
+    out[key] = fieldValue;
+  }
+  return out;
+}
+function normalizePresetTechnical(typeKind, value) {
+  const out = { ...value };
+  // Lensfun exposes these camera quantities in display units, while the
+  // atproto fields use the shared 1e6 scaled-integer representation.
+  if (typeKind === "cameraType") {
+    for (const key of ["cropFactor", "effectiveMegapixels"]) {
+      if (typeof out[key] === "number" && Math.abs(out[key]) < 1000) out[key] = displayToScaled(out[key]);
+    }
+  }
+  return out;
+}
+function technicalFields(typeKind, initial = {}) {
+  let payload = technicalPayload(typeKind, initial);
+  const rows = el("dl", { class: "technical-spec-list" });
+  const empty = el("p", { class: "muted small technical-spec-empty" }, "No technical specifications have been recorded yet.");
+  const editor = el("textarea", {
+    class: "technical-spec-json",
+    rows: "12",
+    spellcheck: "false",
+    "aria-label": "Technical specifications JSON",
+  });
+  const view = el("div", { class: "technical-spec-view" }, [rows, empty]);
+  const render = (next = payload) => {
+    payload = technicalPayload(typeKind, next);
+    rows.replaceChildren(...Object.entries(payload).sort(([a], [b]) => techLabel(a).localeCompare(techLabel(b))).flatMap(([key, value]) => [
+      el("dt", {}, techLabel(key)),
+      el("dd", { class: value && typeof value === "object" ? "technical-spec-structured" : "" }, techValueText(value, key)),
+    ]));
+    empty.classList.toggle("hidden", Object.keys(payload).length > 0);
+    editor.value = JSON.stringify(payload, null, 2);
+  };
+  render();
+  const advanced = el("details", { class: "technical-spec-edit" }, [
+    el("summary", {}, "Edit structured data (advanced)"),
+    el("p", { class: "muted small" }, "Edit the JSON object below. Identity, picture, and datasheet fields are managed above."),
+    editor,
+  ]);
+  const details = el("details", { class: "technical-specs" }, [
+    el("summary", {}, "Technical specifications"),
+    view,
+    advanced,
+  ]);
+  return {
+    node: details,
+    set(next) { render(normalizePresetTechnical(typeKind, technicalPayload(typeKind, next, true))); },
+    read() {
+      const text = editor.value.trim();
+      if (!text) return {};
+      let parsed;
+      try { parsed = JSON.parse(text); } catch {
+        throw new Error("Technical specifications must be valid JSON");
+      }
+      if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
+        throw new Error("Technical specifications must be a JSON object");
+      }
+      return technicalPayload(typeKind, parsed, true);
+    },
+  };
+}
 
 export async function resolveTypeForSave(typeKind, typeRec, wikidata, kind, existing) {
   const now = new Date().toISOString();
@@ -346,14 +519,15 @@ export async function resolveTypeForSave(typeKind, typeRec, wikidata, kind, exis
       const merged = { ...match.value, ...typeRec, updatedAt: now };
       return saveRecord(ctx.agent, ctx.did, NS.catalog[typeKind], merged, match);
     }
-    // Reusing an existing type must still land an explicit picture/datasheet edit,
-    // or the change the user just made would silently vanish.
-    if (ASSET_KEYS.some((k) => k in typeRec && !sameAsset(typeRec[k], match.value[k]))) {
-      const merged = { ...match.value, updatedAt: now };
-      for (const k of ASSET_KEYS) {
-        if (!(k in typeRec)) continue;
-        if (typeRec[k] === undefined) delete merged[k]; else merged[k] = typeRec[k];
-      }
+    // Reusing an existing type must still land submitted technical fields and
+    // explicit asset edits, or choosing an enriched preset would silently drop
+    // everything except the identity used for matching.
+    const submitted = { ...typeRec };
+    delete submitted.createdAt;
+    delete submitted.updatedAt;
+    if (Object.entries(submitted).some(([k, v]) => !sameAsset(v, match.value[k]))) {
+      const merged = { ...match.value, ...submitted, updatedAt: now };
+      for (const k of ASSET_KEYS) if (k in submitted && submitted[k] === undefined) delete merged[k];
       return saveRecord(ctx.agent, ctx.did, NS.catalog[typeKind], merged, match);
     }
     return match.uri;
@@ -375,7 +549,8 @@ export async function resolveTypeForSave(typeKind, typeRec, wikidata, kind, exis
 
 // The one "add gear" flow. Users describe the gear ("what is it?") and their
 // copy ("your copy"). The catalog type is found-or-created behind the scenes.
-export function openAddGear(kind, onDone, prefill = {}, existing = null) {
+export function openAddGear(kind, onDone, prefill = {}, existing = null, opts = {}) {
+  const guided = Boolean(opts.guided);
   const typeKind = TYPE_OF_INSTANCE[kind];
   const preset = typeKind ? PRESETS[typeKind] : null;
   const typeInputs = {};
@@ -383,6 +558,11 @@ export function openAddGear(kind, onDone, prefill = {}, existing = null) {
   const instInputs = {};
   const nodes = [];
   let labLocF = null;                       // map location control for labs
+  const curTypeUri = typeKind ? existing?.value?.[TYPE_KEY[kind]] || null : null;
+  const curType = curTypeUri
+    ? (ctx.store.catalog[typeKind] || []).find((t) => t.uri === curTypeUri)?.value || null
+    : null;
+  let typeTechnical = null;
 
   // ----- "what is it?" (identity → auto type) -----
   let matchedPreset = null;
@@ -390,6 +570,21 @@ export function openAddGear(kind, onDone, prefill = {}, existing = null) {
   if (typeKind) {
     nodes.push(el("h3", { class: "modal-sub" }, kind === "filmRoll" ? "Which film?" : `Which ${kindLabel(kind).toLowerCase()}?`));
     for (const [key, label, req] of TYPE_IDENTITY[typeKind]) {
+      const guidedIdentity = {
+        cameraType: ["make", "model", "mount", "format", "category"],
+        lensType: ["make", "model", "mount", "focalLengthMin", "focalLengthMax", "maxAperture"],
+        filmStock: ["brand", "name", "iso", "filmType", "process"],
+        developerType: ["brand", "name", "process", "form", "defaultDilution", "defaultTemperature"],
+        chemistryType: ["brand", "name", "role", "process", "form", "defaultDilution"],
+        scannerType: ["make", "model", "scannerKind"],
+        filterType: ["make", "name", "filterKind", "threadDiameterMm"],
+        lab: ["name", "website", "location"],
+        enlargerType: ["make", "model", "maxFormat", "headType"],
+        enlargingLensType: ["make", "model", "focalLengthMm", "coversFormat"],
+        printerType: ["make", "model", "printerTechnology"],
+        lightSourceType: ["make", "model", "lightTechnology"],
+      }[typeKind];
+      if (guided && guidedIdentity && !guidedIdentity.includes(key)) continue;
       const { node, input } = fieldControl(key, label + (req ? " *" : ""));
       typeInputs[key] = input;
       typeNodes[key] = node;
@@ -419,8 +614,13 @@ export function openAddGear(kind, onDone, prefill = {}, existing = null) {
       // set a field, teaching a <select> the value if it is not already an option
       const setField = (key, v) => {
         const inp = typeInputs[key];
-        if (inp == null || v == null || typeof v === "object") return;
-        const sv = String(v);
+        if (inp == null || v == null) return;
+        let displayValue = v;
+        if (key === "shutterSpeedSteps" && Array.isArray(v)) displayValue = formatScaledList(v, shutterScaledToDisplay);
+        else if (key === "apertureSteps" && Array.isArray(v)) displayValue = formatScaledList(v, scaledToDisplay);
+        else if (["minShutterSpeed", "maxShutterSpeed"].includes(key) && typeof v === "number") displayValue = shutterScaledToDisplay(v);
+        else if (typeof v === "object") return;
+        const sv = String(displayValue);
         if (inp.tagName === "SELECT" && ![...inp.options].some((o) => o.value === sv)) {
           inp.append(el("option", { value: sv }, enumLabel(sv)));
         }
@@ -451,6 +651,7 @@ export function openAddGear(kind, onDone, prefill = {}, existing = null) {
         if (!it) return;
         matchedPreset = it;
         for (const [k, v] of Object.entries(it)) setField(k, v);
+        typeTechnical?.set({ ...(curType || {}), ...it });
         if (akaHint) {
           const aka = Array.isArray(it.aka) ? it.aka : [];
           akaHint.textContent = aka.length ? `Same film, also sold as ${aka.join(", ")}.` : "";
@@ -463,7 +664,7 @@ export function openAddGear(kind, onDone, prefill = {}, existing = null) {
 
   // lens catalog can never be fully complete, so let the user suggest a missing
   // one: opens a prefilled GitHub issue against the curated database.
-  if (kind === "lens") {
+  if (kind === "lens" && !guided) {
     const suggest = el("button", { class: "linkbtn small", type: "button" }, [icon("plus", 13), " Can't find your lens? Suggest it"]);
     suggest.addEventListener("click", () => {
       const f = {};
@@ -477,17 +678,25 @@ export function openAddGear(kind, onDone, prefill = {}, existing = null) {
   // currently points at, so editing your copy can also fix the model's picture.
   // Belongs with the identity fields above: it describes the model, not your copy.
   let typeAssets = null;
-  if (typeKind) {
-    const curTypeUri = existing?.value?.[TYPE_KEY[kind]] || null;
-    const curType = curTypeUri
-      ? (ctx.store.catalog[typeKind] || []).find((t) => t.uri === curTypeUri)?.value || null
-      : null;
+  if (typeKind && !guided) {
     typeAssets = typeAssetFields(typeKind, curType);
     nodes.push(...typeAssets.nodes);
+    typeTechnical = technicalFields(typeKind, curType || prefill);
+    nodes.push(typeTechnical.node);
   }
 
   // ----- "your copy" (the instance) -----
-  const instFields = INSTANCE_FIELDS[kind] || [["nickname", "Nickname"]];
+  const allInstFields = INSTANCE_FIELDS[kind] || [["nickname", "Nickname"]];
+  const guidedInstanceKeys = {
+    camera: ["nickname"], lens: ["nickname"], filter: ["nickname", "threadSize"],
+    developer: ["nickname", "dilution"], chemistry: ["nickname", "dilution"],
+    scanner: ["nickname"], filmStockpile: ["quantity", "format", "storage"],
+    labAccount: ["nickname"], enlarger: ["nickname"], enlargingLens: ["nickname"],
+    printer: ["nickname"], lightSource: ["nickname"], storageLocation: ["name", "storage"],
+  }[kind];
+  const instFields = guided && guidedInstanceKeys
+    ? allInstFields.filter(([key]) => guidedInstanceKeys.includes(key))
+    : allInstFields;
   if (typeKind) {
     const sub = kind === "filmRoll" ? "This roll (optional)"
       : kind === "filmStockpile" ? "In reserve"
@@ -517,10 +726,10 @@ export function openAddGear(kind, onDone, prefill = {}, existing = null) {
     inp.value = sv;
   }
 
-  const photoInput = el("input", { type: "file", accept: "image/*" });
-  nodes.push(field("Photo (optional, a stock image is used otherwise)", photoInput));
+  const photoInput = guided ? null : el("input", { type: "file", accept: "image/*" });
+  if (photoInput) nodes.push(field("Photo (optional, a stock image is used otherwise)", photoInput));
 
-  openModal(`${existing ? "Edit" : "Add"} ${kindLabel(kind).toLowerCase()}`, nodes, async () => {
+  return openModal(`${existing ? "Edit" : "Add"} ${kindLabel(kind).toLowerCase()}`, nodes, async () => {
     let typeUri = null;
     if (typeKind) {
       const typeRec = readFormFields(typeInputs, {
@@ -531,14 +740,13 @@ export function openAddGear(kind, onDone, prefill = {}, existing = null) {
       });
       const req = TYPE_IDENTITY[typeKind].filter(([, , r]) => r).map(([k]) => k);
       if (req.some((k) => !typeInputs[k]?.value.trim())) throw new Error("Please fill the required fields");
-      // carry the datasheet-farmed spec fields from a matched film-stock preset
-      // onto the saved record, so the enriched data (formats, base, grain, source…)
-      // isn't lost — the add form only has inputs for the core identity fields.
-      if (matchedPreset && typeKind === "filmStock") {
-        for (const k of ["formats", "base", "spectralSensitivity", "grainRms", "resolvingPowerLpMm", "exposureLatitude", "reciprocity", "dxNumber", "discontinued", "releasedYear", "datasheetUrl", "aka"]) {
-          if (matchedPreset[k] != null && typeRec[k] == null) typeRec[k] = matchedPreset[k];
-        }
-      }
+      // The disclosure carries every non-identity field from the selected preset
+      // (including nested structures) instead of maintaining a film-only list.
+      // Core form values are assigned last and therefore win.
+      if (typeTechnical) Object.assign(typeRec, typeTechnical.read(), typeRec);
+      // filmStock retains this legacy URL for compatibility; all kinds also save
+      // the schema-native datasheet assetRef below.
+      if (matchedPreset?.datasheetUrl && typeKind === "filmStock") typeRec.datasheetUrl = matchedPreset.datasheetUrl;
       // matchedPreset tracks the current model selection, so its QID is valid.
       const wikidata = matchedPreset?.wikidata || null;
       if (typeKind === "lab") {
@@ -547,6 +755,19 @@ export function openAddGear(kind, onDone, prefill = {}, existing = null) {
       }
       // the model's own picture/datasheet, uploaded here if the user chose files
       if (typeAssets) Object.assign(typeRec, await typeAssets.read());
+      // Presets store manufacturer links as the legacy flat `datasheetUrl`
+      // because filmStock historically exposed that field directly. Every
+      // catalog lexicon now has the richer `datasheet` assetRef, so persist a
+      // selected preset's link there for cameras, lenses, developers, chemistry,
+      // and film alike. An explicit link/upload from the form, or an asset already
+      // stored on the matching shared catalog record, wins.
+      const submittedLabel = catalogLabel(typeKind, typeRec).toLowerCase().trim();
+      const knownType = (ctx.store.catalog[typeKind] || []).find(
+        (item) => catalogLabel(typeKind, item.value).toLowerCase().trim() === submittedLabel,
+      );
+      if (matchedPreset?.datasheetUrl && !typeRec.datasheet && !knownType?.value?.datasheet) {
+        typeRec.datasheet = { url: matchedPreset.datasheetUrl };
+      }
       // resolve (and, on rename, edit-in-place or dedup) without orphaning a type.
       typeUri = await resolveTypeForSave(typeKind, typeRec, wikidata, kind, existing);
     }
@@ -554,7 +775,7 @@ export function openAddGear(kind, onDone, prefill = {}, existing = null) {
     // required instance fields (e.g. storageLocation name)
     if (instFields.some(([k, , r]) => r && !instInputs[k]?.value.trim())) throw new Error("Please fill the required fields");
     if (typeUri) rec[TYPE_KEY[kind]] = typeUri;
-    const file = photoInput.files?.[0];
+    const file = photoInput?.files?.[0];
     if (file) {
       const bytes = new Uint8Array(await file.arrayBuffer());
       const up = await ctx.agent.com.atproto.repo.uploadBlob(bytes, { encoding: file.type || "image/jpeg" });
@@ -572,7 +793,7 @@ export function openAddGear(kind, onDone, prefill = {}, existing = null) {
     }
     ctx.store = await loadStore(ctx.agent, ctx.did);
     onDone?.();
-  });
+  }, { onClose: opts.onClose });
 }
 
 // kept name for callers that quick-add gear (editor photo cards, etc.)
@@ -580,7 +801,7 @@ export const openCreateInstanceModal = (kind, onDone) => openAddGear(kind, onDon
 
 // Edit an existing copy. Prefill the form from the instance and its catalog
 // type, then update the same record in place (create is reused for the layout).
-export function openEditGear(kind, item, onDone) {
+export function openEditGear(kind, item, onDone, opts = {}) {
   const typeKind = TYPE_OF_INSTANCE[kind];
   const prefill = { ...item.value };
   if (typeKind) {
@@ -600,7 +821,7 @@ export function openEditGear(kind, item, onDone) {
       Object.assign(prefill, conv);
     }
   }
-  openAddGear(kind, onDone, prefill, item);
+  return openAddGear(kind, onDone, prefill, item, opts);
 }
 
 function processChip(value) {

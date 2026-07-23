@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { initLibrary, refreshStore, openAddGear, openEditGear, renderLibrary, effectiveShootGear } from "../src/ui/library.js";
 import { NS } from "../src/graycard.js";
+import { PRESETS } from "../src/data/presets.js";
 import { mockAgent } from "./setup.js";
 
 let agent;
@@ -69,6 +70,25 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
     expect(format.value).toBe("full-frame-digital");
   });
 
+  it("round-trips schema-scaled shutter specifications through display controls", async () => {
+    const preset = PRESETS.cameraType.items.find((item) => item.make === "Canon" && item.model === "F-1");
+    expect(preset.minShutterSpeed).toBe(500);
+    expect(preset.shutterSpeedSteps?.length).toBeGreaterThan(2);
+    openAddGear("camera", () => {});
+    const modal = document.querySelector(".modal");
+    labelInput(modal, "Make").value = "Canon";
+    const model = labelInput(modal, "Model");
+    model.value = "F-1";
+    model.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(labelInput(modal, "Fastest shutter").value).toBe("1/2000");
+    expect(labelInput(modal, "Shutter steps").value).toContain("1/2000");
+    [...modal.querySelectorAll("button")].find((b) => b.textContent === "Save").click();
+    await vi.waitFor(() => expect(agent.created.length).toBe(2));
+    const type = agent.created.find((entry) => entry.collection === NS.catalog.cameraType);
+    expect(type.record.minShutterSpeed).toBe(500);
+    expect(type.record.shutterSpeedSteps).toEqual(preset.shutterSpeedSteps);
+  });
+
   it("auto-creates the catalog type behind the instance on save", async () => {
     const onDone = vi.fn();
     openAddGear("camera", onDone);
@@ -105,6 +125,134 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
     expect(agent.created[1].record.datasheet).toBeUndefined();
   });
 
+  it.each([
+    ["camera", "cameraType", "Make", "Nikon", "Model", "F3"],
+    ["lens", "lensType", "Make", "Canon", "Model", "Canon EF 50mm f/1.8 STM"],
+    ["developer", "developerType", "Brand", "Kodak", "Name", "D-76"],
+    ["chemistry", "chemistryType", "Brand", "Ilford", "Name", "Ilfostop"],
+    ["filmRoll", "filmStock", "Brand", "Kodak", "Name", "Portra 400"],
+  ])("persists the selected %s preset's manufacturer datasheet as an assetRef", async (
+    kind, typeKind, makeLabel, make, primaryLabel, primary,
+  ) => {
+    const preset = PRESETS[typeKind].items.find((item) =>
+      (item.make || item.brand) === make && (item.model || item.name) === primary);
+    expect(preset?.datasheetUrl).toMatch(/^https:\/\//);
+
+    openAddGear(kind, () => {});
+    const modal = document.querySelector(".modal");
+    labelInput(modal, makeLabel).value = make;
+    const primaryInput = labelInput(modal, primaryLabel);
+    primaryInput.value = primary;
+    primaryInput.dispatchEvent(new Event("input", { bubbles: true }));
+    [...modal.querySelectorAll("button")].find((b) => b.textContent === "Save").click();
+
+    await vi.waitFor(() => expect(agent.created.length).toBe(2));
+    const type = agent.created.find((c) => c.collection === NS.catalog[typeKind]);
+    expect(type?.record.datasheet).toEqual({ url: preset.datasheetUrl });
+  });
+
+  it("lets an explicit datasheet link override the selected preset link", async () => {
+    openAddGear("camera", () => {});
+    const modal = document.querySelector(".modal");
+    labelInput(modal, "Make").value = "Nikon";
+    const model = labelInput(modal, "Model");
+    model.value = "F3";
+    model.dispatchEvent(new Event("input", { bubbles: true }));
+    labelInput(modal, "Datasheet link").value = "https://example.test/my-f3-notes.pdf";
+    [...modal.querySelectorAll("button")].find((b) => b.textContent === "Save").click();
+
+    await vi.waitFor(() => expect(agent.created.length).toBe(2));
+    const type = agent.created.find((c) => c.collection === NS.catalog.cameraType);
+    expect(type.record.datasheet).toEqual({ url: "https://example.test/my-f3-notes.pdf" });
+  });
+
+  it.each([
+    ["camera", "cameraType", "Make", "Nikon", "Model", "F3", "batteryTypes", ["LR44", "SR44"], /Battery types/i],
+    ["lens", "lensType", "Make", "Canon", "Model", "Canon EF 50mm f/1.8 STM", "opticalElements", 6, /Optical elements/i],
+    ["developer", "developerType", "Brand", "Kodak", "Name", "D-76", "dilutions", [{ label: "1+1" }], /Supported dilutions/i],
+    ["chemistry", "chemistryType", "Brand", "Ilford", "Name", "Ilfostop", "kitBathSequence", [{ order: 1, role: "stop" }], /Kit bath sequence/i],
+    ["filmRoll", "filmStock", "Brand", "Kodak", "Name", "Portra 400", "reciprocityPoints", [{ meteredSeconds: 10, correctionStops: 0.5 }], /Reciprocity correction/i],
+  ])("surfaces and persists structured technical fields from a selected %s preset", async (
+    kind, typeKind, makeLabel, make, primaryLabel, primary, technicalKey, technicalValue, visibleLabel,
+  ) => {
+    const preset = PRESETS[typeKind].items.find((item) =>
+      (item.make || item.brand) === make && (item.model || item.name) === primary);
+    const prior = preset[technicalKey];
+    preset[technicalKey] = technicalValue;
+    try {
+      openAddGear(kind, () => {});
+      const modal = document.querySelector(".modal");
+      labelInput(modal, makeLabel).value = make;
+      const primaryInput = labelInput(modal, primaryLabel);
+      primaryInput.value = primary;
+      primaryInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+      const disclosure = modal.querySelector("details.technical-specs");
+      expect(disclosure).toBeTruthy();
+      expect(disclosure.textContent).toMatch(visibleLabel);
+      expect(disclosure.querySelector(".technical-spec-json").value).toContain(technicalKey);
+
+      [...modal.querySelectorAll("button")].find((b) => b.textContent === "Save").click();
+      await vi.waitFor(() => expect(agent.created.length).toBe(2));
+      const type = agent.created.find((c) => c.collection === NS.catalog[typeKind]);
+      expect(type.record[technicalKey]).toEqual(technicalValue);
+      expect(type.record.datasheet).toEqual({ url: preset.datasheetUrl });
+    } finally {
+      if (prior === undefined) delete preset[technicalKey]; else preset[technicalKey] = prior;
+    }
+  });
+
+  it("shows nonempty nested fields from an existing catalog record in the technical disclosure", () => {
+    const typeUri = "at://did:plc:test/app.graycard.catalog.cameraType/rk-spec";
+    initLibrary({
+      agent, did: "did:plc:test",
+      store: {
+        catalog: {
+          cameraType: [{
+            uri: typeUri,
+            value: {
+              make: "Nikon", model: "F3",
+              dimensions: { widthMm: 148.5, heightMm: 96.5, depthMm: 65.5 },
+              specSources: [{ page: "12", fields: ["dimensions"] }],
+            },
+          }],
+        },
+        instance: { camera: [] },
+      },
+    });
+    openEditGear("camera", { uri: "at://camera", value: { type: typeUri } }, () => {});
+    const disclosure = document.querySelector("details.technical-specs");
+    expect(disclosure.textContent).toMatch(/Dimensions/);
+    expect(disclosure.textContent).toMatch(/148\.5/);
+    expect(disclosure.textContent).toMatch(/Spec Sources/i);
+    expect(disclosure.querySelector(".technical-spec-json").value).toContain('"dimensions"');
+  });
+
+  it("never presents atproto $-metadata as a technical specification", () => {
+    const typeUri = "at://did:plc:test/app.graycard.catalog.lensType/rk-meta";
+    initLibrary({
+      agent, did: "did:plc:test",
+      store: {
+        catalog: {
+          lensType: [{
+            uri: typeUri,
+            value: {
+              $type: "app.graycard.catalog.lensType",
+              make: "Canon", model: "EF 50mm f/1.8 STM",
+              opticalElements: 6,
+            },
+          }],
+        },
+        instance: { lens: [] },
+      },
+    });
+    openEditGear("lens", { uri: "at://lens", value: { type: typeUri } }, () => {});
+    const disclosure = document.querySelector("details.technical-specs");
+    expect(disclosure.textContent).toMatch(/Optical elements/i);
+    expect(disclosure.textContent).not.toContain("$type");
+    expect(disclosure.querySelector(".technical-spec-json").value).not.toContain("$type");
+  });
+
   it("carries a rebranded film's aka onto the saved stock record", async () => {
     openAddGear("filmRoll", () => {});
     const modal = document.querySelector(".modal");
@@ -123,6 +271,14 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
     const stock = agent.created.find((c) => c.collection === NS.catalog.filmStock);
     expect(stock, "a filmStock type was created").toBeTruthy();
     expect(stock.record.aka).toContain("Ektacolor Pro 400");
+    expect(stock.record.formats).toEqual(["135", "120", "4x5"]);
+    expect(stock.record.base).toBe("polyester");
+    expect(stock.record.variants).toEqual(expect.arrayContaining([
+      expect.objectContaining({ format: "135", base: "polyester" }),
+      expect.objectContaining({ format: "4x5", baseThickness: expect.objectContaining({ value: 190, unit: "micrometer" }) }),
+    ]));
+    expect(stock.record.datasheetUrl).toMatch(/^https:\/\/kodakprofessional\.com\//);
+    expect(stock.record.datasheet).toEqual({ url: stock.record.datasheetUrl });
   });
 
   it("leaves the type's assets unset when the picture fields are blank", async () => {
