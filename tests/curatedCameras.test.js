@@ -43,4 +43,24 @@ describe("data/curated-cameras/*.jsonl", () => {
     expect(models).toContain("Pentax K1000");
     expect(models).toContain("Canon AE-1");
   });
+
+  it("keeps verified camera datasheets on HTTPS manufacturer hosts", () => {
+    const allowedHosts = new Set([
+      "cdn.downloads.lomography.com",
+      "global.canon",
+      "imaging.nikon.com",
+      "instax.com",
+      "support.polaroid.com",
+      "www.lomography.com",
+    ]);
+    const linked = rows.filter((r) => r.datasheetUrl);
+    expect(linked).toHaveLength(75);
+    for (const r of linked) {
+      const url = new URL(r.datasheetUrl);
+      expect(url.protocol, `${r.make} ${r.model}`).toBe("https:");
+      expect(allowedHosts.has(url.hostname), `${r.make} ${r.model}: ${url.hostname}`).toBe(true);
+    }
+    const presetLinks = PRESETS.cameraType.items.filter((r) => r.datasheetUrl);
+    expect(presetLinks).toHaveLength(75);
+  });
 });

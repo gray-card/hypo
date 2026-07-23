@@ -1,7 +1,7 @@
 {
   "_source": "curated from Wikipedia article tables (e.g. 'Nikon F-mount') + Wikidata, authored in data/curated-lenses.jsonl",
-  "_license": "facts (names/specs) are not copyrightable; prose/images per Wikipedia CC-BY-SA 4.0 & Wikidata CC0. See src/data/CATALOG_ATTRIBUTION.md",
-  "_generated": "2026-07-22T13:27:20.219Z",
+  "_license": "Hypo's original compilation: CC-BY-SA 4.0. Source facts may be uncopyrightable; linked images retain their own terms. See data/LICENSE.md and src/data/CATALOG_ATTRIBUTION.md",
+  "_generated": "2026-07-23T16:56:37.711Z",
   "lenses": [
     {
       "make": "Bronica",

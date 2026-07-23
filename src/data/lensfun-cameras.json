@@ -1,7 +1,7 @@
 {
   "_source": "lensfun (https://github.com/lensfun/lensfun), data/db, vendored in data/lensfun-db/",
   "_license": "CC-BY-SA 3.0. See src/data/CATALOG_ATTRIBUTION.md and data/lensfun-db/NOTICE.md",
-  "_generated": "2026-07-22T13:27:20.218Z",
+  "_generated": "2026-07-23T16:56:37.711Z",
   "_wikidata": "run with --wikidata to resolve QIDs (the app also resolves images by name at runtime)",
   "cameras": [
     {

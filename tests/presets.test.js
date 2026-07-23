@@ -97,3 +97,49 @@ describe("film rebrands are aka-linked (same emulsion, two names)", () => {
     expect(find("Ektar 100").aka).toBeUndefined();
   });
 });
+
+describe("developer and chemistry datasheets", () => {
+  const allowedHosts = new Set([
+    "business.kodakmoments.com",
+    "cdn.shopify.com",
+    "cinestillfilm.com",
+    "site.photoformulary.com",
+    "www.adox.de",
+    "www.bellinifoto.it",
+    "www.foma.cz",
+    "www.ilfordphoto.com",
+    "www.kodakprofessional.com",
+    "www.moersch-photochemie.de",
+  ]);
+
+  it("uses optional HTTPS manufacturer references on 24 of 27 developers", () => {
+    const items = PRESETS.developerType.items;
+    const unresolved = items.filter((i) => !i.datasheetUrl).map((i) => `${i.brand} ${i.name}`);
+    expect(items.filter((i) => i.datasheetUrl)).toHaveLength(24);
+    expect(unresolved).toEqual([
+      "Kodak D-23",
+      "Diafine Diafine Two-Bath",
+      "Tetenal Colortec C-41",
+    ]);
+    for (const item of items.filter((i) => i.datasheetUrl)) {
+      const url = new URL(item.datasheetUrl);
+      expect(url.protocol, `${item.brand} ${item.name}`).toBe("https:");
+      expect(allowedHosts.has(url.hostname), `${item.brand} ${item.name}: ${url.hostname}`).toBe(true);
+    }
+  });
+
+  it("uses optional HTTPS manufacturer references on 13 of 15 ancillary chemistries", () => {
+    const items = PRESETS.chemistryType.items;
+    const unresolved = items.filter((i) => !i.datasheetUrl).map((i) => `${i.brand} ${i.name}`);
+    expect(items.filter((i) => i.datasheetUrl)).toHaveLength(13);
+    expect(unresolved).toEqual([
+      "Kodak C-41 Blix",
+      "Kodak Selenium Toner",
+    ]);
+    for (const item of items.filter((i) => i.datasheetUrl)) {
+      const url = new URL(item.datasheetUrl);
+      expect(url.protocol, `${item.brand} ${item.name}`).toBe("https:");
+      expect(allowedHosts.has(url.hostname), `${item.brand} ${item.name}: ${url.hostname}`).toBe(true);
+    }
+  });
+});

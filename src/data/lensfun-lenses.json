@@ -1,7 +1,7 @@
 {
   "_source": "lensfun (https://github.com/lensfun/lensfun), data/db, vendored in data/lensfun-db/",
   "_license": "CC-BY-SA 3.0. See src/data/CATALOG_ATTRIBUTION.md and data/lensfun-db/NOTICE.md",
-  "_generated": "2026-07-22T13:27:20.218Z",
+  "_generated": "2026-07-23T16:56:37.711Z",
   "_wikidata": "run with --wikidata to resolve QIDs (the app also resolves images by name at runtime)",
   "lenses": [
     {
@@ -1237,7 +1237,74 @@
       "focalLengthMax": 50,
       "maxAperture": 1.8,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://global.canon/en/c-museum/product/ef451.html",
+      "closestFocus": {
+        "value": 350,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 210000,
+      "filterThreadDiameter": {
+        "value": 49,
+        "unit": "mm"
+      },
+      "opticalElements": 6,
+      "opticalGroups": 5,
+      "diaphragmBladeCount": 7,
+      "autofocusTechnology": "stepping-motor",
+      "dimensions": {
+        "diameter": {
+          "value": 692,
+          "unit": "mm",
+          "scale": 10
+        },
+        "length": {
+          "value": 393,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 160,
+        "unit": "g"
+      },
+      "productionStartYear": 2015,
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://global.canon/en/c-museum/product/ef451.html"
+          },
+          "publisher": "Canon Inc.",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://global.canon/en/c-museum/product/ef451.html"
+            },
+            "publisher": "Canon Inc.",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "productionStartYear"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Canon",
@@ -4882,7 +4949,78 @@
       "focalLengthMax": 23,
       "maxAperture": 23,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://dl.fujifilm-x.com/support/manual/lenses/lens_xf23f2_xf35f2_manual_02.pdf",
+      "focalLength35mm": 35000000,
+      "closestFocus": {
+        "value": 220,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 130000,
+      "filterThreadDiameter": {
+        "value": 43,
+        "unit": "mm"
+      },
+      "opticalElements": 10,
+      "opticalGroups": 6,
+      "diaphragmBladeCount": 9,
+      "dimensions": {
+        "diameter": {
+          "value": 60,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 519,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 180,
+        "unit": "g"
+      },
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://dl.fujifilm-x.com/support/manual/lenses/lens_xf23f2_xf35f2_manual_02.pdf"
+          },
+          "publisher": "FUJIFILM Corporation",
+          "documentNumber": "BL00004843-103",
+          "language": "en",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://dl.fujifilm-x.com/support/manual/lenses/lens_xf23f2_xf35f2_manual_02.pdf"
+            },
+            "publisher": "FUJIFILM Corporation",
+            "documentNumber": "BL00004843-103",
+            "language": "en",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "focalLength35mm",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "dimensions",
+            "weight"
+          ],
+          "page": "PDF page 16",
+          "table": "Specifications",
+          "method": "manual-transcription",
+          "note": "Weight excludes lens caps and hood."
+        }
+      ]
     },
     {
       "make": "Fujifilm",
@@ -4947,7 +5085,78 @@
       "focalLengthMax": 35,
       "maxAperture": 35,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://dl.fujifilm-x.com/support/manual/lenses/lens_xf23f2_xf35f2_manual_02.pdf",
+      "focalLength35mm": 53000000,
+      "closestFocus": {
+        "value": 350,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 135000,
+      "filterThreadDiameter": {
+        "value": 43,
+        "unit": "mm"
+      },
+      "opticalElements": 9,
+      "opticalGroups": 6,
+      "diaphragmBladeCount": 9,
+      "dimensions": {
+        "diameter": {
+          "value": 60,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 459,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 170,
+        "unit": "g"
+      },
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://dl.fujifilm-x.com/support/manual/lenses/lens_xf23f2_xf35f2_manual_02.pdf"
+          },
+          "publisher": "FUJIFILM Corporation",
+          "documentNumber": "BL00004843-103",
+          "language": "en",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://dl.fujifilm-x.com/support/manual/lenses/lens_xf23f2_xf35f2_manual_02.pdf"
+            },
+            "publisher": "FUJIFILM Corporation",
+            "documentNumber": "BL00004843-103",
+            "language": "en",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "focalLength35mm",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "dimensions",
+            "weight"
+          ],
+          "page": "PDF page 16",
+          "table": "Specifications",
+          "method": "manual-transcription",
+          "note": "Weight excludes lens caps and hood."
+        }
+      ]
     },
     {
       "make": "Fujifilm",
@@ -8322,7 +8531,84 @@
       "focalLengthMax": 300,
       "maxAperture": 4.5,
       "lensTypeKind": "zoom",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/telephotozoom/af-p_70-300mmf_45-56e_ed_vr/",
+      "closestFocus": {
+        "value": 1200,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 250000,
+      "filterThreadDiameter": {
+        "value": 67,
+        "unit": "mm"
+      },
+      "opticalElements": 18,
+      "opticalGroups": 14,
+      "diaphragmBladeCount": 9,
+      "stabilized": true,
+      "stabilizationStops": 4500000,
+      "autofocusTechnology": "stepping-motor",
+      "dimensions": {
+        "diameter": {
+          "value": 805,
+          "unit": "mm",
+          "scale": 10
+        },
+        "length": {
+          "value": 146,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 680,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-82"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/telephotozoom/af-p_70-300mmf_45-56e_ed_vr/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/telephotozoom/af-p_70-300mmf_45-56e_ed_vr/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "stabilized",
+            "stabilizationStops",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8335,7 +8621,81 @@
       "focalLengthMax": 40,
       "maxAperture": 2.8,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/specialpurpose/micro/af-s_dx_micro40mmf_28g/",
+      "closestFocus": {
+        "value": 163,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 1000000,
+      "filterThreadDiameter": {
+        "value": 52,
+        "unit": "mm"
+      },
+      "opticalElements": 9,
+      "opticalGroups": 7,
+      "diaphragmBladeCount": 7,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 685,
+          "unit": "mm",
+          "scale": 10
+        },
+        "length": {
+          "value": 645,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 235,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "aps-c-digital"
+      ],
+      "compatibleHoods": [
+        "HB-61"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/specialpurpose/micro/af-s_dx_micro40mmf_28g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/specialpurpose/micro/af-s_dx_micro40mmf_28g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8374,7 +8734,83 @@
       "focalLengthMax": 140,
       "maxAperture": 3.5,
       "lensTypeKind": "zoom",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/normalzoom/af-s_dx_18-140mmf_35-56g_ed_vr/",
+      "closestFocus": {
+        "value": 450,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 230000,
+      "filterThreadDiameter": {
+        "value": 67,
+        "unit": "mm"
+      },
+      "opticalElements": 17,
+      "opticalGroups": 12,
+      "diaphragmBladeCount": 7,
+      "stabilized": true,
+      "stabilizationStops": 4000000,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 78,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 97,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 490,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "aps-c-digital"
+      ],
+      "compatibleHoods": [
+        "HB-32"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/normalzoom/af-s_dx_18-140mmf_35-56g_ed_vr/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/normalzoom/af-s_dx_18-140mmf_35-56g_ed_vr/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "stabilized",
+            "stabilizationStops",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8400,7 +8836,80 @@
       "focalLengthMax": 300,
       "maxAperture": 3.5,
       "lensTypeKind": "zoom",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/normalzoom/af-s_dx_18-300mmf_35-63g_ed_vr/",
+      "closestFocus": {
+        "value": 480,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 290000,
+      "filterThreadDiameter": {
+        "value": 67,
+        "unit": "mm"
+      },
+      "opticalElements": 16,
+      "opticalGroups": 12,
+      "diaphragmBladeCount": 7,
+      "stabilized": true,
+      "stabilizationStops": 4000000,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 785,
+          "unit": "mm",
+          "scale": 10
+        },
+        "length": {
+          "value": 99,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 550,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "aps-c-digital"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/normalzoom/af-s_dx_18-300mmf_35-63g_ed_vr/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/normalzoom/af-s_dx_18-300mmf_35-63g_ed_vr/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "stabilized",
+            "stabilizationStops",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8413,7 +8922,82 @@
       "focalLengthMax": 35,
       "maxAperture": 1.8,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_dx_35mmf_18g/",
+      "focalLength35mm": 52500000,
+      "closestFocus": {
+        "value": 300,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 160000,
+      "filterThreadDiameter": {
+        "value": 52,
+        "unit": "mm"
+      },
+      "opticalElements": 8,
+      "opticalGroups": 6,
+      "diaphragmBladeCount": 7,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 70,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 525,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 200,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "aps-c-digital"
+      ],
+      "compatibleHoods": [
+        "HB-46"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_dx_35mmf_18g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_dx_35mmf_18g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "focalLength35mm",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8608,7 +9192,79 @@
       "focalLengthMax": 60,
       "maxAperture": 2.8,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/specialpurpose/micro/af-s_micro60mmf_28g/",
+      "closestFocus": {
+        "value": 185,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 1000000,
+      "filterThreadDiameter": {
+        "value": 62,
+        "unit": "mm"
+      },
+      "opticalElements": 12,
+      "opticalGroups": 9,
+      "diaphragmBladeCount": 9,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 73,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 89,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 425,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-42"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/specialpurpose/micro/af-s_micro60mmf_28g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/specialpurpose/micro/af-s_micro60mmf_28g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8621,7 +9277,80 @@
       "focalLengthMax": 105,
       "maxAperture": 1.4,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_105mmf_14e_ed/",
+      "closestFocus": {
+        "value": 1000,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 130000,
+      "filterThreadDiameter": {
+        "value": 82,
+        "unit": "mm"
+      },
+      "opticalElements": 14,
+      "opticalGroups": 9,
+      "diaphragmBladeCount": 9,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 945,
+          "unit": "mm",
+          "scale": 10
+        },
+        "length": {
+          "value": 106,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 985,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-79"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_105mmf_14e_ed/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_105mmf_14e_ed/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8660,7 +9389,93 @@
       "focalLengthMax": 500,
       "maxAperture": 5.6,
       "lensTypeKind": "zoom",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/telephotozoom/af-s_200-500mmf_56e_ed_vr/",
+      "closestFocus": {
+        "value": 2200,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 220000,
+      "filterThreadDiameter": {
+        "value": 95,
+        "unit": "mm"
+      },
+      "opticalElements": 19,
+      "opticalGroups": 12,
+      "diaphragmBladeCount": 9,
+      "stabilized": true,
+      "stabilizationStops": 4500000,
+      "dimensions": {
+        "diameter": {
+          "value": 108,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 2675,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 2300,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-71"
+      ],
+      "compatibleTeleconverters": [
+        "TC-14E (AF possible only with an f/8-compatible camera)",
+        "TC-14E II (AF possible only with an f/8-compatible camera)",
+        "TC-14E III (AF possible only with an f/8-compatible camera)",
+        "TC-17E II (AF not possible)",
+        "TC-20E (AF not possible)",
+        "TC-20E II (AF not possible)",
+        "TC-20E III (AF not possible)"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/telephotozoom/af-s_200-500mmf_56e_ed_vr/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/telephotozoom/af-s_200-500mmf_56e_ed_vr/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "stabilized",
+            "stabilizationStops",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods",
+            "compatibleTeleconverters"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription",
+          "note": "Recorded weight includes the tripod collar; the source also gives 2090 g without the tripod collar."
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8673,7 +9488,81 @@
       "focalLengthMax": 20,
       "maxAperture": 1.8,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_20mmf_18g/",
+      "closestFocus": {
+        "value": 200,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 230000,
+      "filterThreadDiameter": {
+        "value": 77,
+        "unit": "mm"
+      },
+      "opticalElements": 13,
+      "opticalGroups": 11,
+      "diaphragmBladeCount": 7,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 825,
+          "unit": "mm",
+          "scale": 10
+        },
+        "length": {
+          "value": 805,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 355,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-72"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_20mmf_18g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_20mmf_18g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8725,7 +9614,80 @@
       "focalLengthMax": 24,
       "maxAperture": 1.8,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_24mmf_18g_ed/",
+      "closestFocus": {
+        "value": 230,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 200000,
+      "filterThreadDiameter": {
+        "value": 72,
+        "unit": "mm"
+      },
+      "opticalElements": 12,
+      "opticalGroups": 9,
+      "diaphragmBladeCount": 7,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 775,
+          "unit": "mm",
+          "scale": 10
+        },
+        "length": {
+          "value": 83,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 355,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-76"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_24mmf_18g_ed/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_24mmf_18g_ed/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8738,7 +9700,80 @@
       "focalLengthMax": 28,
       "maxAperture": 1.8,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_28mmf_18g/",
+      "closestFocus": {
+        "value": 250,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 220000,
+      "filterThreadDiameter": {
+        "value": 67,
+        "unit": "mm"
+      },
+      "opticalElements": 11,
+      "opticalGroups": 9,
+      "diaphragmBladeCount": 7,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 73,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 805,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 330,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-64"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_28mmf_18g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_28mmf_18g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8764,7 +9799,90 @@
       "focalLengthMax": 300,
       "maxAperture": 4,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_300mmf_4e_pf_ed_vr/",
+      "closestFocus": {
+        "value": 1400,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 240000,
+      "filterThreadDiameter": {
+        "value": 77,
+        "unit": "mm"
+      },
+      "opticalElements": 16,
+      "opticalGroups": 10,
+      "diaphragmBladeCount": 9,
+      "stabilized": true,
+      "stabilizationStops": 4500000,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 89,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 1475,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 755,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-73"
+      ],
+      "compatibleTeleconverters": [
+        "TC-14E III",
+        "TC-17E II",
+        "TC-20E III"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_300mmf_4e_pf_ed_vr/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_300mmf_4e_pf_ed_vr/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "stabilized",
+            "stabilizationStops",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods",
+            "compatibleTeleconverters"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8777,7 +9895,80 @@
       "focalLengthMax": 35,
       "maxAperture": 1.4,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_35mmf_14g/",
+      "closestFocus": {
+        "value": 300,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 200000,
+      "filterThreadDiameter": {
+        "value": 67,
+        "unit": "mm"
+      },
+      "opticalElements": 10,
+      "opticalGroups": 7,
+      "diaphragmBladeCount": 9,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 83,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 895,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 600,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-59"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_35mmf_14g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_35mmf_14g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8790,7 +9981,80 @@
       "focalLengthMax": 35,
       "maxAperture": 1.8,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_35mmf_18g/",
+      "closestFocus": {
+        "value": 250,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 240000,
+      "filterThreadDiameter": {
+        "value": 58,
+        "unit": "mm"
+      },
+      "opticalElements": 11,
+      "opticalGroups": 8,
+      "diaphragmBladeCount": 7,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 72,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 715,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 305,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-70"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_35mmf_18g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/wide/af-s_35mmf_18g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8803,7 +10067,83 @@
       "focalLengthMax": 500,
       "maxAperture": 5.6,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_500mmf_56e_pf_ed_vr/",
+      "closestFocus": {
+        "value": 3000,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 180000,
+      "filterThreadDiameter": {
+        "value": 95,
+        "unit": "mm"
+      },
+      "opticalElements": 19,
+      "opticalGroups": 11,
+      "diaphragmBladeCount": 9,
+      "stabilized": true,
+      "stabilizationStops": 4000000,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 106,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 237,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 1460,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-84"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_500mmf_56e_pf_ed_vr/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_500mmf_56e_pf_ed_vr/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "stabilized",
+            "stabilizationStops",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8816,7 +10156,80 @@
       "focalLengthMax": 50,
       "maxAperture": 1.4,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_50mmf_14g/",
+      "closestFocus": {
+        "value": 450,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 150000,
+      "filterThreadDiameter": {
+        "value": 58,
+        "unit": "mm"
+      },
+      "opticalElements": 8,
+      "opticalGroups": 7,
+      "diaphragmBladeCount": 9,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 735,
+          "unit": "mm",
+          "scale": 10
+        },
+        "length": {
+          "value": 54,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 280,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-47"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_50mmf_14g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_50mmf_14g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8842,7 +10255,80 @@
       "focalLengthMax": 50,
       "maxAperture": 1.8,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_50mmf_18g/",
+      "closestFocus": {
+        "value": 450,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 150000,
+      "filterThreadDiameter": {
+        "value": 58,
+        "unit": "mm"
+      },
+      "opticalElements": 7,
+      "opticalGroups": 6,
+      "diaphragmBladeCount": 7,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 72,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 525,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 185,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-47"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_50mmf_18g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_50mmf_18g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8868,7 +10354,79 @@
       "focalLengthMax": 58,
       "maxAperture": 1.4,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_nikkor58mmf_14g/",
+      "closestFocus": {
+        "value": 580,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 130000,
+      "filterThreadDiameter": {
+        "value": 72,
+        "unit": "mm"
+      },
+      "opticalElements": 9,
+      "opticalGroups": 6,
+      "diaphragmBladeCount": 9,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 85,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 70,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 385,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-68"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_nikkor58mmf_14g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_nikkor58mmf_14g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8881,7 +10439,94 @@
       "focalLengthMax": 600,
       "maxAperture": 4,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_600mmf_4e_fl_ed_vr/",
+      "closestFocus": {
+        "value": 4400,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 140000,
+      "filterThreadDiameter": {
+        "value": 405,
+        "unit": "mm",
+        "scale": 10
+      },
+      "opticalElements": 16,
+      "opticalGroups": 12,
+      "diaphragmBladeCount": 9,
+      "stabilized": true,
+      "stabilizationStops": 4000000,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 166,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 432,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 3810,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HK-40"
+      ],
+      "compatibleTeleconverters": [
+        "TC-14E",
+        "TC-14E II",
+        "TC-14E III",
+        "TC-17E II",
+        "TC-20E",
+        "TC-20E II",
+        "TC-20E III"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_600mmf_4e_fl_ed_vr/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/telephoto/af-s_600mmf_4e_fl_ed_vr/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "stabilized",
+            "stabilizationStops",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods",
+            "compatibleTeleconverters"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8959,7 +10604,88 @@
       "focalLengthMax": 400,
       "maxAperture": 4.5,
       "lensTypeKind": "zoom",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/telephotozoom/af-s_80-400mmf_45-56g_ed_vr/",
+      "closestFocus": {
+        "value": 1750,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 175439,
+      "filterThreadDiameter": {
+        "value": 77,
+        "unit": "mm"
+      },
+      "opticalElements": 20,
+      "opticalGroups": 12,
+      "diaphragmBladeCount": 9,
+      "stabilized": true,
+      "stabilizationStops": 4000000,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 955,
+          "unit": "mm",
+          "scale": 10
+        },
+        "length": {
+          "value": 203,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 1570,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-65"
+      ],
+      "compatibleTeleconverters": [
+        "1.4x teleconverter on an f/8-compatible camera"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/telephotozoom/af-s_80-400mmf_45-56g_ed_vr/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/telephotozoom/af-s_80-400mmf_45-56g_ed_vr/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "stabilized",
+            "stabilizationStops",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods",
+            "compatibleTeleconverters"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -8985,7 +10711,80 @@
       "focalLengthMax": 85,
       "maxAperture": 1.4,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_nikkor85mmf_14g/",
+      "closestFocus": {
+        "value": 850,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 120000,
+      "filterThreadDiameter": {
+        "value": 77,
+        "unit": "mm"
+      },
+      "opticalElements": 10,
+      "opticalGroups": 9,
+      "diaphragmBladeCount": 9,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 865,
+          "unit": "mm",
+          "scale": 10
+        },
+        "length": {
+          "value": 84,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 595,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-55"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_nikkor85mmf_14g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/singlefocal/normal/af-s_nikkor85mmf_14g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -9180,7 +10979,75 @@
       "focalLengthMax": 85,
       "maxAperture": 3.5,
       "lensTypeKind": "zoom",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/normalzoom/af-s_zoom24-85mmf_35-45g/",
+      "closestFocus": {
+        "value": 380,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 212766,
+      "opticalElements": 15,
+      "opticalGroups": 12,
+      "diaphragmBladeCount": 7,
+      "autofocusTechnology": "ultrasonic-ring",
+      "dimensions": {
+        "diameter": {
+          "value": 73,
+          "unit": "mm"
+        },
+        "length": {
+          "value": 725,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 415,
+        "unit": "g"
+      },
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "HB-28"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/normalzoom/af-s_zoom24-85mmf_35-45g/"
+          },
+          "publisher": "Nikon Corporation",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/lineup/lens/f-mount/zoom/normalzoom/af-s_zoom24-85mmf_35-45g/"
+            },
+            "publisher": "Nikon Corporation",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "closestFocus",
+            "maxReproductionRatio",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "autofocusTechnology",
+            "dimensions",
+            "weight",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -15197,17 +17064,113 @@
       "model": "Sigma 35mm f/1.4 DG HSM | A",
       "mount": "Nikon F",
       "mounts": [
-        "Nikon F",
+        "L-Mount",
+        "Sony E",
         "Sigma SA",
         "Canon EF",
-        "Sony Alpha",
-        "Pentax KAF"
+        "Nikon F",
+        "Pentax K",
+        "Sony A"
       ],
       "focalLengthMin": 35,
       "focalLengthMax": 35,
       "maxAperture": 1.4,
       "lensTypeKind": "prime",
-      "wikidata": null
+      "wikidata": null,
+      "datasheetUrl": "https://www.sigma-global.com/en/lenses/a012_35_14/",
+      "variants": [
+        {
+          "mount": "L-Mount",
+          "dimensions": {
+            "diameter": {
+              "value": 77,
+              "unit": "mm"
+            },
+            "length": {
+              "value": 118,
+              "unit": "mm"
+            }
+          },
+          "weight": {
+            "value": 755,
+            "unit": "g"
+          }
+        },
+        {
+          "mount": "Sigma SA",
+          "dimensions": {
+            "diameter": {
+              "value": 77,
+              "unit": "mm"
+            },
+            "length": {
+              "value": 94,
+              "unit": "mm"
+            }
+          },
+          "weight": {
+            "value": 665,
+            "unit": "g"
+          }
+        }
+      ],
+      "closestFocus": {
+        "value": 300,
+        "unit": "mm"
+      },
+      "maxReproductionRatio": 192308,
+      "filterThreadDiameter": {
+        "value": 67,
+        "unit": "mm"
+      },
+      "opticalElements": 13,
+      "opticalGroups": 11,
+      "diaphragmBladeCount": 9,
+      "coveredFormats": [
+        "full-frame-digital"
+      ],
+      "compatibleHoods": [
+        "LH730-03"
+      ],
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.sigma-global.com/en/lenses/a012_35_14/"
+          },
+          "publisher": "SIGMA Corporation",
+          "documentNumber": "A012",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.sigma-global.com/en/lenses/a012_35_14/"
+            },
+            "publisher": "SIGMA Corporation",
+            "documentNumber": "A012",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "mounts",
+            "variants",
+            "closestFocus",
+            "maxReproductionRatio",
+            "filterThreadDiameter",
+            "opticalElements",
+            "opticalGroups",
+            "diaphragmBladeCount",
+            "coveredFormats",
+            "compatibleHoods"
+          ],
+          "table": "Specifications",
+          "method": "manual-transcription",
+          "note": "The manufacturer wording Pentax mount is normalized to the catalog enum Pentax K."
+        }
+      ]
     },
     {
       "make": "Sigma",

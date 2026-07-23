@@ -1,7 +1,7 @@
 {
   "_source": "curated from Wikipedia + Wikidata, authored in data/curated-cameras/*.jsonl",
-  "_license": "facts (names/specs) are not copyrightable; prose/images per Wikipedia CC-BY-SA 4.0 & Wikidata CC0. See src/data/CATALOG_ATTRIBUTION.md",
-  "_generated": "2026-07-22T13:27:20.219Z",
+  "_license": "Hypo's original compilation: CC-BY-SA 4.0. Source facts may be uncopyrightable; linked images retain their own terms. See data/LICENSE.md and src/data/CATALOG_ATTRIBUTION.md",
+  "_generated": "2026-07-23T16:56:37.711Z",
   "cameras": [
     {
       "make": "Canon",
@@ -11,7 +11,102 @@
       "category": "film",
       "wikidata": "Q63083",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_new_F-1-Camera.jpg?width=320",
-      "source": "wikipedia:Canon F-1"
+      "source": "wikipedia:Canon F-1",
+      "datasheetUrl": "https://global.canon/en/c-museum/product/film78.html",
+      "shutterType": "focal-plane",
+      "minShutterSpeed": 500,
+      "maxShutterSpeed": 1000000,
+      "shutterSpeedSteps": [
+        500,
+        1000,
+        2000,
+        4000,
+        8000,
+        16667,
+        33333,
+        66667,
+        125000,
+        250000,
+        500000,
+        1000000
+      ],
+      "meteringModes": [
+        "partial"
+      ],
+      "exposurePrograms": [
+        "manual"
+      ],
+      "isoMin": 25,
+      "isoMax": 2000,
+      "viewfinderCoverage": 970000,
+      "viewfinderMagnification": 770000,
+      "filmAdvanceModes": [
+        "manual-lever"
+      ],
+      "batteryTypes": [
+        "1.3 V HD mercury cell"
+      ],
+      "dimensions": {
+        "width": {
+          "value": 147,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 99,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 43,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 820,
+        "unit": "g"
+      },
+      "productionStartYear": 1971,
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://global.canon/en/c-museum/product/film78.html"
+          },
+          "publisher": "Canon Inc.",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://global.canon/en/c-museum/product/film78.html"
+            },
+            "publisher": "Canon Inc.",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "shutterType",
+            "minShutterSpeed",
+            "maxShutterSpeed",
+            "shutterSpeedSteps",
+            "meteringModes",
+            "exposurePrograms",
+            "isoMin",
+            "isoMax",
+            "viewfinderCoverage",
+            "viewfinderMagnification",
+            "filmAdvanceModes",
+            "batteryTypes",
+            "dimensions",
+            "weight",
+            "productionStartYear"
+          ],
+          "page": "Specifications",
+          "method": "manual-transcription",
+          "note": "The source lists a 1.3 V HD mercury cell under Power Source but a 1.3 V MD mercury cell under Dimensions and Weight; batteryTypes preserves the Power Source wording."
+        }
+      ]
     },
     {
       "make": "Canon",
@@ -81,7 +176,103 @@
       "category": "film",
       "wikidata": "Q55674",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_AE-1_front_with_50mm_lens.jpg?width=320",
-      "source": "wikipedia:Canon AE-1"
+      "source": "wikipedia:Canon AE-1",
+      "datasheetUrl": "https://global.canon/en/c-museum/product/film93.html",
+      "shutterType": "focal-plane",
+      "minShutterSpeed": 1000,
+      "maxShutterSpeed": 2000000,
+      "shutterSpeedSteps": [
+        1000,
+        2000,
+        4000,
+        8000,
+        16667,
+        33333,
+        66667,
+        125000,
+        250000,
+        500000,
+        1000000,
+        2000000
+      ],
+      "meteringModes": [
+        "center-weighted"
+      ],
+      "exposurePrograms": [
+        "shutter-priority",
+        "manual"
+      ],
+      "exposureCompensationMax": 1500000,
+      "isoMin": 25,
+      "isoMax": 3200,
+      "viewfinderMagnification": 860000,
+      "filmAdvanceModes": [
+        "manual-lever"
+      ],
+      "batteryTypes": [
+        "4G-13 6 V mercury oxide battery",
+        "4LR44 alkaline battery"
+      ],
+      "dimensions": {
+        "width": {
+          "value": 141,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 87,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 48,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 590,
+        "unit": "g"
+      },
+      "productionStartYear": 1976,
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://global.canon/en/c-museum/product/film93.html"
+          },
+          "publisher": "Canon Inc.",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://global.canon/en/c-museum/product/film93.html"
+            },
+            "publisher": "Canon Inc.",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "shutterType",
+            "minShutterSpeed",
+            "maxShutterSpeed",
+            "shutterSpeedSteps",
+            "meteringModes",
+            "exposurePrograms",
+            "exposureCompensationMax",
+            "isoMin",
+            "isoMax",
+            "viewfinderMagnification",
+            "filmAdvanceModes",
+            "batteryTypes",
+            "dimensions",
+            "weight",
+            "productionStartYear"
+          ],
+          "page": "Specifications",
+          "method": "manual-transcription"
+        }
+      ]
     },
     {
       "make": "Canon",
@@ -201,7 +392,110 @@
       "category": "film",
       "wikidata": "Q5033226",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS-1_front-left_2016_Canon_Plaza_S.jpg?width=320",
-      "source": "wikipedia:Canon EOS-1"
+      "source": "wikipedia:Canon EOS-1",
+      "datasheetUrl": "https://global.canon/en/c-museum/product/film132.html",
+      "shutterType": "focal-plane",
+      "minShutterSpeed": 125,
+      "maxShutterSpeed": 30000000,
+      "flashSyncSpeed": 4000,
+      "shutterStopIncrement": "1/3",
+      "meteringModes": [
+        "matrix",
+        "partial",
+        "spot",
+        "center-weighted"
+      ],
+      "exposurePrograms": [
+        "program",
+        "shutter-priority",
+        "aperture-priority",
+        "manual",
+        "bulb"
+      ],
+      "exposureCompensationMin": -3000000,
+      "exposureCompensationMax": 3000000,
+      "exposureCompensationIncrement": "1/3",
+      "isoMin": 6,
+      "isoMax": 6400,
+      "viewfinderMagnification": 720000,
+      "autofocusSystem": "TTL phase detection with cross-type BASIS sensor",
+      "autofocusModes": [
+        "single",
+        "continuous"
+      ],
+      "filmAdvanceModes": [
+        "motor-single",
+        "motor-continuous"
+      ],
+      "batteryTypes": [
+        "2CR5 lithium battery"
+      ],
+      "dimensions": {
+        "width": {
+          "value": 161,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 107,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 72,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 890,
+        "unit": "g"
+      },
+      "productionStartYear": 1989,
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://global.canon/en/c-museum/product/film132.html"
+          },
+          "publisher": "Canon Inc.",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://global.canon/en/c-museum/product/film132.html"
+            },
+            "publisher": "Canon Inc.",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "shutterType",
+            "minShutterSpeed",
+            "maxShutterSpeed",
+            "flashSyncSpeed",
+            "shutterStopIncrement",
+            "meteringModes",
+            "exposurePrograms",
+            "exposureCompensationMin",
+            "exposureCompensationMax",
+            "exposureCompensationIncrement",
+            "isoMin",
+            "isoMax",
+            "viewfinderMagnification",
+            "autofocusSystem",
+            "autofocusModes",
+            "filmAdvanceModes",
+            "batteryTypes",
+            "dimensions",
+            "weight",
+            "productionStartYear"
+          ],
+          "page": "Specifications",
+          "method": "manual-transcription",
+          "note": "Weight includes battery."
+        }
+      ]
     },
     {
       "make": "Canon",
@@ -231,7 +525,118 @@
       "category": "film",
       "wikidata": "Q69711",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canon_EOS_1V_HS_-01.jpg?width=320",
-      "source": "wikipedia:Canon EOS-1V"
+      "source": "wikipedia:Canon EOS-1V",
+      "datasheetUrl": "https://global.canon/en/c-museum/product/film218.html",
+      "shutterType": "focal-plane",
+      "minShutterSpeed": 125,
+      "maxShutterSpeed": 30000000,
+      "flashSyncSpeed": 4000,
+      "shutterStopIncrement": "1/3",
+      "meteringModes": [
+        "matrix",
+        "partial",
+        "spot",
+        "multi-spot",
+        "center-weighted"
+      ],
+      "exposurePrograms": [
+        "program",
+        "shutter-priority",
+        "aperture-priority",
+        "manual",
+        "bulb"
+      ],
+      "exposureCompensationMin": -3000000,
+      "exposureCompensationMax": 3000000,
+      "exposureCompensationIncrement": "1/3",
+      "isoMin": 6,
+      "isoMax": 6400,
+      "viewfinderCoverage": 1000000,
+      "viewfinderMagnification": 720000,
+      "autofocusSystem": "TTL-AREA-SIR with CMOS sensor and 45 focusing points",
+      "autofocusModes": [
+        "single",
+        "continuous",
+        "manual"
+      ],
+      "filmAdvanceModes": [
+        "motor-single",
+        "motor-continuous"
+      ],
+      "batteryTypes": [
+        "2CR5 lithium battery",
+        "8 AA batteries with PB-E2",
+        "NP-E2 Ni-MH pack with PB-E2"
+      ],
+      "dimensions": {
+        "width": {
+          "value": 161,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 1208,
+          "unit": "mm",
+          "scale": 10
+        },
+        "depth": {
+          "value": 708,
+          "unit": "mm",
+          "scale": 10
+        }
+      },
+      "weight": {
+        "value": 945,
+        "unit": "g"
+      },
+      "productionStartYear": 2000,
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://global.canon/en/c-museum/product/film218.html"
+          },
+          "publisher": "Canon Inc.",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://global.canon/en/c-museum/product/film218.html"
+            },
+            "publisher": "Canon Inc.",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "shutterType",
+            "minShutterSpeed",
+            "maxShutterSpeed",
+            "flashSyncSpeed",
+            "shutterStopIncrement",
+            "meteringModes",
+            "exposurePrograms",
+            "exposureCompensationMin",
+            "exposureCompensationMax",
+            "exposureCompensationIncrement",
+            "isoMin",
+            "isoMax",
+            "viewfinderCoverage",
+            "viewfinderMagnification",
+            "autofocusSystem",
+            "autofocusModes",
+            "filmAdvanceModes",
+            "batteryTypes",
+            "dimensions",
+            "weight",
+            "productionStartYear"
+          ],
+          "page": "Specifications",
+          "method": "manual-transcription",
+          "note": "Official source spells the model EOS-1V; catalog identity retains EOS-1v. Weight excludes battery."
+        }
+      ]
     },
     {
       "make": "Canon",
@@ -461,7 +866,84 @@
       "category": "film",
       "wikidata": "Q2936498",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Canonet_GIII_QL17.jpg?width=320",
-      "source": "wikipedia:Canonet"
+      "source": "wikipedia:Canonet",
+      "datasheetUrl": "https://global.canon/en/c-museum/product/film84.html",
+      "shutterType": "leaf",
+      "minShutterSpeed": 2000,
+      "maxShutterSpeed": 250000,
+      "exposurePrograms": [
+        "shutter-priority",
+        "manual"
+      ],
+      "isoMin": 25,
+      "isoMax": 800,
+      "viewfinderMagnification": 600000,
+      "filmAdvanceModes": [
+        "manual-lever"
+      ],
+      "batteryTypes": [
+        "1.3 V H-D mercury cell"
+      ],
+      "dimensions": {
+        "width": {
+          "value": 120,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 75,
+          "unit": "mm"
+        },
+        "depth": {
+          "value": 60,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 620,
+        "unit": "g"
+      },
+      "productionStartYear": 1972,
+      "productionEndYear": 1982,
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://global.canon/en/c-museum/product/film84.html"
+          },
+          "publisher": "Canon Inc.",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://global.canon/en/c-museum/product/film84.html"
+            },
+            "publisher": "Canon Inc.",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "shutterType",
+            "minShutterSpeed",
+            "maxShutterSpeed",
+            "exposurePrograms",
+            "isoMin",
+            "isoMax",
+            "viewfinderMagnification",
+            "filmAdvanceModes",
+            "batteryTypes",
+            "dimensions",
+            "weight",
+            "productionStartYear",
+            "productionEndYear"
+          ],
+          "page": "Specifications",
+          "method": "manual-transcription",
+          "note": "Official source spells the model Canonet G-III 17; catalog identity retains Canonet QL17 GIII."
+        }
+      ]
     },
     {
       "make": "Canon",
@@ -1051,7 +1533,16 @@
       "category": "instant",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fuji_Instax_Mini_40.jpg?width=320",
-      "source": "wikipedia:List of Instax cameras and printers"
+      "source": "wikipedia:List of Instax cameras and printers",
+      "datasheetUrl": "https://instax.com/mini40/en/support/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://instax.com/mini40/en/support/"
+          }
+        }
+      ]
     },
     {
       "make": "Fujifilm",
@@ -1091,7 +1582,16 @@
       "category": "instant",
       "wikidata": null,
       "image": null,
-      "source": "wikipedia:List of Instax cameras and printers"
+      "source": "wikipedia:List of Instax cameras and printers",
+      "datasheetUrl": "https://instax.com/mini_evo/en/support/manuals/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://instax.com/mini_evo/en/support/manuals/"
+          }
+        }
+      ]
     },
     {
       "make": "Fujifilm",
@@ -1101,7 +1601,16 @@
       "category": "instant",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fuji_Instax_mini_LiPlay_instant_camera.jpg?width=320",
-      "source": "wikipedia:List of Instax cameras and printers"
+      "source": "wikipedia:List of Instax cameras and printers",
+      "datasheetUrl": "https://instax.com/mini_liplay/en/support/manuals/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://instax.com/mini_liplay/en/support/manuals/"
+          }
+        }
+      ]
     },
     {
       "make": "Fujifilm",
@@ -1111,7 +1620,76 @@
       "category": "instant",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Fujifilm_Instax_Mini_12_-_Instant_Film_Camera_%2852950271338%29.jpg?width=320",
-      "source": "wikipedia:List of Instax cameras and printers"
+      "source": "wikipedia:List of Instax cameras and printers",
+      "datasheetUrl": "https://instax.com/mini_12/assets/pdf/manual_naen.pdf",
+      "shutterType": "electronic",
+      "minShutterSpeed": 4000,
+      "maxShutterSpeed": 500000,
+      "exposurePrograms": [
+        "program"
+      ],
+      "viewfinderMagnification": 370000,
+      "batteryTypes": [
+        "Two AA-size alkaline batteries (LR6)"
+      ],
+      "dimensions": {
+        "width": {
+          "value": 104,
+          "unit": "mm"
+        },
+        "height": {
+          "value": 666,
+          "unit": "mm",
+          "scale": 10
+        },
+        "depth": {
+          "value": 122,
+          "unit": "mm"
+        }
+      },
+      "weight": {
+        "value": 306,
+        "unit": "g"
+      },
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://instax.com/mini_12/assets/pdf/manual_naen.pdf"
+          },
+          "publisher": "FUJIFILM Corporation",
+          "documentNumber": "FI020-EN-NA-01",
+          "language": "en",
+          "retrievedAt": "2026-07-23T00:00:00Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://instax.com/mini_12/assets/pdf/manual_naen.pdf"
+            },
+            "publisher": "FUJIFILM Corporation",
+            "documentNumber": "FI020-EN-NA-01",
+            "language": "en",
+            "retrievedAt": "2026-07-23T00:00:00Z"
+          },
+          "fields": [
+            "shutterType",
+            "minShutterSpeed",
+            "maxShutterSpeed",
+            "exposurePrograms",
+            "viewfinderMagnification",
+            "batteryTypes",
+            "dimensions",
+            "weight"
+          ],
+          "page": "15-16",
+          "method": "manual-transcription",
+          "note": "Weight excludes batteries, film pack, and strap."
+        }
+      ]
     },
     {
       "make": "Fujifilm",
@@ -1141,7 +1719,16 @@
       "category": "instant",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/%D7%9E%D7%A6%D7%9C%D7%9E%D7%AA_%D7%90%D7%99%D7%A0%D7%A1%D7%98%D7%A7%D7%A1_SQUARE_SQ1.jpg?width=320",
-      "source": "wikipedia:List of Instax cameras and printers"
+      "source": "wikipedia:List of Instax cameras and printers",
+      "datasheetUrl": "https://instax.com/sq1/en/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://instax.com/sq1/en/"
+          }
+        }
+      ]
     },
     {
       "make": "Fujifilm",
@@ -1181,7 +1768,16 @@
       "category": "instant",
       "wikidata": null,
       "image": null,
-      "source": "wikipedia:List of Instax cameras and printers"
+      "source": "wikipedia:List of Instax cameras and printers",
+      "datasheetUrl": "https://instax.com/sq40/en/support/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://instax.com/sq40/en/support/"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1191,7 +1787,16 @@
       "category": "instant",
       "wikidata": "Q3394062",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Polaroid_SX-70_%284462345243%29.jpg?width=320",
-      "source": "wikipedia:Polaroid SX-70"
+      "source": "wikipedia:Polaroid SX-70",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1201,7 +1806,16 @@
       "category": "instant",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Polaroid_SX-70_Sonar_One_Step_%284665242131%29.jpg?width=320",
-      "source": "wikipedia:Polaroid SX-70"
+      "source": "wikipedia:Polaroid SX-70",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1211,7 +1825,16 @@
       "category": "instant",
       "wikidata": null,
       "image": null,
-      "source": "wikipedia:List of Polaroid instant cameras"
+      "source": "wikipedia:List of Polaroid instant cameras",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1221,7 +1844,16 @@
       "category": "instant",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Polaroid_SLR690.jpg?width=320",
-      "source": "wikipedia:List of Polaroid instant cameras"
+      "source": "wikipedia:List of Polaroid instant cameras",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1231,7 +1863,16 @@
       "category": "instant",
       "wikidata": "Q137910605",
       "image": null,
-      "source": "wikipedia:List of Polaroid instant cameras"
+      "source": "wikipedia:List of Polaroid instant cameras",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1241,7 +1882,16 @@
       "category": "instant",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Poloroid_Impulse.jpg?width=320",
-      "source": "wikipedia:List of Polaroid instant cameras"
+      "source": "wikipedia:List of Polaroid instant cameras",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1261,7 +1911,16 @@
       "category": "instant",
       "wikidata": null,
       "image": null,
-      "source": "wikipedia:List of Polaroid instant cameras"
+      "source": "wikipedia:List of Polaroid instant cameras",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1271,7 +1930,16 @@
       "category": "instant",
       "wikidata": "Q105543917",
       "image": null,
-      "source": "wikipedia:List of Polaroid instant cameras"
+      "source": "wikipedia:List of Polaroid instant cameras",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1281,7 +1949,16 @@
       "category": "instant",
       "wikidata": null,
       "image": null,
-      "source": "wikipedia:List of Polaroid instant cameras"
+      "source": "wikipedia:List of Polaroid instant cameras",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/360012375840-User-manual-and-quick-start-guide-of-Polaroid-Now-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/360012375840-User-manual-and-quick-start-guide-of-Polaroid-Now-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1291,7 +1968,16 @@
       "category": "instant",
       "wikidata": null,
       "image": null,
-      "source": "wikipedia:List of Polaroid instant cameras"
+      "source": "wikipedia:List of Polaroid instant cameras",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/360012375840-User-manual-and-quick-start-guide-of-Polaroid-Now-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/360012375840-User-manual-and-quick-start-guide-of-Polaroid-Now-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1311,7 +1997,16 @@
       "category": "instant",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Polaroid_Spectra_QPS.jpg?width=320",
-      "source": "wikipedia:List of Polaroid instant cameras"
+      "source": "wikipedia:List of Polaroid instant cameras",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1321,7 +2016,16 @@
       "category": "instant",
       "wikidata": "Q137927428",
       "image": null,
-      "source": "wikipedia:List of Polaroid instant cameras"
+      "source": "wikipedia:List of Polaroid instant cameras",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/115012460048-Where-can-I-find-a-user-manual-for-my-Polaroid-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Polaroid",
@@ -1361,7 +2065,16 @@
       "category": "instant",
       "wikidata": null,
       "image": null,
-      "source": "wikipedia:List of Polaroid instant cameras"
+      "source": "wikipedia:List of Polaroid instant cameras",
+      "datasheetUrl": "https://support.polaroid.com/hc/en-us/articles/360021436580-User-manual-and-quick-start-guide-of-Polaroid-Go-camera",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://support.polaroid.com/hc/en-us/articles/360021436580-User-manual-and-quick-start-guide-of-Polaroid-Go-camera"
+          }
+        }
+      ]
     },
     {
       "make": "Lomography",
@@ -1371,7 +2084,16 @@
       "category": "instant",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Lomo%27instant%21_%28cropped%29.jpg?width=320",
-      "source": "wikipedia:List of Instax cameras and printers"
+      "source": "wikipedia:List of Instax cameras and printers",
+      "datasheetUrl": "https://www.lomography.com/magazine/298405-the-beginner-s-ultimate-guide-to-the-lomo-instant",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.lomography.com/magazine/298405-the-beginner-s-ultimate-guide-to-the-lomo-instant"
+          }
+        }
+      ]
     },
     {
       "make": "Lomography",
@@ -1391,7 +2113,16 @@
       "category": "instant",
       "wikidata": null,
       "image": null,
-      "source": "wikipedia:List of Instax cameras and printers"
+      "source": "wikipedia:List of Instax cameras and printers",
+      "datasheetUrl": "https://cdn.downloads.lomography.com/downloads/lomo-instant-wide-manual.pdf",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://cdn.downloads.lomography.com/downloads/lomo-instant-wide-manual.pdf"
+          }
+        }
+      ]
     },
     {
       "make": "Lomography",
@@ -3631,7 +4362,16 @@
       "category": "film",
       "wikidata": "Q1931209",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F_Eye_Level.jpg?width=320",
-      "source": "wikipedia:Nikon F"
+      "source": "wikipedia:Nikon F",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history-f/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history-f/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3641,7 +4381,16 @@
       "category": "film",
       "wikidata": "Q788315",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F2_DE1.jpg?width=320",
-      "source": "wikipedia:Nikon F2"
+      "source": "wikipedia:Nikon F2",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history-f2/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history-f2/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3651,7 +4400,16 @@
       "category": "film",
       "wikidata": "Q1470486",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/F3big.jpg?width=320",
-      "source": "wikipedia:Nikon F3"
+      "source": "wikipedia:Nikon F3",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history-f3/index.html",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history-f3/index.html"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3661,7 +4419,16 @@
       "category": "film",
       "wikidata": "Q1384459",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F4_1.jpg?width=320",
-      "source": "wikipedia:Nikon F4"
+      "source": "wikipedia:Nikon F4",
+      "datasheetUrl": "https://imaging.nikon.com/history/chronicle/history-f4/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/history/chronicle/history-f4/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3671,7 +4438,16 @@
       "category": "film",
       "wikidata": "Q1510216",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/16-04-09_Nikon_F5_RalfR_WAT_6948.jpg?width=320",
-      "source": "wikipedia:Nikon F5"
+      "source": "wikipedia:Nikon F5",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history-f5/index.html",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history-f5/index.html"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3681,7 +4457,16 @@
       "category": "film",
       "wikidata": "Q1510460",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F6_face.jpg?width=320",
-      "source": "wikipedia:Nikon F6"
+      "source": "wikipedia:Nikon F6",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/2000/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/2000/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3691,7 +4476,16 @@
       "category": "film",
       "wikidata": "Q56322804",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_Nikomat_FT_01.JPG?width=320",
-      "source": "wikipedia:Nikkormat"
+      "source": "wikipedia:Nikkormat",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history-f/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history-f/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3701,7 +4495,16 @@
       "category": "film",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikomat_IMG_5356.JPG?width=320",
-      "source": "wikipedia:Nikkormat"
+      "source": "wikipedia:Nikkormat",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/cousins06-e/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/cousins06-e/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3711,7 +4514,16 @@
       "category": "film",
       "wikidata": null,
       "image": null,
-      "source": "wikipedia:Nikkormat"
+      "source": "wikipedia:Nikkormat",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1970/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1970/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3721,7 +4533,16 @@
       "category": "film",
       "wikidata": null,
       "image": null,
-      "source": "wikipedia:Nikkormat"
+      "source": "wikipedia:Nikkormat",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1970/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1970/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3731,7 +4552,16 @@
       "category": "film",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikkormat_el_japanese_analog_camera_with_35mm_lens.jpg?width=320",
-      "source": "wikipedia:Nikkormat"
+      "source": "wikipedia:Nikkormat",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1970/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1970/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3741,7 +4571,16 @@
       "category": "film",
       "wikidata": null,
       "image": null,
-      "source": "wikipedia:Nikkormat"
+      "source": "wikipedia:Nikkormat",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1970/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1970/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3751,7 +4590,16 @@
       "category": "film",
       "wikidata": "Q3341825",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_FM.jpg?width=320",
-      "source": "wikipedia:Nikon FM"
+      "source": "wikipedia:Nikon FM",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1970/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1970/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3761,7 +4609,16 @@
       "category": "film",
       "wikidata": "Q1352089",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_FM2_black.jpg?width=320",
-      "source": "wikipedia:Nikon FM2"
+      "source": "wikipedia:Nikon FM2",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/cousins13-e/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/cousins13-e/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3771,7 +4628,16 @@
       "category": "film",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/NIKON_FM2n_NIKKOR_Q.jpg?width=320",
-      "source": "wikipedia:Nikon FM2"
+      "source": "wikipedia:Nikon FM2",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/cousins13-e/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/cousins13-e/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3781,7 +4647,16 @@
       "category": "film",
       "wikidata": "Q655249",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/NikonFM3A.jpg?width=320",
-      "source": "wikipedia:Nikon FM3A"
+      "source": "wikipedia:Nikon FM3A",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/2000/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/2000/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3791,7 +4666,16 @@
       "category": "film",
       "wikidata": "Q2308014",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_FE_%26_Nikkor_50_mm_f1.4.jpg?width=320",
-      "source": "wikipedia:Nikon FE"
+      "source": "wikipedia:Nikon FE",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1970/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1970/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3801,7 +4685,16 @@
       "category": "film",
       "wikidata": "Q3341827",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/NikonFE2blkfrt50f14.jpg?width=320",
-      "source": "wikipedia:Nikon FE2"
+      "source": "wikipedia:Nikon FE2",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/cousins14-e/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/cousins14-e/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3811,7 +4704,16 @@
       "category": "film",
       "wikidata": "Q1457619",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/NikonFAblkfrt35f2.jpg?width=320",
-      "source": "wikipedia:Nikon FA"
+      "source": "wikipedia:Nikon FA",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/cousins14-e/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/cousins14-e/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3821,7 +4723,16 @@
       "category": "film",
       "wikidata": "Q3341826",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_FG_1982_8872836.jpg?width=320",
-      "source": "wikipedia:Nikon FG"
+      "source": "wikipedia:Nikon FG",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1980/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1980/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3831,7 +4742,16 @@
       "category": "film",
       "wikidata": "Q11040975",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/FG-20.JPG?width=320",
-      "source": "wikipedia:Nikon FG-20"
+      "source": "wikipedia:Nikon FG-20",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1980/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1980/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3841,7 +4761,16 @@
       "category": "film",
       "wikidata": "Q2263095",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_EM_%28balance_adjust%29.jpg?width=320",
-      "source": "wikipedia:Nikon EM"
+      "source": "wikipedia:Nikon EM",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1970/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1970/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3851,7 +4780,16 @@
       "category": "film",
       "wikidata": "Q1654201",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_FM10.jpg?width=320",
-      "source": "wikipedia:Nikon FM10"
+      "source": "wikipedia:Nikon FM10",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1990/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1990/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3861,7 +4799,16 @@
       "category": "film",
       "wikidata": "Q951843",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F301.jpg?width=320",
-      "source": "wikipedia:Nikon F-301"
+      "source": "wikipedia:Nikon F-301",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1980/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1980/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3871,7 +4818,16 @@
       "category": "film",
       "wikidata": "Q1992006",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F-501-Nikkor.jpg?width=320",
-      "source": "wikipedia:Nikon F-501"
+      "source": "wikipedia:Nikon F-501",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1980/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1980/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3881,7 +4837,16 @@
       "category": "film",
       "wikidata": "Q1984095",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/N8008_front.jpg?width=320",
-      "source": "wikipedia:Nikon F-801"
+      "source": "wikipedia:Nikon F-801",
+      "datasheetUrl": "https://imaging.nikon.com/history/chronicle/history-f4/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/history/chronicle/history-f4/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3891,7 +4856,16 @@
       "category": "film",
       "wikidata": "Q7036525",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_N90s_body_MB10.JPG?width=320",
-      "source": "wikipedia:Nikon F90"
+      "source": "wikipedia:Nikon F90",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1990/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1990/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3901,7 +4875,16 @@
       "category": "film",
       "wikidata": "Q12040937",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F90x.jpg?width=320",
-      "source": "wikipedia:Nikon F90"
+      "source": "wikipedia:Nikon F90",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1990/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1990/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3911,7 +4894,16 @@
       "category": "film",
       "wikidata": "Q3341816",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F100.png?width=320",
-      "source": "wikipedia:Nikon F100"
+      "source": "wikipedia:Nikon F100",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1990/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1990/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3921,7 +4913,16 @@
       "category": "film",
       "wikidata": "Q1068333",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F80_T.jpg?width=320",
-      "source": "wikipedia:Nikon F80"
+      "source": "wikipedia:Nikon F80",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/2000/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/2000/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3931,7 +4932,16 @@
       "category": "film",
       "wikidata": "Q378703",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F75_01.jpg?width=320",
-      "source": "wikipedia:Nikon F75"
+      "source": "wikipedia:Nikon F75",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/2000/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/2000/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3941,7 +4951,16 @@
       "category": "film",
       "wikidata": "Q3078788",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_N65_%28lower_contrast%29.jpg?width=320",
-      "source": "wikipedia:Nikon F65"
+      "source": "wikipedia:Nikon F65",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/2000/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/2000/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3951,7 +4970,16 @@
       "category": "film",
       "wikidata": "Q489172",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon-f60-2.jpg?width=320",
-      "source": "wikipedia:Nikon F60"
+      "source": "wikipedia:Nikon F60",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1990/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1990/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3961,7 +4989,16 @@
       "category": "film",
       "wikidata": "Q3341822",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F70_BL_%28filter_retouch%29.jpg?width=320",
-      "source": "wikipedia:Nikon F70"
+      "source": "wikipedia:Nikon F70",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1990/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1990/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3971,7 +5008,16 @@
       "category": "film",
       "wikidata": "Q3078442",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F50_5914.jpeg?width=320",
-      "source": "wikipedia:Nikon F50"
+      "source": "wikipedia:Nikon F50",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1990/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1990/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3981,7 +5027,16 @@
       "category": "film",
       "wikidata": "Q3341820",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_F601_D.jpg?width=320",
-      "source": "wikipedia:Nikon F-601"
+      "source": "wikipedia:Nikon F-601",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/products_history/1990/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/products_history/1990/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -3991,7 +5046,16 @@
       "category": "film",
       "wikidata": "Q1992003",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/F-401_401-S_401-X.jpg?width=320",
-      "source": "wikipedia:Nikon F-401"
+      "source": "wikipedia:Nikon F-401",
+      "datasheetUrl": "https://imaging.nikon.com/history/chronicle/history-f4/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/history/chronicle/history-f4/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4001,7 +5065,16 @@
       "category": "film",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_S_with_NIKKOR_H.C_2_f%3D5cm_lens.jpg?width=320",
-      "source": "wikipedia:Nikon I, M and S"
+      "source": "wikipedia:Nikon I, M and S",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history_e/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history_e/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4011,7 +5084,16 @@
       "category": "film",
       "wikidata": "Q124802074",
       "image": null,
-      "source": "wikipedia:Nikon I, M and S"
+      "source": "wikipedia:Nikon I, M and S",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/rhnc08s2-e/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/rhnc08s2-e/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4021,7 +5103,16 @@
       "category": "film",
       "wikidata": "Q7036542",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/S3-400.jpg?width=320",
-      "source": "wikipedia:Nikon S3"
+      "source": "wikipedia:Nikon S3",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/rhnc07sp-e/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/rhnc07sp-e/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4031,7 +5122,16 @@
       "category": "film",
       "wikidata": "Q7036545",
       "image": null,
-      "source": "wikipedia:Nikon I, M and S"
+      "source": "wikipedia:Nikon I, M and S",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/rhnc07sp-e/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/rhnc07sp-e/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4041,7 +5141,16 @@
       "category": "film",
       "wikidata": "Q7036548",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikon_SP_chrome_with_exposure_meter_and_NIKKOR-S_1%2C4_f%3D5cm.JPG?width=320",
-      "source": "wikipedia:Nikon SP"
+      "source": "wikipedia:Nikon SP",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/rhnc07sp-e/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/rhnc07sp-e/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4051,7 +5160,16 @@
       "category": "film",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/S3-2000.jpg?width=320",
-      "source": "wikipedia:Nikon S3"
+      "source": "wikipedia:Nikon S3",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/rhnc07sp-e/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/rhnc07sp-e/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4061,7 +5179,16 @@
       "category": "film",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_front_2016_Nikon_Museum.jpg?width=320",
-      "source": "wikipedia:Nikonos"
+      "source": "wikipedia:Nikonos",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4071,7 +5198,16 @@
       "category": "film",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_II_front-left_2016_Nikon_Museum.jpg?width=320",
-      "source": "wikipedia:Nikonos"
+      "source": "wikipedia:Nikonos",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4081,7 +5217,16 @@
       "category": "film",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_III_front_2015_Nikon_Museum.jpg?width=320",
-      "source": "wikipedia:Nikonos"
+      "source": "wikipedia:Nikonos",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4091,7 +5236,16 @@
       "category": "film",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_IV-A_front-right_2015_Nikon_Museum.jpg?width=320",
-      "source": "wikipedia:Nikonos"
+      "source": "wikipedia:Nikonos",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4101,7 +5255,16 @@
       "category": "film",
       "wikidata": "Q745343",
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_V_front_2015_Nikon_Museum.jpg?width=320",
-      "source": "wikipedia:Nikonos"
+      "source": "wikipedia:Nikonos",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/"
+          }
+        }
+      ]
     },
     {
       "make": "Nikon",
@@ -4111,7 +5274,16 @@
       "category": "film",
       "wikidata": null,
       "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Nikonos_RS_AF_front-left_2016_Nikon_Museum.jpg?width=320",
-      "source": "wikipedia:Nikonos"
+      "source": "wikipedia:Nikonos",
+      "datasheetUrl": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/chronicle/history-nikonos/"
+          }
+        }
+      ]
     },
     {
       "make": "Olympus",

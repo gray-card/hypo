@@ -6,6 +6,7 @@ import { PRESETS } from "../src/data/presets.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CURATED_DIR = join(ROOT, "data", "curated-lenses");
+const DATASHEET_FILE = join(ROOT, "data", "datasheets", "lenses.jsonl");
 
 function loadAllCurated() {
   const rows = [];
@@ -60,5 +61,27 @@ describe("PRESETS.lensType merges curated with lensfun (deduped)", () => {
   it("never lists the same lens model twice", () => {
     const models = PRESETS.lensType.items.map((l) => `${l.make}|${l.model}`.toLowerCase());
     expect(new Set(models).size).toBe(models.length);
+  });
+
+  it("applies every exact manufacturer datasheet overlay", () => {
+    const links = readFileSync(DATASHEET_FILE, "utf8")
+      .split("\n").map((s) => s.trim()).filter(Boolean).map((s) => JSON.parse(s));
+    const allowedHosts = new Set([
+      "dl.fujifilm-x.com",
+      "global.canon",
+      "imaging.nikon.com",
+      "www.sigma-global.com",
+    ]);
+    expect(links).toHaveLength(26);
+    const presets = new Map(PRESETS.lensType.items.map((l) => [
+      `${l.make}\0${l.model}`.toLowerCase(),
+      l,
+    ]));
+    for (const link of links) {
+      const url = new URL(link.datasheetUrl);
+      expect(url.protocol, `${link.make} ${link.model}`).toBe("https:");
+      expect(allowedHosts.has(url.hostname), `${link.make} ${link.model}: ${url.hostname}`).toBe(true);
+      expect(presets.get(`${link.make}\0${link.model}`.toLowerCase())?.datasheetUrl).toBe(link.datasheetUrl);
+    }
   });
 });

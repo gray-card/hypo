@@ -11,6 +11,7 @@ import lensfunCameras from "./lensfun-cameras.json";
 import curatedLenses from "./curated-lenses.json";
 import curatedCameras from "./curated-cameras.json";
 import curatedFilmStocks from "./curated-film-stocks.json";
+import curatedDarkroomProducts from "./curated-darkroom-products.json";
 
 // lensfun (CC-BY-SA) plus the curated non-lensfun additions (e.g. Nikon's
 // manual-focus line), deduped at build time so a lens never appears twice.
@@ -84,8 +85,12 @@ export const MANUFACTURERS = [
 // stay as their own entries — a photographer may hold a box under either label —
 // but each points at the other so clients can treat them as one film.
 const film = (brand, name, iso, filmType, process, aka) => ({ brand, name, iso, filmType, process, ...(aka ? { aka } : {}) });
-const dev = (brand, name, process, form, defaultDilution) => ({ brand, name, process, form, defaultDilution });
-const chem = (brand, name, role, form) => ({ brand, name, role, form });
+const dev = (brand, name, process, form, defaultDilution, datasheetUrl) => ({
+  brand, name, process, form, defaultDilution, ...(datasheetUrl ? { datasheetUrl } : {}),
+});
+const chem = (brand, name, role, form, datasheetUrl) => ({
+  brand, name, role, form, ...(datasheetUrl ? { datasheetUrl } : {}),
+});
 const scan = (make, model, scannerKind) => ({ make, model, scannerKind });
 const paper = (brand, name, surface) => ({ brand, name, surface });
 const filt = (make, name, filterKind, threadDiameterMm) => ({ make, name, filterKind, threadDiameterMm });
@@ -180,10 +185,11 @@ const cameraNorm = (make, model) =>
   `${make} ${model}`.toLowerCase().replace(/\b(eos|mark|mk|lumix)\b/g, " ").replace(/[^a-z0-9]/g, "");
 
 const ALL_CAMERAS = (() => {
-  const seen = new Set(CURATED_CAMERAS.map((c) => cameraNorm(c.make, c.model)));
-  const out = [...CURATED_CAMERAS];
-  // hand-curated JSONL bodies (film SLRs/rangefinders/TLRs) then lensfun digital
-  for (const src of [(curatedCameras.cameras || []), (lensfunCameras.cameras || [])]) {
+  const seen = new Set();
+  const out = [];
+  // Prefer the canonical JSONL record, which can carry provenance, images, and
+  // datasheets. The older inline list is a fallback, followed by lensfun digital.
+  for (const src of [(curatedCameras.cameras || []), CURATED_CAMERAS, (lensfunCameras.cameras || [])]) {
     for (const c of src) {
       const k = cameraNorm(c.make, c.model);
       if (seen.has(k)) continue;
@@ -288,54 +294,54 @@ export const PRESETS = {
     primary: "name",
     label: (i) => `${i.brand} ${i.name}`,
     items: [
-      dev("Kodak", "D-76", "bw", "powder", "1+1"),
-      dev("Kodak", "HC-110", "bw", "liquid-concentrate", "1+31 (dil. B)"),
-      dev("Kodak", "XTOL", "bw", "powder", "1+1"),
+      dev("Kodak", "D-76", "bw", "powder", "1+1", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
+      dev("Kodak", "HC-110", "bw", "liquid-concentrate", "1+31 (dil. B)", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
+      dev("Kodak", "XTOL", "bw", "powder", "1+1", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
       dev("Kodak", "D-23", "bw", "powder", "stock"),
-      dev("Ilford", "ID-11", "bw", "powder", "1+1"),
-      dev("Ilford", "DD-X", "bw", "liquid-concentrate", "1+4"),
-      dev("Ilford", "Ilfosol 3", "bw", "liquid-concentrate", "1+9"),
-      dev("Ilford", "Microphen", "bw", "powder", "stock"),
-      dev("Ilford", "Perceptol", "bw", "powder", "1+1"),
-      dev("Adox", "Rodinal / Adonal", "bw", "liquid-concentrate", "1+25"),
-      dev("Adox", "XT-3", "bw", "powder", "1+1"),
-      dev("Adox", "FX-39 II", "bw", "liquid-concentrate", "1+9"),
-      dev("Cinestill", "Df96 Monobath", "bw", "liquid-ready", "stock"),
-      dev("Bellini", "Hydrofen", "bw", "liquid-concentrate", "1+19"),
-      dev("Foma", "Fomadon R09", "bw", "liquid-concentrate", "1+25"),
-      dev("Foma", "Fomadon Excel", "bw", "powder", "1+1"),
-      dev("Photographers' Formulary", "Pyrocat-HD", "bw", "liquid-concentrate", "1+1+100"),
-      dev("Photographers' Formulary", "PMK Pyro", "bw", "liquid-concentrate", "1+2+100"),
+      dev("Ilford", "ID-11", "bw", "powder", "1+1", "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"),
+      dev("Ilford", "DD-X", "bw", "liquid-concentrate", "1+4", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
+      dev("Ilford", "Ilfosol 3", "bw", "liquid-concentrate", "1+9", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
+      dev("Ilford", "Microphen", "bw", "powder", "stock", "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"),
+      dev("Ilford", "Perceptol", "bw", "powder", "1+1", "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"),
+      dev("Adox", "Rodinal / Adonal", "bw", "liquid-concentrate", "1+25", "https://www.adox.de/adox-film-developer/rodinal-adonal/"),
+      dev("Adox", "XT-3", "bw", "powder", "1+1", "https://www.adox.de/xt3-en/"),
+      dev("Adox", "FX-39 II", "bw", "liquid-concentrate", "1+9", "https://www.adox.de/adox-film-developer/adox-fx-39/"),
+      dev("Cinestill", "Df96 Monobath", "monobath", "liquid-ready", "stock", "https://cdn.shopify.com/s/files/1/0339/5113/files/Df96_instructions_Instructions_Complete.pdf"),
+      dev("Bellini", "Hydrofen", "bw", "liquid-concentrate", "1+19", "https://www.bellinifoto.it/wp-content/uploads/2020/08/BWDROD.pdf"),
+      dev("Foma", "Fomadon R09", "bw", "liquid-concentrate", "1+25", "https://www.foma.cz/en/catalogue-fomadon-r09-detail-421"),
+      dev("Foma", "Fomadon Excel", "bw", "powder", "1+1", "https://www.foma.cz/en/catalogue-fomadon-excel-detail-422"),
+      dev("Photographers' Formulary", "Pyrocat-HD", "bw", "liquid-concentrate", "1+1+100", "https://site.photoformulary.com/Catalog.pdf"),
+      dev("Photographers' Formulary", "PMK Pyro", "bw", "liquid-concentrate", "1+2+100", "https://site.photoformulary.com/Catalog.pdf"),
       dev("Diafine", "Diafine Two-Bath", "bw", "powder", "two-bath"),
-      dev("Kodak", "Flexicolor C-41", "c41", "kit", "stock"),
-      dev("Bellini", "C-41", "c41", "kit", "stock"),
-      dev("Cinestill", "Cs41 Color Simplified", "c41", "kit", "stock"),
+      dev("Kodak", "Flexicolor C-41", "c41", "kit", "stock", "https://business.kodakmoments.com/sites/default/files/wysiwyg/pro/chemistry/z131.pdf"),
+      dev("Bellini", "C-41", "c41", "kit", "stock", "https://www.bellinifoto.it/wp-content/uploads/2019/07/C41_scheda-tecnica-5.pdf"),
+      dev("Cinestill", "Cs41 Color Simplified", "c41", "kit", "stock", "https://cdn.shopify.com/s/files/1/0339/5113/files/CS41powder_Instructions_Complete.pdf"),
       dev("Tetenal", "Colortec C-41", "c41", "kit", "stock"),
-      dev("Bellini", "E-6", "e6", "kit", "stock"),
-      dev("Cinestill", "Cs6 Creative Slide E-6", "e6", "kit", "stock"),
-      dev("Cinestill", "Cs2 ECN-2", "ecn2", "kit", "stock"),
-      dev("Kodak", "Ektachrome E-6", "e6", "kit", "stock"),
+      dev("Bellini", "E-6", "e6", "kit", "stock", "https://www.bellinifoto.it/en/prodotto/kit-amateur-e6/"),
+      dev("Cinestill", "Cs6 Creative Slide E-6", "e6", "kit", "stock", "https://cinestillfilm.com/collections/tcs-temp/products/cs6-creative-slide-3-bath-kits-for-color-timing-chrome-reversal-and-e-6-film"),
+      dev("Cinestill", "Cs2 ECN-2", "ecn2", "kit", "stock", "https://cinestillfilm.com/collections/cs2-cine"),
+      dev("Kodak", "Ektachrome E-6", "e6", "kit", "stock", "https://business.kodakmoments.com/sites/default/files/files/resources/j83.pdf"),
     ],
   },
   chemistryType: {
     primary: "name",
     label: (i) => `${i.brand} ${i.name}`,
     items: [
-      chem("Ilford", "Ilfostop", "stop", "liquid-concentrate"),
-      chem("Kodak", "Indicator Stop Bath", "stop", "liquid-concentrate"),
-      chem("Ilford", "Rapid Fixer", "fixer", "liquid-concentrate"),
-      chem("Ilford", "Hypam", "fixer", "liquid-concentrate"),
-      chem("Kodak", "Professional Fixer", "fixer", "powder"),
-      chem("Kodak", "Kodafix", "fixer", "liquid-concentrate"),
-      chem("Photographers' Formulary", "TF-4 Archival Fixer", "fixer", "liquid-ready"),
-      chem("Photographers' Formulary", "TF-5 Archival Fixer", "fixer", "liquid-ready"),
-      chem("Kodak", "Hypo Clearing Agent", "other", "powder"),
-      chem("Ilford", "Ilfotol", "wetting-agent", "liquid-concentrate"),
-      chem("Kodak", "Photo-Flo 200", "wetting-agent", "liquid-concentrate"),
+      chem("Ilford", "Ilfostop", "stop", "liquid-concentrate", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
+      chem("Kodak", "Indicator Stop Bath", "stop", "liquid-concentrate", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
+      chem("Ilford", "Rapid Fixer", "fixer", "liquid-concentrate", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
+      chem("Ilford", "Hypam", "fixer", "liquid-concentrate", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
+      chem("Kodak", "Professional Fixer", "fixer", "powder", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
+      chem("Kodak", "Kodafix", "fixer", "liquid-concentrate", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
+      chem("Photographers' Formulary", "TF-4 Archival Fixer", "fixer", "liquid-ready", "https://site.photoformulary.com/Catalog.pdf"),
+      chem("Photographers' Formulary", "TF-5 Archival Fixer", "fixer", "liquid-ready", "https://site.photoformulary.com/Catalog.pdf"),
+      chem("Kodak", "Hypo Clearing Agent", "other", "powder", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
+      chem("Ilford", "Ilfotol", "wetting-agent", "liquid-concentrate", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
+      chem("Kodak", "Photo-Flo 200", "wetting-agent", "liquid-concentrate", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
       chem("Kodak", "C-41 Blix", "blix", "kit"),
-      chem("Adox", "Adostab II", "stabilizer", "liquid-ready"),
+      chem("Adox", "Adostab II", "stabilizer", "liquid-ready", "https://www.adox.de/chemistry/toners-helping-aids/adostab/"),
       chem("Kodak", "Selenium Toner", "toner", "liquid-concentrate"),
-      chem("Moersch", "Sepia Toner", "toner", "liquid-concentrate"),
+      chem("Moersch", "Sepia Toner", "toner", "liquid-concentrate", "https://www.moersch-photochemie.de/en/product/mt5-sepia-schwefeltoner/"),
     ],
   },
   cameraType: {
@@ -427,18 +433,46 @@ export const PRESETS = {
 {
   const norm = (s) => String(s || "").toLowerCase().replace(/plus/g, "").replace(/[^a-z0-9]/g, "");
   const items = PRESETS.filmStock.items;
-  const have = new Set(items.map((i) => norm(i.name)));
+  const byName = new Map(items.map((i) => [norm(i.name), i]));
   for (const s of (curatedFilmStocks.stocks || [])) {
-    if (have.has(norm(s.name))) continue;
-    have.add(norm(s.name));
-    items.push({
-      brand: s.brand, name: s.name, iso: s.iso, filmType: s.filmType, process: s.process,
-      formats: s.formats, base: s.base, spectralSensitivity: s.spectralSensitivity,
-      grainRms: s.grainRms, resolvingPowerLpMm: s.resolvingPowerLpMm,
-      exposureLatitude: s.exposureLatitude, discontinued: s.discontinued, datasheetUrl: s.datasheetUrl,
-    });
+    const key = norm(s.name);
+    const existing = byName.get(key);
+    if (existing) {
+      // The sourced catalog is authoritative for factual fields and
+      // manufacturer capitalization. Properties absent from it (for instance a
+      // hand-maintained alias) remain on the compact built-in record.
+      Object.assign(existing, Object.fromEntries(Object.entries(s).filter(([, value]) => value != null)));
+      continue;
+    }
+    const added = { ...s };
+    byName.set(key, added);
+    items.push(added);
   }
   items.sort((a, b) => (a.brand + " " + a.name).localeCompare(b.brand + " " + b.name));
+}
+
+// Enrich the compact built-in developer and chemistry lists with structured
+// manufacturer specifications. Identity fields from the built-ins remain the
+// display canonicalization; datasheet fields fill only missing values.
+{
+  const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  for (const [presetKind, sourceKey] of [["developerType", "developers"], ["chemistryType", "chemistries"]]) {
+    const items = PRESETS[presetKind].items;
+    const byIdentity = new Map(items.map((item) => [`${norm(item.brand)}\0${norm(item.name)}`, item]));
+    for (const spec of (curatedDarkroomProducts[sourceKey] || [])) {
+      const key = `${norm(spec.brand)}\0${norm(spec.name)}`;
+      const existing = byIdentity.get(key);
+      if (existing) {
+        for (const [field, value] of Object.entries(spec)) {
+          if (value != null && existing[field] == null) existing[field] = value;
+        }
+        continue;
+      }
+      const added = { ...spec };
+      byIdentity.set(key, added);
+      items.push(added);
+    }
+  }
 }
 
 export const FIELD_ENUMS = {
