@@ -126,13 +126,22 @@ function onSession(sess) {
   // your gear first, galleries second. brand-new users get the wizard.
   if (!profileSegment()) {
     goSection("setup").then(() => {
-      if (needsOnboarding(getStore())) startOnboarding();
+      if (needsOnboarding(getStore(), did)) startOnboarding();
     });
   }
 }
 
 function startOnboarding() {
-  openOnboarding({ agent, did, onDone: () => goSection("setup") });
+  openOnboarding({ agent, did, onDone: (destination = "setup") => {
+    if (destination.startsWith("setup-")) {
+      const tab = destination.slice("setup-".length);
+      const body = $("#library-body");
+      if (body) body.dataset.tab = tab;
+      goSection("setup");
+    } else {
+      goSection(destination);
+    }
+  } });
 }
 
 async function signOut() {

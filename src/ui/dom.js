@@ -201,6 +201,7 @@ export function openModal(title, bodyNodes, onSave, opts = {}) {
     document.removeEventListener("keydown", onKey);
     overlay.remove();
     if (prevFocus && prevFocus.focus) prevFocus.focus();
+    opts.onClose?.();
   };
 
   function onKey(e) {
