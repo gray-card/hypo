@@ -186,7 +186,7 @@ async function discoverSetups(body) {
   };
 
   const setCounts = () => discoverCounts().then((c) => {
-    if (c) countLine.textContent = `${c.setups.toLocaleString()} setup${c.setups === 1 ? "" : "s"} from ${c.authors.toLocaleString()} photographer${c.authors === 1 ? "" : "s"}.`;
+    if (c) countLine.textContent = `${c.setups.toLocaleString()} setup${c.setups === 1 ? "" : "s"} from ${c.authors.toLocaleString()} photographer${c.authors === 1 ? "" : "s"}. To appear in this listing, you can publish your setup from your public profile page.`;
   });
 
   const loadMore = async () => {
