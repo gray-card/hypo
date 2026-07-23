@@ -13,6 +13,18 @@
           "make": { "type": "string", "maxLength": 128 },
           "model": { "type": "string", "maxLength": 256 },
           "mount": { "type": "ref", "ref": "app.graycard.defs#mount" },
+          "mounts": {
+            "type": "array",
+            "maxLength": 32,
+            "description": "All mounts in which the optical model was offered. mount remains the primary/legacy value.",
+            "items": { "type": "ref", "ref": "app.graycard.defs#mount" }
+          },
+          "variants": {
+            "type": "array",
+            "maxLength": 64,
+            "description": "Mount- or market-specific versions of this optical model.",
+            "items": { "type": "ref", "ref": "#variant" }
+          },
           "lensTypeKind": { "type": "ref", "ref": "app.graycard.defs#lensTypeKind" },
           "focalLengthMin": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" },
           "focalLengthMax": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" },
@@ -26,13 +38,70 @@
             "items": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" }
           },
           "apertureStopIncrement": { "type": "ref", "ref": "app.graycard.defs#stopFraction", "description": "Default stop fraction when generating aperture options from min/max (shot logger may override when steps are absent)." },
+          "closestFocus": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Minimum focusing distance as specified by the manufacturer." },
+          "maxReproductionRatio": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Maximum image-to-subject reproduction ratio at 1e6 scale; 1:1 is 1000000 and 1:2 is 500000." },
+          "filterThreadDiameter": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Front filter thread diameter, normally in millimetres." },
+          "opticalElements": { "type": "integer", "minimum": 1, "maximum": 100 },
+          "opticalGroups": { "type": "integer", "minimum": 1, "maximum": 100 },
+          "diaphragmBladeCount": { "type": "integer", "minimum": 1, "maximum": 64 },
+          "stabilized": { "type": "boolean", "description": "Whether the lens includes optical image stabilization." },
+          "stabilizationStops": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Manufacturer-rated stabilization benefit in stops at 1e6 scale." },
+          "autofocusTechnology": { "type": "ref", "ref": "app.graycard.defs#lensAutofocusTechnology" },
+          "dimensions": { "type": "ref", "ref": "app.graycard.defs#physicalDimensions" },
+          "weight": { "type": "ref", "ref": "app.graycard.defs#measure" },
+          "imageCircleDiameter": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Usable image-circle diameter at the manufacturer-specified focus/aperture." },
+          "coveredFormats": {
+            "type": "array",
+            "maxLength": 24,
+            "items": { "type": "ref", "ref": "app.graycard.defs#captureFormat" }
+          },
+          "productionStartYear": { "type": "integer", "minimum": 1800, "maximum": 2200 },
+          "productionEndYear": { "type": "integer", "minimum": 1800, "maximum": 2200 },
+          "compatibleHoods": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "maxLength": 128 }
+          },
+          "compatibleTeleconverters": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "maxLength": 128 }
+          },
           "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
           "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "documents": {
+            "type": "array",
+            "maxLength": 16,
+            "description": "Technical sheets, manuals, catalogs, and other documents consulted for this model.",
+            "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" }
+          },
+          "specSources": {
+            "type": "array",
+            "maxLength": 64,
+            "description": "Field-level assertions identifying the exact document location behind structured specifications.",
+            "items": { "type": "ref", "ref": "app.graycard.defs#specSource" }
+          },
           "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
           "notes": { "type": "string", "maxLength": 2000 },
           "createdAt": { "type": "string", "format": "datetime" },
           "updatedAt": { "type": "string", "format": "datetime" }
         }
+      }
+    },
+    "variant": {
+      "type": "object",
+      "description": "A mount- or market-specific version of a lens model.",
+      "required": ["mount"],
+      "properties": {
+        "mount": { "type": "ref", "ref": "app.graycard.defs#mount" },
+        "name": { "type": "string", "maxLength": 256 },
+        "catalogNumber": { "type": "string", "maxLength": 128 },
+        "filterThreadDiameter": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "dimensions": { "type": "ref", "ref": "app.graycard.defs#physicalDimensions" },
+        "weight": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "productionStartYear": { "type": "integer", "minimum": 1800, "maximum": 2200 },
+        "productionEndYear": { "type": "integer", "minimum": 1800, "maximum": 2200 },
+        "note": { "type": "string", "maxLength": 500 }
       }
     }
   }

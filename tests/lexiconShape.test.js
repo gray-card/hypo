@@ -147,4 +147,55 @@ describe("lexicon shape guards", () => {
     expect(load("catalog.filmStock").defs.main.record.properties.datasheetUrl.maxLength).toBeGreaterThan(0);
     expect(load("catalog.devRecipe").defs.main.record.properties.source.maxLength).toBeGreaterThan(0);
   });
+
+  it("camera and lens specifications carry structured document provenance", () => {
+    const defs = load("defs").defs;
+    expect(defs.productDocument.required).toEqual(["kind", "asset"]);
+    expect(defs.productDocument.properties.kind.knownValues).toContain("technical-data");
+    expect(defs.specSource.required).toEqual(["document", "fields"]);
+    expect(defs.specSource.properties.document.ref).toBe("#productDocument");
+    expect(defs.specSource.properties.fields.maxLength).toBeGreaterThan(0);
+
+    for (const id of ["catalog.cameraType", "catalog.lensType"]) {
+      const p = load(id).defs.main.record.properties;
+      expect(p.documents.items.ref).toBe("app.graycard.defs#productDocument");
+      expect(p.documents.maxLength).toBeGreaterThan(0);
+      expect(p.specSources.items.ref).toBe("app.graycard.defs#specSource");
+      expect(p.specSources.maxLength).toBeGreaterThan(0);
+    }
+  });
+
+  it("camera and lens technical fields stay structured and bounded", () => {
+    const camera = load("catalog.cameraType").defs.main.record.properties;
+    for (const field of [
+      "shutterType", "flashSyncSpeed", "isoMin", "isoMax", "isoSteps",
+      "meteringModes", "exposurePrograms", "exposureCompensationMin",
+      "exposureCompensationMax", "viewfinderCoverage", "viewfinderMagnification",
+      "autofocusSystem", "autofocusModes", "filmAdvanceModes", "batteryTypes",
+      "dimensions", "weight", "productionStartYear", "productionEndYear",
+      "sensorWidth", "sensorHeight", "cropFactor", "effectiveMegapixels",
+      "sensorTechnology", "storageMedia", "rawFormats",
+    ]) expect(camera[field], `cameraType.${field}`).toBeTruthy();
+    for (const field of [
+      "isoSteps", "meteringModes", "exposurePrograms", "autofocusModes",
+      "filmAdvanceModes", "batteryTypes", "storageMedia", "rawFormats",
+    ]) expect(camera[field].maxLength, `cameraType.${field}`).toBeGreaterThan(0);
+
+    const lensDoc = load("catalog.lensType");
+    const lens = lensDoc.defs.main.record.properties;
+    for (const field of [
+      "mounts", "variants", "focalLength35mm", "maxApertureAtTele",
+      "closestFocus", "maxReproductionRatio", "filterThreadDiameter",
+      "opticalElements", "opticalGroups", "diaphragmBladeCount", "stabilized",
+      "stabilizationStops", "autofocusTechnology", "dimensions", "weight",
+      "imageCircleDiameter", "coveredFormats", "productionStartYear",
+      "productionEndYear", "compatibleHoods", "compatibleTeleconverters",
+    ]) expect(lens[field], `lensType.${field}`).toBeTruthy();
+    for (const field of [
+      "mounts", "variants", "coveredFormats", "compatibleHoods",
+      "compatibleTeleconverters",
+    ]) expect(lens[field].maxLength, `lensType.${field}`).toBeGreaterThan(0);
+    expect(lens.variants.items.ref).toBe("#variant");
+    expect(lensDoc.defs.variant.required).toEqual(["mount"]);
+  });
 });

@@ -15,16 +15,92 @@
           "category": { "type": "ref", "ref": "app.graycard.defs#cameraCategory" },
           "mount": { "type": "ref", "ref": "app.graycard.defs#mount" },
           "format": { "type": "ref", "ref": "app.graycard.defs#captureFormat" },
+          "shutterType": { "type": "ref", "ref": "app.graycard.defs#shutterType" },
           "minShutterSpeed": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Fastest shutter (shortest exposure), in seconds at 1e6 scale — e.g. 1/8000 s." },
           "maxShutterSpeed": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Slowest shutter (longest exposure), in seconds at 1e6 scale — e.g. 30 s." },
+          "flashSyncSpeed": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Fastest normal flash-sync exposure in seconds at 1e6 scale, e.g. 1/250 s is 4000." },
           "shutterSpeedSteps": {
             "type": "array",
             "description": "Exact shutter speeds for the shot logger dial, in seconds at 1e6 scale. When present, overrides min/max and stop-fraction generation.",
             "items": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" }
           },
           "shutterStopIncrement": { "type": "ref", "ref": "app.graycard.defs#stopFraction", "description": "Default stop fraction when generating shutter options from min/max (shot logger may override when steps are absent)." },
+          "isoMin": { "type": "integer", "minimum": 1, "maximum": 10000000, "description": "Lowest supported ISO/ASA setting, excluding special low extensions." },
+          "isoMax": { "type": "integer", "minimum": 1, "maximum": 10000000, "description": "Highest supported ISO/ASA setting, excluding special high extensions." },
+          "isoSteps": {
+            "type": "array",
+            "maxLength": 128,
+            "description": "Exact supported ISO/ASA settings when the camera uses a discrete dial or menu.",
+            "items": { "type": "integer", "minimum": 1, "maximum": 10000000 }
+          },
+          "isoStopIncrement": { "type": "ref", "ref": "app.graycard.defs#stopFraction" },
+          "meteringModes": {
+            "type": "array",
+            "maxLength": 16,
+            "items": { "type": "ref", "ref": "app.graycard.defs#meteringMode" }
+          },
+          "exposurePrograms": {
+            "type": "array",
+            "maxLength": 24,
+            "items": { "type": "ref", "ref": "app.graycard.defs#exposureProgram" }
+          },
+          "exposureCompensationMin": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Minimum exposure compensation in EV at 1e6 scale, usually negative." },
+          "exposureCompensationMax": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Maximum exposure compensation in EV at 1e6 scale." },
+          "exposureCompensationIncrement": { "type": "ref", "ref": "app.graycard.defs#stopFraction" },
+          "viewfinderCoverage": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Viewfinder frame coverage as a proportion at 1e6 scale; 100% is 1000000." },
+          "viewfinderMagnification": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Nominal viewfinder magnification ratio at 1e6 scale." },
+          "autofocusSystem": { "type": "string", "maxLength": 256, "description": "Manufacturer name or concise description of the autofocus system." },
+          "autofocusModes": {
+            "type": "array",
+            "maxLength": 12,
+            "items": { "type": "ref", "ref": "app.graycard.defs#autofocusMode" }
+          },
+          "filmAdvanceModes": {
+            "type": "array",
+            "maxLength": 12,
+            "items": { "type": "ref", "ref": "app.graycard.defs#filmAdvanceMode" }
+          },
+          "batteryTypes": {
+            "type": "array",
+            "maxLength": 16,
+            "description": "Manufacturer-specified battery designations, preserving regional equivalents when useful.",
+            "items": { "type": "string", "maxLength": 64 }
+          },
+          "dimensions": { "type": "ref", "ref": "app.graycard.defs#physicalDimensions" },
+          "weight": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Manufacturer-specified body weight; notes or source location should state whether batteries are included." },
+          "productionStartYear": { "type": "integer", "minimum": 1800, "maximum": 2200 },
+          "productionEndYear": { "type": "integer", "minimum": 1800, "maximum": 2200 },
+          "sensorWidth": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Active or effective sensor width, normally in millimetres." },
+          "sensorHeight": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Active or effective sensor height, normally in millimetres." },
+          "cropFactor": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "35 mm-equivalent focal-length multiplier at 1e6 scale." },
+          "effectiveMegapixels": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Effective megapixel count at 1e6 scale." },
+          "sensorTechnology": { "type": "ref", "ref": "app.graycard.defs#sensorTechnology" },
+          "storageMedia": {
+            "type": "array",
+            "maxLength": 24,
+            "description": "Supported storage media or card standards.",
+            "items": { "type": "string", "maxLength": 64 }
+          },
+          "rawFormats": {
+            "type": "array",
+            "maxLength": 24,
+            "description": "Manufacturer RAW file formats or extensions supported by the camera.",
+            "items": { "type": "string", "maxLength": 64 }
+          },
           "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
           "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "documents": {
+            "type": "array",
+            "maxLength": 16,
+            "description": "Technical sheets, manuals, catalogs, and other documents consulted for this model.",
+            "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" }
+          },
+          "specSources": {
+            "type": "array",
+            "maxLength": 64,
+            "description": "Field-level assertions identifying the exact document location behind structured specifications.",
+            "items": { "type": "ref", "ref": "app.graycard.defs#specSource" }
+          },
           "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
           "notes": { "type": "string", "maxLength": 2000 },
           "createdAt": { "type": "string", "format": "datetime" },

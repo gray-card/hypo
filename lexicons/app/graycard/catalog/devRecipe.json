@@ -7,17 +7,19 @@
       "description": "A published development time at one temperature. Times are only ever shown for temperatures a manufacturer datasheet supports (interpolated within published points, never extrapolated).",
       "required": ["tempC10", "timeSec"],
       "properties": {
-        "tempC10": { "type": "integer", "description": "Temperature in tenths of a degree Celsius (20.0 C = 200)." },
-        "timeSec": { "type": "integer", "minimum": 0, "description": "Development time in seconds at this temperature." }
+        "tempC10": { "type": "integer", "minimum": -1000, "maximum": 1000, "description": "Temperature in tenths of a degree Celsius (20.0 C = 200)." },
+        "timeSec": { "type": "integer", "minimum": 0, "maximum": 604800, "description": "Development time in seconds at this temperature." }
       }
     },
     "agitation": {
       "type": "object",
       "description": "Agitation scheme, structured so a timer can drive a metronome.",
       "properties": {
-        "initialSec": { "type": "integer", "minimum": 0, "description": "Continuous agitation at the start of the step." },
-        "everySec": { "type": "integer", "minimum": 0, "description": "Agitation cycle period (e.g. 60 = once a minute)." },
-        "forSec": { "type": "integer", "minimum": 0, "description": "Agitation duration within each cycle (e.g. 10s)." },
+        "initialSec": { "type": "integer", "minimum": 0, "maximum": 604800, "description": "Continuous agitation at the start of the step." },
+        "everySec": { "type": "integer", "minimum": 0, "maximum": 604800, "description": "Agitation cycle period (e.g. 60 = once a minute)." },
+        "forSec": { "type": "integer", "minimum": 0, "maximum": 604800, "description": "Agitation duration within each cycle (e.g. 10s)." },
+        "inversions": { "type": "integer", "minimum": 0, "maximum": 100, "description": "Inversions in each agitation cycle." },
+        "continuous": { "type": "boolean" },
         "note": { "type": "string", "maxLength": 256, "description": "Free-text scheme (e.g. '4 inversions', 'continuous')." }
       }
     },
@@ -29,21 +31,50 @@
         "type": "object",
         "required": ["developerMake", "developerName", "filmMake", "filmName", "process", "temps", "source"],
         "properties": {
+          "developerType": { "type": "string", "format": "at-uri", "description": "Preferred reference to app.graycard.catalog.developerType." },
           "developerMake": { "type": "string", "maxLength": 128 },
-          "developerName": { "type": "string", "maxLength": 128 },
+          "developerName": { "type": "string", "maxLength": 128, "description": "Name fallback for portable records or unresolved developer types." },
           "dilution": { "type": "string", "maxLength": 64, "description": "e.g. 'stock', '1+1', '1+31'." },
+          "filmStock": { "type": "string", "format": "at-uri", "description": "Preferred reference to app.graycard.catalog.filmStock." },
           "filmMake": { "type": "string", "maxLength": 128 },
-          "filmName": { "type": "string", "maxLength": 128 },
+          "filmName": { "type": "string", "maxLength": 128, "description": "Name fallback for portable records or unresolved film stocks." },
           "ei": { "type": "integer", "minimum": 1, "description": "Exposure index the time is for; push/pull rows are separate recipes." },
+          "pushPull": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Push or pull relative to box speed, in stops." },
           "process": { "type": "ref", "ref": "app.graycard.defs#filmProcess" },
           "temps": {
             "type": "array",
+            "maxLength": 64,
             "description": "One or more published (temperature, time) points. Multiple points enable interpolation between them.",
             "items": { "type": "ref", "ref": "#tempPoint" }
           },
           "agitation": { "type": "ref", "ref": "#agitation" },
           "tankType": { "type": "ref", "ref": "app.graycard.defs#tankType" },
+          "rotaryRpm": { "type": "integer", "minimum": 1, "maximum": 1000 },
+          "methodNotes": { "type": "string", "maxLength": 500 },
+          "contrastTarget": { "type": "string", "maxLength": 128, "description": "Published contrast target, e.g. CI 0.58." },
+          "gammaTarget": { "type": "ref", "ref": "app.graycard.defs#measure" },
+          "recommendationStatus": {
+            "type": "string",
+            "knownValues": ["manufacturer-recommended", "manufacturer-supported", "compatible", "not-recommended", "community-tested", "experimental", "unknown"],
+            "description": "Strength of the source's recommendation for this exact film/developer combination."
+          },
+          "interpolationAllowed": { "type": "boolean", "description": "Whether interpolation between published temperature/time points is supported." },
+          "interpolationMethod": {
+            "type": "string",
+            "knownValues": ["none", "linear", "log-time-linear", "manufacturer-table", "other"]
+          },
+          "derived": { "type": "boolean", "description": "True when one or more operative values were calculated rather than printed directly in the source." },
+          "derivationNotes": { "type": "string", "maxLength": 500 },
           "source": { "type": "string", "maxLength": 512, "description": "URL of the manufacturer datasheet this recipe was transcribed from." },
+          "sourceDocument": { "type": "ref", "ref": "app.graycard.defs#productDocument" },
+          "sourcePage": { "type": "string", "maxLength": 64 },
+          "sourceTable": { "type": "string", "maxLength": 128 },
+          "sourceRevision": { "type": "string", "maxLength": 128 },
+          "specSources": {
+            "type": "array",
+            "maxLength": 16,
+            "items": { "type": "ref", "ref": "app.graycard.defs#specSource" }
+          },
           "notes": { "type": "string", "maxLength": 1000 },
           "createdAt": { "type": "string", "format": "datetime" },
           "updatedAt": { "type": "string", "format": "datetime" }

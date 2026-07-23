@@ -2,6 +2,77 @@
   "lexicon": 1,
   "id": "app.graycard.catalog.filmStock",
   "defs": {
+    "formatVariant": {
+      "type": "object",
+      "description": "A format-specific commercial variant. Base and packaging can differ while the emulsion remains the same.",
+      "required": ["format"],
+      "properties": {
+        "format": { "type": "ref", "ref": "app.graycard.defs#captureFormat" },
+        "catalogNumber": { "type": "string", "maxLength": 64 },
+        "exposures": { "type": "integer", "minimum": 1, "maximum": 1000 },
+        "base": { "type": "string", "knownValues": ["acetate", "triacetate", "polyester", "paper", "other"] },
+        "baseThickness": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Physical base thickness; micrometres are preferred." },
+        "sheetCount": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "notes": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "reciprocityPoint": {
+      "type": "object",
+      "description": "A published long-exposure correction at a metered exposure time.",
+      "required": ["meteredSeconds"],
+      "properties": {
+        "meteredSeconds": { "type": "integer", "minimum": 0, "maximum": 315360000, "description": "Uncorrected meter-indicated exposure time." },
+        "correctedSeconds": { "type": "integer", "minimum": 0, "maximum": 315360000 },
+        "correctionStops": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Exposure correction in stops." },
+        "colorFilter": { "type": "string", "maxLength": 128, "description": "Published color-compensating filter, when applicable." },
+        "notes": { "type": "string", "maxLength": 256 }
+      }
+    },
+    "resolvingPowerTest": {
+      "type": "object",
+      "description": "A resolving-power measurement under a stated test contrast.",
+      "required": ["linesPerMm"],
+      "properties": {
+        "contrastRatio": { "type": "string", "maxLength": 32, "description": "Test-target contrast, e.g. 1.6:1 or 1000:1." },
+        "linesPerMm": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "developer": { "type": "string", "maxLength": 128 },
+        "method": { "type": "string", "maxLength": 256 }
+      }
+    },
+    "granularityMeasurement": {
+      "type": "object",
+      "description": "A published granularity result together with enough test conditions to interpret it.",
+      "required": ["value"],
+      "properties": {
+        "value": { "type": "integer", "description": "Published value multiplied by scale; scale defaults to 1." },
+        "scale": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+        "kind": { "type": "string", "knownValues": ["rms", "diffuse-rms", "print-grain-index", "other"] },
+        "aperture": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Measurement aperture; micrometres are preferred." },
+        "density": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "method": { "type": "string", "maxLength": 256 }
+      }
+    },
+    "spectralSample": {
+      "type": "object",
+      "description": "One sample from a manufacturer spectral-sensitivity curve.",
+      "required": ["wavelengthNm", "response"],
+      "properties": {
+        "wavelengthNm": { "type": "integer", "minimum": 100, "maximum": 2000 },
+        "response": { "type": "integer", "description": "Relative response divided by scale." },
+        "scale": { "type": "integer", "minimum": 1, "maximum": 1000000 }
+      }
+    },
+    "storageGuidance": {
+      "type": "object",
+      "description": "Manufacturer storage conditions for unopened or exposed film.",
+      "properties": {
+        "state": { "type": "string", "knownValues": ["unexposed", "exposed", "processed", "shipping", "other"] },
+        "minTemperature": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "maxTemperature": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "maxHumidityPercent": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "instructions": { "type": "string", "maxLength": 1000 }
+      }
+    },
     "main": {
       "type": "record",
       "description": "Film emulsion type (catalog). Rolls reference this record.",
@@ -12,14 +83,22 @@
         "properties": {
           "brand": { "type": "string", "maxLength": 128 },
           "name": { "type": "string", "maxLength": 128 },
-          "iso": { "type": "integer", "minimum": 1, "description": "Box speed (ISO/ASA)." },
+          "iso": { "type": "integer", "minimum": 1, "description": "Box speed or lower end of a manufacturer-published ISO/ASA range." },
+          "isoMax": { "type": "integer", "minimum": 1, "description": "Upper end of a manufacturer-published ISO/ASA range when the stock is explicitly rated across more than one speed." },
           "filmType": { "type": "ref", "ref": "app.graycard.defs#filmType" },
           "process": { "type": "ref", "ref": "app.graycard.defs#filmProcess" },
           "format": { "type": "ref", "ref": "app.graycard.defs#captureFormat", "description": "Primary/legacy format. Prefer `formats` for the full list." },
           "formats": {
             "type": "array",
+            "maxLength": 64,
             "description": "All formats this emulsion is sold in (from the datasheet).",
             "items": { "type": "ref", "ref": "app.graycard.defs#captureFormat" }
+          },
+          "variants": {
+            "type": "array",
+            "maxLength": 128,
+            "description": "Format- and package-specific variants.",
+            "items": { "type": "ref", "ref": "#formatVariant" }
           },
           "base": {
             "type": "string",
@@ -30,10 +109,50 @@
             "type": "string",
             "knownValues": ["panchromatic", "orthochromatic", "extended-red", "infrared", "other"]
           },
+          "spectralRangeMinNm": { "type": "integer", "minimum": 100, "maximum": 2000 },
+          "spectralRangeMaxNm": { "type": "integer", "minimum": 100, "maximum": 2000 },
+          "spectralSamples": {
+            "type": "array",
+            "maxLength": 512,
+            "description": "Digitized samples of the manufacturer spectral-response curve.",
+            "items": { "type": "ref", "ref": "#spectralSample" }
+          },
           "grainRms": { "type": "integer", "description": "RMS granularity as printed, scaled ×10 (e.g. 10.0 → 100)." },
+          "granularityMeasurements": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "ref", "ref": "#granularityMeasurement" }
+          },
           "resolvingPowerLpMm": { "type": "integer", "minimum": 1, "description": "Resolving power in lines/mm at high contrast (1000:1), per datasheet." },
-          "exposureLatitude": { "type": "string", "maxLength": 64, "description": "e.g. '-1 to +3 stops'." },
+          "resolvingPowerTests": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "ref", "ref": "#resolvingPowerTest" }
+          },
+          "exposureLatitude": { "type": "string", "maxLength": 256, "description": "Manufacturer exposure-latitude or usable-EI guidance." },
           "reciprocity": { "type": "string", "maxLength": 512, "description": "Reciprocity-failure guidance from the datasheet." },
+          "reciprocityPoints": {
+            "type": "array",
+            "maxLength": 128,
+            "items": { "type": "ref", "ref": "#reciprocityPoint" }
+          },
+          "colorBalance": {
+            "type": "string",
+            "knownValues": ["daylight", "tungsten", "flash", "mixed", "not-applicable", "other"]
+          },
+          "colorBalanceKelvin": { "type": "integer", "minimum": 1000, "maximum": 50000 },
+          "storageGuidance": {
+            "type": "array",
+            "maxLength": 16,
+            "items": { "type": "ref", "ref": "#storageGuidance" }
+          },
+          "handlingGuidance": { "type": "string", "maxLength": 2000 },
+          "recommendedRecipes": {
+            "type": "array",
+            "maxLength": 128,
+            "description": "Recommended app.graycard.catalog.devRecipe records.",
+            "items": { "type": "string", "format": "at-uri" }
+          },
           "dxNumber": { "type": "string", "maxLength": 16 },
           "discontinued": { "type": "boolean" },
           "releasedYear": { "type": "integer" },
@@ -43,6 +162,17 @@
           "aka": { "type": "array", "maxLength": 12, "description": "Other names the SAME emulsion is sold under (e.g. a rebrand: Ektacolor Pro 400 is Portra 400). Facts, not AT-URIs, so two brandings can be treated as one film even before both exist as records.", "items": { "type": "string", "maxLength": 128 } },
           "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
           "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "documents": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" },
+            "description": "Manufacturer documents used for this catalog record, including technical sheets and processing charts."
+          },
+          "specSources": {
+            "type": "array",
+            "maxLength": 64,
+            "items": { "type": "ref", "ref": "app.graycard.defs#specSource" }
+          },
           "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
           "notes": { "type": "string", "maxLength": 2000 },
           "createdAt": { "type": "string", "format": "datetime" },

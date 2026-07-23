@@ -24,11 +24,31 @@
         },
         "temperature": {
           "type": "ref",
+          "ref": "app.graycard.defs#measure",
+          "description": "Legacy/summary bath temperature; prefer temperatureSetpoint and actualTemperature."
+        },
+        "temperatureSetpoint": {
+          "type": "ref",
+          "ref": "app.graycard.defs#measure"
+        },
+        "actualTemperature": {
+          "type": "ref",
           "ref": "app.graycard.defs#measure"
         },
         "timeSeconds": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "description": "Legacy/summary bath duration; prefer publishedTimeSeconds and actualTimeSeconds."
+        },
+        "publishedTimeSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 604800
+        },
+        "actualTimeSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 604800
         },
         "agitation": {
           "type": "string",
@@ -47,6 +67,21 @@
           "createdAt"
         ],
         "properties": {
+          "recipe": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.catalog.devRecipe selected for the primary development step."
+          },
+          "sourceDocument": {
+            "type": "ref",
+            "ref": "app.graycard.defs#productDocument",
+            "description": "Structured manufacturer document used when no catalog recipe record is available."
+          },
+          "sourceSpec": {
+            "type": "ref",
+            "ref": "app.graycard.defs#specSource",
+            "description": "Exact source location supporting the selected processing values."
+          },
           "developer": {
             "type": "string",
             "format": "at-uri",
@@ -83,15 +118,44 @@
           },
           "temperature": {
             "type": "ref",
-            "ref": "app.graycard.defs#measure"
+            "ref": "app.graycard.defs#measure",
+            "description": "Legacy/summary temperature; prefer temperatureSetpoint and actualTemperature."
+          },
+          "temperatureSetpoint": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Target processing temperature selected from the recipe."
+          },
+          "actualTemperature": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Observed processing temperature."
           },
           "timeSeconds": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 0,
+            "description": "Legacy/summary duration; prefer publishedTimeSeconds and actualTimeSeconds."
+          },
+          "publishedTimeSeconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 604800,
+            "description": "Nominal duration selected from or interpolated within the published recipe."
+          },
+          "actualTimeSeconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 604800,
+            "description": "Duration actually used."
           },
           "agitation": {
             "type": "string",
             "maxLength": 256
+          },
+          "agitationScheme": {
+            "type": "ref",
+            "ref": "app.graycard.catalog.devRecipe#agitation",
+            "description": "Structured agitation used during the primary development step."
           },
           "tankType": { "type": "ref", "ref": "app.graycard.defs#tankType" },
           "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },

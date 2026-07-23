@@ -2,6 +2,97 @@
   "lexicon": 1,
   "id": "app.graycard.catalog.developerType",
   "defs": {
+    "dilutionOption": {
+      "type": "object",
+      "description": "A supported stock or working dilution and its intended use.",
+      "required": ["label"],
+      "properties": {
+        "label": { "type": "string", "maxLength": 64, "description": "Published notation, e.g. stock, 1+1, or 1+31." },
+        "intendedUse": { "type": "string", "maxLength": 256 },
+        "oneShot": { "type": "boolean" },
+        "minimumConcentrate": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "instructions": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "mixingStep": {
+      "type": "object",
+      "description": "One ordered step in preparing stock or working solution.",
+      "required": ["order", "instruction"],
+      "properties": {
+        "order": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "component": { "type": "string", "maxLength": 128 },
+        "amount": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "waterTemperature": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "instruction": { "type": "string", "maxLength": 1000 },
+        "finalVolume": { "type": "ref", "ref": "app.graycard.defs#measure" }
+      }
+    },
+    "capacityRule": {
+      "type": "object",
+      "description": "Published processing capacity for a stated amount of solution.",
+      "properties": {
+        "solutionVolume": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "rolls13536": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "rolls120": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "sheets8x10Equivalent": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "area": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "notes": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "replenishmentRule": {
+      "type": "object",
+      "description": "Published replenishment rate and trigger.",
+      "properties": {
+        "amount": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "per": { "type": "string", "maxLength": 128, "description": "Capacity unit, e.g. per 135-36 roll or square metre." },
+        "maximumCycles": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "instructions": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "shelfLife": {
+      "type": "object",
+      "description": "Published life of a concentrate, stock, or working solution under stated conditions.",
+      "required": ["solutionState"],
+      "properties": {
+        "solutionState": { "type": "string", "knownValues": ["unopened", "opened-concentrate", "stock-solution", "working-solution", "replenished-solution", "other"] },
+        "durationDays": { "type": "integer", "minimum": 0, "maximum": 36500 },
+        "container": { "type": "string", "maxLength": 128 },
+        "conditions": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "temperatureRange": {
+      "type": "object",
+      "description": "Supported operating or storage temperature interval.",
+      "properties": {
+        "minimum": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "maximum": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "use": { "type": "string", "knownValues": ["processing", "mixing", "storage", "other"] }
+      }
+    },
+    "hazardClassification": {
+      "type": "object",
+      "description": "Public safety classification transcribed from an SDS; not a reproduction of a proprietary formula.",
+      "properties": {
+        "system": { "type": "string", "maxLength": 64, "description": "Classification system, e.g. GHS or CLP." },
+        "signalWord": { "type": "string", "maxLength": 64 },
+        "pictograms": { "type": "array", "maxLength": 16, "items": { "type": "string", "maxLength": 64 } },
+        "hazardStatements": { "type": "array", "maxLength": 64, "items": { "type": "string", "maxLength": 256 } }
+      }
+    },
+    "bathStep": {
+      "type": "object",
+      "description": "One ordered bath in a multi-bath product kit.",
+      "required": ["order", "role"],
+      "properties": {
+        "order": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "role": { "type": "ref", "ref": "app.graycard.defs#chemistryRole" },
+        "name": { "type": "string", "maxLength": 128 },
+        "dilution": { "type": "string", "maxLength": 64 },
+        "temperature": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "timeSeconds": { "type": "integer", "minimum": 0, "maximum": 604800 },
+        "instructions": { "type": "string", "maxLength": 500 }
+      }
+    },
     "main": {
       "type": "record",
       "description": "Developer product/type (e.g. Kodak HC-110, Ilford ID-11). Developer instances reference this record.",
@@ -17,9 +108,39 @@
           "defaultDilution": { "type": "string", "maxLength": 64, "description": "Typical mix (1+31, stock, etc.)." },
           "defaultTemperature": { "type": "ref", "ref": "app.graycard.defs#measure" },
           "defaultTimeSeconds": { "type": "integer", "minimum": 0 },
+          "dilutions": { "type": "array", "maxLength": 64, "items": { "type": "ref", "ref": "#dilutionOption" } },
+          "mixingInstructions": { "type": "array", "maxLength": 64, "items": { "type": "ref", "ref": "#mixingStep" } },
+          "minimumConcentratePerRoll": { "type": "ref", "ref": "app.graycard.defs#measure" },
+          "capacity": { "type": "array", "maxLength": 32, "items": { "type": "ref", "ref": "#capacityRule" } },
+          "replenishment": { "type": "array", "maxLength": 32, "items": { "type": "ref", "ref": "#replenishmentRule" } },
+          "oneShot": { "type": "boolean" },
+          "reusable": { "type": "boolean" },
+          "shelfLives": { "type": "array", "maxLength": 32, "items": { "type": "ref", "ref": "#shelfLife" } },
+          "temperatureRanges": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "#temperatureRange" } },
+          "compatibleProcesses": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "app.graycard.defs#filmProcess" } },
+          "compatibleFilmTypes": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "app.graycard.defs#filmType" } },
+          "compatibleMaterials": {
+            "type": "array",
+            "maxLength": 16,
+            "items": { "type": "string", "knownValues": ["film", "paper", "plate", "motion-picture-film", "other"] }
+          },
+          "recommendedRecipes": {
+            "type": "array",
+            "maxLength": 256,
+            "description": "Film-specific app.graycard.catalog.devRecipe records; film-specific times belong there rather than on this product.",
+            "items": { "type": "string", "format": "at-uri" }
+          },
+          "ph": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Published pH and associated scale." },
+          "kitBathSequence": { "type": "array", "maxLength": 32, "items": { "type": "ref", "ref": "#bathStep" } },
+          "hazards": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "#hazardClassification" } },
+          "disposalGuidance": { "type": "string", "maxLength": 2000 },
           "catalogNumber": { "type": "string", "maxLength": 64 },
           "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
           "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "documents": { "type": "array", "maxLength": 32, "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" } },
+          "technicalDocuments": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" } },
+          "sdsDocuments": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" } },
+          "specSources": { "type": "array", "maxLength": 64, "items": { "type": "ref", "ref": "app.graycard.defs#specSource" } },
           "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
           "notes": { "type": "string", "maxLength": 2000 },
           "createdAt": { "type": "string", "format": "datetime" },

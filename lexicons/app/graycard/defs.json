@@ -133,6 +133,77 @@
         "license": { "type": "string", "maxLength": 128, "description": "License or usage terms of the asset, when known." }
       }
     },
+    "productDocument": {
+      "type": "object",
+      "description": "A manufacturer or other publisher document used to establish catalog specifications. The asset points to the document; the remaining fields identify the exact edition consulted.",
+      "required": ["kind", "asset"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "knownValues": ["technical-data", "manual", "processing-chart", "sds", "service-manual", "catalog", "product-page", "other"]
+        },
+        "asset": { "type": "ref", "ref": "#assetRef" },
+        "publisher": { "type": "string", "maxLength": 256 },
+        "documentNumber": { "type": "string", "maxLength": 128 },
+        "revision": { "type": "string", "maxLength": 128 },
+        "publishedAt": { "type": "string", "format": "datetime" },
+        "language": { "type": "string", "maxLength": 35, "description": "BCP 47 language tag when known, e.g. en or de-CH." },
+        "retrievedAt": { "type": "string", "format": "datetime" },
+        "supersedes": { "type": "string", "format": "at-uri", "description": "Older catalog document record superseded by this edition, when one exists." }
+      }
+    },
+    "specSource": {
+      "type": "object",
+      "description": "Field-level provenance connecting one or more catalog fields to the exact document location and transcription method that supports them.",
+      "required": ["document", "fields"],
+      "properties": {
+        "document": { "type": "ref", "ref": "#productDocument" },
+        "fields": {
+          "type": "array",
+          "maxLength": 64,
+          "items": { "type": "string", "maxLength": 128 },
+          "description": "Catalog property names supported by this assertion."
+        },
+        "page": { "type": "string", "maxLength": 64 },
+        "table": { "type": "string", "maxLength": 128 },
+        "method": {
+          "type": "string",
+          "knownValues": ["manual-transcription", "manufacturer-import", "machine-extraction", "derived", "other"]
+        },
+        "note": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "physicalDimensions": {
+      "type": "object",
+      "description": "Physical product dimensions. Clients should inspect each measure's unit; millimetres are preferred for catalog interchange.",
+      "properties": {
+        "width": { "type": "ref", "ref": "#measure" },
+        "height": { "type": "ref", "ref": "#measure" },
+        "depth": { "type": "ref", "ref": "#measure" },
+        "diameter": { "type": "ref", "ref": "#measure" },
+        "length": { "type": "ref", "ref": "#measure" }
+      }
+    },
+    "shutterType": {
+      "type": "string",
+      "knownValues": ["focal-plane", "leaf", "electronic", "electronic-front-curtain", "global-electronic", "rotary-disc", "guillotine", "other"]
+    },
+    "autofocusMode": {
+      "type": "string",
+      "knownValues": ["single", "continuous", "automatic", "tracking", "manual", "other"]
+    },
+    "filmAdvanceMode": {
+      "type": "string",
+      "knownValues": ["manual-lever", "manual-knob", "motor-single", "motor-continuous", "motor-programmed", "other"]
+    },
+    "sensorTechnology": {
+      "type": "string",
+      "knownValues": ["ccd", "cmos", "bsi-cmos", "stacked-cmos", "foveon-x3", "live-mos", "other"]
+    },
+    "lensAutofocusTechnology": {
+      "type": "string",
+      "knownValues": ["screw-drive", "dc-motor", "coreless-motor", "ultrasonic-ring", "ultrasonic-micro", "stepping-motor", "linear-motor", "piezoelectric", "manual-focus", "other"]
+    },
     "filterKind": {
       "type": "string",
       "knownValues": ["uv", "skylight", "protection", "nd", "nd-variable", "graduated-nd", "polarizer-circular", "polarizer-linear", "color", "gradient-color", "contrast", "warming", "cooling", "infrared", "ir-pass", "ir-cut", "uv-pass", "close-up", "split-diopter", "diffusion", "black-mist", "mist", "soft-focus", "center-spot", "star", "prism", "night", "didymium", "other"]

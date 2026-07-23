@@ -64,6 +64,16 @@ Gray Card's internal panproto scene tier.
 - **temporalRef**: optional `{frame, timeStartMs, timeEndMs, fps}` on regions, stages,
   and graphs so the same records can ground video without a schema fork.
 - **provenance** / **fieldProvenance**: record- and field-level source and confidence.
+- **productDocument** / **specSource**: edition-aware manufacturer documents and the
+  exact catalog fields, pages, or tables they support. Camera, lens, film,
+  developer, and chemistry records can expose these citations alongside their
+  structured technical specifications.
+
+Film/developer processing recommendations belong in `catalog.devRecipe`, where
+the exact film, developer, EI, dilution, method, temperature/time points, and
+source location can vary together. `process.developSession` records what was
+actually done and distinguishes the selected published time and temperature
+setpoint from the observed duration and temperature.
 
 ## rule.batch
 
