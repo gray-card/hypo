@@ -1,7 +1,7 @@
 {
   "_source": "lensfun (https://github.com/lensfun/lensfun), data/db, vendored in data/lensfun-db/",
   "_license": "CC-BY-SA 3.0. See src/data/CATALOG_ATTRIBUTION.md and data/lensfun-db/NOTICE.md",
-  "_generated": "2026-07-27T09:43:54.769Z",
+  "_generated": "2026-08-03T09:37:03.434Z",
   "_wikidata": "QIDs resolved best-effort via Wikidata wbsearchentities (CC0); review before trusting.",
   "cameras": [
     {
@@ -2982,7 +2982,7 @@
       "format": "other",
       "cropFactor": 4.843,
       "mount": "canonG2",
-      "wikidata": null,
+      "wikidata": "Q136764815",
       "image": null
     },
     {
@@ -3004,7 +3004,7 @@
       "format": "other",
       "cropFactor": 3.6,
       "mount": "djiFC3582",
-      "wikidata": null,
+      "wikidata": "Q133887357",
       "image": null
     },
     {
@@ -3136,7 +3136,7 @@
       "format": "other",
       "cropFactor": 6.03,
       "mount": "fujiA370",
-      "wikidata": null,
+      "wikidata": "Q140488018",
       "image": null
     },
     {
@@ -3169,7 +3169,7 @@
       "format": "other",
       "cropFactor": 4.5,
       "mount": "fujiF11",
-      "wikidata": null,
+      "wikidata": "Q20889083",
       "image": null
     },
     {
@@ -3202,7 +3202,7 @@
       "format": "other",
       "cropFactor": 4.5,
       "mount": "fuji810",
-      "wikidata": null,
+      "wikidata": "Q140487651",
       "image": null
     },
     {
@@ -3917,7 +3917,7 @@
       "format": "aps-c-digital",
       "cropFactor": 1.534,
       "mount": "Fujifilm X",
-      "wikidata": "Q115052837",
+      "wikidata": null,
       "image": null
     },
     {
@@ -3950,7 +3950,7 @@
       "format": "aps-c-digital",
       "cropFactor": 1.528,
       "mount": "fujix100",
-      "wikidata": "Q126029978",
+      "wikidata": null,
       "image": null
     },
     {
@@ -3983,7 +3983,7 @@
       "format": "aps-c-digital",
       "cropFactor": 1.53,
       "mount": "fujix100v2",
-      "wikidata": "Q124998434",
+      "wikidata": null,
       "image": null
     },
     {
@@ -4005,7 +4005,7 @@
       "format": "other",
       "cropFactor": 3.93,
       "mount": "fujix10",
-      "wikidata": "Q18356573",
+      "wikidata": null,
       "image": null
     },
     {
@@ -4038,7 +4038,7 @@
       "format": "aps-c-digital",
       "cropFactor": 1.53,
       "mount": "fujixf10",
-      "wikidata": "Q126030604",
+      "wikidata": null,
       "image": null
     },
     {
@@ -4104,7 +4104,7 @@
       "format": "other",
       "cropFactor": 5.42,
       "mount": "goProHero3+",
-      "wikidata": "Q138581186",
+      "wikidata": null,
       "image": null
     },
     {
@@ -4137,7 +4137,7 @@
       "format": "other",
       "cropFactor": 5,
       "mount": "goProHero4black",
-      "wikidata": "Q60198336",
+      "wikidata": null,
       "image": null
     },
     {
@@ -4203,7 +4203,7 @@
       "format": "other",
       "cropFactor": 1.953,
       "mount": "l2d20c",
-      "wikidata": "Q133886275",
+      "wikidata": null,
       "image": null
     },
     {
