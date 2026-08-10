@@ -1,7 +1,7 @@
 {
   "_source": "lensfun (https://github.com/lensfun/lensfun), data/db, vendored in data/lensfun-db/",
   "_license": "CC-BY-SA 3.0. See src/data/CATALOG_ATTRIBUTION.md and data/lensfun-db/NOTICE.md",
-  "_generated": "2026-08-03T09:37:03.434Z",
+  "_generated": "2026-08-10T07:22:51.531Z",
   "_wikidata": "QIDs resolved best-effort via Wikidata wbsearchentities (CC0); review before trusting.",
   "lenses": [
     {
@@ -6915,6 +6915,22 @@
     },
     {
       "make": "Meike",
+      "model": "E 33mm F1.4 STM NEO",
+      "mount": "Sony E",
+      "mounts": [
+        "Sony E",
+        "Nikon Z",
+        "Fujifilm X"
+      ],
+      "focalLengthMin": 33,
+      "focalLengthMax": 33,
+      "maxAperture": 1.4,
+      "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Meike",
       "model": "Meike 25mm f/1.8",
       "mount": "Canon EF-M",
       "mounts": [
@@ -8143,6 +8159,20 @@
       "focalLengthMax": 20,
       "maxAperture": 1.8,
       "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikkor Z 24-105mm f/4-7.1",
+      "mount": "Nikon Z",
+      "mounts": [
+        "Nikon Z"
+      ],
+      "focalLengthMin": 24,
+      "focalLengthMax": 105,
+      "maxAperture": 4,
+      "lensTypeKind": "zoom",
       "wikidata": null,
       "image": null
     },
@@ -21744,6 +21774,25 @@
       ],
       "focalLengthMin": 40,
       "focalLengthMax": 40,
+      "maxAperture": 2,
+      "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "TTArtisan",
+      "model": "TTArtisan 50mm f/2",
+      "mount": "Sony E",
+      "mounts": [
+        "Sony E",
+        "Fujifilm X",
+        "Canon RF",
+        "Nikon Z",
+        "Micro 4/3 System",
+        "Leica L"
+      ],
+      "focalLengthMin": 50,
+      "focalLengthMax": 50,
       "maxAperture": 2,
       "lensTypeKind": "prime",
       "wikidata": null,

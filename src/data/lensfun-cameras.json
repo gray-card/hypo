@@ -1,7 +1,7 @@
 {
   "_source": "lensfun (https://github.com/lensfun/lensfun), data/db, vendored in data/lensfun-db/",
   "_license": "CC-BY-SA 3.0. See src/data/CATALOG_ATTRIBUTION.md and data/lensfun-db/NOTICE.md",
-  "_generated": "2026-08-03T09:37:03.434Z",
+  "_generated": "2026-08-10T07:22:51.531Z",
   "_wikidata": "QIDs resolved best-effort via Wikidata wbsearchentities (CC0); review before trusting.",
   "cameras": [
     {
@@ -2982,7 +2982,7 @@
       "format": "other",
       "cropFactor": 4.843,
       "mount": "canonG2",
-      "wikidata": "Q136764815",
+      "wikidata": null,
       "image": null
     },
     {
@@ -3004,7 +3004,7 @@
       "format": "other",
       "cropFactor": 3.6,
       "mount": "djiFC3582",
-      "wikidata": "Q133887357",
+      "wikidata": null,
       "image": null
     },
     {
@@ -3136,7 +3136,7 @@
       "format": "other",
       "cropFactor": 6.03,
       "mount": "fujiA370",
-      "wikidata": "Q140488018",
+      "wikidata": null,
       "image": null
     },
     {
@@ -3147,7 +3147,7 @@
       "format": "other",
       "cropFactor": 4.5,
       "mount": "fuji810",
-      "wikidata": null,
+      "wikidata": "Q140478039",
       "image": null
     },
     {
@@ -3169,7 +3169,7 @@
       "format": "other",
       "cropFactor": 4.5,
       "mount": "fujiF11",
-      "wikidata": "Q20889083",
+      "wikidata": null,
       "image": null
     },
     {
@@ -3180,7 +3180,7 @@
       "format": "other",
       "cropFactor": 4.341,
       "mount": "fujiF200exr",
-      "wikidata": null,
+      "wikidata": "Q20889084",
       "image": null
     },
     {
@@ -3202,7 +3202,7 @@
       "format": "other",
       "cropFactor": 4.5,
       "mount": "fuji810",
-      "wikidata": "Q140487651",
+      "wikidata": null,
       "image": null
     },
     {
@@ -3213,7 +3213,7 @@
       "format": "other",
       "cropFactor": 5.43,
       "mount": "fujif770exr",
-      "wikidata": null,
+      "wikidata": "Q20889090",
       "image": null
     },
     {
@@ -3301,7 +3301,7 @@
       "format": "other",
       "cropFactor": 6.491,
       "mount": "fujiS5500",
-      "wikidata": null,
+      "wikidata": "Q140486069",
       "image": null
     },
     {
@@ -3345,7 +3345,7 @@
       "format": "other",
       "cropFactor": 4.487,
       "mount": "fuji602",
-      "wikidata": null,
+      "wikidata": "Q5507399",
       "image": null
     },
     {
@@ -3389,7 +3389,7 @@
       "format": "other",
       "cropFactor": 4.48,
       "mount": "fujiS9000",
-      "wikidata": null,
+      "wikidata": "Q5450031",
       "image": null
     },
     {
@@ -3444,7 +3444,7 @@
       "format": "medium-format-digital",
       "cropFactor": 0.79,
       "mount": "Fujifilm G",
-      "wikidata": null,
+      "wikidata": "Q122731264",
       "image": null
     },
     {
@@ -4571,6 +4571,28 @@
     },
     {
       "make": "Leica Camera",
+      "model": "D-Lux 7",
+      "exifModel": "D-Lux 7",
+      "category": "digital",
+      "format": "other",
+      "cropFactor": 2.21,
+      "mount": "panasonicDMCLX100",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Leica Camera",
+      "model": "D-Lux 8",
+      "exifModel": "D-Lux 8",
+      "category": "digital",
+      "format": "other",
+      "cropFactor": 2.21,
+      "mount": "panasonicDMCLX100",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Leica Camera",
       "model": "Leica CL",
       "exifModel": "Leica CL",
       "category": "digital",
@@ -4824,6 +4846,17 @@
     },
     {
       "make": "Leica Camera",
+      "model": "Leica SL3-P",
+      "exifModel": "Leica SL3-P",
+      "category": "digital",
+      "format": "full-frame-digital",
+      "cropFactor": 1,
+      "mount": "Leica L",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Leica Camera",
       "model": "Leica SL3-S",
       "exifModel": "Leica SL3-S",
       "category": "digital",
@@ -4896,6 +4929,17 @@
       "format": "full-frame-digital",
       "cropFactor": 1,
       "mount": "Leica M",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Leica",
+      "model": "D-Lux (Typ 109)",
+      "exifModel": "D-Lux (Typ 109)",
+      "category": "digital",
+      "format": "other",
+      "cropFactor": 2.21,
+      "mount": "panasonicDMCLX100",
       "wikidata": null,
       "image": null
     },
@@ -7888,7 +7932,7 @@
       "format": "other",
       "cropFactor": 2,
       "mount": "Micro 4/3 System",
-      "wikidata": null,
+      "wikidata": "Q28456857",
       "image": null
     },
     {
@@ -7932,7 +7976,7 @@
       "format": "other",
       "cropFactor": 2,
       "mount": "Micro 4/3 System",
-      "wikidata": null,
+      "wikidata": "Q126387724",
       "image": null
     },
     {
@@ -11184,6 +11228,17 @@
       "make": "Sony",
       "model": "ZV-1",
       "exifModel": "ZV-1",
+      "category": "digital",
+      "format": "other",
+      "cropFactor": 2.7,
+      "mount": "sonyZV1",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Sony",
+      "model": "ZV-1A",
+      "exifModel": "ZV-1A",
       "category": "digital",
       "format": "other",
       "cropFactor": 2.7,
