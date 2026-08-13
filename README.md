@@ -14,6 +14,7 @@
 
 <p>
   <a href="https://hypo.graycard.app">Live app</a> ·
+  <a href="https://hypo.graycard.app/docs/">Documentation</a> ·
   <a href="lexicons/">Lexicons</a> ·
   <a href="#run-locally">Run locally</a> ·
   <a href="#license">License</a>
@@ -95,12 +96,12 @@ npm run preview   # serve dist/ on http://127.0.0.1:5173
 
 Hypo is a GitHub Pages project site published at `https://hypo.graycard.app/`.
 
-| Piece                          | Role                                                                             |
-| ------------------------------ | -------------------------------------------------------------------------------- |
-| `vite.config.js`               | `base: '/'` (custom domain is the site root)                                     |
-| `public/CNAME`                 | `hypo.graycard.app`                                                              |
-| `public/client-metadata.json`  | public atproto OAuth client (`client_id`, redirect URI, scope)                   |
-| `.github/workflows/deploy.yml` | build on `main`, publish `dist/`, copy `index.html` to `404.html` for SPA routes |
+| Piece                          | Role                                                                                   |
+| ------------------------------ | -------------------------------------------------------------------------------------- |
+| `vite.config.js`               | `base: '/'` (custom domain is the site root)                                           |
+| `public/CNAME`                 | `hypo.graycard.app`                                                                    |
+| `public/client-metadata.json`  | public atproto OAuth client (`client_id`, redirect URI, scope)                         |
+| `.github/workflows/deploy.yml` | validate a `v*` tag from `main`, rerun release gates, and publish the app and `/docs/` |
 
 Production OAuth uses `https://hypo.graycard.app/client-metadata.json` as `client_id`.
 Changing that URL invalidates existing sessions; users must sign in again. Keep the OAuth
@@ -122,18 +123,18 @@ npm run build:catalog
 
 ## Layout
 
-| Path                                                                                             | Contents                                             |
-| ------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
-| `index.html`                                                                                     | shell and views                                      |
-| `src/main.js`                                                                                    | boot, OAuth, navigation                              |
-| `src/grain.js`                                                                                   | grain gallery / photo / EXIF read-write              |
-| `src/graycard.js`                                                                                | graycard store and record helpers                    |
-| `src/registry.js`, `src/constellation.js`, `src/hydrate.js`, `src/publish.js`, `src/discover.js` | cross-network Discover                               |
-| `src/ui/`                                                                                        | library, editor, upload, profiles, scene editor, map |
-| `src/data/`                                                                                      | catalog seeds, Wikidata resolution, tokenizer        |
-| `lexicons/`                                                                                      | `app.graycard.*` schemas (`lexicons/README.md`)      |
-| `public/`                                                                                        | OAuth metadata, icons, `CNAME`                       |
-| `tests/`                                                                                         | vitest suite                                         |
+| Path         | Contents                                                                      |
+| ------------ | ----------------------------------------------------------------------------- |
+| `apps/web/`  | typed web shell, actions, routes, and library views                           |
+| `packages/`  | domain, lexicon, PDS, schema runtime, store, sync, catalog, and UI boundaries |
+| `src/`       | production application modules retained while the package boundaries settle   |
+| `lexicons/`  | `app.graycard.*` schemas and Panproto-managed evolution                       |
+| `.panproto/` | committed schema history, refs, and the `lexicons-v1` baseline                |
+| `docs/`      | Hypo tutorials, how-to guides, explanation, and generated schema reference    |
+| `data/`      | human-edited catalog sources and third-party attribution                      |
+| `public/`    | OAuth metadata, catalog shards, icons, and `CNAME`                            |
+| `fixtures/`  | schema-conformance and migration fixtures                                     |
+| `tests/`     | unit, integration, fixture-PDS, desktop, and mobile browser tests             |
 
 ## License
 

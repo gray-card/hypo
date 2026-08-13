@@ -11,8 +11,8 @@ resolution).
 
 ## Type / instance / event / artifact
 
-- **catalog.\***: shareable, forkable **types** (camera model, film stock, developer,
-  lab, scan profile, paper, chemistry, scanner). Catalog records carry
+- **catalog.\***: shareable, forkable **types** (camera model, film stock, photographic
+  chemistry, lab, scan profile, paper, scanner). Catalog records carry
   `links` (`app.graycard.defs#catalogLinks`): `sameAs` / `forkedFrom` AT-URIs and
   `externalIds` for external ontologies (Wikidata, camera-wiki, Getty AAT, and so on).
 - **instance.\***: owned **individuals** that point at a type (two Nikon F2 bodies, one
@@ -70,8 +70,8 @@ Gray Card's internal panproto scene tier.
   and graphs so the same records can ground video without a schema fork.
 - **provenance** / **fieldProvenance**: record- and field-level source and confidence.
 - **productDocument** / **specSource**: edition-aware manufacturer documents and the
-  exact catalog fields, pages, or tables they support. Camera, lens, film,
-  developer, and chemistry records can expose these citations alongside their
+  exact catalog fields, pages, or tables they support. Camera, lens, film, and
+  chemistry records can expose these citations alongside their
   structured technical specifications.
 
 Film/developer processing recommendations belong in `catalog.devRecipe`, where
