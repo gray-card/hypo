@@ -6,23 +6,29 @@ import { blobUrl } from "../grain.js";
 import { catalogImageUrl } from "./catalogImage.js";
 
 const TYPE_OF_INSTANCE = {
-  camera: "cameraType", lens: "lensType", filter: "filterType", developer: "developerType",
-  scanner: "scannerType", chemistry: "chemistryType", filmRoll: "filmStock",
+  camera: "cameraType",
+  lens: "lensType",
+  filter: "filterType",
+  scanner: "scannerType",
+  chemistry: "chemistryType",
+  filmRoll: "filmStock",
   filmStockpile: "filmStock",
 };
 
 export async function instanceImageUrl(agent, did, store, kind, value) {
   if (value?.image) {
-    try { return await blobUrl(agent, did, value.image); } catch { return null; }
+    try {
+      return await blobUrl(agent, did, value.image);
+    } catch {
+      return null;
+    }
   }
   const tk = TYPE_OF_INSTANCE[kind];
-  const typeUri = (kind === "filmRoll" || kind === "filmStockpile") ? value?.stock : value?.type;
+  const typeUri = kind === "filmRoll" || kind === "filmStockpile" ? value?.stock : value?.type;
   const typeVal = typeUri ? store.byUri.get(typeUri)?.item?.value : null;
   // the type's own image (link or uploaded file), else a curated manufacturer
   // product shot, else the Wikidata stock image.
-  return (tk && typeVal)
-    ? catalogImageUrl(tk, typeVal, { blobUrl: (b) => blobUrl(agent, did, b) })
-    : null;
+  return tk && typeVal ? catalogImageUrl(tk, typeVal, { blobUrl: (b) => blobUrl(agent, did, b) }) : null;
 }
 
 // attach a thumbnail element that (re)loads when `getValue()` changes.
@@ -35,9 +41,14 @@ export function gearThumb(agent, did, store, kind, getValue) {
     thumb.style.backgroundImage = "";
     const v = getValue();
     if (!v) return;
-    instanceImageUrl(agent, did, store, kind, v).then((url) => {
-      if (url) { thumb.style.backgroundImage = `url("${url}")`; thumb.classList.add("has-img"); }
-    }).catch(() => {});
+    instanceImageUrl(agent, did, store, kind, v)
+      .then((url) => {
+        if (url) {
+          thumb.style.backgroundImage = `url("${url}")`;
+          thumb.classList.add("has-img");
+        }
+      })
+      .catch(() => {});
   };
   return { thumb, refresh };
 }

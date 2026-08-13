@@ -1,0 +1,91 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.meter.calibration",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A calibration profile for a metering instrument — most importantly a phone acting as a meter, where each camera module and sensor path needs its own correction. Stored in the repo so profiles roam across app installs. A reading references the profile that was applied to it, keeping every value auditable.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["meter", "createdAt"],
+        "properties": {
+          "meter": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "The app.graycard.instance.meter this profile calibrates."
+          },
+          "cameraModule": { "type": "ref", "ref": "app.graycard.meter.defs#cameraModule" },
+          "sensorPath": { "type": "ref", "ref": "app.graycard.meter.defs#sensorPath" },
+          "reference": { "type": "ref", "ref": "app.graycard.meter.defs#calibrationReference" },
+          "referenceDetail": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "The specific reference, e.g. 'Sekonic L-758DR s/n …', 'sunny-16, clear noon 2026-06-14'."
+          },
+          "offsetStops": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Global correction applied to raw engine EV, in stops (positive = engine reads dark)."
+          },
+          "constantK": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Reflected-light calibration constant K in cd·s/(m²·ISO) this profile targets (default 12.5)."
+          },
+          "constantCFlat": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Incident flat-receptor constant C in lx·s/ISO (commonly 250)."
+          },
+          "constantCDome": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Incident hemispherical-receptor constant C in lx·s/ISO (commonly 330)."
+          },
+          "curve": {
+            "type": "array",
+            "maxLength": 32,
+            "description": "Optional non-linear correction: (engine EV → corrected EV) control points, interpolated linearly between points.",
+            "items": {
+              "type": "object",
+              "required": ["engineEv", "correctedEv"],
+              "properties": {
+                "engineEv": { "type": "ref", "ref": "app.graycard.defs#measure" },
+                "correctedEv": { "type": "ref", "ref": "app.graycard.defs#measure" }
+              }
+            }
+          },
+          "validEvMin": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Lower bound of the validated range (EV100)."
+          },
+          "validEvMax": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Upper bound of the validated range (EV100)."
+          },
+          "deviceModel": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Hardware identifier the profile was made on, e.g. 'iPhone17,2', so a restored account on new hardware knows to recalibrate."
+          },
+          "osVersion": {
+            "type": "string",
+            "maxLength": 32,
+            "description": "OS build at calibration time; camera pipelines change between releases."
+          },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "note": { "type": "string", "maxLength": 1000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "supersedes": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Previous calibration this one replaces, forming an auditable chain."
+          }
+        }
+      }
+    }
+  }
+}

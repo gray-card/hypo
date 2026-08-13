@@ -20,7 +20,7 @@ import { autoGroundAnalysis } from "./grounding.js";
 
 const now = () => new Date().toISOString();
 const clamp01 = (n) => Math.min(1, Math.max(0, Number(n) || 0));
-const SCALE = 1_000_000;                 // scene coords are normalized [0,1] × 1e6
+const SCALE = 1_000_000; // scene coords are normalized [0,1] × 1e6
 const sc = (n) => Math.round(clamp01(n) * SCALE);
 
 // ---------------------------------------------------------------------------
@@ -49,7 +49,8 @@ const SCENE_SCHEMA = {
   properties: {
     altText: {
       type: "string",
-      description: "Concise, screen-reader-friendly alt text: one plain sentence (~125 characters) describing the image for someone who cannot see it. No 'image of' preamble.",
+      description:
+        "Concise, screen-reader-friendly alt text: one plain sentence (~125 characters) describing the image for someone who cannot see it. No 'image of' preamble.",
     },
     description: {
       type: "string",
@@ -62,16 +63,25 @@ const SCENE_SCHEMA = {
         type: "object",
         additionalProperties: false,
         properties: {
-          key: { type: "string", description: "A short unique id like o1, o2 used to reference this object in relations." },
+          key: {
+            type: "string",
+            description: "A short unique id like o1, o2 used to reference this object in relations.",
+          },
           type: { type: "string", description: "A general class noun, lowercase, e.g. person, dog, tree, car, sky." },
-          label: { type: "string", description: "An optional specific instance label, e.g. 'the cyclist' or 'red door'." },
+          label: {
+            type: "string",
+            description: "An optional specific instance label, e.g. 'the cyclist' or 'red door'.",
+          },
           box: {
             type: "object",
             additionalProperties: false,
-            description: "Approximate bounding box as fractions of image width/height in [0,1], origin at the top-left. Omit if unsure.",
+            description:
+              "Approximate bounding box as fractions of image width/height in [0,1], origin at the top-left. Omit if unsure.",
             properties: {
-              x: { type: "number" }, y: { type: "number" },
-              w: { type: "number" }, h: { type: "number" },
+              x: { type: "number" },
+              y: { type: "number" },
+              w: { type: "number" },
+              h: { type: "number" },
             },
             required: ["x", "y", "w", "h"],
           },
@@ -88,7 +98,10 @@ const SCENE_SCHEMA = {
         properties: {
           from: { type: "string", description: "key of the source object" },
           to: { type: "string", description: "key of the target object" },
-          type: { type: "string", description: "the relation, lowercase, e.g. above, below, left of, holding, part of, next to." },
+          type: {
+            type: "string",
+            description: "the relation, lowercase, e.g. above, below, left of, holding, part of, next to.",
+          },
         },
         required: ["from", "to", "type"],
       },
@@ -139,9 +152,15 @@ const QUERY_IR_SCHEMA = {
         required: ["kind"],
         properties: {
           kind: { type: "string", enum: ["object", "relation"] },
-          concept: { type: "string", description: "object clause: a lowercase class noun, e.g. dog, fire hydrant, animal." },
+          concept: {
+            type: "string",
+            description: "object clause: a lowercase class noun, e.g. dog, fire hydrant, animal.",
+          },
           subject: { type: "string", description: "relation clause: subject label (omit for a wildcard)." },
-          relation: { type: "string", description: "relation clause: a natural relation phrase, e.g. left of, riding." },
+          relation: {
+            type: "string",
+            description: "relation clause: a natural relation phrase, e.g. left of, riding.",
+          },
           object: { type: "string", description: "relation clause: object label (omit for a wildcard)." },
           negate: { type: "boolean", description: "true for no/without/not X." },
           minCount: { type: "integer", description: "only for an explicit quantity like 'two dogs'; a lower bound." },
@@ -151,7 +170,8 @@ const QUERY_IR_SCHEMA = {
   },
 };
 
-const relationHint = (relations) => (relations?.length ? " Prefer these known relations when they fit: " + relations.slice(0, 40).join(", ") + "." : "");
+const relationHint = (relations) =>
+  relations?.length ? " Prefer these known relations when they fit: " + relations.slice(0, 40).join(", ") + "." : "";
 
 // Query reranking (optional, opt-in): score how well each candidate photo's TEXT
 // descriptor matches the query, as a third fusion signal. Judges text only (no
@@ -161,15 +181,23 @@ const RERANK_INSTRUCTION =
   'Return JSON of the exact shape {"scores":[{"i":<photo number>,"rel":<0-3>}]} with one entry per photo: ' +
   "3 = clearly matches, 2 = probably, 1 = loosely related, 0 = not related. Base it only on the given text.";
 const RERANK_SCHEMA = {
-  type: "object", additionalProperties: false, required: ["scores"],
+  type: "object",
+  additionalProperties: false,
+  required: ["scores"],
   properties: {
     scores: {
       type: "array",
-      items: { type: "object", additionalProperties: false, required: ["i", "rel"], properties: { i: { type: "integer" }, rel: { type: "integer" } } },
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["i", "rel"],
+        properties: { i: { type: "integer" }, rel: { type: "integer" } },
+      },
     },
   },
 };
-const rerankPrompt = (query, texts) => `Query: "${query}"\n\nPhotos:\n${texts.map((t, i) => `${i + 1}. ${String(t || "").slice(0, 240)}`).join("\n")}\n\nReturn a 0-3 relevance score for each numbered photo as JSON.`;
+const rerankPrompt = (query, texts) =>
+  `Query: "${query}"\n\nPhotos:\n${texts.map((t, i) => `${i + 1}. ${String(t || "").slice(0, 240)}`).join("\n")}\n\nReturn a 0-3 relevance score for each numbered photo as JSON.`;
 
 const claudeProvider = {
   id: "claude",
@@ -178,14 +206,15 @@ const claudeProvider = {
   keyPlaceholder: "sk-ant-…",
   keyHint: "Stored only in this browser, never uploaded.",
   keyUrl: "https://console.anthropic.com/settings/keys",
-  billingNote: "Uses pay-as-you-go API credits, billed separately from a Claude Pro/Max subscription. Haiku is the lowest-cost model; images are downscaled before sending.",
+  billingNote:
+    "Uses pay-as-you-go API credits, billed separately from a Claude Pro/Max subscription. Haiku is the lowest-cost model; images are downscaled before sending.",
   models: [
     { id: "claude-opus-4-8", label: "Opus 4.8 · most capable" },
     { id: "claude-sonnet-5", label: "Sonnet 5 · balanced" },
     { id: "claude-haiku-4-5", label: "Haiku 4.5 · fast, low-cost" },
   ],
   defaultModel: "claude-opus-4-8",
-  parseModel: "claude-haiku-4-5",   // query parsing is small/frequent — use the cheap tier
+  parseModel: "claude-haiku-4-5", // query parsing is small/frequent — use the cheap tier
 
   async validate(config) {
     // a cheap authenticated GET; 200 => key is usable from this browser.
@@ -206,19 +235,26 @@ const claudeProvider = {
       model: resolveModel(this, config),
       max_tokens: 4096,
       system: ANALYSIS_INSTRUCTION,
-      messages: [{
-        role: "user",
-        content: [
-          { type: "image", source: { type: "base64", media_type: image.mediaType, data: image.base64 } },
-          { type: "text", text: "Analyze this photo and return the scene description as JSON matching the required schema." },
-        ],
-      }],
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: image.mediaType, data: image.base64 } },
+            {
+              type: "text",
+              text: "Analyze this photo and return the scene description as JSON matching the required schema.",
+            },
+          ],
+        },
+      ],
       output_config: { format: { type: "json_schema", schema: SCENE_SCHEMA } },
     };
     let res;
     try {
       res = await fetch(`${ANTHROPIC_URL}/messages`, {
-        method: "POST", headers: ANTHROPIC_HEADERS(config.apiKey), body: JSON.stringify(body),
+        method: "POST",
+        headers: ANTHROPIC_HEADERS(config.apiKey),
+        body: JSON.stringify(body),
       });
     } catch (err) {
       throw new Error(`Could not reach Anthropic: ${err?.message || err}`);
@@ -229,8 +265,11 @@ const claudeProvider = {
     const text = (data?.content || []).find((b) => b.type === "text")?.text;
     if (!text) throw new Error("No analysis was returned.");
     let parsed;
-    try { parsed = JSON.parse(text); }
-    catch { throw new Error("Could not parse the analysis response as JSON."); }
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      throw new Error("Could not parse the analysis response as JSON.");
+    }
     return normalizeAnalysis(parsed);
   },
 
@@ -240,18 +279,22 @@ const claudeProvider = {
       model: resolveModel(this, config),
       max_tokens: 300,
       system: ALT_TEXT_INSTRUCTION,
-      messages: [{
-        role: "user",
-        content: [
-          { type: "image", source: { type: "base64", media_type: image.mediaType, data: image.base64 } },
-          { type: "text", text: "Write alt text for this photo." },
-        ],
-      }],
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: image.mediaType, data: image.base64 } },
+            { type: "text", text: "Write alt text for this photo." },
+          ],
+        },
+      ],
     };
     let res;
     try {
       res = await fetch(`${ANTHROPIC_URL}/messages`, {
-        method: "POST", headers: ANTHROPIC_HEADERS(config.apiKey), body: JSON.stringify(body),
+        method: "POST",
+        headers: ANTHROPIC_HEADERS(config.apiKey),
+        body: JSON.stringify(body),
       });
     } catch (err) {
       throw new Error(`Could not reach Anthropic: ${err?.message || err}`);
@@ -270,12 +313,23 @@ const claudeProvider = {
       model: this.parseModel || resolveModel(this, config),
       max_tokens: 512,
       system: PARSE_INSTRUCTION + relationHint(relations),
-      messages: [{ role: "user", content: [{ type: "text", text: `Parse this photo-search query as JSON matching the required schema: "${query}"` }] }],
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: `Parse this photo-search query as JSON matching the required schema: "${query}"` },
+          ],
+        },
+      ],
       output_config: { format: { type: "json_schema", schema: QUERY_IR_SCHEMA } },
     };
     let res;
     try {
-      res = await fetch(`${ANTHROPIC_URL}/messages`, { method: "POST", headers: ANTHROPIC_HEADERS(config.apiKey), body: JSON.stringify(body) });
+      res = await fetch(`${ANTHROPIC_URL}/messages`, {
+        method: "POST",
+        headers: ANTHROPIC_HEADERS(config.apiKey),
+        body: JSON.stringify(body),
+      });
     } catch (err) {
       throw new Error(`Could not reach Anthropic: ${err?.message || err}`);
     }
@@ -297,8 +351,15 @@ const claudeProvider = {
       output_config: { format: { type: "json_schema", schema: RERANK_SCHEMA } },
     };
     let res;
-    try { res = await fetch(`${ANTHROPIC_URL}/messages`, { method: "POST", headers: ANTHROPIC_HEADERS(config.apiKey), body: JSON.stringify(body) }); }
-    catch (err) { throw new Error(`Could not reach Anthropic: ${err?.message || err}`); }
+    try {
+      res = await fetch(`${ANTHROPIC_URL}/messages`, {
+        method: "POST",
+        headers: ANTHROPIC_HEADERS(config.apiKey),
+        body: JSON.stringify(body),
+      });
+    } catch (err) {
+      throw new Error(`Could not reach Anthropic: ${err?.message || err}`);
+    }
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.error?.message || `Anthropic API error ${res.status}`);
     const text = (data?.content || []).find((b) => b.type === "text")?.text;
@@ -342,7 +403,8 @@ const geminiProvider = {
   keyPlaceholder: "AIza…",
   keyHint: "Stored only in this browser, never uploaded.",
   keyUrl: "https://aistudio.google.com/apikey",
-  billingNote: "Has a free tier (rate-limited). On the free tier, Google may use your images to improve its models; the paid tier does not. Images are downscaled before sending.",
+  billingNote:
+    "Has a free tier (rate-limited). On the free tier, Google may use your images to improve its models; the paid tier does not. Images are downscaled before sending.",
   // gemini-flash-latest is a self-updating alias (points to the current stable
   // Flash), so the default does not rot as Google retires older versions for new
   // users. The pinned 3.x IDs are offered for reproducibility.
@@ -352,7 +414,7 @@ const geminiProvider = {
     { id: "gemini-3.1-flash-lite", label: "3.1 Flash-Lite · lowest cost" },
   ],
   defaultModel: "gemini-flash-latest",
-  parseModel: "gemini-flash-latest",   // query parsing is small/frequent — use the fast tier
+  parseModel: "gemini-flash-latest", // query parsing is small/frequent — use the fast tier
 
   async validate(config) {
     let res;
@@ -363,7 +425,8 @@ const geminiProvider = {
     }
     if (res.ok) return true;
     const msg = await errorMessage(res);
-    if (res.status === 400 || res.status === 403) throw new Error(msg || "That API key was rejected. Check the key and try again.");
+    if (res.status === 400 || res.status === 403)
+      throw new Error(msg || "That API key was rejected. Check the key and try again.");
     throw new Error(msg || `Gemini API error ${res.status}`);
   },
 
@@ -371,36 +434,44 @@ const geminiProvider = {
     const model = resolveModel(this, config);
     const body = {
       systemInstruction: { parts: [{ text: ANALYSIS_INSTRUCTION }] },
-      contents: [{
-        role: "user",
-        parts: [
-          { inlineData: { mimeType: image.mediaType, data: image.base64 } },
-          { text: GEMINI_JSON_INSTRUCTION },
-        ],
-      }],
+      contents: [
+        {
+          role: "user",
+          parts: [{ inlineData: { mimeType: image.mediaType, data: image.base64 } }, { text: GEMINI_JSON_INSTRUCTION }],
+        },
+      ],
       generationConfig: { responseMimeType: "application/json" },
     };
     let res;
     try {
       res = await fetch(`${GEMINI_URL}/models/${encodeURIComponent(model)}:generateContent`, {
-        method: "POST", headers: geminiHeaders(config.apiKey), body: JSON.stringify(body),
+        method: "POST",
+        headers: geminiHeaders(config.apiKey),
+        body: JSON.stringify(body),
       });
     } catch (err) {
       throw new Error(`Could not reach Google: ${err?.message || err}`);
     }
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.error?.message || `Gemini API error ${res.status}`);
-    if (data?.promptFeedback?.blockReason) throw new Error(`The request was blocked by Google (${data.promptFeedback.blockReason}).`);
+    if (data?.promptFeedback?.blockReason)
+      throw new Error(`The request was blocked by Google (${data.promptFeedback.blockReason}).`);
     const cand = data?.candidates?.[0];
     const finish = cand?.finishReason;
     if (finish && finish !== "STOP" && finish !== "MAX_TOKENS") {
       throw new Error(`The model stopped without a usable answer (${finish}).`);
     }
-    const text = (cand?.content?.parts || []).map((p) => p.text).filter(Boolean).join("");
+    const text = (cand?.content?.parts || [])
+      .map((p) => p.text)
+      .filter(Boolean)
+      .join("");
     if (!text) throw new Error("No analysis was returned.");
     let parsed;
-    try { parsed = JSON.parse(text); }
-    catch { throw new Error("Could not parse the analysis response as JSON."); }
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      throw new Error("Could not parse the analysis response as JSON.");
+    }
     return normalizeAnalysis(parsed);
   },
 
@@ -409,20 +480,34 @@ const geminiProvider = {
     const model = resolveModel(this, config);
     const body = {
       systemInstruction: { parts: [{ text: ALT_TEXT_INSTRUCTION }] },
-      contents: [{ role: "user", parts: [{ inlineData: { mimeType: image.mediaType, data: image.base64 } }, { text: "Write alt text for this photo." }] }],
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { inlineData: { mimeType: image.mediaType, data: image.base64 } },
+            { text: "Write alt text for this photo." },
+          ],
+        },
+      ],
     };
     let res;
     try {
       res = await fetch(`${GEMINI_URL}/models/${encodeURIComponent(model)}:generateContent`, {
-        method: "POST", headers: geminiHeaders(config.apiKey), body: JSON.stringify(body),
+        method: "POST",
+        headers: geminiHeaders(config.apiKey),
+        body: JSON.stringify(body),
       });
     } catch (err) {
       throw new Error(`Could not reach Google: ${err?.message || err}`);
     }
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.error?.message || `Gemini API error ${res.status}`);
-    if (data?.promptFeedback?.blockReason) throw new Error(`The request was blocked by Google (${data.promptFeedback.blockReason}).`);
-    const text = (data?.candidates?.[0]?.content?.parts || []).map((p) => p.text).filter(Boolean).join("");
+    if (data?.promptFeedback?.blockReason)
+      throw new Error(`The request was blocked by Google (${data.promptFeedback.blockReason}).`);
+    const text = (data?.candidates?.[0]?.content?.parts || [])
+      .map((p) => p.text)
+      .filter(Boolean)
+      .join("");
     if (!text) throw new Error("No alt text was returned.");
     return cleanAltText(text);
   },
@@ -433,19 +518,32 @@ const geminiProvider = {
     const model = this.parseModel || resolveModel(this, config);
     const body = {
       systemInstruction: { parts: [{ text: PARSE_INSTRUCTION + relationHint(relations) }] },
-      contents: [{ role: "user", parts: [{ text: `Parse this photo-search query as JSON matching the described shape: "${query}"` }] }],
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: `Parse this photo-search query as JSON matching the described shape: "${query}"` }],
+        },
+      ],
       generationConfig: { responseMimeType: "application/json", temperature: 0 },
     };
     let res;
     try {
-      res = await fetch(`${GEMINI_URL}/models/${encodeURIComponent(model)}:generateContent`, { method: "POST", headers: geminiHeaders(config.apiKey), body: JSON.stringify(body) });
+      res = await fetch(`${GEMINI_URL}/models/${encodeURIComponent(model)}:generateContent`, {
+        method: "POST",
+        headers: geminiHeaders(config.apiKey),
+        body: JSON.stringify(body),
+      });
     } catch (err) {
       throw new Error(`Could not reach Google: ${err?.message || err}`);
     }
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.error?.message || `Gemini API error ${res.status}`);
-    if (data?.promptFeedback?.blockReason) throw new Error(`The request was blocked by Google (${data.promptFeedback.blockReason}).`);
-    const text = (data?.candidates?.[0]?.content?.parts || []).map((p) => p.text).filter(Boolean).join("");
+    if (data?.promptFeedback?.blockReason)
+      throw new Error(`The request was blocked by Google (${data.promptFeedback.blockReason}).`);
+    const text = (data?.candidates?.[0]?.content?.parts || [])
+      .map((p) => p.text)
+      .filter(Boolean)
+      .join("");
     if (!text) throw new Error("No parse was returned.");
     return JSON.parse(text);
   },
@@ -459,11 +557,21 @@ const geminiProvider = {
       generationConfig: { responseMimeType: "application/json", temperature: 0 },
     };
     let res;
-    try { res = await fetch(`${GEMINI_URL}/models/${encodeURIComponent(model)}:generateContent`, { method: "POST", headers: geminiHeaders(config.apiKey), body: JSON.stringify(body) }); }
-    catch (err) { throw new Error(`Could not reach Google: ${err?.message || err}`); }
+    try {
+      res = await fetch(`${GEMINI_URL}/models/${encodeURIComponent(model)}:generateContent`, {
+        method: "POST",
+        headers: geminiHeaders(config.apiKey),
+        body: JSON.stringify(body),
+      });
+    } catch (err) {
+      throw new Error(`Could not reach Google: ${err?.message || err}`);
+    }
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.error?.message || `Gemini API error ${res.status}`);
-    const text = (data?.candidates?.[0]?.content?.parts || []).map((p) => p.text).filter(Boolean).join("");
+    const text = (data?.candidates?.[0]?.content?.parts || [])
+      .map((p) => p.text)
+      .filter(Boolean)
+      .join("");
     if (!text) throw new Error("No rerank was returned.");
     return JSON.parse(text);
   },
@@ -485,7 +593,12 @@ export function resolveModel(provider, config) {
 }
 
 async function errorMessage(res) {
-  try { const j = await res.json(); return j?.error?.message || null; } catch { return null; }
+  try {
+    const j = await res.json();
+    return j?.error?.message || null;
+  } catch {
+    return null;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -501,9 +614,7 @@ export function normalizeAnalysis(raw) {
       key: String(o.key || `o${i + 1}`),
       type: { id: String(o.type), label: String(o.type) },
       label: o.label ? String(o.label) : "",
-      box: isBox(o.box)
-        ? { x: clamp01(o.box.x), y: clamp01(o.box.y), w: clamp01(o.box.w), h: clamp01(o.box.h) }
-        : null,
+      box: isBox(o.box) ? { x: clamp01(o.box.x), y: clamp01(o.box.y), w: clamp01(o.box.w), h: clamp01(o.box.h) } : null,
     }));
   const keys = new Set(nodes.map((n) => n.key));
   const relations = Array.isArray(raw?.relations) ? raw.relations : [];
@@ -521,7 +632,11 @@ function isBox(b) {
 // Tidy a model's alt-text reply into one clean line: collapse whitespace and
 // strip any surrounding quotes the model may have wrapped it in.
 function cleanAltText(s) {
-  return String(s || "").trim().replace(/\s+/g, " ").replace(/^["'“”]+|["'“”]+$/g, "").trim();
+  return String(s || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/^["'“”]+|["'“”]+$/g, "")
+    .trim();
 }
 
 // ---------------------------------------------------------------------------
@@ -542,24 +657,29 @@ export async function preparePhotoImage(agent, did, blobRef, { maxEdge = 1400, q
     const w = Math.max(1, Math.round(bitmap.width * scale));
     const h = Math.max(1, Math.round(bitmap.height * scale));
     const canvas = document.createElement("canvas");
-    canvas.width = w; canvas.height = h;
+    canvas.width = w;
+    canvas.height = h;
     canvas.getContext("2d").drawImage(bitmap, 0, 0, w, h);
     bitmap.close?.();
     const outBlob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
     if (outBlob) return { base64: await blobToBase64(outBlob), mediaType: "image/jpeg" };
-  } catch { /* fall through to sending the original bytes */ }
+  } catch {
+    /* fall through to sending the original bytes */
+  }
 
   // Fallback: the browser could not decode/resize the image. Only send it as-is
   // if its declared type is one the provider accepts and it is small enough to
   // POST directly; otherwise fail with an actionable message rather than sending
   // bytes under a mismatched media type or blowing the payload limit.
   const SUPPORTED = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-  const MAX_FALLBACK_BYTES = 3_500_000;   // ~5MB base64 ceiling, minus overhead
+  const MAX_FALLBACK_BYTES = 3_500_000; // ~5MB base64 ceiling, minus overhead
   if (!SUPPORTED.includes(src.type)) {
     throw new Error(`Unsupported image format for analysis: ${src.type || "unknown"}. Try a JPEG or PNG.`);
   }
   if (srcBlob.size > MAX_FALLBACK_BYTES) {
-    throw new Error("This image couldn't be resized in the browser and is too large to send directly. Try a smaller or standard-format (JPEG/PNG) image.");
+    throw new Error(
+      "This image couldn't be resized in the browser and is too large to send directly. Try a smaller or standard-format (JPEG/PNG) image.",
+    );
   }
   return { base64: await blobToBase64(srcBlob), mediaType: src.type };
 }
@@ -567,7 +687,11 @@ export async function preparePhotoImage(agent, did, blobRef, { maxEdge = 1400, q
 function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
-    fr.onload = () => { const s = String(fr.result); const i = s.indexOf(","); resolve(i >= 0 ? s.slice(i + 1) : s); };
+    fr.onload = () => {
+      const s = String(fr.result);
+      const i = s.indexOf(",");
+      resolve(i >= 0 ? s.slice(i + 1) : s);
+    };
     fr.onerror = () => reject(fr.error || new Error("Could not read image data."));
     fr.readAsDataURL(blob);
   });
@@ -583,15 +707,35 @@ function blobToBase64(blob) {
 export async function clearSceneGraph(agent, did, photoUri) {
   // Delete EVERY graph bound to this photo (not just the first), so a stray
   // second graph from a prior interrupted/concurrent run self-heals here.
-  const graphs = (await listRecords(agent, did, NS.scene.graph)).filter((r) => r.value.subject === photoUri);
+  // Destructive cleanup must enumerate the current repository state rather
+  // than a prior snapshot. Explicit refreshes retain listRecords' offline cache
+  // fallback while preventing stale snapshots from leaving orphaned records.
+  const graphs = (await listRecords(agent, did, NS.scene.graph, { refresh: true })).filter(
+    (r) => r.value.subject === photoUri,
+  );
   if (!graphs.length) return;
   const graphUris = new Set(graphs.map((g) => g.uri));
   const uris = [];
-  for (const n of (await listRecords(agent, did, NS.scene.node)).filter((r) => graphUris.has(r.value.scene))) uris.push(n.uri);
-  for (const e of (await listRecords(agent, did, NS.scene.edge)).filter((r) => graphUris.has(r.value.scene))) uris.push(e.uri);
-  for (const rg of (await listRecords(agent, did, NS.scene.region)).filter((r) => r.value.photo === photoUri)) uris.push(rg.uri);
+  for (const n of (await listRecords(agent, did, NS.scene.node, { refresh: true })).filter((r) =>
+    graphUris.has(r.value.scene),
+  ))
+    uris.push(n.uri);
+  for (const e of (await listRecords(agent, did, NS.scene.edge, { refresh: true })).filter((r) =>
+    graphUris.has(r.value.scene),
+  ))
+    uris.push(e.uri);
+  for (const rg of (await listRecords(agent, did, NS.scene.region, { refresh: true })).filter(
+    (r) => r.value.photo === photoUri,
+  ))
+    uris.push(rg.uri);
   for (const g of graphs) uris.push(g.uri);
-  for (const uri of uris) { try { await deleteRecord(agent, did, uri); } catch { /* best-effort cleanup */ } }
+  for (const uri of uris) {
+    try {
+      await deleteRecord(agent, did, uri);
+    } catch {
+      /* best-effort cleanup */
+    }
+  }
 }
 
 // Create graph -> regions -> nodes -> edges from a normalized analysis. Records
@@ -600,9 +744,18 @@ export async function clearSceneGraph(agent, did, photoUri) {
 export async function writeSceneGraph(agent, did, photoUri, analysis, { replace = true } = {}) {
   if (replace) await clearSceneGraph(agent, did, photoUri);
   const provenance = { source: "analysis", confidence: "likely", assertedAt: now() };
-  const graphUri = await saveRecord(agent, did, NS.scene.graph, {
-    subject: photoUri, ontologies: [], provenance, createdAt: now(),
-  }, null);
+  const graphUri = await saveRecord(
+    agent,
+    did,
+    NS.scene.graph,
+    {
+      subject: photoUri,
+      ontologies: [],
+      provenance,
+      createdAt: now(),
+    },
+    null,
+  );
 
   const nodeUriByKey = new Map();
   for (const n of analysis.nodes) {
@@ -610,25 +763,53 @@ export async function writeSceneGraph(agent, did, photoUri, analysis, { replace 
     if (n.box) {
       // scene.region has no `provenance` field in its lexicon (unlike
       // graph/node/edge); match the manual editor's shapeToRegion shape exactly.
-      regionUri = await saveRecord(agent, did, NS.scene.region, {
-        photo: photoUri, kind: "bbox",
-        bbox: { x: sc(n.box.x), y: sc(n.box.y), w: sc(n.box.w), h: sc(n.box.h) },
-        createdAt: now(),
-      }, null);
+      regionUri = await saveRecord(
+        agent,
+        did,
+        NS.scene.region,
+        {
+          photo: photoUri,
+          kind: "bbox",
+          bbox: { x: sc(n.box.x), y: sc(n.box.y), w: sc(n.box.w), h: sc(n.box.h) },
+          createdAt: now(),
+        },
+        null,
+      );
     }
-    const nodeUri = await saveRecord(agent, did, NS.scene.node, {
-      scene: graphUri, type: { id: n.type.id, label: n.type.label },
-      label: n.label || undefined, region: regionUri || undefined,
-      provenance, createdAt: now(),
-    }, null);
+    const nodeUri = await saveRecord(
+      agent,
+      did,
+      NS.scene.node,
+      {
+        scene: graphUri,
+        type: { id: n.type.id, label: n.type.label },
+        label: n.label || undefined,
+        region: regionUri || undefined,
+        provenance,
+        createdAt: now(),
+      },
+      null,
+    );
     nodeUriByKey.set(n.key, nodeUri);
   }
   for (const e of analysis.edges) {
-    const from = nodeUriByKey.get(e.from), to = nodeUriByKey.get(e.to);
+    const from = nodeUriByKey.get(e.from),
+      to = nodeUriByKey.get(e.to);
     if (!from || !to) continue;
-    await saveRecord(agent, did, NS.scene.edge, {
-      scene: graphUri, type: { id: e.type.id, label: e.type.label }, from, to, provenance, createdAt: now(),
-    }, null);
+    await saveRecord(
+      agent,
+      did,
+      NS.scene.edge,
+      {
+        scene: graphUri,
+        type: { id: e.type.id, label: e.type.label },
+        from,
+        to,
+        provenance,
+        createdAt: now(),
+      },
+      null,
+    );
   }
   return graphUri;
 }
@@ -678,9 +859,16 @@ export async function rerankSearch(query, config, candidates = []) {
   const provider = getProvider(config);
   const list = (candidates || []).slice(0, 30);
   if (!provider.rerankQuery || !list.length) return new Map();
-  const raw = await provider.rerankQuery(config, query, list.map((c) => c.text || ""));
+  const raw = await provider.rerankQuery(
+    config,
+    query,
+    list.map((c) => c.text || ""),
+  );
   const out = new Map();
-  for (const s of raw?.scores || []) { const c = list[(Number(s.i) | 0) - 1]; if (c && Number.isFinite(s.rel)) out.set(c.uri, Math.max(0, Math.min(1, s.rel / 3))); }
+  for (const s of raw?.scores || []) {
+    const c = list[(Number(s.i) | 0) - 1];
+    if (c && Number.isFinite(s.rel)) out.set(c.uri, Math.max(0, Math.min(1, s.rel / 3)));
+  }
   return out;
 }
 

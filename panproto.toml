@@ -1,0 +1,7 @@
+[workspace]
+name = "graycard-lexicons"
+
+[[package]]
+name = "lexicons"
+path = "lexicons"
+protocol = "atproto"

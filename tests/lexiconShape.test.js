@@ -37,6 +37,23 @@ function load(id) {
 describe("lexicon shape guards", () => {
   const lexicons = allLexicons();
 
+  it("uses the canonical capture and lineage records and a narrow render event", () => {
+    const ids = new Set(lexicons.map(({ doc }) => doc.id));
+    expect(ids).not.toContain("app.graycard.process.captureSession");
+    expect(ids).not.toContain("app.graycard.process.digitalSession");
+    expect(ids).not.toContain("app.graycard.photo.derivative");
+    expect(ids).toContain("app.graycard.session.capture");
+    expect(ids).toContain("app.graycard.artifact");
+    expect(ids).toContain("app.graycard.process.renderSession");
+
+    const render = load("process.renderSession").defs.main;
+    expect(render.description).toContain("render or export event");
+    expect(render.record.properties.sourceArtifacts.items.format).toBe("at-uri");
+    expect(render.record.properties.outputArtifacts.items.format).toBe("at-uri");
+    expect(render.record.properties.rawFormat).toBeUndefined();
+    expect(render.record.properties.inCameraProcessing).toBeUndefined();
+  });
+
   it("every lexicon parses as valid JSON with an id and defs", () => {
     for (const { path, doc } of lexicons) {
       expect(doc.id, path).toMatch(/^app\.graycard\./);
@@ -73,8 +90,9 @@ describe("lexicon shape guards", () => {
     expect(dr.process).toEqual({ type: "ref", ref: "app.graycard.defs#filmProcess" });
     expect(dr.tankType).toEqual({ type: "ref", ref: "app.graycard.defs#tankType" });
     // enlarger/enlargingLens reference negativeFormat
-    expect(load("catalog.enlargerType").defs.main.record.properties.maxFormat.ref)
-      .toBe("app.graycard.defs#negativeFormat");
+    expect(load("catalog.enlargerType").defs.main.record.properties.maxFormat.ref).toBe(
+      "app.graycard.defs#negativeFormat",
+    );
   });
 
   it("session.capture keeps arrays and has no deprecated singular fields", () => {
@@ -126,7 +144,18 @@ describe("lexicon shape guards", () => {
     expect(o.main.record.properties.nodeTypes.items.ref).toBe("#typeDecl");
     expect(o.main.record.properties.edgeTypes.items.ref).toBe("#typeDecl");
     // edge (relation) types carry algebra + asserted domain/range + observed witnesses
-    for (const k of ["inverse", "opposite", "symmetric", "transitive", "reflexive", "functional", "domain", "range", "domainIncludes", "rangeIncludes"]) {
+    for (const k of [
+      "inverse",
+      "opposite",
+      "symmetric",
+      "transitive",
+      "reflexive",
+      "functional",
+      "domain",
+      "range",
+      "domainIncludes",
+      "rangeIncludes",
+    ]) {
       expect(o.typeDecl.properties[k], `typeDecl.${k}`).toBeTruthy();
     }
     // A-Box invariant unchanged: scene.edge relates two grounded node INSTANCES
@@ -139,10 +168,12 @@ describe("lexicon shape guards", () => {
     const defs = load("defs").defs;
     expect(defs.mount.maxLength).toBeGreaterThan(0);
     expect(defs.stopFraction.knownValues).toEqual(["1", "1/2", "1/3"]);
-    expect(load("catalog.cameraType").defs.main.record.properties.minShutterSpeed.ref)
-      .toBe("app.graycard.defs#scaledInteger");
-    expect(load("catalog.lensType").defs.main.record.properties.apertureSteps.items.ref)
-      .toBe("app.graycard.defs#scaledInteger");
+    expect(load("catalog.cameraType").defs.main.record.properties.minShutterSpeed.ref).toBe(
+      "app.graycard.defs#scaledInteger",
+    );
+    expect(load("catalog.lensType").defs.main.record.properties.apertureSteps.items.ref).toBe(
+      "app.graycard.defs#scaledInteger",
+    );
     expect(defs.sourceFile.properties.mimeType.maxLength).toBeGreaterThan(0);
     expect(load("catalog.filmStock").defs.main.record.properties.datasheetUrl.maxLength).toBeGreaterThan(0);
     expect(load("catalog.devRecipe").defs.main.record.properties.source.maxLength).toBeGreaterThan(0);
@@ -167,34 +198,85 @@ describe("lexicon shape guards", () => {
 
   it("camera and lens technical fields stay structured and bounded", () => {
     const camera = load("catalog.cameraType").defs.main.record.properties;
+    expect(camera.alternativeNames).toMatchObject({
+      type: "array",
+      maxLength: 32,
+      items: { type: "string", maxLength: 256 },
+    });
     for (const field of [
-      "shutterType", "flashSyncSpeed", "isoMin", "isoMax", "isoSteps",
-      "meteringModes", "exposurePrograms", "exposureCompensationMin",
-      "exposureCompensationMax", "viewfinderCoverage", "viewfinderMagnification",
-      "autofocusSystem", "autofocusModes", "filmAdvanceModes", "batteryTypes",
-      "dimensions", "weight", "productionStartYear", "productionEndYear",
-      "sensorWidth", "sensorHeight", "cropFactor", "effectiveMegapixels",
-      "sensorTechnology", "storageMedia", "rawFormats",
-    ]) expect(camera[field], `cameraType.${field}`).toBeTruthy();
+      "shutterType",
+      "flashSyncSpeed",
+      "isoMin",
+      "isoMax",
+      "isoSteps",
+      "meteringModes",
+      "exposurePrograms",
+      "exposureCompensationMin",
+      "exposureCompensationMax",
+      "viewfinderCoverage",
+      "viewfinderMagnification",
+      "autofocusSystem",
+      "autofocusModes",
+      "filmAdvanceModes",
+      "batteryTypes",
+      "dimensions",
+      "weight",
+      "productionStartYear",
+      "productionEndYear",
+      "sensorWidth",
+      "sensorHeight",
+      "cropFactor",
+      "effectiveMegapixels",
+      "sensorTechnology",
+      "storageMedia",
+      "rawFormats",
+    ])
+      expect(camera[field], `cameraType.${field}`).toBeTruthy();
     for (const field of [
-      "isoSteps", "meteringModes", "exposurePrograms", "autofocusModes",
-      "filmAdvanceModes", "batteryTypes", "storageMedia", "rawFormats",
-    ]) expect(camera[field].maxLength, `cameraType.${field}`).toBeGreaterThan(0);
+      "isoSteps",
+      "meteringModes",
+      "exposurePrograms",
+      "autofocusModes",
+      "filmAdvanceModes",
+      "batteryTypes",
+      "storageMedia",
+      "rawFormats",
+    ])
+      expect(camera[field].maxLength, `cameraType.${field}`).toBeGreaterThan(0);
 
     const lensDoc = load("catalog.lensType");
+    expect(lensDoc.defs.main.record.properties.alternativeNames).toMatchObject({
+      type: "array",
+      maxLength: 32,
+      items: { type: "string", maxLength: 256 },
+    });
     const lens = lensDoc.defs.main.record.properties;
     for (const field of [
-      "mounts", "variants", "focalLength35mm", "maxApertureAtTele",
-      "closestFocus", "maxReproductionRatio", "filterThreadDiameter",
-      "opticalElements", "opticalGroups", "diaphragmBladeCount", "stabilized",
-      "stabilizationStops", "autofocusTechnology", "dimensions", "weight",
-      "imageCircleDiameter", "coveredFormats", "productionStartYear",
-      "productionEndYear", "compatibleHoods", "compatibleTeleconverters",
-    ]) expect(lens[field], `lensType.${field}`).toBeTruthy();
-    for (const field of [
-      "mounts", "variants", "coveredFormats", "compatibleHoods",
+      "mounts",
+      "variants",
+      "focalLength35mm",
+      "maxApertureAtTele",
+      "closestFocus",
+      "maxReproductionRatio",
+      "filterThreadDiameter",
+      "opticalElements",
+      "opticalGroups",
+      "diaphragmBladeCount",
+      "stabilized",
+      "stabilizationStops",
+      "autofocusTechnology",
+      "dimensions",
+      "weight",
+      "imageCircleDiameter",
+      "coveredFormats",
+      "productionStartYear",
+      "productionEndYear",
+      "compatibleHoods",
       "compatibleTeleconverters",
-    ]) expect(lens[field].maxLength, `lensType.${field}`).toBeGreaterThan(0);
+    ])
+      expect(lens[field], `lensType.${field}`).toBeTruthy();
+    for (const field of ["mounts", "variants", "coveredFormats", "compatibleHoods", "compatibleTeleconverters"])
+      expect(lens[field].maxLength, `lensType.${field}`).toBeGreaterThan(0);
     expect(lens.variants.items.ref).toBe("#variant");
     expect(lensDoc.defs.variant.required).toEqual(["mount"]);
   });

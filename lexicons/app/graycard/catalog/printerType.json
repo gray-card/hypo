@@ -21,10 +21,22 @@
             "knownValues": ["pigment", "dye", "other"]
           },
           "inkChannels": { "type": "integer", "minimum": 1, "description": "Number of ink channels (e.g. 10, 12)." },
-          "maxMediaWidthMm": { "type": "integer", "minimum": 1, "description": "Widest media, in mm (13\" = 330, 17\" = 432, 24\" = 610, 44\" = 1118)." },
+          "maxMediaWidthMm": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Widest media, in mm (13\" = 330, 17\" = 432, 24\" = 610, 44\" = 1118)."
+          },
           "monochrome": { "type": "boolean", "description": "Dedicated B&W ink set (e.g. Piezography)." },
-          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
-          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "image": {
+            "type": "ref",
+            "ref": "app.graycard.defs#assetRef",
+            "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image."
+          },
+          "datasheet": {
+            "type": "ref",
+            "ref": "app.graycard.defs#assetRef",
+            "description": "Official datasheet: a link (preferred), an uploaded file, or another record."
+          },
           "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
           "notes": { "type": "string", "maxLength": 2000 },
           "createdAt": { "type": "string", "format": "datetime" },

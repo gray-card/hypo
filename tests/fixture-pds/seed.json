@@ -1,0 +1,99 @@
+{
+  "identities": {
+    "alice.test": "did:plc:alice"
+  },
+  "records": [
+    {
+      "repo": "did:plc:alice",
+      "collection": "app.graycard.catalog.cameraType",
+      "rkey": "camera-type-a",
+      "value": {
+        "$type": "app.graycard.catalog.cameraType",
+        "make": "Fixture",
+        "model": "HTTP One",
+        "category": "digital",
+        "createdAt": "2026-01-01T00:00:00.000Z"
+      }
+    },
+    {
+      "repo": "did:plc:alice",
+      "collection": "app.graycard.instance.camera",
+      "rkey": "camera-a",
+      "value": {
+        "$type": "app.graycard.instance.camera",
+        "type": "at://did:plc:alice/app.graycard.catalog.cameraType/camera-type-a",
+        "nickname": "black body",
+        "createdAt": "2026-01-01T00:00:00.000Z"
+      }
+    },
+    {
+      "repo": "did:plc:alice",
+      "collection": "app.graycard.instance.camera",
+      "rkey": "camera-b",
+      "value": {
+        "$type": "app.graycard.instance.camera",
+        "type": "at://did:plc:alice/app.graycard.catalog.cameraType/camera-type-a",
+        "nickname": "silver body",
+        "createdAt": "2026-01-02T00:00:00.000Z"
+      }
+    },
+    {
+      "repo": "did:plc:alice",
+      "collection": "app.graycard.instance.camera",
+      "rkey": "camera-c",
+      "value": {
+        "$type": "app.graycard.instance.camera",
+        "type": "at://did:plc:alice/app.graycard.catalog.cameraType/camera-type-a",
+        "nickname": "backup body",
+        "createdAt": "2026-01-03T00:00:00.000Z"
+      }
+    },
+    {
+      "repo": "did:plc:alice",
+      "collection": "app.graycard.catalog.lensType",
+      "rkey": "lens-type-a",
+      "value": {
+        "$type": "app.graycard.catalog.lensType",
+        "make": "Fixture",
+        "model": "Normal 50mm",
+        "createdAt": "2026-01-04T00:00:00.000Z"
+      }
+    },
+    {
+      "repo": "did:plc:alice",
+      "collection": "app.graycard.instance.lens",
+      "rkey": "lens-a",
+      "value": {
+        "$type": "app.graycard.instance.lens",
+        "type": "at://did:plc:alice/app.graycard.catalog.lensType/lens-type-a",
+        "nickname": "normal lens",
+        "createdAt": "2026-01-04T00:00:00.000Z"
+      }
+    },
+    {
+      "repo": "did:plc:alice",
+      "collection": "app.graycard.session.capture",
+      "rkey": "shoot-a",
+      "value": {
+        "$type": "app.graycard.session.capture",
+        "label": "Fixture photo walk",
+        "cameras": ["at://did:plc:alice/app.graycard.instance.camera/camera-a"],
+        "lenses": ["at://did:plc:alice/app.graycard.instance.lens/lens-a"],
+        "createdAt": "2026-01-05T00:00:00.000Z"
+      }
+    },
+    {
+      "repo": "did:plc:alice",
+      "collection": "app.graycard.workflow.template",
+      "rkey": "workflow-a",
+      "value": {
+        "$type": "app.graycard.workflow.template",
+        "name": "Fixture digital workflow",
+        "medium": "digital",
+        "defaultCamera": "at://did:plc:alice/app.graycard.instance.camera/camera-a",
+        "stageKinds": ["capture", "edit"],
+        "createdAt": "2026-01-06T00:00:00.000Z"
+      }
+    }
+  ]
+}

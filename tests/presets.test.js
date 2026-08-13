@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { CURATED_MOUNT_NAMES, GEAR_FIELD_ENUM_OPTIONS, LEXICON_ENUM_OPTIONS } from "../packages/lexicon/src/index.ts";
 import { PRESETS, ENUMS, MANUFACTURERS, FIELD_ENUMS } from "../src/data/presets.js";
 
 describe("camera catalog (curated + lensfun merge)", () => {
@@ -19,6 +20,11 @@ describe("camera catalog (curated + lensfun merge)", () => {
     expect(has("Panasonic", "S5 II")).toBe(true);
     expect(has("Nikon", "Z6 II")).toBe(true);
     expect(cams.some((c) => /ILCE-|DC-S|Z \d_/.test(c.model))).toBe(false);
+  });
+  it("retains a Lensfun EXIF model as an alternative camera name", () => {
+    expect(cams.find((camera) => camera.make === "Sony" && camera.model === "A7 III")?.alternativeNames).toContain(
+      "ILCE-7M3",
+    );
   });
   it("has instant bodies and a sane total", () => {
     expect(has("Polaroid", "SX-70")).toBe(true);
@@ -48,12 +54,49 @@ describe("lens catalog", () => {
 describe("enum data", () => {
   it("exposes the enums the forms rely on", () => {
     expect(ENUMS.rollStatus).not.toContain("stored"); // the "in stock" state was removed
-    expect(ENUMS.rollStatus[0]).toBe("loaded");        // a roll starts life loaded
+    expect(ENUMS.rollStatus[0]).toBe("loaded"); // a roll starts life loaded
     expect(FIELD_ENUMS.status).toContain("loaded");
     expect(FIELD_ENUMS.format).toContain("135");
     // level-of-analysis fixes hold: no paper-print process in film process, etc.
     expect(ENUMS.process).not.toContain("ra4");
     expect(ENUMS.filmType).not.toContain("motion-picture");
+  });
+  it("projects every lexicon-backed list from generated knownValues", () => {
+    const expectedSources = {
+      format: "captureFormat",
+      process: "filmProcess",
+      filmType: "filmType",
+      category: "cameraCategory",
+      roles: "chemistryRole",
+      form: "developerForm",
+      scannerKind: "scannerKind",
+      base: "paperBase",
+      surface: "paperSurface",
+      lensTypeKind: "lensTypeKind",
+      filterKind: "filterKind",
+      meteringMode: "meteringMode",
+      exposureProgram: "exposureProgram",
+      stopFraction: "stopFraction",
+      printProcess: "printProcess",
+      medium: "paperMedium",
+      contrast: "paperContrast",
+      tone: "paperTone",
+      maxFormat: "negativeFormat",
+      coversFormat: "negativeFormat",
+      headType: "headType",
+      printerTechnology: "printerTechnology",
+      inkType: "inkType",
+      lightTechnology: "lightTechnology",
+      storage: "storage",
+      rollStatus: "rollStatus",
+      cassetteType: "cassetteType",
+      artifactKind: "artifactKind",
+    };
+    for (const [name, source] of Object.entries(expectedSources)) {
+      expect(ENUMS[name], name).toBe(LEXICON_ENUM_OPTIONS[source]);
+    }
+    expect(ENUMS.mount).toBe(CURATED_MOUNT_NAMES);
+    expect(FIELD_ENUMS).toBe(GEAR_FIELD_ENUM_OPTIONS);
   });
   it("manufacturers are unique and sorted", () => {
     const sorted = [...MANUFACTURERS].sort((a, b) => a.localeCompare(b));
@@ -98,7 +141,7 @@ describe("film rebrands are aka-linked (same emulsion, two names)", () => {
   });
 });
 
-describe("developer and chemistry datasheets", () => {
+describe("photographic chemistry datasheets", () => {
   const allowedHosts = new Set([
     "business.kodakmoments.com",
     "cdn.shopify.com",
@@ -112,27 +155,14 @@ describe("developer and chemistry datasheets", () => {
     "www.moersch-photochemie.de",
   ]);
 
-  it("uses optional HTTPS manufacturer references on 24 of 27 developers", () => {
-    const items = PRESETS.developerType.items;
+  it("uses optional HTTPS manufacturer references on 37 of 42 unified chemistry products", () => {
+    const items = PRESETS.chemistryType.items;
     const unresolved = items.filter((i) => !i.datasheetUrl).map((i) => `${i.brand} ${i.name}`);
-    expect(items.filter((i) => i.datasheetUrl)).toHaveLength(24);
+    expect(items.filter((i) => i.datasheetUrl)).toHaveLength(37);
     expect(unresolved).toEqual([
       "Kodak D-23",
       "Diafine Diafine Two-Bath",
       "Tetenal Colortec C-41",
-    ]);
-    for (const item of items.filter((i) => i.datasheetUrl)) {
-      const url = new URL(item.datasheetUrl);
-      expect(url.protocol, `${item.brand} ${item.name}`).toBe("https:");
-      expect(allowedHosts.has(url.hostname), `${item.brand} ${item.name}: ${url.hostname}`).toBe(true);
-    }
-  });
-
-  it("uses optional HTTPS manufacturer references on 13 of 15 ancillary chemistries", () => {
-    const items = PRESETS.chemistryType.items;
-    const unresolved = items.filter((i) => !i.datasheetUrl).map((i) => `${i.brand} ${i.name}`);
-    expect(items.filter((i) => i.datasheetUrl)).toHaveLength(13);
-    expect(unresolved).toEqual([
       "Kodak C-41 Blix",
       "Kodak Selenium Toner",
     ]);
@@ -141,5 +171,7 @@ describe("developer and chemistry datasheets", () => {
       expect(url.protocol, `${item.brand} ${item.name}`).toBe("https:");
       expect(allowedHosts.has(url.hostname), `${item.brand} ${item.name}: ${url.hostname}`).toBe(true);
     }
+    expect(items.find((item) => item.name === "C-41 Blix")?.roles).toEqual(["bleach", "fixer"]);
+    expect(items.find((item) => item.name === "Df96 Monobath")?.roles).toEqual(["film-developer", "fixer"]);
   });
 });

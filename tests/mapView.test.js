@@ -14,7 +14,11 @@ function stubCanvas(ctx) {
 
 describe("cssColorToRgb — maplibre-safe accent color", () => {
   it("rasterises a color to an rgb() string maplibre can parse", () => {
-    stubCanvas({ fillStyle: "", fillRect() {}, getImageData: () => ({ data: Uint8ClampedArray.from([245, 146, 58, 255]) }) });
+    stubCanvas({
+      fillStyle: "",
+      fillRect() {},
+      getImageData: () => ({ data: Uint8ClampedArray.from([245, 146, 58, 255]) }),
+    });
     const out = cssColorToRgb("oklch(0.75 0.155 58)");
     expect(out).toBe("rgb(245, 146, 58)");
     expect(out).not.toMatch(/oklch/);

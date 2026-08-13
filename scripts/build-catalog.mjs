@@ -45,11 +45,17 @@ async function loadXmlSources() {
   try {
     const r = await fetch(API, { headers: { "User-Agent": "graycard-build" } });
     if (r.ok) names = (await r.json()).filter((f) => f.name.endsWith(".xml")).map((f) => f.name);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   console.log(`fetching ${names.length} db files from upstream`);
   const out = [];
   for (const name of names) {
-    try { out.push(await (await fetch(`${RAW}/${name}`)).text()); } catch { /* skip */ }
+    try {
+      out.push(await (await fetch(`${RAW}/${name}`)).text());
+    } catch {
+      /* skip */
+    }
   }
   return out;
 }
@@ -62,7 +68,9 @@ async function wikidataQid(label) {
     const u = `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(label)}&language=en&format=json&type=item&limit=1`;
     const j = await (await fetch(u, { headers: { "User-Agent": "graycard-build" } })).json();
     return j.search?.[0]?.id || null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 async function imageForQid(qid) {
   if (!qid) return null;
@@ -71,7 +79,9 @@ async function imageForQid(qid) {
     const j = await (await fetch(u, { headers: { "User-Agent": "graycard-build" } })).json();
     const file = j.claims?.P18?.[0]?.mainsnak?.datavalue?.value;
     return file ? `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=320` : null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 // -- parse --------------------------------------------------------------------
@@ -79,8 +89,16 @@ async function imageForQid(qid) {
 const { lenses, cameras } = buildCatalog(await loadXmlSources());
 
 if (RESOLVE_WIKIDATA) {
-  for (const it of lenses) { it.wikidata = await wikidataQid(`${it.make} ${it.model}`); it.image = await imageForQid(it.wikidata); await new Promise((r) => setTimeout(r, 120)); }
-  for (const it of cameras) { it.wikidata = await wikidataQid(`${it.make} ${it.model}`); it.image = await imageForQid(it.wikidata); await new Promise((r) => setTimeout(r, 120)); }
+  for (const it of lenses) {
+    it.wikidata = await wikidataQid(`${it.make} ${it.model}`);
+    it.image = await imageForQid(it.wikidata);
+    await new Promise((r) => setTimeout(r, 120));
+  }
+  for (const it of cameras) {
+    it.wikidata = await wikidataQid(`${it.make} ${it.model}`);
+    it.image = await imageForQid(it.wikidata);
+    await new Promise((r) => setTimeout(r, 120));
+  }
 }
 
 // -- curated lenses (non-lensfun; e.g. Nikon's manual-focus line) -------------
@@ -93,18 +111,30 @@ if (RESOLVE_WIKIDATA) {
 // dedupe key: the full model normalized (drops the family word + punctuation but
 // keeps the era tokens AI / AI-S / AF etc., so pre-AI, AI and AI-S stay distinct).
 // Matching on the whole model avoids cross-make / cross-era false positives.
-const norm = (s) => String(s || "").toLowerCase().replace(/nikkor|nikon/g, "").replace(/[^a-z0-9]/g, "");
+const norm = (s) =>
+  String(s || "")
+    .toLowerCase()
+    .replace(/nikkor|nikon/g, "")
+    .replace(/[^a-z0-9]/g, "");
 
 // load every data/curated-lenses/*.jsonl file (one per manufacturer), so a
 // swarm of contributors can each own a file without merge conflicts.
 function loadCurated() {
   if (!existsSync(CURATED_DIR)) return [];
   const out = [];
-  for (const f of readdirSync(CURATED_DIR).filter((f) => f.endsWith(".jsonl")).sort()) {
-    const lines = readFileSync(join(CURATED_DIR, f), "utf8").split("\n").map((l) => l.trim()).filter(Boolean);
+  for (const f of readdirSync(CURATED_DIR)
+    .filter((f) => f.endsWith(".jsonl"))
+    .sort()) {
+    const lines = readFileSync(join(CURATED_DIR, f), "utf8")
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
     lines.forEach((l, i) => {
-      try { out.push(JSON.parse(l)); }
-      catch (e) { throw new Error(`${f}:${i + 1}: invalid JSON: ${e.message}`); }
+      try {
+        out.push(JSON.parse(l));
+      } catch (e) {
+        throw new Error(`${f}:${i + 1}: invalid JSON: ${e.message}`);
+      }
     });
   }
   return out;
@@ -127,7 +157,7 @@ if (curated.length) {
       const byName = new Map(wd.map((w) => [norm(w.model), w]));
       for (const e of curated) {
         if (e.make !== make) continue;
-        const hit = byName.get(norm(e.model));       // exact normalized match only (safe)
+        const hit = byName.get(norm(e.model)); // exact normalized match only (safe)
         if (!hit) continue;
         if (!e.wikidata) e.wikidata = hit.wikidata;
         if (!e.image && hit.image) e.image = hit.image;
@@ -140,16 +170,27 @@ if (curated.length) {
 // -- curated cameras (non-lensfun; e.g. film bodies) --------------------------
 // Same pattern as lenses: one data/curated-cameras/<maker>.jsonl per contributor.
 const cameraNorm = (make, model) =>
-  `${make} ${model}`.toLowerCase().replace(/\b(eos|mark|mk|lumix)\b/g, " ").replace(/[^a-z0-9]/g, "");
+  `${make} ${model}`
+    .toLowerCase()
+    .replace(/\b(eos|mark|mk|lumix)\b/g, " ")
+    .replace(/[^a-z0-9]/g, "");
 
 function loadCuratedCameras() {
   if (!existsSync(CURATED_CAM_DIR)) return [];
   const out = [];
-  for (const f of readdirSync(CURATED_CAM_DIR).filter((f) => f.endsWith(".jsonl")).sort()) {
-    const lines = readFileSync(join(CURATED_CAM_DIR, f), "utf8").split("\n").map((l) => l.trim()).filter(Boolean);
+  for (const f of readdirSync(CURATED_CAM_DIR)
+    .filter((f) => f.endsWith(".jsonl"))
+    .sort()) {
+    const lines = readFileSync(join(CURATED_CAM_DIR, f), "utf8")
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
     lines.forEach((l, i) => {
-      try { out.push(JSON.parse(l)); }
-      catch (e) { throw new Error(`${f}:${i + 1}: invalid JSON: ${e.message}`); }
+      try {
+        out.push(JSON.parse(l));
+      } catch (e) {
+        throw new Error(`${f}:${i + 1}: invalid JSON: ${e.message}`);
+      }
     });
   }
   return out;
@@ -162,11 +203,13 @@ if (curatedCameras.length) {
   const beforeC = curatedCameras.length;
   curatedCameras = curatedCameras.filter((c) => {
     const k = cameraNorm(c.make, c.model);
-    if (lfCam.has(k) || seen.has(k)) return false;   // drop lensfun dupes + intra-curated dupes
+    if (lfCam.has(k) || seen.has(k)) return false; // drop lensfun dupes + intra-curated dupes
     seen.add(k);
     return true;
   });
-  console.log(`curated cameras: ${curatedCameras.length} kept (${beforeC - curatedCameras.length} dropped as lensfun/intra dupes)`);
+  console.log(
+    `curated cameras: ${curatedCameras.length} kept (${beforeC - curatedCameras.length} dropped as lensfun/intra dupes)`,
+  );
 }
 
 // -- curated development recipes (from manufacturer datasheets) ---------------
@@ -177,25 +220,39 @@ if (curatedCameras.length) {
 function loadCuratedDevTimes() {
   if (!existsSync(CURATED_DEV_DIR)) return [];
   const out = [];
-  for (const f of readdirSync(CURATED_DEV_DIR).filter((f) => f.endsWith(".jsonl")).sort()) {
-    const lines = readFileSync(join(CURATED_DEV_DIR, f), "utf8").split("\n").map((l) => l.trim()).filter(Boolean);
+  for (const f of readdirSync(CURATED_DEV_DIR)
+    .filter((f) => f.endsWith(".jsonl"))
+    .sort()) {
+    const lines = readFileSync(join(CURATED_DEV_DIR, f), "utf8")
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
     lines.forEach((l, i) => {
       let rec;
-      try { rec = JSON.parse(l); }
-      catch (e) { throw new Error(`${f}:${i + 1}: invalid JSON: ${e.message}`); }
+      try {
+        rec = JSON.parse(l);
+      } catch (e) {
+        throw new Error(`${f}:${i + 1}: invalid JSON: ${e.message}`);
+      }
       // minimal validation so a bad row fails the build loudly rather than silently
       for (const k of ["developerMake", "developerName", "filmMake", "filmName", "process", "temps", "source"]) {
         if (rec[k] == null) throw new Error(`${f}:${i + 1}: missing required field '${k}'`);
       }
-      if (!Array.isArray(rec.temps) || !rec.temps.length) throw new Error(`${f}:${i + 1}: 'temps' must be a non-empty array`);
-      for (const t of rec.temps) if (!Number.isInteger(t.tempC10) || !Number.isInteger(t.timeSec)) throw new Error(`${f}:${i + 1}: each temp needs integer tempC10 + timeSec`);
+      if (!Array.isArray(rec.temps) || !rec.temps.length)
+        throw new Error(`${f}:${i + 1}: 'temps' must be a non-empty array`);
+      for (const t of rec.temps)
+        if (!Number.isInteger(t.tempC10) || !Number.isInteger(t.timeSec))
+          throw new Error(`${f}:${i + 1}: each temp needs integer tempC10 + timeSec`);
       out.push(rec);
     });
   }
   return out;
 }
 const devTimes = loadCuratedDevTimes();
-if (devTimes.length) console.log(`curated dev recipes: ${devTimes.length} from ${readdirSync(CURATED_DEV_DIR).filter((f) => f.endsWith(".jsonl")).length} datasheet file(s)`);
+if (devTimes.length)
+  console.log(
+    `curated dev recipes: ${devTimes.length} from ${readdirSync(CURATED_DEV_DIR).filter((f) => f.endsWith(".jsonl")).length} datasheet file(s)`,
+  );
 
 // -- curated film stocks (from manufacturer datasheets) -----------------------
 // data/curated-film-stocks/<maker>.jsonl holds film emulsion specs (formats, base,
@@ -204,12 +261,20 @@ if (devTimes.length) console.log(`curated dev recipes: ${devTimes.length} from $
 function loadCuratedFilmStocks() {
   if (!existsSync(CURATED_FILM_DIR)) return [];
   const out = [];
-  for (const f of readdirSync(CURATED_FILM_DIR).filter((f) => f.endsWith(".jsonl")).sort()) {
-    const lines = readFileSync(join(CURATED_FILM_DIR, f), "utf8").split("\n").map((l) => l.trim()).filter(Boolean);
+  for (const f of readdirSync(CURATED_FILM_DIR)
+    .filter((f) => f.endsWith(".jsonl"))
+    .sort()) {
+    const lines = readFileSync(join(CURATED_FILM_DIR, f), "utf8")
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
     lines.forEach((l, i) => {
       let rec;
-      try { rec = JSON.parse(l); }
-      catch (e) { throw new Error(`${f}:${i + 1}: invalid JSON: ${e.message}`); }
+      try {
+        rec = JSON.parse(l);
+      } catch (e) {
+        throw new Error(`${f}:${i + 1}: invalid JSON: ${e.message}`);
+      }
       for (const k of ["brand", "name", "filmType", "process"]) {
         if (rec[k] == null) throw new Error(`${f}:${i + 1}: missing required field '${k}'`);
       }
@@ -219,7 +284,10 @@ function loadCuratedFilmStocks() {
   return out;
 }
 const filmStocks = loadCuratedFilmStocks();
-if (filmStocks.length) console.log(`curated film stocks: ${filmStocks.length} from ${readdirSync(CURATED_FILM_DIR).filter((f) => f.endsWith(".jsonl")).length} datasheet file(s)`);
+if (filmStocks.length)
+  console.log(
+    `curated film stocks: ${filmStocks.length} from ${readdirSync(CURATED_FILM_DIR).filter((f) => f.endsWith(".jsonl")).length} datasheet file(s)`,
+  );
 
 // -- developer and chemistry product specifications --------------------------
 // These rows enrich the small hand-curated autocomplete lists in presets.js.
@@ -229,11 +297,17 @@ function loadDarkroomProducts(kind, requiredFields) {
   const file = join(DATASHEET_DIR, `${kind}.jsonl`);
   if (!existsSync(file)) return [];
   const out = [];
-  const lines = readFileSync(file, "utf8").split("\n").map((l) => l.trim()).filter(Boolean);
+  const lines = readFileSync(file, "utf8")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
   lines.forEach((line, i) => {
     let rec;
-    try { rec = JSON.parse(line); }
-    catch (e) { throw new Error(`data/datasheets/${kind}.jsonl:${i + 1}: invalid JSON: ${e.message}`); }
+    try {
+      rec = JSON.parse(line);
+    } catch (e) {
+      throw new Error(`data/datasheets/${kind}.jsonl:${i + 1}: invalid JSON: ${e.message}`);
+    }
     for (const field of requiredFields) {
       if (!rec[field]) throw new Error(`data/datasheets/${kind}.jsonl:${i + 1}: missing required field '${field}'`);
     }
@@ -247,8 +321,44 @@ function loadDarkroomProducts(kind, requiredFields) {
   return out;
 }
 
-const developerProducts = loadDarkroomProducts("developers", ["brand", "name", "process", "form"]);
-const chemistryProducts = loadDarkroomProducts("chemistries", ["brand", "name", "role", "form"]);
+const developerProducts = loadDarkroomProducts("developers", ["brand", "name", "process", "form"]).map((item) => ({
+  ...item,
+  roles:
+    item.process === "monobath"
+      ? ["film-developer", "fixer"]
+      : item.form !== "kit"
+        ? ["film-developer"]
+        : item.process === "e6"
+          ? ["first-developer", "color-developer", "bleach", "fixer", "stabilizer"]
+          : item.process === "c41"
+            ? ["color-developer", "bleach", "fixer", "stabilizer"]
+            : item.process === "ecn2"
+              ? ["color-developer", "bleach", "fixer"]
+              : ["film-developer"],
+  productKind: item.form === "kit" ? "process-kit" : "single-chemical",
+}));
+const chemistryProducts = loadDarkroomProducts("chemistries", ["brand", "name", "role", "form"]).map((item) => {
+  const roles =
+    item.role === "blix"
+      ? ["bleach", "fixer"]
+      : item.role === "monobath"
+        ? ["film-developer", "fixer"]
+        : item.role === "developer"
+          ? ["film-developer"]
+          : item.role === "other" && item.name === "Hypo Clearing Agent"
+            ? ["clearing-agent"]
+            : [item.role];
+  const { role: _legacyRole, ...rest } = item;
+  return {
+    ...rest,
+    roles,
+    specSources: rest.specSources?.map((source) => ({
+      ...source,
+      fields: source.fields?.map((field) => (field === "role" ? "roles" : field)),
+    })),
+    productKind: item.form === "kit" ? "multi-part-chemical" : "single-chemical",
+  };
+});
 
 // -- manufacturer datasheet links --------------------------------------------
 //
@@ -257,24 +367,37 @@ const chemistryProducts = loadDarkroomProducts("chemistries", ["brand", "name", 
 // datasheet. Keys intentionally use the catalog's exact make + model strings;
 // loose matching could attach a manual to a different optical revision.
 const datasheetKey = (make, model) =>
-  `${String(make || "").trim().toLowerCase()}\0${String(model || "").trim().toLowerCase()}`;
+  `${String(make || "")
+    .trim()
+    .toLowerCase()}\0${String(model || "")
+    .trim()
+    .toLowerCase()}`;
 
 function loadDatasheetEnrichments(kind) {
   const file = join(DATASHEET_DIR, `${kind}.jsonl`);
   if (!existsSync(file)) return new Map();
   const enrichments = new Map();
-  const lines = readFileSync(file, "utf8").split("\n").map((l) => l.trim()).filter(Boolean);
+  const lines = readFileSync(file, "utf8")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
   lines.forEach((line, i) => {
     let rec;
-    try { rec = JSON.parse(line); }
-    catch (e) { throw new Error(`data/datasheets/${kind}.jsonl:${i + 1}: invalid JSON: ${e.message}`); }
+    try {
+      rec = JSON.parse(line);
+    } catch (e) {
+      throw new Error(`data/datasheets/${kind}.jsonl:${i + 1}: invalid JSON: ${e.message}`);
+    }
     for (const field of ["make", "model", "datasheetUrl"]) {
       if (!rec[field]) throw new Error(`data/datasheets/${kind}.jsonl:${i + 1}: missing required field '${field}'`);
     }
     if (!/^https:\/\//.test(rec.datasheetUrl)) {
       throw new Error(`data/datasheets/${kind}.jsonl:${i + 1}: datasheetUrl must use https`);
     }
-    if (rec.verifiedFields != null && (!Array.isArray(rec.verifiedFields) || rec.verifiedFields.some((field) => typeof field !== "string"))) {
+    if (
+      rec.verifiedFields != null &&
+      (!Array.isArray(rec.verifiedFields) || rec.verifiedFields.some((field) => typeof field !== "string"))
+    ) {
       throw new Error(`data/datasheets/${kind}.jsonl:${i + 1}: verifiedFields must be an array of property names`);
     }
     if (rec.document != null && (typeof rec.document !== "object" || Array.isArray(rec.document))) {
@@ -290,8 +413,14 @@ function loadDatasheetEnrichments(kind) {
 }
 
 const ENRICHMENT_META_FIELDS = new Set([
-  "make", "model", "verifiedFields", "document",
-  "sourcePage", "sourceTable", "sourceMethod", "sourceNote",
+  "make",
+  "model",
+  "verifiedFields",
+  "document",
+  "sourcePage",
+  "sourceTable",
+  "sourceMethod",
+  "sourceNote",
 ]);
 
 function applyDatasheetEnrichments(records, enrichments, defaultDocumentKind) {
@@ -314,14 +443,17 @@ function applyDatasheetEnrichments(records, enrichments, defaultDocumentKind) {
     };
     record.documents = [...(record.documents || []), document];
     if (enrichment.verifiedFields?.length) {
-      record.specSources = [...(record.specSources || []), {
-        document,
-        fields: enrichment.verifiedFields,
-        ...(enrichment.sourcePage ? { page: enrichment.sourcePage } : {}),
-        ...(enrichment.sourceTable ? { table: enrichment.sourceTable } : {}),
-        method: enrichment.sourceMethod || "manual-transcription",
-        ...(enrichment.sourceNote ? { note: enrichment.sourceNote } : {}),
-      }];
+      record.specSources = [
+        ...(record.specSources || []),
+        {
+          document,
+          fields: enrichment.verifiedFields,
+          ...(enrichment.sourcePage ? { page: enrichment.sourcePage } : {}),
+          ...(enrichment.sourceTable ? { table: enrichment.sourceTable } : {}),
+          method: enrichment.sourceMethod || "manual-transcription",
+          ...(enrichment.sourceNote ? { note: enrichment.sourceNote } : {}),
+        },
+      ];
     }
     applied++;
   }
@@ -331,10 +463,13 @@ function applyDatasheetEnrichments(records, enrichments, defaultDocumentKind) {
 function attachLegacyDatasheetDocuments(records, defaultDocumentKind) {
   for (const record of records) {
     if (!record.datasheetUrl || record.documents?.some((doc) => doc.asset?.url === record.datasheetUrl)) continue;
-    record.documents = [...(record.documents || []), {
-      kind: defaultDocumentKind,
-      asset: { url: record.datasheetUrl },
-    }];
+    record.documents = [
+      ...(record.documents || []),
+      {
+        kind: defaultDocumentKind,
+        asset: { url: record.datasheetUrl },
+      },
+    ];
   }
 }
 
@@ -351,7 +486,9 @@ attachLegacyDatasheetDocuments(curatedCameras, "product-page");
 attachLegacyDatasheetDocuments(lenses, "technical-data");
 attachLegacyDatasheetDocuments(curated, "technical-data");
 if (cameraDatasheets.size || lensDatasheets.size) {
-  console.log(`datasheet enrichment: ${linkedCameras}/${cameraDatasheets.size} camera and ${linkedLenses}/${lensDatasheets.size} lens rows applied`);
+  console.log(
+    `datasheet enrichment: ${linkedCameras}/${cameraDatasheets.size} camera and ${linkedLenses}/${lensDatasheets.size} lens rows applied`,
+  );
 }
 
 const header = {
@@ -363,34 +500,61 @@ const header = {
     : "run with --wikidata to resolve QIDs (the app also resolves images by name at runtime)",
 };
 const curatedHeader = {
-  _source: "curated from Wikipedia article tables (e.g. 'Nikon F-mount') + Wikidata, authored in data/curated-lenses.jsonl",
-  _license: "Hypo's original compilation: CC-BY-SA 4.0. Source facts may be uncopyrightable; linked images retain their own terms. See data/LICENSE.md and src/data/CATALOG_ATTRIBUTION.md",
+  _source:
+    "curated from Wikipedia article tables (e.g. 'Nikon F-mount') + Wikidata, authored in data/curated-lenses.jsonl",
+  _license:
+    "Hypo's original compilation: CC-BY-SA 4.0. Source facts may be uncopyrightable; linked images retain their own terms. See data/LICENSE.md and src/data/CATALOG_ATTRIBUTION.md",
   _generated: new Date().toISOString(),
 };
 writeFileSync(join(OUT, "lensfun-lenses.json"), JSON.stringify({ ...header, lenses }, null, 2));
 writeFileSync(join(OUT, "lensfun-cameras.json"), JSON.stringify({ ...header, cameras }, null, 2));
 writeFileSync(join(OUT, "curated-lenses.json"), JSON.stringify({ ...curatedHeader, lenses: curated }, null, 2));
-writeFileSync(join(OUT, "curated-cameras.json"), JSON.stringify({ ...curatedHeader, _source: "curated from Wikipedia + Wikidata, authored in data/curated-cameras/*.jsonl", cameras: curatedCameras }, null, 2));
+writeFileSync(
+  join(OUT, "curated-cameras.json"),
+  JSON.stringify(
+    {
+      ...curatedHeader,
+      _source: "curated from Wikipedia + Wikidata, authored in data/curated-cameras/*.jsonl",
+      cameras: curatedCameras,
+    },
+    null,
+    2,
+  ),
+);
 const devHeader = {
-  _source: "development times transcribed from official manufacturer datasheets, authored in data/curated-dev-times/*.jsonl; each recipe carries its own source URL",
-  _license: "Hypo's original compilation: CC-BY-SA 4.0; individual development times may be non-copyrightable facts. See data/LICENSE.md",
+  _source:
+    "development times transcribed from official manufacturer datasheets, authored in data/curated-dev-times/*.jsonl; each recipe carries its own source URL",
+  _license:
+    "Hypo's original compilation: CC-BY-SA 4.0; individual development times may be non-copyrightable facts. See data/LICENSE.md",
   _generated: new Date().toISOString(),
 };
 writeFileSync(join(OUT, "curated-dev-times.json"), JSON.stringify({ ...devHeader, recipes: devTimes }, null, 2));
 const filmHeader = {
-  _source: "film emulsion specs transcribed from official manufacturer datasheets, authored in data/curated-film-stocks/*.jsonl; each record carries its own datasheetUrl",
-  _license: "Hypo's original compilation: CC-BY-SA 4.0; individual specs may be non-copyrightable facts. See data/LICENSE.md",
+  _source:
+    "film emulsion specs transcribed from official manufacturer datasheets, authored in data/curated-film-stocks/*.jsonl; each record carries its own datasheetUrl",
+  _license:
+    "Hypo's original compilation: CC-BY-SA 4.0; individual specs may be non-copyrightable facts. See data/LICENSE.md",
   _generated: new Date().toISOString(),
 };
 writeFileSync(join(OUT, "curated-film-stocks.json"), JSON.stringify({ ...filmHeader, stocks: filmStocks }, null, 2));
 const darkroomHeader = {
-  _source: "developer and chemistry product specifications transcribed from official manufacturer technical and safety documents in data/datasheets/*.jsonl",
-  _license: "Hypo's original compilation: CC-BY-SA 4.0; individual specifications may be non-copyrightable facts. See data/LICENSE.md",
+  _source:
+    "developer and chemistry product specifications transcribed from official manufacturer technical and safety documents in data/datasheets/*.jsonl",
+  _license:
+    "Hypo's original compilation: CC-BY-SA 4.0; individual specifications may be non-copyrightable facts. See data/LICENSE.md",
   _generated: new Date().toISOString(),
 };
-writeFileSync(join(OUT, "curated-darkroom-products.json"), JSON.stringify({
-  ...darkroomHeader,
-  developers: developerProducts,
-  chemistries: chemistryProducts,
-}, null, 2));
-console.log(`wrote ${lenses.length} lensfun lenses, ${cameras.length} cameras, ${curated.length} curated lenses, ${curatedCameras.length} curated cameras, ${devTimes.length} dev recipes, ${filmStocks.length} film stocks, ${developerProducts.length} developer specs, ${chemistryProducts.length} chemistry specs${RESOLVE_WIKIDATA ? " (+ Wikidata QIDs)" : ""}`);
+writeFileSync(
+  join(OUT, "curated-darkroom-products.json"),
+  JSON.stringify(
+    {
+      ...darkroomHeader,
+      chemistries: [...developerProducts, ...chemistryProducts],
+    },
+    null,
+    2,
+  ),
+);
+console.log(
+  `wrote ${lenses.length} lensfun lenses, ${cameras.length} cameras, ${curated.length} curated lenses, ${curatedCameras.length} curated cameras, ${devTimes.length} dev recipes, ${filmStocks.length} film stocks, ${developerProducts.length + chemistryProducts.length} chemistry specs${RESOLVE_WIKIDATA ? " (+ Wikidata QIDs)" : ""}`,
+);

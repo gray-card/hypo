@@ -4,24 +4,69 @@
   "defs": {
     "main": {
       "type": "record",
-      "description": "Ordered workflow from source to a published photo (e.g. social.grain.photo). Optional branches for multi-export.",
+      "description": "One planned or performed workflow trace, with general subjects/products and ordered stage records.",
       "key": "tid",
       "record": {
         "type": "object",
-        "required": ["photo", "medium", "stages", "createdAt"],
+        "required": ["medium", "stages", "createdAt"],
         "properties": {
-          "photo": { "type": "string", "format": "at-uri" },
+          "photo": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Legacy convenience for a single published-photo product. Prefer products."
+          },
+          "subjects": {
+            "type": "array",
+            "maxLength": 256,
+            "description": "Scenes, rolls, negatives, files, prints, or other artifacts this run starts from.",
+            "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }
+          },
+          "products": {
+            "type": "array",
+            "maxLength": 256,
+            "description": "Artifacts or publications produced by this run.",
+            "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }
+          },
           "medium": { "type": "ref", "ref": "app.graycard.workflow.defs#medium" },
+          "template": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "The app.graycard.workflow.template instantiated by this run."
+          },
+          "templateRevision": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Template CID or application revision captured when the run was planned."
+          },
+          "templateName": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Display-name snapshot retained if the template is later renamed or deleted."
+          },
+          "topology": {
+            "type": "string",
+            "knownValues": ["graph", "legacy-linear"],
+            "description": "How stage dependencies are interpreted. graph treats branches as the complete edge set, including an intentionally empty graph."
+          },
+          "status": { "type": "ref", "ref": "app.graycard.workflow.defs#runStatus" },
           "stages": {
             "type": "array",
+            "maxLength": 512,
             "items": { "type": "ref", "ref": "app.graycard.workflow.defs#stageLink" }
           },
           "branches": {
             "type": "array",
+            "maxLength": 512,
+            "description": "Legacy explicit run-stage branch links.",
             "items": { "type": "ref", "ref": "app.graycard.workflow.defs#branchLink" }
           },
           "label": { "type": "string", "maxLength": 128 },
           "notes": { "type": "string", "maxLength": 2000 },
+          "plannedAt": { "type": "string", "format": "datetime" },
+          "startedAt": { "type": "string", "format": "datetime" },
+          "completedAt": { "type": "string", "format": "datetime" },
+          "failedAt": { "type": "string", "format": "datetime" },
+          "cancelledAt": { "type": "string", "format": "datetime" },
           "createdAt": { "type": "string", "format": "datetime" },
           "updatedAt": { "type": "string", "format": "datetime" }
         }

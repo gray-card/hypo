@@ -31,32 +31,40 @@ photos on [grain.social](https://grain.social), all written straight to your PDS
 is standard atproto OAuth with your atmosphere account, and there is **no backend**: Hypo
 is a static single-page app you can host for free.
 
+This repository contains Hypo for web. Hypo is the metadata product; Gray Card is a
+separate, full-featured photo editor with a scope comparable to Lightroom. Both use the
+same `app.graycard.*` metadata model, but Gray Card's editing features have separate
+documentation.
+
 ## What it manages
 
 Everything Hypo touches is an ordinary record in your own repo. It adds `app.graycard.*`
 records for your gear, workflows, provenance, and scenes, and edits the `social.grain.*`
 photo records they attach to in place (grain's schema is untouched).
 
-| Record | What Hypo does |
-| --- | --- |
-| `app.graycard.*` | gear catalog and owned instances, captures, workflows, darkroom and scanning sessions, scene graphs, batch rules, discovery (see `lexicons/`) |
-| `social.grain.gallery` | edit `title`, `description` |
-| `social.grain.photo` | replace the image blob in place; edit `alt`, `aspectRatio` |
-| `social.grain.photo.exif` | make, model, lens, aperture, exposure, ISO, focal length, flash, date |
-| `social.grain.gallery.item` | gallery membership and order |
+| Record                      | What Hypo does                                                                                                                                |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app.graycard.*`            | gear catalog and owned instances, captures, workflows, darkroom and scanning sessions, scene graphs, batch rules, discovery (see `lexicons/`) |
+| `social.grain.gallery`      | edit `title`, `description`                                                                                                                   |
+| `social.grain.photo`        | replace the image blob in place; edit `alt`, `aspectRatio`                                                                                    |
+| `social.grain.photo.exif`   | make, model, lens, aperture, exposure, ISO, focal length, flash, date                                                                         |
+| `social.grain.gallery.item` | gallery membership and order                                                                                                                  |
 
 Writes use `putRecord` with the **same record key**, so AT-URIs stay stable, and
 `swapRecord` so a stale edit fails instead of overwriting someone else's change.
 
 ## Features
 
-- **Library:** cameras, lenses, film stockpiles and rolls, chemistry, scanners, and a shot logger. Gear types carry manufacturer product images and datasheets, with an editable per-type override.
+- **Library:** cameras, lenses, film stockpiles and rolls, multi-role photographic chemistry, scanners, meters, and other working equipment. Gear types carry manufacturer product images and datasheets, with an editable per-type override.
+- **Lifecycle records:** optional, chronology-checked dates for loading, unloading, lab handoff, development, mixing, discarding, and other film and chemistry milestones.
+- **Shoots and metering:** a mobile-friendly shot logger, capture sessions, meter readings, calibration records, exposure calculations, and film-reciprocity support.
 - **Galleries:** create from upload, edit metadata, reorder frames, batch rules, and per-gallery gear defaults.
-- **Workflows:** reusable templates, per-photo runs, and stages tied to photos.
+- **Workflows:** reusable branching templates, typed inputs and outputs, repeatable steps, per-subject runs, and stages tied to photos and process records.
 - **Scene graphs:** regions, nodes, and edges on a photo, with types grounded to Wikidata and semantic search over what's actually in each frame.
 - **Profiles:** a public view of anyone's setup at `https://hypo.graycard.app/profile/<handle>`. No login.
 - **Discover:** publish an `app.graycard.setup` record to list your setup network-wide; Discover enumerates every published setup in real time via [Constellation](https://constellation.microcosm.blue/), a shared backlink index, still with no Hypo backend.
-- **Offline:** shot logs queue locally and flush when you're back online.
+- **Following:** a local activity feed for people followed through Bluesky and Grain, with the source of each relationship shown in the interface.
+- **Offline:** supported writes queue locally, preserve optimistic state, and surface swap conflicts instead of discarding edits.
 
 ## How it works
 
@@ -87,11 +95,11 @@ npm run preview   # serve dist/ on http://127.0.0.1:5173
 
 Hypo is a GitHub Pages project site published at `https://hypo.graycard.app/`.
 
-| Piece | Role |
-| --- | --- |
-| `vite.config.js` | `base: '/'` (custom domain is the site root) |
-| `public/CNAME` | `hypo.graycard.app` |
-| `public/client-metadata.json` | public atproto OAuth client (`client_id`, redirect URI, scope) |
+| Piece                          | Role                                                                             |
+| ------------------------------ | -------------------------------------------------------------------------------- |
+| `vite.config.js`               | `base: '/'` (custom domain is the site root)                                     |
+| `public/CNAME`                 | `hypo.graycard.app`                                                              |
+| `public/client-metadata.json`  | public atproto OAuth client (`client_id`, redirect URI, scope)                   |
 | `.github/workflows/deploy.yml` | build on `main`, publish `dist/`, copy `index.html` to `404.html` for SPA routes |
 
 Production OAuth uses `https://hypo.graycard.app/client-metadata.json` as `client_id`.
@@ -114,18 +122,18 @@ npm run build:catalog
 
 ## Layout
 
-| Path | Contents |
-| --- | --- |
-| `index.html` | shell and views |
-| `src/main.js` | boot, OAuth, navigation |
-| `src/grain.js` | grain gallery / photo / EXIF read-write |
-| `src/graycard.js` | graycard store and record helpers |
-| `src/registry.js`, `src/constellation.js`, `src/hydrate.js`, `src/publish.js`, `src/discover.js` | cross-network Discover |
-| `src/ui/` | library, editor, upload, profiles, scene editor, map |
-| `src/data/` | catalog seeds, Wikidata resolution, tokenizer |
-| `lexicons/` | `app.graycard.*` schemas (`lexicons/README.md`) |
-| `public/` | OAuth metadata, icons, `CNAME` |
-| `tests/` | vitest suite |
+| Path                                                                                             | Contents                                             |
+| ------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
+| `index.html`                                                                                     | shell and views                                      |
+| `src/main.js`                                                                                    | boot, OAuth, navigation                              |
+| `src/grain.js`                                                                                   | grain gallery / photo / EXIF read-write              |
+| `src/graycard.js`                                                                                | graycard store and record helpers                    |
+| `src/registry.js`, `src/constellation.js`, `src/hydrate.js`, `src/publish.js`, `src/discover.js` | cross-network Discover                               |
+| `src/ui/`                                                                                        | library, editor, upload, profiles, scene editor, map |
+| `src/data/`                                                                                      | catalog seeds, Wikidata resolution, tokenizer        |
+| `lexicons/`                                                                                      | `app.graycard.*` schemas (`lexicons/README.md`)      |
+| `public/`                                                                                        | OAuth metadata, icons, `CNAME`                       |
+| `tests/`                                                                                         | vitest suite                                         |
 
 ## License
 

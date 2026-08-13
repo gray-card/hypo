@@ -27,7 +27,8 @@
       try {
         var t = localStorage.getItem("hypo:theme");
         if (t) document.documentElement.setAttribute("data-theme", t);
-        if (localStorage.getItem("hypo:density") === "compact") document.documentElement.setAttribute("data-density", "compact");
+        if (localStorage.getItem("hypo:density") === "compact")
+          document.documentElement.setAttribute("data-density", "compact");
       } catch (e) {}
     </script>
     <link rel="stylesheet" href="/src/style.css" />
@@ -43,11 +44,24 @@
       <nav id="primary-nav" class="primary-nav hidden" aria-label="Primary">
         <button class="nav-tab" data-section="setup" type="button">Setup</button>
         <button class="nav-tab" data-section="galleries" type="button">Galleries</button>
+        <button class="nav-tab" data-section="following" type="button">Following</button>
         <button class="nav-tab" data-section="discover" type="button">Discover</button>
       </nav>
       <div class="topbar-actions">
-        <button id="theme-toggle" class="icon-btn" type="button" title="Toggle light / dark" aria-label="Toggle light or dark theme"></button>
-        <button id="shortcuts-btn" class="icon-btn" type="button" title="Keyboard shortcuts" aria-label="Keyboard shortcuts"></button>
+        <button
+          id="theme-toggle"
+          class="icon-btn"
+          type="button"
+          title="Toggle light / dark"
+          aria-label="Toggle light or dark theme"
+        ></button>
+        <button
+          id="shortcuts-btn"
+          class="icon-btn"
+          type="button"
+          title="Keyboard shortcuts"
+          aria-label="Keyboard shortcuts"
+        ></button>
         <div id="session" class="session hidden"></div>
       </div>
     </header>
@@ -56,36 +70,34 @@
       <!-- login view -->
       <section id="login-view" class="login-view hidden">
         <div class="card login-card">
-        <h2>Log in with your atmosphere account</h2>
-        <p class="muted">
-          Use the atproto account you already have across the atmosphere (the
-          same one you use on Bluesky, grain.social, and more).
-        </p>
-        <form id="login-form">
-          <div class="handle-wrap">
-            <input
-              id="handle"
-              type="text"
-              placeholder="you.bsky.social or did:plc:…"
-              autocomplete="off"
-              spellcheck="false"
-              role="combobox"
-              aria-autocomplete="list"
-              aria-expanded="false"
-              aria-controls="handle-suggestions"
-            />
-            <ul
-              id="handle-suggestions"
-              class="handle-suggestions hidden"
-              role="listbox"
-            ></ul>
-          </div>
-          <button type="submit">Sign in</button>
-        </form>
-        <p id="login-error" class="error"></p>
-        <p class="muted small login-learn">
-          <a href="https://atmosphereaccount.com/" target="_blank" rel="noopener">What is an atmosphere account? &#8599;</a>
-        </p>
+          <h2>Log in with your atmosphere account</h2>
+          <p class="muted">
+            Use the atproto account you already have across the atmosphere (the same one you use on Bluesky,
+            grain.social, and more).
+          </p>
+          <form id="login-form">
+            <div class="handle-wrap">
+              <input
+                id="handle"
+                type="text"
+                placeholder="you.bsky.social or did:plc:…"
+                autocomplete="off"
+                spellcheck="false"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="handle-suggestions"
+              />
+              <ul id="handle-suggestions" class="handle-suggestions hidden" role="listbox"></ul>
+            </div>
+            <button type="submit">Sign in</button>
+          </form>
+          <p id="login-error" class="error"></p>
+          <p class="muted small login-learn">
+            <a href="https://atmosphereaccount.com/" target="_blank" rel="noopener"
+              >What is an atmosphere account? &#8599;</a
+            >
+          </p>
         </div>
       </section>
 
@@ -128,6 +140,26 @@
         <div id="library-body"></div>
       </section>
 
+      <!-- following: public activity from the viewer's Grain + Bluesky follows -->
+      <section id="following-view" class="hidden">
+        <div class="view-head row between">
+          <div class="following-title">
+            <h2>Following</h2>
+            <p class="view-sub muted small">
+              Public photos and graycard activity from accounts you follow. Grain and Bluesky keep separate follow
+              graphs; Hypo combines both here and labels the source.
+            </p>
+          </div>
+          <button id="following-refresh" class="ghost small-btn" type="button">Refresh</button>
+        </div>
+        <p class="following-explainer muted small">
+          <strong>Why this can take a moment:</strong> Hypo has no central activity server. The accounts you follow and
+          their public records live in separate account repositories, so this feed is periodically rebuilt in your
+          browser.
+        </p>
+        <div id="following-body"></div>
+      </section>
+
       <!-- discover: other people's setups -->
       <section id="profile-view" class="hidden">
         <div class="view-head row between">
@@ -149,10 +181,21 @@
 
     <!-- mobile bottom navigation -->
     <nav id="bottom-nav" class="bottom-nav hidden" aria-label="Primary">
-      <button class="nav-item" data-section="setup" type="button"><span class="nav-ico"></span><span class="nav-label">Setup</span></button>
-      <button class="nav-item" data-section="galleries" type="button"><span class="nav-ico"></span><span class="nav-label">Galleries</span></button>
-      <button class="nav-item" data-section="discover" type="button"><span class="nav-ico"></span><span class="nav-label">Discover</span></button>
-      <button class="nav-item" id="bottom-account" type="button"><span class="nav-ico"></span><span class="nav-label">More</span></button>
+      <button class="nav-item" data-section="setup" type="button">
+        <span class="nav-ico"></span><span class="nav-label">Setup</span>
+      </button>
+      <button class="nav-item" data-section="galleries" type="button">
+        <span class="nav-ico"></span><span class="nav-label">Galleries</span>
+      </button>
+      <button class="nav-item" data-section="following" type="button">
+        <span class="nav-ico"></span><span class="nav-label">Following</span>
+      </button>
+      <button class="nav-item" data-section="discover" type="button">
+        <span class="nav-ico"></span><span class="nav-label">Discover</span>
+      </button>
+      <button class="nav-item" id="bottom-account" type="button">
+        <span class="nav-ico"></span><span class="nav-label">More</span>
+      </button>
     </nav>
 
     <!-- account / settings menu (populated in JS) -->

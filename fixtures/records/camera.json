@@ -1,0 +1,6 @@
+{
+  "$type": "app.graycard.instance.camera",
+  "type": "at://did:plc:example/app.graycard.catalog.cameraType/panproto-fixture",
+  "nickname": "Panproto conformance camera",
+  "createdAt": "2026-08-12T00:00:00.000Z"
+}

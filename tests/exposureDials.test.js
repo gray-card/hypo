@@ -1,13 +1,15 @@
 import { describe, it, expect } from "vitest";
 import {
-  buildApertureOptions, buildShutterOptions,
-  displayToShutterScaled, scaledShutterToDial, scaledApertureToDial,
-  usesExactApertureSteps, usesExactShutterSteps,
+  buildApertureOptions,
+  buildShutterOptions,
+  displayToShutterScaled,
+  scaledShutterToDial,
+  scaledApertureToDial,
+  usesExactApertureSteps,
+  usesExactShutterSteps,
   parseScaledList,
 } from "../src/exposureDials.js";
 import { displayToScaled } from "../src/graycard.js";
-
-const S = 1_000_000;
 
 describe("exposureDials", () => {
   it("round-trips shutter display values", () => {
@@ -30,7 +32,13 @@ describe("exposureDials", () => {
   });
 
   it("uses exact shutter steps when provided", () => {
-    const camera = { shutterSpeedSteps: [displayToShutterScaled("1/1000"), displayToShutterScaled("1/125"), displayToShutterScaled("1s")] };
+    const camera = {
+      shutterSpeedSteps: [
+        displayToShutterScaled("1/1000"),
+        displayToShutterScaled("1/125"),
+        displayToShutterScaled("1s"),
+      ],
+    };
     expect(buildShutterOptions(camera)).toEqual(["1/1000", "1/125", "1s"]);
     expect(usesExactShutterSteps(camera)).toBe(true);
   });

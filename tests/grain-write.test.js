@@ -1,5 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { createGallery, createPhoto, addGalleryItem, uploadImage, setGalleryItemPosition, replacePhoto, COLLECTIONS } from "../src/grain.js";
+import {
+  createGallery,
+  createPhoto,
+  addGalleryItem,
+  uploadImage,
+  setGalleryItemPosition,
+  replacePhoto,
+  COLLECTIONS,
+} from "../src/grain.js";
 import { mockAgent } from "./setup.js";
 
 describe("direct gallery upload helpers", () => {
@@ -26,7 +34,7 @@ describe("direct gallery upload helpers", () => {
     await createPhoto(agent, "did:plc:test", { blob, aspectRatio: { width: 3, height: 2 }, alt: "a cat" });
     const rec = agent.created[0];
     expect(rec.collection).toBe(COLLECTIONS.photo);
-    expect(rec.record.photo).toBe(blob);
+    expect(rec.record.photo).toEqual(blob);
     expect(rec.record.aspectRatio).toEqual({ width: 3, height: 2 });
     expect(rec.record.alt).toBe("a cat");
   });
@@ -49,7 +57,11 @@ describe("direct gallery upload helpers", () => {
 
   it("setGalleryItemPosition updates position and preserves other fields (reorder)", async () => {
     const agent = mockAgent();
-    const item = { uri: "at://did:plc:test/social.grain.gallery.item/rk9", cid: "cid9", value: { gallery: "at://g", item: "at://p", position: 0, createdAt: "2026-01-01T00:00:00Z" } };
+    const item = {
+      uri: "at://did:plc:test/social.grain.gallery.item/rk9",
+      cid: "cid9",
+      value: { gallery: "at://g", item: "at://p", position: 0, createdAt: "2026-01-01T00:00:00Z" },
+    };
     await setGalleryItemPosition(agent, "did:plc:test", item, 3);
     const rec = agent.put[0];
     expect(rec.collection).toBe(COLLECTIONS.galleryItem);
@@ -66,7 +78,12 @@ describe("direct gallery upload helpers", () => {
     const photo = {
       uri: "at://did:plc:test/social.grain.photo/rk1",
       cid: "cid-old",
-      value: { photo: oldBlob, alt: "keep me", createdAt: "2026-01-01T00:00:00Z", aspectRatio: { width: 3, height: 2 } },
+      value: {
+        photo: oldBlob,
+        alt: "keep me",
+        createdAt: "2026-01-01T00:00:00Z",
+        aspectRatio: { width: 3, height: 2 },
+      },
     };
     const result = await replacePhoto(agent, "did:plc:test", photo, {
       blob: newBlob,
@@ -76,7 +93,7 @@ describe("direct gallery upload helpers", () => {
     const rec = agent.put[0];
     expect(rec.collection).toBe(COLLECTIONS.photo);
     expect(rec.rkey).toBe("rk1");
-    expect(rec.record.photo).toBe(newBlob);
+    expect(rec.record.photo).toEqual(newBlob);
     expect(rec.record.alt).toBe("keep me");
     expect(rec.record.createdAt).toBe("2026-01-01T00:00:00Z");
     expect(rec.record.aspectRatio).toEqual({ width: 4, height: 3 });

@@ -22,14 +22,28 @@ function fixture() {
       filmStock: [{ uri: stockUri, value: { brand: "Kodak", name: "Tri-X 400" } }],
     },
     instance: {
-      camera: [{ uri: camA, value: { type: f2Type } }, { uri: camB, value: { type: f2Type } }],
+      camera: [
+        { uri: camA, value: { type: f2Type } },
+        { uri: camB, value: { type: f2Type } },
+      ],
       lens: [{ uri: lensX, value: { type: lens50Type } }],
       exposure: [{ uri: "e1", value: { photo: pG, camera: camA, aperture: "8", takenAt: "2026-06-10T12:00:00Z" } }],
     },
   };
   const exif = [
     { value: { photo: pG, make: "Nikon", model: "F2", fNumber: 16000000 } }, // graycard already covers pG's camera+aperture
-    { value: { photo: pE, make: "Nikon", model: "F2", lensMake: "Nikon", lensModel: "Nikkor 50mm f/1.4 AI", fNumber: 5600000, exposureTime: 2000, dateTimeOriginal: "2026-06-13T18:24:00Z" } },
+    {
+      value: {
+        photo: pE,
+        make: "Nikon",
+        model: "F2",
+        lensMake: "Nikon",
+        lensModel: "Nikkor 50mm f/1.4 AI",
+        fNumber: 5600000,
+        exposureTime: 2000,
+        dateTimeOriginal: "2026-06-13T18:24:00Z",
+      },
+    },
   ];
   const galleryItems = [{ value: { gallery: "at://g1", item: pG } }, { value: { gallery: "at://g1", item: pE } }];
   return { store, captures: [], galleryItems, exif };
@@ -40,14 +54,14 @@ describe("buildPhotoIndex — graycard is truth; EXIF fills gaps; instance vs mo
 
   it("uses graycard for a facet and ignores EXIF there", () => {
     const m = idx.meta.get(pG);
-    expect([...m.cameras]).toEqual([camA]);       // graycard body
+    expect([...m.cameras]).toEqual([camA]); // graycard body
     expect([...m.cameraTypes]).toEqual([f2Type]); // and its model
-    expect([...m.apertures]).toEqual(["8"]);      // graycard "8", NOT EXIF f/16
+    expect([...m.apertures]).toEqual(["8"]); // graycard "8", NOT EXIF f/16
   });
 
   it("EXIF-only + duplicated model: attributes the MODEL but not a specific body", () => {
     const m = idx.meta.get(pE);
-    expect(m.cameras.size).toBe(0);               // two F2s -> can't pick one
+    expect(m.cameras.size).toBe(0); // two F2s -> can't pick one
     expect([...m.cameraTypes]).toEqual([f2Type]); // but the model is known
   });
 
@@ -76,31 +90,38 @@ describe("photoMatches — instance filters are exact, model filters are model-l
   });
 
   it("filtering by a specific body matches only graycard-tagged photos", () => {
-    const s = emptyFilterState(); s.camera.add(camA);
-    expect(photoMatches(idx.meta.get(pG), s)).toBe(true);  // tagged camA
+    const s = emptyFilterState();
+    s.camera.add(camA);
+    expect(photoMatches(idx.meta.get(pG), s)).toBe(true); // tagged camA
     expect(photoMatches(idx.meta.get(pE), s)).toBe(false); // EXIF F2 not pinned to a body
   });
 
   it("filtering by the camera MODEL matches graycard AND EXIF photos of that model", () => {
-    const s = emptyFilterState(); s.cameraType.add(f2Type);
+    const s = emptyFilterState();
+    s.cameraType.add(f2Type);
     expect(photoMatches(idx.meta.get(pG), s)).toBe(true);
     expect(photoMatches(idx.meta.get(pE), s)).toBe(true);
   });
 
   it("filtering by the (single-copy) lens matches the EXIF-only photo", () => {
-    const s = emptyFilterState(); s.lens.add(lensX);
+    const s = emptyFilterState();
+    s.lens.add(lensX);
     expect(photoMatches(idx.meta.get(pE), s)).toBe(true);
     expect(photoMatches(idx.meta.get(pG), s)).toBe(false);
   });
 
   it("model + all its bodies selected together still matches EXIF-only photos (OR within a kind)", () => {
-    const s = emptyFilterState(); s.cameraType.add(f2Type); s.camera.add(camA); s.camera.add(camB);
-    expect(photoMatches(idx.meta.get(pE), s)).toBe(true);  // via the model
-    expect(photoMatches(idx.meta.get(pG), s)).toBe(true);  // via body or model
+    const s = emptyFilterState();
+    s.cameraType.add(f2Type);
+    s.camera.add(camA);
+    s.camera.add(camB);
+    expect(photoMatches(idx.meta.get(pE), s)).toBe(true); // via the model
+    expect(photoMatches(idx.meta.get(pG), s)).toBe(true); // via body or model
   });
 
   it("aperture facet respects graycard-vs-EXIF per photo", () => {
-    const s = emptyFilterState(); s.aperture.add("8");
+    const s = emptyFilterState();
+    s.aperture.add("8");
     expect(photoMatches(idx.meta.get(pG), s)).toBe(true);
     expect(photoMatches(idx.meta.get(pE), s)).toBe(false);
   });
@@ -114,23 +135,23 @@ describe("location — precedence, fallbacks, and ~5km coarsening", () => {
 
   const shootUri = "at://did/app.graycard.session.capture/s1";
   const galleryUri = "at://did/social.grain.gallery/g1";
-  const pExp = "at://did/social.grain.photo/pExp";  // exposure has GPS
-  const pCap = "at://did/social.grain.photo/pCap";  // only a manual per-photo location
-  const pGal = "at://did/social.grain.photo/pGal";  // only a gallery default
-  const pSho = "at://did/social.grain.photo/pSho";  // only a shoot place
+  const pExp = "at://did/social.grain.photo/pExp"; // exposure has GPS
+  const pCap = "at://did/social.grain.photo/pCap"; // only a manual per-photo location
+  const pGal = "at://did/social.grain.photo/pGal"; // only a gallery default
+  const pSho = "at://did/social.grain.photo/pSho"; // only a shoot place
 
   const idx = buildPhotoIndex({
-    store: { catalog: {}, instance: {
-      exposure: [{ uri: "e1", value: { photo: pExp, location: nyc, shoot: shootUri } }],
-    } },
+    store: {
+      catalog: {},
+      instance: {
+        exposure: [{ uri: "e1", value: { photo: pExp, location: nyc, shoot: shootUri } }],
+      },
+    },
     captures: [
       { value: { photo: pCap, location: la } },
-      { value: { photo: pSho, shoot: shootUri } },   // linked to a shoot, no GPS of its own
+      { value: { photo: pSho, shoot: shootUri } }, // linked to a shoot, no GPS of its own
     ],
-    galleryItems: [
-      { value: { gallery: galleryUri, item: pGal } },
-      { value: { gallery: galleryUri, item: pExp } },
-    ],
+    galleryItems: [{ value: { gallery: galleryUri, item: pGal } }, { value: { gallery: galleryUri, item: pExp } }],
     galleryDefaults: [{ value: { gallery: galleryUri, location: paris } }],
     shoots: [{ uri: shootUri, value: { places: [berlin] } }],
   });
@@ -143,7 +164,7 @@ describe("location — precedence, fallbacks, and ~5km coarsening", () => {
   });
 
   it("per-frame exposure GPS wins over the gallery default it also belongs to", () => {
-    expect(idx.meta.get(pExp).cell).toBe(coarseCell(nyc).key);   // NYC, not Paris
+    expect(idx.meta.get(pExp).cell).toBe(coarseCell(nyc).key); // NYC, not Paris
   });
 
   it("a manual per-photo capture location resolves when there's no exposure GPS", () => {
@@ -159,7 +180,8 @@ describe("location — precedence, fallbacks, and ~5km coarsening", () => {
   });
 
   it("filters by a coarse cell", () => {
-    const s = emptyFilterState(); s.cell.add(coarseCell(paris).key);
+    const s = emptyFilterState();
+    s.cell.add(coarseCell(paris).key);
     expect(photoMatches(idx.meta.get(pGal), s)).toBe(true);
     expect(photoMatches(idx.meta.get(pExp), s)).toBe(false);
   });
@@ -168,7 +190,7 @@ describe("location — precedence, fallbacks, and ~5km coarsening", () => {
 describe("ISO facet — film stock box speed (graycard) with EXIF fallback", () => {
   const stock = "at://did/app.graycard.catalog.filmStock/trix400";
   const roll = "at://did/app.graycard.instance.filmRoll/r1";
-  const pCap = "at://did/social.grain.photo/pCap";   // graycard: roll -> stock iso 400
+  const pCap = "at://did/social.grain.photo/pCap"; // graycard: roll -> stock iso 400
   const pExif = "at://did/social.grain.photo/pExif"; // no film -> EXIF iSO fallback (200)
   const idx = buildPhotoIndex({
     store: {

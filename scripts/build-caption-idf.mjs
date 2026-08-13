@@ -17,7 +17,7 @@
 // IMPORTANT: tokenizes with the SAME tokenizer the app uses (imported from
 // src/sceneSearch.js) so df keys align exactly with query tokens.
 
-import { createWriteStream, createReadStream, existsSync, readFileSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import { createInterface } from "node:readline";
 import { createGunzip } from "node:zlib";
@@ -41,7 +41,8 @@ const DEFAULTS = {
 function parseArgs(argv) {
   const o = { ...DEFAULTS };
   for (let i = 0; i < argv.length; i += 2) {
-    const k = argv[i]?.replace(/^--/, ""); const v = argv[i + 1];
+    const k = argv[i]?.replace(/^--/, "");
+    const v = argv[i + 1];
     if (k && v != null && k in o) o[k] = k === "top" ? Number(v) : v;
   }
   return o;
@@ -54,8 +55,14 @@ async function openStream(input) {
   if (/^https?:\/\//i.test(input)) {
     raw = await new Promise((res, rej) => {
       const req = https.get(input, (r) => {
-        if (r.statusCode >= 300 && r.statusCode < 400 && r.headers.location) { r.resume(); return openStream(r.headers.location).then(res, rej); }
-        if (r.statusCode !== 200) { r.resume(); return rej(new Error(`HTTP ${r.statusCode} for ${input}`)); }
+        if (r.statusCode >= 300 && r.statusCode < 400 && r.headers.location) {
+          r.resume();
+          return openStream(r.headers.location).then(res, rej);
+        }
+        if (r.statusCode !== 200) {
+          r.resume();
+          return rej(new Error(`HTTP ${r.statusCode} for ${input}`));
+        }
         res(r);
       });
       req.on("error", rej);
@@ -76,33 +83,49 @@ async function main() {
   // (unigram+stem) with a warning if pass 1 hasn't produced a model yet.
   const modelPath = resolve(ROOT, "src/data/tokenizer-model.json");
   let model = null;
-  try { model = JSON.parse(readFileSync(modelPath, "utf8")); } catch { model = null; }
+  try {
+    model = JSON.parse(readFileSync(modelPath, "utf8"));
+  } catch {
+    model = null;
+  }
   const tk = model?.phrases?.length ? makeTokenizer({ phrases: model.phrases }) : tokenize;
-  if (model?.phrases?.length) console.error(`[caption-idf] phrase model: ${model.phrases.length} phrases (v${model.version})`);
-  else console.error("[caption-idf] WARNING: no tokenizer-model.json phrases — building df with the BASE tokenizer (run build-tokenizer first).");
+  if (model?.phrases?.length)
+    console.error(`[caption-idf] phrase model: ${model.phrases.length} phrases (v${model.version})`);
+  else
+    console.error(
+      "[caption-idf] WARNING: no tokenizer-model.json phrases — building df with the BASE tokenizer (run build-tokenizer first).",
+    );
 
   const stream = await openStream(opts.input);
   const rl = createInterface({ input: stream, crlfDelay: Infinity });
 
   const df = new Map();
-  let N = 0, totalTokens = 0;
+  let N = 0,
+    totalTokens = 0;
   for await (const line of rl) {
     if (!line) continue;
     const tab = line.indexOf("\t");
-    const caption = tab >= 0 ? line.slice(tab + 1) : line;   // url<TAB>caption; also tolerate caption-only
-    const toks = tk(caption);   // tokenizer owns normalize/stem/filter/phrase-merge; no re-filter (would clip phrase tokens)
+    const caption = tab >= 0 ? line.slice(tab + 1) : line; // url<TAB>caption; also tolerate caption-only
+    const toks = tk(caption); // tokenizer owns normalize/stem/filter/phrase-merge; no re-filter (would clip phrase tokens)
     if (!toks.length) continue;
-    N += 1; totalTokens += toks.length;
-    for (const t of new Set(toks)) df.set(t, (df.get(t) || 0) + 1);   // document frequency (once per caption)
-    if (N % 500000 === 0) console.error(`[caption-idf] ${N.toLocaleString()} captions, ${df.size.toLocaleString()} terms`);
+    N += 1;
+    totalTokens += toks.length;
+    for (const t of new Set(toks)) df.set(t, (df.get(t) || 0) + 1); // document frequency (once per caption)
+    if (N % 500000 === 0)
+      console.error(`[caption-idf] ${N.toLocaleString()} captions, ${df.size.toLocaleString()} terms`);
   }
   if (!N) throw new Error("no captions parsed — check the input format (expected url<TAB>caption)");
 
   const kept = [...df.entries()].sort((a, b) => b[1] - a[1]).slice(0, opts.top);
   const dfFloor = kept.length ? kept[kept.length - 1][1] : 1;
   const table = {
-    source: opts.source, sourceUrl: opts.sourceUrl, license: opts.license,
-    builtFrom: `${N} captions`, N, avgdl: totalTokens / N, dfFloor,
+    source: opts.source,
+    sourceUrl: opts.sourceUrl,
+    license: opts.license,
+    builtFrom: `${N} captions`,
+    N,
+    avgdl: totalTokens / N,
+    dfFloor,
     // Alignment tags so a stale asset (built by a different tokenizer/model) is
     // detectable; buildIdfLookup ignores these unknown fields.
     tokenizer: {
@@ -114,7 +137,12 @@ async function main() {
     df: Object.fromEntries(kept),
   };
   await writeFile(opts.out, JSON.stringify(table));
-  console.error(`[caption-idf] wrote ${opts.out}: N=${N.toLocaleString()}, kept ${kept.length.toLocaleString()} terms, dfFloor=${dfFloor}, avgdl=${table.avgdl.toFixed(2)}`);
+  console.error(
+    `[caption-idf] wrote ${opts.out}: N=${N.toLocaleString()}, kept ${kept.length.toLocaleString()} terms, dfFloor=${dfFloor}, avgdl=${table.avgdl.toFixed(2)}`,
+  );
 }
 
-main().catch((e) => { console.error("[caption-idf] FAILED:", e.message); process.exit(1); });
+main().catch((e) => {
+  console.error("[caption-idf] FAILED:", e.message);
+  process.exit(1);
+});

@@ -15,9 +15,20 @@ describe("data model covers everything the Frames app records", () => {
   const shoot = lex("session/capture.json").defs.main.record.properties;
 
   it("per-frame exposure settings Frames logs are all present", () => {
-    for (const f of ["aperture", "shutterSpeed", "exposureCompensation", "focalLength",
-      "focusDistance", "meteringMode", "exposureProgram", "flash", "shotAtIso",
-      "frameNumber", "takenAt", "note"]) {
+    for (const f of [
+      "aperture",
+      "shutterSpeed",
+      "exposureCompensation",
+      "focalLength",
+      "focusDistance",
+      "meteringMode",
+      "exposureProgram",
+      "flash",
+      "shotAtIso",
+      "frameNumber",
+      "takenAt",
+      "note",
+    ]) {
       expect(exposure[f], `exposure.${f}`).toBeTruthy();
     }
   });

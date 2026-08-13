@@ -1,0 +1,28 @@
+[
+  {
+    "name": "application entry (raw)",
+    "path": "dist/assets/app-*.js",
+    "limit": "150 KB",
+    "gzip": false,
+    "brotli": false
+  },
+  {
+    "name": "application entry (gzip)",
+    "path": "dist/assets/app-*.js",
+    "limit": "150 KB",
+    "gzip": true
+  },
+  {
+    "name": "lazy Panproto runtime (gzip)",
+    "path": "dist/assets/panproto-runtime-*.js",
+    "limit": "300 KB",
+    "gzip": true
+  },
+  {
+    "name": "lazy Panproto WASM (raw)",
+    "path": "dist/assets/panproto_wasm_bg.wasm",
+    "limit": "9 MB",
+    "gzip": false,
+    "brotli": false
+  }
+]

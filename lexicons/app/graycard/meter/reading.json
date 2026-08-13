@@ -1,0 +1,234 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.meter.reading",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A light-meter reading containing an observed photometric quantity, observation geometry, instrument, and optional exposure solution. It supports phone meters, handheld ambient or spot meters, and imported flash-meter readings. geometry, lightKind, and createdAt are required; other fields may be added afterward. ev100, illuminance, and luminance store measurements, while exposure stores the displayed solution and its compensation, filters, and reciprocity adjustment.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["geometry", "lightKind", "createdAt"],
+        "properties": {
+          "geometry": { "type": "ref", "ref": "app.graycard.meter.defs#meterGeometry" },
+          "lightKind": { "type": "ref", "ref": "app.graycard.meter.defs#lightKind" },
+          "meter": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.instance.meter that took the reading (a handheld meter, or a phone acting as one)."
+          },
+          "calibration": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.meter.calibration profile applied to this reading."
+          },
+          "sensorPath": { "type": "ref", "ref": "app.graycard.meter.defs#sensorPath" },
+          "cameraModule": { "type": "ref", "ref": "app.graycard.meter.defs#cameraModule" },
+
+          "ev100": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Exposure value normalized to ISO 100 (unit 'EV'). The canonical photometric result for exposure purposes."
+          },
+          "illuminance": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Incident illuminance (unit 'lx'; clients may display fc). Canonical for incident readings."
+          },
+          "luminance": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Reflected luminance (unit 'cd/m2'; clients may display fL). Canonical for reflected/spot readings."
+          },
+          "calibrationConstant": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "The ISO 2720 constant used to relate photometry to exposure for this reading: K in cd·s/(m²·ISO) for reflected (commonly 12.5), C in lx·s/ISO for incident (commonly 250 flat / 330 dome). Recorded so readings from differently-calibrated instruments remain comparable."
+          },
+
+          "nominalSpotAngle": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Advertised acceptance angle of the spot optics in degrees (1 for a true spot meter)."
+          },
+          "achievedSpotAngle": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Acceptance angle actually integrated for this reading, in degrees. For phone spot metering this is the optics-limited value and may exceed the requested angle."
+          },
+          "spotPoint": {
+            "type": "object",
+            "description": "Where in the preview frame the spot patch was centered, normalized [0,1] × 1e6 (see app.graycard.defs#scaledInteger convention used by scene regions).",
+            "properties": {
+              "x": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+              "y": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+            },
+            "required": ["x", "y"]
+          },
+          "previewPhoto": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional photo record (e.g. social.grain.photo) of the metered scene/preview frame the spotPoint refers to."
+          },
+
+          "iso": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Sensitivity the exposure solution is stated at (arithmetic ISO). Fractional ISO below 1 (e.g. 0.8) may be expressed via exposureCompensation instead."
+          },
+          "priorityMode": { "type": "ref", "ref": "app.graycard.meter.defs#priorityMode" },
+          "aperture": {
+            "type": "string",
+            "maxLength": 16,
+            "description": "Solved or held f-number as displayed, e.g. '5.6', '1.0', '90' (matches instance.exposure dial convention)."
+          },
+          "shutterSeconds": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Solved or held exposure time in seconds (unit 's'). Long exposures store the reciprocity-corrected value here when reciprocity is applied; see reciprocity."
+          },
+          "exposureCompensation": {
+            "type": "string",
+            "maxLength": 16,
+            "description": "Compensation applied to the solution in EV, e.g. '-0.5', '+1'."
+          },
+          "frameRate": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Cine mode: frame rate in fps."
+          },
+          "shutterAngle": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Cine mode: shutter angle in degrees (time = angle / (360 × fps))."
+          },
+          "filter": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.instance.filter whose factor is included in the solution."
+          },
+          "filterCompensation": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Total filter/ND compensation folded into the solution, in stops."
+          },
+          "reciprocity": {
+            "type": "object",
+            "description": "Reciprocity-failure correction applied to the solution.",
+            "properties": {
+              "applied": { "type": "boolean" },
+              "model": {
+                "type": "string",
+                "maxLength": 64,
+                "description": "e.g. 'power:1.31', 'schwarzschild:0.62', 'table'."
+              },
+              "meteredSeconds": {
+                "type": "ref",
+                "ref": "app.graycard.defs#measure",
+                "description": "Uncorrected metered time (unit 's')."
+              },
+              "filmStock": {
+                "type": "string",
+                "format": "at-uri",
+                "description": "app.graycard.catalog.filmStock the model came from."
+              }
+            }
+          },
+
+          "flash": {
+            "type": "object",
+            "description": "Flash-metering details (typically imported from a dedicated flash meter).",
+            "properties": {
+              "syncMode": { "type": "ref", "ref": "app.graycard.meter.defs#flashSyncMode" },
+              "flashPercent": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Flash contribution to total exposure, percent (the flash/ambient analysis figure)."
+              },
+              "cumulativeCount": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Number of pops accumulated for a multiple-flash reading."
+              },
+              "duration": {
+                "type": "ref",
+                "ref": "app.graycard.defs#measure",
+                "description": "Measured flash duration in seconds at the stated threshold."
+              },
+              "durationThreshold": {
+                "type": "string",
+                "maxLength": 8,
+                "description": "Duration threshold convention, e.g. 't0.5', 't0.1' (fraction of peak intensity the duration is measured at)."
+              }
+            }
+          },
+
+          "seriesId": {
+            "type": "string",
+            "maxLength": 32,
+            "description": "Groups readings taken as one workflow set (spot memory bank, averaging session, contrast evaluation). Members share the id."
+          },
+          "role": { "type": "ref", "ref": "app.graycard.meter.defs#readingRole" },
+          "averagedFrom": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "For role 'average': the member readings combined into this value."
+          },
+          "targetZone": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "Zone System placement of the metered area (0–X). The exposure solution reflects this placement."
+          },
+          "placementOffset": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Stops offset from meter-indicated middle gray applied by placement (targetZone − 5, or a free offset), in stops."
+          },
+
+          "colorTemperature": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Correlated color temperature in kelvin, when the instrument measures it."
+          },
+          "tint": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Green–magenta deviation (unit 'duv' or 'cc') when measured."
+          },
+
+          "flags": {
+            "type": "array",
+            "maxLength": 8,
+            "items": { "type": "string", "maxLength": 32 },
+            "description": "Instrument caveats attached to the value, e.g. 'out-of-range-low', 'out-of-range-high', 'flare-risk', 'uncalibrated', 'approximate-incident'."
+          },
+
+          "subject": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "What was metered, e.g. 'north rock face, shadow under overhang'."
+          },
+          "location": { "type": "ref", "ref": "app.graycard.defs#geoLocation" },
+          "exposure": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.instance.exposure this reading informed. The exposure record's meterReadings array is the canonical aggregation; this back-reference is a convenience."
+          },
+          "shoot": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.session.capture this reading belongs to."
+          },
+          "takenAt": { "type": "string", "format": "datetime" },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "note": { "type": "string", "maxLength": 1000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
 import {
-  normalizeString, stem, tokenize, makeTokenizer, buildTextIndex, bm25Search, PHRASE_JOINER,
+  normalizeString,
+  stem,
+  tokenize,
+  makeTokenizer,
+  buildTextIndex,
+  bm25Search,
+  PHRASE_JOINER,
 } from "../src/sceneSearch.js";
 import { buildIdfLookup } from "../src/data/captionIdf.js";
 import captionIdfTable from "../src/data/caption-idf.json";
@@ -25,8 +31,8 @@ describe("normalizeString + base tokenize", () => {
   });
   it("rewrites connective symbols and splits number+unit", () => {
     expect(tokenize("r&d")).toEqual(["r", "and", "d"]);
-    expect(tokenize("5km")).toEqual(["km"]);          // pure-digit dropped, unit kept
-    expect(tokenize("2024")).toEqual([]);             // pure-digit dropped
+    expect(tokenize("5km")).toEqual(["km"]); // pure-digit dropped, unit kept
+    expect(tokenize("2024")).toEqual([]); // pure-digit dropped
   });
   it("drops overlong tokens whole (never truncates)", () => {
     expect(tokenize("a".repeat(31))).toEqual([]);
@@ -37,22 +43,39 @@ describe("normalizeString + base tokenize", () => {
 describe("stem (S-stemmer-lite)", () => {
   it("folds regular plurals to singular", () => {
     for (const [pl, sg] of [
-      ["dogs", "dog"], ["trees", "tree"], ["cities", "city"], ["babies", "baby"],
-      ["glasses", "glass"], ["boxes", "box"], ["churches", "church"], ["dishes", "dish"],
-      ["buzzes", "buzz"], ["houses", "house"], ["roses", "rose"], ["prizes", "prize"],
-    ]) expect(stem(pl)).toBe(sg);
+      ["dogs", "dog"],
+      ["trees", "tree"],
+      ["cities", "city"],
+      ["babies", "baby"],
+      ["glasses", "glass"],
+      ["boxes", "box"],
+      ["churches", "church"],
+      ["dishes", "dish"],
+      ["buzzes", "buzz"],
+      ["houses", "house"],
+      ["roses", "rose"],
+      ["prizes", "prize"],
+    ])
+      expect(stem(pl)).toBe(sg);
   });
   it("leaves protected words and short/guarded forms intact", () => {
-    for (const w of ["movies", "bus", "gas", "lens", "news", "virus", "analysis", "iris", "ties", "pies", "species"]) expect(stem(w)).toBe(w);
+    for (const w of ["movies", "bus", "gas", "lens", "news", "virus", "analysis", "iris", "ties", "pies", "species"])
+      expect(stem(w)).toBe(w);
   });
   it("is idempotent", () => {
     for (const w of ["dog", "city", "glass", "house", "box"]) expect(stem(stem(w))).toBe(stem(w));
   });
   it("never over-conflates distinct words (no derivational stripping)", () => {
     for (const [a, b] of [
-      ["universe", "university"], ["sparse", "spare"], ["flower", "flow"],
-      ["arm", "army"], ["organ", "organic"], ["business", "busy"], ["relative", "relativity"],
-    ]) expect(stem(a)).not.toBe(stem(b));
+      ["universe", "university"],
+      ["sparse", "spare"],
+      ["flower", "flow"],
+      ["arm", "army"],
+      ["organ", "organic"],
+      ["business", "busy"],
+      ["relative", "relativity"],
+    ])
+      expect(stem(a)).not.toBe(stem(b));
   });
 });
 
@@ -98,18 +121,26 @@ describe("shipped assets: df-table fixed point (stale-asset guard)", () => {
   it("every df key re-tokenizes to exactly itself", () => {
     const keys = Object.keys(captionIdfTable.df || {});
     expect(keys.length).toBeGreaterThan(0);
-    const bad = keys.filter((k) => { const t = tk(k); return t.length !== 1 || t[0] !== k; });
+    const bad = keys.filter((k) => {
+      const t = tk(k);
+      return t.length !== 1 || t[0] !== k;
+    });
     expect(bad.slice(0, 20)).toEqual([]);
   });
   it("df phrase keys are all real learned phrases and each is a fixed point", () => {
     const phrases = new Set(phraseModel?.phrases || []);
     const phraseKeys = Object.keys(captionIdfTable.df || {}).filter((k) => k.includes(PHRASE_JOINER));
     if (phrases.size) {
-      expect(phraseKeys.length).toBeGreaterThan(0);                       // a phrase-built df table MUST carry phrase keys
-      expect(phraseKeys.filter((k) => !phrases.has(k))).toEqual([]);      // every phrase df key is a member of the shipped set
-      expect(phraseKeys.filter((k) => { const t = tk(k); return t.length !== 1 || t[0] !== k; })).toEqual([]);   // and re-merges to itself
+      expect(phraseKeys.length).toBeGreaterThan(0); // a phrase-built df table MUST carry phrase keys
+      expect(phraseKeys.filter((k) => !phrases.has(k))).toEqual([]); // every phrase df key is a member of the shipped set
+      expect(
+        phraseKeys.filter((k) => {
+          const t = tk(k);
+          return t.length !== 1 || t[0] !== k;
+        }),
+      ).toEqual([]); // and re-merges to itself
     } else {
-      expect(phraseKeys).toEqual([]);   // a base-only build must not carry phrase keys
+      expect(phraseKeys).toEqual([]); // a base-only build must not carry phrase keys
     }
   });
 });
@@ -122,7 +153,7 @@ describe("IDF sanity on the shipped table", () => {
     expect(captionIdfTable.avgdl).toBeGreaterThan(0);
   });
   it("weights rarer terms higher and OOV highest", () => {
-    const common = idf(Object.entries(captionIdfTable.df).sort((a, b) => b[1] - a[1])[0][0]);   // highest df
+    const common = idf(Object.entries(captionIdfTable.df).sort((a, b) => b[1] - a[1])[0][0]); // highest df
     const oov = idf("zzznotarealword");
     expect(oov).toBeGreaterThan(common);
     expect(common).toBeGreaterThan(0);
@@ -135,21 +166,23 @@ describe("end-to-end BM25 through the shipped IDF table", () => {
   it("scores a real df term via the {idf} path, not as OOV", () => {
     const dfKeys = Object.keys(captionIdfTable.df);
     // prefer a phrase key (exercises the merge + df alignment); else a common unigram
-    const key = dfKeys.find((k) => k.includes(PHRASE_JOINER)) || dfKeys.sort((a, b) => captionIdfTable.df[b] - captionIdfTable.df[a])[100];
+    const key =
+      dfKeys.find((k) => k.includes(PHRASE_JOINER)) ||
+      dfKeys.sort((a, b) => captionIdfTable.df[b] - captionIdfTable.df[a])[100];
     const text = key.split(PHRASE_JOINER).join(" ");
     const terms = tk(text);
-    expect(terms).toContain(key);                                   // the surface text tokenizes to the df key
+    expect(terms).toContain(key); // the surface text tokenizes to the df key
     const idx = buildTextIndex([{ uri: "d", text }], tk);
     expect(bm25Search(idx, terms, { idf }).get("d") || 0).toBeGreaterThan(0);
-    expect(idf(key)).toBeLessThan(idf("zzznotarealword"));          // found in df -> below the OOV default
+    expect(idf(key)).toBeLessThan(idf("zzznotarealword")); // found in df -> below the OOV default
   });
 });
 
 describe("behavioral BM25 invariants", () => {
   it("A: a plural query matches a singular caption via stemming", () => {
-    const idx = buildTextIndex([{ uri: "d1", text: "a dog in a field" }]);   // base tk stems 'dog'
-    const s = bm25Search(idx, tokenize("dogs"));                             // query stems 'dogs' -> 'dog'
-    expect((s.get("d1") || 0)).toBeGreaterThan(0);
+    const idx = buildTextIndex([{ uri: "d1", text: "a dog in a field" }]); // base tk stems 'dog'
+    const s = bm25Search(idx, tokenize("dogs")); // query stems 'dogs' -> 'dog'
+    expect(s.get("d1") || 0).toBeGreaterThan(0);
   });
   it("B: a learned phrase concentrates the query on the right doc", () => {
     const tk = makeTokenizer({ phrases: ["hot_air_balloon"] });
@@ -162,7 +195,7 @@ describe("behavioral BM25 invariants", () => {
     const idx = buildTextIndex(docs, tk);
     const s = bm25Search(idx, tk("hot air balloon"));
     expect(s.get("d1")).toBeGreaterThan(0);
-    for (const d of ["d2", "d3", "d4"]) expect(s.get(d) || 0).toBe(0);   // phrase token matches only the target
+    for (const d of ["d2", "d3", "d4"]) expect(s.get(d) || 0).toBe(0); // phrase token matches only the target
     // base tokenizer instead lights up all four (splits into hot/air/balloon)
     const base = buildTextIndex(docs);
     const sb = bm25Search(base, tokenize("hot air balloon"));

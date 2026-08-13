@@ -39,6 +39,11 @@
             "description": "Optional AT-URIs of the author's app.graycard.* library items (cameras, lenses, film, scanners) to highlight.",
             "items": { "type": "string", "format": "at-uri" }
           },
+          "schemaVersion": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Optional Panproto lexicon release written by this client, used to label cross-version records and locate a verified migration chain."
+          },
           "createdAt": { "type": "string", "format": "datetime" },
           "updatedAt": { "type": "string", "format": "datetime" }
         }

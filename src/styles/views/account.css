@@ -1,0 +1,215 @@
+/* ===== account / settings menu ===== */
+.account-menu {
+  position: fixed;
+  z-index: 60;
+  background: var(--bg-elev);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow);
+  padding: 6px;
+  /* mobile: bottom sheet above the nav bar */
+  left: 8px;
+  right: 8px;
+  bottom: calc(72px + env(safe-area-inset-bottom));
+  border-radius: 16px;
+  animation: menu-in 0.16s var(--ease-spring, ease);
+}
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.menu-account {
+  padding: 8px 10px 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 11px 10px;
+  background: none;
+  border: none;
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  font-size: 14.5px;
+  cursor: pointer;
+}
+.menu-item:hover {
+  background: var(--surface-2);
+}
+.menu-item .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+  flex: none;
+}
+.menu-item.danger {
+  color: var(--danger);
+}
+.menu-item.danger .icon {
+  color: var(--danger);
+}
+.menu-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 5px 8px;
+}
+
+@media (min-width: 720px) {
+  .account-menu {
+    left: auto;
+    right: 16px;
+    bottom: auto;
+    top: 60px;
+    width: 264px;
+    border-radius: var(--radius);
+  }
+}
+
+/* dark mode: account menu matches nav safelight treatment */
+:root[data-theme="dark"] .avatar-btn:hover,
+:root[data-theme="dark"] .avatar-btn[aria-expanded="true"] {
+  background: oklch(0.75 0.155 58 / 0.09);
+  border-color: oklch(0.75 0.155 58 / 0.42);
+  box-shadow: 0 0 22px -4px oklch(0.75 0.155 58 / 0.45);
+}
+:root[data-theme="dark"] .account-menu {
+  background: oklch(0.185 0.007 60 / 0.88);
+  border-color: oklch(0.75 0.155 58 / 0.2);
+  box-shadow:
+    var(--shadow),
+    0 0 36px -10px oklch(0.75 0.155 58 / 0.38);
+}
+:root[data-theme="dark"] .menu-item:hover {
+  background: oklch(0.75 0.155 58 / 0.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .avatar-btn:hover,
+  :root:not([data-theme]) .avatar-btn[aria-expanded="true"] {
+    background: oklch(0.75 0.155 58 / 0.09);
+    border-color: oklch(0.75 0.155 58 / 0.42);
+    box-shadow: 0 0 22px -4px oklch(0.75 0.155 58 / 0.45);
+  }
+  :root:not([data-theme]) .account-menu {
+    background: oklch(0.185 0.007 60 / 0.88);
+    border-color: oklch(0.75 0.155 58 / 0.2);
+    box-shadow:
+      var(--shadow),
+      0 0 36px -10px oklch(0.75 0.155 58 / 0.38);
+  }
+  :root:not([data-theme]) .menu-item:hover {
+    background: oklch(0.75 0.155 58 / 0.08);
+  }
+}
+
+.view-sub {
+  margin: 3px 0 0;
+}
+
+/* custom autocomplete (replaces native <datalist>), same look as every menu */
+.ac-field {
+  position: relative;
+}
+.ac-menu {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  max-height: 240px;
+  overflow-y: auto;
+}
+.ac-opt {
+  padding: 8px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ac-opt:hover,
+.ac-opt.active {
+  background: var(--surface-2);
+}
+.rb-field {
+  position: relative;
+  flex: 1;
+  min-width: 90px;
+}
+.rb-field input {
+  width: 100%;
+}
+
+/* setup / gear */
+.add-gear {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.add-gear .icon {
+  width: 15px;
+  height: 15px;
+}
+.gear-empty {
+  margin: 6px 0 2px;
+}
+
+/* EXIF → gear suggestion chips */
+.gear-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 6px;
+  padding: 8px 10px;
+  background: color-mix(in oklch, var(--accent) 8%, transparent);
+  border: 1px solid color-mix(in oklch, var(--accent) 22%, transparent);
+  border-radius: var(--radius-sm);
+}
+.gear-suggest:empty {
+  display: none;
+}
+.gear-suggest .icon {
+  color: var(--accent);
+  flex: none;
+}
+.subtle-actions {
+  margin-top: 8px;
+  gap: 6px;
+}
+.photo-save {
+  width: 100%;
+  margin-top: 10px;
+}
+.gear-section h2 {
+  font-size: 15px;
+}
+.modal-sub {
+  margin: 16px 0 4px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.modal-sub:first-child {
+  margin-top: 2px;
+}

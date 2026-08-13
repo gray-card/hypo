@@ -1,94 +1,18 @@
 // graycard.js: app.graycard.* data layer
 
-import { exifToForm, formToExifValue, listRecords, parseAtUri } from "./grain.js";
+import { exifToForm, flushRecordOperation, formToExifValue, listRecords, parseAtUri, recordRkey } from "./grain.js";
+import * as outbox from "./outbox.js";
+import { prepareSchemaWrite } from "./schemaRuntime.js";
+import { NS, CATALOG_KINDS, INSTANCE_KINDS } from "../packages/lexicon/src/namespaces.ts";
+import { assertConsumableLifecycle } from "@hypo/domain";
+import { migrateLegacyDeveloperRecords } from "./legacyDeveloperMigration.ts";
 
-export const NS = {
-  catalog: {
-    cameraType: "app.graycard.catalog.cameraType",
-    lensType: "app.graycard.catalog.lensType",
-    filmStock: "app.graycard.catalog.filmStock",
-    filterType: "app.graycard.catalog.filterType",
-    developerType: "app.graycard.catalog.developerType",
-    scannerType: "app.graycard.catalog.scannerType",
-    chemistryType: "app.graycard.catalog.chemistryType",
-    lab: "app.graycard.catalog.lab",
-    scanProfile: "app.graycard.catalog.scanProfile",
-    paperType: "app.graycard.catalog.paperType",
-    devRecipe: "app.graycard.catalog.devRecipe",
-    enlargerType: "app.graycard.catalog.enlargerType",
-    printerType: "app.graycard.catalog.printerType",
-    lightSourceType: "app.graycard.catalog.lightSourceType",
-    enlargingLensType: "app.graycard.catalog.enlargingLensType",
-  },
-  instance: {
-    camera: "app.graycard.instance.camera",
-    lens: "app.graycard.instance.lens",
-    filmRoll: "app.graycard.instance.filmRoll",
-    filmStockpile: "app.graycard.instance.filmStockpile",
-    exposure: "app.graycard.instance.exposure",
-    filter: "app.graycard.instance.filter",
-    developer: "app.graycard.instance.developer",
-    scanner: "app.graycard.instance.scanner",
-    chemistry: "app.graycard.instance.chemistry",
-    labAccount: "app.graycard.instance.labAccount",
-    storageLocation: "app.graycard.instance.storageLocation",
-    enlarger: "app.graycard.instance.enlarger",
-    printer: "app.graycard.instance.printer",
-    lightSource: "app.graycard.instance.lightSource",
-    enlargingLens: "app.graycard.instance.enlargingLens",
-    intermediate: "app.graycard.instance.intermediate",
-  },
-  process: {
-    developSession: "app.graycard.process.developSession",
-    digitizeSession: "app.graycard.process.digitizeSession",
-    digitalSession: "app.graycard.process.digitalSession",
-    captureSession: "app.graycard.process.captureSession",
-    editSession: "app.graycard.process.editSession",
-    maintenanceSession: "app.graycard.process.maintenanceSession",
-    printSession: "app.graycard.process.printSession",
-  },
-  session: { capture: "app.graycard.session.capture" },
-  workflow: {
-    stage: "app.graycard.workflow.stage",
-    run: "app.graycard.workflow.run",
-    template: "app.graycard.workflow.template",
-  },
-  photo: {
-    capture: "app.graycard.photo.capture",
-    workflow: "app.graycard.photo.workflow",
-    derivative: "app.graycard.photo.derivative",
-  },
-  gallery: { defaults: "app.graycard.gallery.defaults" },
-  rule: { batch: "app.graycard.rule.batch" },
-  artifact: "app.graycard.artifact",
-  // a publicly discoverable setup, opting the user into cross-network Discover
-  setup: "app.graycard.setup",
-  edit: { recipe: "app.graycard.edit.recipe" },
-  scene: {
-    ontology: "app.graycard.scene.ontology",
-    graph: "app.graycard.scene.graph",
-    region: "app.graycard.scene.region",
-    node: "app.graycard.scene.node",
-    edge: "app.graycard.scene.edge",
-  },
-};
-
-export const CATALOG_KINDS = [
-  "cameraType", "lensType", "filmStock", "filterType", "developerType", "scannerType",
-  "chemistryType", "lab", "scanProfile", "paperType",
-  "enlargerType", "printerType", "lightSourceType", "enlargingLensType",
-];
-
-export const INSTANCE_KINDS = [
-  "camera", "lens", "filter", "filmRoll", "filmStockpile", "exposure", "developer", "scanner",
-  "chemistry", "labAccount", "storageLocation", "enlarger", "printer", "lightSource", "enlargingLens", "intermediate",
-];
+export { NS, CATALOG_KINDS, INSTANCE_KINDS };
 
 const TYPE_REF = {
   camera: "cameraType",
   lens: "lensType",
   filter: "filterType",
-  developer: "developerType",
   scanner: "scannerType",
   chemistry: "chemistryType",
   filmRoll: "filmStock",
@@ -157,36 +81,54 @@ function mapRecords(records) {
     .map((r) => ({
       uri: r.uri,
       cid: r.cid,
-      rkey: parseAtUri(r.uri).rkey,
+      rkey: recordRkey(r.uri),
       value: r.value,
+      schemaRuntime: r.schemaRuntime,
     }))
     .sort((a, b) => JSON.stringify(a.value).localeCompare(JSON.stringify(b.value)));
 }
 
 // build a per-kind fetcher for a namespace group (catalog/instance).
-const grabWith = (agent, did, ns) => (kind) => listRecords(agent, did, ns[kind]);
+const grabWith = (agent, did, ns, options) => (kind) => listRecords(agent, did, ns[kind], options);
 
 // A shoot's date for ordering: when it was shot (startedAt), else when the record
 // was created. Shoots are shown newest-first everywhere they appear.
 export const shootDateKey = (v) => v?.startedAt || v?.createdAt || "";
 export const compareShootsByDate = (a, b) => shootDateKey(b.value).localeCompare(shootDateKey(a.value));
 
-export async function loadStore(agent, did) {
+/** Assemble a store snapshot from the collection cache unless refresh is explicit. */
+export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
+  const migration = await migrateLegacyDeveloperRecords(agent, did);
+  if (migration.migrated) refresh = true;
   const catalog = {};
   const instance = {};
   const byUri = new Map();
 
   // every collection is an independent read, so fetch them all concurrently
   // rather than serially — the round trips dominate the load time.
-  const grab = (nsid) => listRecords(agent, did, nsid);
+  const options = { refresh };
+  const grab = (nsid) => listRecords(agent, did, nsid, options);
   const [
-    catalogLists, instanceLists,
-    photoCaptureRecs, photoWorkflowRecs, sceneGraphRecs, maintenanceRecs, galleryDefaultsRecs,
-    workflowRuns, workflowStages, workflowTemplates, shoots, batchRules,
-    developSessions, digitizeSessions,
+    catalogLists,
+    instanceLists,
+    photoCaptureRecs,
+    photoWorkflowRecs,
+    sceneGraphRecs,
+    maintenanceRecs,
+    galleryDefaultsRecs,
+    workflowRuns,
+    workflowStages,
+    workflowTemplates,
+    shoots,
+    batchRules,
+    developSessions,
+    digitizeSessions,
+    editSessions,
+    printSessions,
+    renderSessions,
   ] = await Promise.all([
-    Promise.all(CATALOG_KINDS.map(grabWith(agent, did, NS.catalog))),
-    Promise.all(INSTANCE_KINDS.map(grabWith(agent, did, NS.instance))),
+    Promise.all(CATALOG_KINDS.map(grabWith(agent, did, NS.catalog, options))),
+    Promise.all(INSTANCE_KINDS.map(grabWith(agent, did, NS.instance, options))),
     grab(NS.photo.capture),
     grab(NS.photo.workflow),
     grab(NS.scene.graph),
@@ -199,6 +141,9 @@ export async function loadStore(agent, did) {
     grab(NS.rule.batch).then(mapRecords),
     grab(NS.process.developSession).then(mapRecords),
     grab(NS.process.digitizeSession).then(mapRecords),
+    grab(NS.process.editSession).then(mapRecords),
+    grab(NS.process.printSession).then(mapRecords),
+    grab(NS.process.renderSession).then(mapRecords),
   ]);
 
   CATALOG_KINDS.forEach((kind, i) => {
@@ -213,50 +158,92 @@ export async function loadStore(agent, did) {
   const photoCaptureByPhoto = new Map();
   for (const r of photoCaptureRecs) {
     photoCaptureByPhoto.set(r.value.photo, {
-      uri: r.uri, cid: r.cid, rkey: parseAtUri(r.uri).rkey, value: r.value,
+      uri: r.uri,
+      cid: r.cid,
+      rkey: recordRkey(r.uri),
+      value: r.value,
+      schemaRuntime: r.schemaRuntime,
     });
   }
 
   const photoWorkflowByPhoto = new Map();
   for (const r of photoWorkflowRecs) {
     photoWorkflowByPhoto.set(r.value.photo, {
-      uri: r.uri, cid: r.cid, rkey: parseAtUri(r.uri).rkey, value: r.value,
+      uri: r.uri,
+      cid: r.cid,
+      rkey: recordRkey(r.uri),
+      value: r.value,
+      schemaRuntime: r.schemaRuntime,
     });
   }
 
   const sceneGraphByPhoto = new Map();
   for (const r of sceneGraphRecs) {
-    if (r.value.subject) sceneGraphByPhoto.set(r.value.subject, { uri: r.uri, value: r.value });
+    if (r.value.subject)
+      sceneGraphByPhoto.set(r.value.subject, { uri: r.uri, value: r.value, schemaRuntime: r.schemaRuntime });
   }
 
   const maintenanceBySubject = new Map();
   for (const r of maintenanceRecs) {
     if (!r.value.subject) continue;
     const list = maintenanceBySubject.get(r.value.subject) || [];
-    list.push({ uri: r.uri, value: r.value });
+    list.push({ uri: r.uri, value: r.value, schemaRuntime: r.schemaRuntime });
     maintenanceBySubject.set(r.value.subject, list);
   }
 
   const galleryDefaultsByGallery = new Map();
   for (const r of galleryDefaultsRecs) {
     galleryDefaultsByGallery.set(r.value.gallery, {
-      uri: r.uri, cid: r.cid, rkey: parseAtUri(r.uri).rkey, value: r.value,
+      uri: r.uri,
+      cid: r.cid,
+      rkey: recordRkey(r.uri),
+      value: r.value,
+      schemaRuntime: r.schemaRuntime,
     });
   }
 
-  shoots.sort(compareShootsByDate);   // newest-first, inherited by every consumer of store.shoots
+  shoots.sort(compareShootsByDate); // newest-first, inherited by every consumer of store.shoots
 
-  for (const item of [...workflowRuns, ...workflowStages, ...workflowTemplates, ...shoots, ...batchRules, ...developSessions, ...digitizeSessions]) {
+  for (const item of [
+    ...workflowRuns,
+    ...workflowStages,
+    ...workflowTemplates,
+    ...shoots,
+    ...batchRules,
+    ...developSessions,
+    ...digitizeSessions,
+    ...editSessions,
+    ...printSessions,
+    ...renderSessions,
+  ]) {
     byUri.set(item.uri, { layer: "other", item });
   }
 
   return {
-    catalog, instance, byUri,
-    photoCaptureByPhoto, photoWorkflowByPhoto, sceneGraphByPhoto, maintenanceBySubject, galleryDefaultsByGallery,
-    workflowRuns, workflowStages, workflowTemplates, shoots, batchRules,
-    developSessions, digitizeSessions,
+    catalog,
+    instance,
+    byUri,
+    photoCaptureByPhoto,
+    photoWorkflowByPhoto,
+    sceneGraphByPhoto,
+    maintenanceBySubject,
+    galleryDefaultsByGallery,
+    workflowRuns,
+    workflowStages,
+    workflowTemplates,
+    shoots,
+    batchRules,
+    developSessions,
+    digitizeSessions,
+    editSessions,
+    printSessions,
+    renderSessions,
+    processSessions: [...developSessions, ...digitizeSessions, ...editSessions, ...printSessions, ...renderSessions],
   };
 }
+
+/** @deprecated Prefer readStoreSnapshot; retained for compatibility with feature modules. */
+export const loadStore = readStoreSnapshot;
 
 export function catalogLabel(kind, value) {
   if (!value) return "(unknown)";
@@ -274,9 +261,10 @@ export function catalogLabel(kind, value) {
       return [value.brand, value.name].filter(Boolean).join(" ");
     case "filterType":
       return [value.make, value.name].filter(Boolean).join(" ") || value.name || kind;
-    case "developerType":
     case "chemistryType":
-      return [value.brand, value.name, value.role].filter(Boolean).join(" ");
+      return [value.brand, value.name, (value.roles || []).map((role) => role.replaceAll("-", " ")).join(" + ")]
+        .filter(Boolean)
+        .join(" ");
     case "lab":
     case "scanProfile":
       return value.name || kind;
@@ -290,8 +278,9 @@ export function instanceLabel(kind, value, store) {
   const nick = value.nickname || value.label;
   const typeKey = TYPE_REF[kind];
   if (typeKey && value.type) {
-    const t = store.catalog[typeKey]?.find((x) => x.uri === value.type)?.value
-      || store.catalog.filmStock?.find((x) => x.uri === value.stock)?.value;
+    const t =
+      store.catalog[typeKey]?.find((x) => x.uri === value.type)?.value ||
+      store.catalog.filmStock?.find((x) => x.uri === value.stock)?.value;
     const base = t ? catalogLabel(typeKey === "filmStock" ? "filmStock" : typeKey, t) : value.type;
     return [nick, base, value.serialNumber].filter(Boolean).join(" · ");
   }
@@ -302,7 +291,11 @@ export function instanceLabel(kind, value, store) {
   }
   if (kind === "filmStockpile" && value.stock) {
     const t = store.catalog.filmStock?.find((x) => x.uri === value.stock)?.value;
-    return [t && catalogLabel("filmStock", t), value.quantity != null ? `×${value.quantity}` : null].filter(Boolean).join(" · ") || "Film reserve";
+    return (
+      [t && catalogLabel("filmStock", t), value.quantity != null ? `×${value.quantity}` : null]
+        .filter(Boolean)
+        .join(" · ") || "Film reserve"
+    );
   }
   if (kind === "exposure") return value.frameNumber != null ? `Frame #${value.frameNumber}` : "Exposure";
   if (kind === "filter") {
@@ -317,23 +310,30 @@ export function instanceLabel(kind, value, store) {
 }
 
 export async function saveRecord(agent, did, collection, record, existing) {
-  const value = { ...record, $type: collection };
+  const prepared = await prepareSchemaWrite(collection, record, existing);
+  // Workflow stages are a discriminated union, so their variant $type must
+  // survive the generic record writer. Other records default to the collection.
+  const value = { ...prepared, $type: prepared.$type || collection };
+  assertConsumableLifecycle(collection, value);
   if (existing) {
-    await agent.com.atproto.repo.putRecord({
-      repo: did, collection, rkey: existing.rkey, record: value,
-      swapRecord: existing.cid, validate: false,
+    const operation = outbox.enqueuePut(did, {
+      uri: existing.uri,
+      collection,
+      rkey: existing.rkey,
+      record: value,
+      swapRecord: existing.cid,
     });
+    await flushRecordOperation(agent, did, operation);
     return existing.uri;
   }
-  const res = await agent.com.atproto.repo.createRecord({
-    repo: did, collection, record: value, validate: false,
-  });
-  return res.data.uri;
+  const operation = outbox.enqueue(did, collection, value);
+  const settled = await flushRecordOperation(agent, did, operation);
+  return settled.acknowledgement?.uri || operation.tempUri;
 }
 
 export async function deleteRecord(agent, did, uri) {
-  const { collection, rkey } = parseAtUri(uri);
-  await agent.com.atproto.repo.deleteRecord({ repo: did, collection, rkey });
+  const operation = outbox.enqueueDelete(did, uri);
+  await flushRecordOperation(agent, did, operation);
 }
 
 // split one physical roll off a reserve stockpile: decrement its quantity and
@@ -342,7 +342,7 @@ export async function deleteRecord(agent, did, uri) {
 export async function splitRollFromStockpile(agent, did, stockpile, { camera, label } = {}) {
   const sv = stockpile.value;
   const now = new Date().toISOString();
-  // We consider splitting a roll off the reserve to involve loading it, 
+  // We consider splitting a roll off the reserve to involve loading it,
   // so the roll starts as `loaded`. The camera is
   // optional: you can load without recording which body.
   const roll = {
@@ -364,8 +364,7 @@ export async function splitRollFromStockpile(agent, did, stockpile, { camera, la
   const rollUri = await saveRecord(agent, did, NS.instance.filmRoll, roll, null);
 
   const nextQty = Math.max(0, (Number(sv.quantity) || 1) - 1);
-  await saveRecord(agent, did, NS.instance.filmStockpile,
-    { ...sv, quantity: nextQty, updatedAt: now }, stockpile);
+  await saveRecord(agent, did, NS.instance.filmStockpile, { ...sv, quantity: nextQty, updatedAt: now }, stockpile);
 
   return rollUri;
 }
@@ -418,11 +417,12 @@ export function projectCaptureToExif(form, refs, store, { mode = "fill" } = {}) 
   if (lensType) {
     if (canWrite("lensMake") && lensType.make) out.lensMake = lensType.make;
     if (canWrite("lensModel") && lensType.model) out.lensModel = lensType.model;
-    const focal = lensType.focalLength35mm != null
-      ? scaledToDisplay(lensType.focalLength35mm)
-      : lensType.focalLengthMin != null
-        ? scaledToDisplay(lensType.focalLengthMin)
-        : parseFocalLengthFromModel(lensType.model);
+    const focal =
+      lensType.focalLength35mm != null
+        ? scaledToDisplay(lensType.focalLength35mm)
+        : lensType.focalLengthMin != null
+          ? scaledToDisplay(lensType.focalLengthMin)
+          : parseFocalLengthFromModel(lensType.model);
     if (canWrite("focalLengthIn35mmFormat") && focal) {
       out.focalLengthIn35mmFormat = String(Math.round(parseFloat(focal)));
     }
@@ -442,21 +442,39 @@ export async function savePhotoCapture(agent, did, photoUri, fields, existing) {
     createdAt: existing?.value?.createdAt || new Date().toISOString(),
     ...fields,
   };
-  const record = { ...value, $type: NS.photo.capture };
+  const prepared = await prepareSchemaWrite(NS.photo.capture, value, existing);
+  const record = { ...prepared, $type: NS.photo.capture };
 
   if (existing) {
-    const res = await agent.com.atproto.repo.putRecord({
-      repo: did, collection: NS.photo.capture, rkey: existing.rkey, record,
-      swapRecord: existing.cid, validate: false,
+    const operation = outbox.enqueuePut(did, {
+      uri: existing.uri,
+      collection: NS.photo.capture,
+      rkey: existing.rkey,
+      record,
+      swapRecord: existing.cid,
     });
-    return { uri: existing.uri, cid: res.data.cid, rkey: existing.rkey, value };
+    const settled = await flushRecordOperation(agent, did, operation);
+    return {
+      uri: existing.uri,
+      cid: settled.acknowledgement?.cid || existing.cid,
+      rkey: existing.rkey,
+      value,
+      schemaRuntime: existing.schemaRuntime,
+      pending: Boolean(settled.operation),
+    };
   }
 
-  const res = await agent.com.atproto.repo.createRecord({
-    repo: did, collection: NS.photo.capture, record, validate: false,
-  });
-  const { rkey } = parseAtUri(res.data.uri);
-  return { uri: res.data.uri, cid: res.data.cid, rkey, value };
+  const operation = outbox.enqueue(did, NS.photo.capture, record);
+  const settled = await flushRecordOperation(agent, did, operation);
+  const uri = settled.acknowledgement?.uri || operation.tempUri;
+  const rkey = uri.startsWith("at://") ? parseAtUri(uri).rkey : operation.id;
+  return {
+    uri,
+    cid: settled.acknowledgement?.cid,
+    rkey,
+    value,
+    pending: Boolean(settled.operation),
+  };
 }
 
 export async function saveGalleryDefaults(agent, did, galleryUri, fields, existing) {
@@ -468,10 +486,10 @@ export async function saveGalleryDefaults(agent, did, galleryUri, fields, existi
   return saveRecord(agent, did, NS.gallery.defaults, value, existing);
 }
 
-export function chemistryRole(value, store) {
-  if (!value?.type) return null;
+export function chemistryRoles(value, store) {
+  if (!value?.type) return [];
   const t = store.catalog.chemistryType.find((x) => x.uri === value.type)?.value;
-  return t?.role || null;
+  return Array.isArray(t?.roles) ? t.roles : [];
 }
 
 export function uriLayer(uri, store) {
@@ -483,13 +501,42 @@ export async function saveWorkflowTemplate(agent, did, value, existing) {
   return saveRecord(agent, did, NS.workflow.template, value, existing);
 }
 
-const norm = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+const norm = (s) =>
+  String(s || "")
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+const gearTokenSignature = (s) =>
+  String(s || "")
+    .normalize("NFKD")
+    .toLowerCase()
+    .match(/[a-z]+|\d+(?:\.\d+)?/g)
+    ?.sort()
+    .join("|") || "";
 
 // fuzzy match one gear label against a normalized exif key
-function gearMatches(typeLabel, key) {
+function gearMatches(typeLabel, exifLabel) {
   const a = norm(typeLabel);
-  if (!a || !key) return false;
-  return a === key || (a.length >= 6 && key.includes(a)) || (key.length >= 6 && a.includes(key));
+  const b = norm(exifLabel);
+  if (!a || !b) return false;
+  if (a === b || (a.length >= 6 && b.includes(a)) || (b.length >= 6 && a.includes(b))) return true;
+  const aTokens = gearTokenSignature(typeLabel);
+  const bTokens = gearTokenSignature(exifLabel);
+  return aTokens.split("|").length >= 3 && aTokens === bTokens;
+}
+
+function gearTypeLabels(value) {
+  const make = value.make || "";
+  const aliases = [
+    ...(Array.isArray(value.alternativeNames) ? value.alternativeNames : []),
+    ...(value.exifModel ? [value.exifModel] : []),
+  ].filter((name) => typeof name === "string" && name.trim());
+  return [
+    [make, value.model].filter(Boolean).join(" "),
+    value.model || "",
+    ...aliases.flatMap((alias) => [alias, [make, alias].filter(Boolean).join(" ")]),
+  ];
 }
 
 // Suggest which of the user's gear a photo's EXIF points at. Returns, for camera
@@ -504,12 +551,9 @@ export function matchGear(exif, store) {
     if (!exifLabel) return null;
     // match on the full "make model" and on the model alone, since EXIF makes are
     // often verbose ("NIKON CORPORATION") while the type stores a clean make.
-    const keys = [norm(exifLabel), norm(model)].filter(Boolean);
+    const keys = [exifLabel, model].filter(Boolean);
     const typeUris = (store.catalog[typeKind] || [])
-      .filter((t) => {
-        const full = [t.value.make, t.value.model].filter(Boolean).join(" ");
-        return keys.some((k) => gearMatches(full, k) || gearMatches(t.value.model || "", k));
-      })
+      .filter((t) => keys.some((key) => gearTypeLabels(t.value).some((label) => gearMatches(label, key))))
       .map((t) => t.uri);
     const instances = (store.instance[instKind] || [])
       .filter((it) => typeUris.includes(it.value[typeRefKey]))

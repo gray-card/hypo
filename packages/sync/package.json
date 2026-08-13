@@ -1,0 +1,14 @@
+{
+  "name": "@hypo/sync",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@hypo/lexicon": "*",
+    "@hypo/pds": "*"
+  }
+}

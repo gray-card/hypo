@@ -4,25 +4,25 @@ A review of every controlled vocabulary in the lexicons. Three goals: **full cov
 of the concept, **one level of analysis** per enum (each option answers the same
 question), and letting users enter **their own value** rather than settling for "other".
 
-Note on the data model: in atproto, `knownValues` is an *open* list: a record may
+Note on the data model: in atproto, `knownValues` is an _open_ list: a record may
 carry any string, so widening a vocabulary or letting a user type a custom value is
 non-breaking. The only work is (a) curating the suggested values and (b) a UI that
 offers "Other…" → free text. Existing records with custom values round-trip.
 
 ## Level-of-analysis fixes (options that answered a different question)
 
-- **filmProcess** contained `ra4`: RA-4 is a colour *paper/print* process, not a film
+- **filmProcess** contained `ra4`: RA-4 is a colour _paper/print_ process, not a film
   development process. Removed from film process; it already lives in `printProcess`.
 - **filmType** contained `motion-picture`: that's a use/format axis, not a
   tone×polarity. A motion-picture stock is really a colour-negative (ECN-2) or
-  B&W-negative whose *process* is `ecn2`/`bw`. Removed; affected presets reclassified.
-- **surface** (paper) mixed `fiber` (a paper *base*) with `glossy/matte/pearl` (a
-  *finish*). Split into a new **base** field (fiber / resin-coated / baryta) and a
+  B&W-negative whose _process_ is `ecn2`/`bw`. Removed; affected presets reclassified.
+- **surface** (paper) mixed `fiber` (a paper _base_) with `glossy/matte/pearl` (a
+  _finish_). Split into a new **base** field (fiber / resin-coated / baryta) and a
   finish-only **surface**.
 - **cassetteType** contained `sheet-holder`: sheet film has no cassette. Removed;
   added the housings that actually exist (reloadable metal/plastic, 120 spool, bulk).
 - **process** / **tankType** were duplicated across `developSession` and `devRecipe`
-  with *different* value sets. Unified to one list each.
+  with _different_ value sets. Unified to one list each.
 
 ## Coverage additions (same level, more complete)
 
@@ -51,7 +51,7 @@ offers "Other…" → free text. Existing records with custom values round-trip.
 ## Deliberate non-changes
 
 - **cameraCategory** keeps `motion-picture`. Although "motion vs still" is technically a
-  separate axis from "film vs digital", *motion-picture camera* is a well-understood
+  separate axis from "film vs digital", _motion-picture camera_ is a well-understood
   top-level category and splitting it into a flag would churn the data for little gain.
 - **Rule / scene / provenance enums** (`op`, `operator`, `mode`, `scope`, `source`,
   `confidence`, `regionKind`, `artifactKind`, `engine`, `scheme`) are internal and were

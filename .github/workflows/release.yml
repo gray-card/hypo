@@ -1,0 +1,34 @@
+name: Prepare release version
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-preparation
+  cancel-in-progress: false
+
+jobs:
+  version-pr:
+    name: Update versions and changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - uses: changesets/action@v1
+        with:
+          version: npm run version-packages
+          title: "chore: prepare release"
+          commit: "chore: prepare release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

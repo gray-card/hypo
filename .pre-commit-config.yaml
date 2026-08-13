@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: panproto-integration
+        name: Validate the Panproto schema suite and corpus
+        entry: npm run check:panproto
+        language: system
+        pass_filenames: false
+        files: ^(lexicons/|fixtures/records/|lenses/|panproto\.toml|\.panproto/)

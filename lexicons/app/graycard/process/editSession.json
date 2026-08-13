@@ -7,10 +7,7 @@
       "key": "tid",
       "record": {
         "type": "object",
-        "required": [
-          "software",
-          "createdAt"
-        ],
+        "required": ["software", "createdAt"],
         "properties": {
           "software": {
             "type": "string",

@@ -7,10 +7,7 @@
       "key": "tid",
       "record": {
         "type": "object",
-        "required": [
-          "name",
-          "createdAt"
-        ],
+        "required": ["name", "createdAt"],
         "properties": {
           "brand": {
             "type": "string",
@@ -23,48 +20,22 @@
           "medium": {
             "type": "string",
             "description": "What kind of printing paper this is.",
-            "knownValues": [
-              "silver-gelatin",
-              "ra4",
-              "alt-process",
-              "inkjet",
-              "dye-sublimation",
-              "other"
-            ]
+            "knownValues": ["silver-gelatin", "ra4", "alt-process", "inkjet", "dye-sublimation", "other"]
           },
           "base": {
             "type": "string",
             "description": "Paper base: fiber (FB), resin-coated (RC), or baryta.",
-            "knownValues": [
-              "fiber",
-              "resin-coated",
-              "baryta",
-              "alpha-cellulose",
-              "other"
-            ]
+            "knownValues": ["fiber", "resin-coated", "baryta", "alpha-cellulose", "other"]
           },
           "surface": {
             "type": "string",
             "description": "Surface finish, separate from base.",
-            "knownValues": [
-              "glossy",
-              "satin",
-              "luster",
-              "pearl",
-              "semi-matte",
-              "matte",
-              "textured",
-              "other"
-            ]
+            "knownValues": ["glossy", "satin", "luster", "pearl", "semi-matte", "matte", "textured", "other"]
           },
           "contrast": {
             "type": "string",
             "description": "Fixed-grade vs variable (multigrade) contrast.",
-            "knownValues": [
-              "graded",
-              "variable-contrast",
-              "other"
-            ]
+            "knownValues": ["graded", "variable-contrast", "other"]
           },
           "grade": {
             "type": "string",
@@ -74,20 +45,23 @@
           "tone": {
             "type": "string",
             "description": "Image tone.",
-            "knownValues": [
-              "neutral",
-              "warm",
-              "cool",
-              "other"
-            ]
+            "knownValues": ["neutral", "warm", "cool", "other"]
           },
           "weight": {
             "type": "string",
             "maxLength": 32,
             "description": "Paper weight, e.g. 'double-weight' or '310gsm'."
           },
-          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
-          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "image": {
+            "type": "ref",
+            "ref": "app.graycard.defs#assetRef",
+            "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image."
+          },
+          "datasheet": {
+            "type": "ref",
+            "ref": "app.graycard.defs#assetRef",
+            "description": "Official datasheet: a link (preferred), an uploaded file, or another record."
+          },
           "links": {
             "type": "ref",
             "ref": "app.graycard.defs#catalogLinks"

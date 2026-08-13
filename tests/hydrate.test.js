@@ -12,7 +12,9 @@ function router(map) {
   });
 }
 
-const pdsDoc = (endpoint) => ({ service: [{ id: "#atproto_pds", type: "AtprotoPersonalDataServer", serviceEndpoint: endpoint }] });
+const pdsDoc = (endpoint) => ({
+  service: [{ id: "#atproto_pds", type: "AtprotoPersonalDataServer", serviceEndpoint: endpoint }],
+});
 
 describe("hydrateSetup", () => {
   afterEach(() => vi.restoreAllMocks());
@@ -22,7 +24,12 @@ describe("hydrateSetup", () => {
       "plc.directory/did:plc:aaa": pdsDoc("https://pds.aaa"),
       "pds.aaa/xrpc/com.atproto.repo.getRecord": { value: { $type: "app.graycard.setup", name: "Kit" } },
     });
-    const rec = await hydrateSetup({ did: "did:plc:aaa", collection: "app.graycard.setup", rkey: "r1", uri: "at://did:plc:aaa/app.graycard.setup/r1" });
+    const rec = await hydrateSetup({
+      did: "did:plc:aaa",
+      collection: "app.graycard.setup",
+      rkey: "r1",
+      uri: "at://did:plc:aaa/app.graycard.setup/r1",
+    });
     expect(rec.value.name).toBe("Kit");
     expect(rec.uri).toBe("at://did:plc:aaa/app.graycard.setup/r1");
   });
@@ -43,7 +50,9 @@ describe("hydratePage", () => {
       "plc.directory/did:plc:ddd": pdsDoc("https://pds.ddd"),
       "pds.ccc/xrpc/com.atproto.repo.getRecord": { value: { name: "C" } },
       // ddd has no getRecord mapping -> 404 -> dropped
-      "getProfiles": { profiles: [{ did: "did:plc:ccc", handle: "cee.test", displayName: "Cee", avatar: "http://a/av" }] },
+      getProfiles: {
+        profiles: [{ did: "did:plc:ccc", handle: "cee.test", displayName: "Cee", avatar: "http://a/av" }],
+      },
     });
     const out = await hydratePage([
       { did: "did:plc:ccc", collection: "app.graycard.setup", rkey: "r", uri: "at://did:plc:ccc/app.graycard.setup/r" },

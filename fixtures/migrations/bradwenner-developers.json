@@ -1,0 +1,105 @@
+{
+  "source": {
+    "handle": "bradwenner.photo",
+    "did": "did:plc:fyxup3moaom35xzxnomsryyx",
+    "copiedAt": "2026-08-13T11:00:00.000Z",
+    "note": "Public records copied for a deterministic, non-destructive developer-to-chemistry migration test."
+  },
+  "records": [
+    {
+      "repo": "did:plc:fyxup3moaom35xzxnomsryyx",
+      "collection": "app.graycard.catalog.developerType",
+      "rkey": "3mswqyzaqgc2o",
+      "sourceCid": "bafyreiafsee5vskx4bpjakgrjx64eq5bd4o3w3tx2j554r7qko57jevtf4",
+      "value": {
+        "$type": "app.graycard.catalog.developerType",
+        "brand": "BW",
+        "name": "Parodinal",
+        "process": "bw",
+        "form": "liquid-concentrate",
+        "defaultDilution": "1:50",
+        "createdAt": "2026-08-13T04:00:17.805Z"
+      }
+    },
+    {
+      "repo": "did:plc:fyxup3moaom35xzxnomsryyx",
+      "collection": "app.graycard.catalog.developerType",
+      "rkey": "3mswqxnp6oc2o",
+      "sourceCid": "bafyreif76m7ub3x4etergxqgtjkqvswt5ny76azyubg7zjchov32j66wnu",
+      "value": {
+        "$type": "app.graycard.catalog.developerType",
+        "brand": "Kodak",
+        "name": "HC-110",
+        "process": "bw",
+        "form": "liquid-concentrate",
+        "defaultDilution": "1+31 (dil. B)",
+        "datasheet": {
+          "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+        },
+        "createdAt": "2026-08-13T03:59:32.161Z"
+      }
+    },
+    {
+      "repo": "did:plc:fyxup3moaom35xzxnomsryyx",
+      "collection": "app.graycard.instance.developer",
+      "rkey": "3mswqyzeaq22o",
+      "sourceCid": "bafyreidxizuhu2yhybshjt3mwda2ejtu7o2bq5hjb2xadepvokwxoo4v7u",
+      "value": {
+        "$type": "app.graycard.instance.developer",
+        "type": "at://did:plc:fyxup3moaom35xzxnomsryyx/app.graycard.catalog.developerType/3mswqyzaqgc2o",
+        "createdAt": "2026-08-13T04:00:17.945Z"
+      }
+    },
+    {
+      "repo": "did:plc:fyxup3moaom35xzxnomsryyx",
+      "collection": "app.graycard.instance.developer",
+      "rkey": "3mswqxnqwdk2o",
+      "sourceCid": "bafyreib7ashtirxvvfeudtpy2vhwlas63g5cg2y4bc2zjkdtf4ixvidftq",
+      "value": {
+        "$type": "app.graycard.instance.developer",
+        "type": "at://did:plc:fyxup3moaom35xzxnomsryyx/app.graycard.catalog.developerType/3mswqxnp6oc2o",
+        "createdAt": "2026-08-13T03:59:32.227Z"
+      }
+    },
+    {
+      "repo": "did:plc:fyxup3moaom35xzxnomsryyx",
+      "collection": "app.graycard.workflow.template",
+      "rkey": "3mswr2lc6jc2o",
+      "sourceCid": "bafyreierkflc37ef6elsfzoxbbzrpj3bc6jkihtqt7pkvylzwvodgnrdbm",
+      "value": {
+        "$type": "app.graycard.workflow.template",
+        "name": "Home-developed film",
+        "notes": "Created by guided setup.",
+        "medium": "film",
+        "createdAt": "2026-08-13T04:01:10.293Z",
+        "updatedAt": "2026-08-13T04:01:10.293Z",
+        "stageKinds": ["capture", "develop", "digitize", "edit"],
+        "defaultLens": "at://did:plc:fyxup3moaom35xzxnomsryyx/app.graycard.instance.lens/3mswqhi4np22o",
+        "defaultCamera": "at://did:plc:fyxup3moaom35xzxnomsryyx/app.graycard.instance.camera/3mswqetrgp22o",
+        "defaultScanner": "at://did:plc:fyxup3moaom35xzxnomsryyx/app.graycard.instance.scanner/3mswqzl4zvk2o",
+        "defaultDeveloper": "at://did:plc:fyxup3moaom35xzxnomsryyx/app.graycard.instance.developer/3mswqxnqwdk2o",
+        "stageDefaults": [
+          {
+            "kind": "capture",
+            "fields": {
+              "lens": "at://did:plc:fyxup3moaom35xzxnomsryyx/app.graycard.instance.lens/3mswqhi4np22o",
+              "camera": "at://did:plc:fyxup3moaom35xzxnomsryyx/app.graycard.instance.camera/3mswqetrgp22o"
+            }
+          },
+          {
+            "kind": "develop",
+            "fields": {
+              "developer": "at://did:plc:fyxup3moaom35xzxnomsryyx/app.graycard.instance.developer/3mswqxnqwdk2o"
+            }
+          },
+          {
+            "kind": "digitize",
+            "fields": {
+              "scanner": "at://did:plc:fyxup3moaom35xzxnomsryyx/app.graycard.instance.scanner/3mswqzl4zvk2o"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

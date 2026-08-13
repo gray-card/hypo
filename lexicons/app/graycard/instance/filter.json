@@ -13,7 +13,11 @@
           "type": { "type": "string", "format": "at-uri", "description": "app.graycard.catalog.filterType" },
           "nickname": { "type": "string", "maxLength": 128 },
           "serialNumber": { "type": "string", "maxLength": 128 },
-          "threadSize": { "type": "integer", "minimum": 1, "description": "This copy's thread size in mm, if it differs from the catalog default." },
+          "threadSize": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "This copy's thread size in mm, if it differs from the catalog default."
+          },
           "notes": { "type": "string", "maxLength": 2000 },
           "createdAt": { "type": "string", "format": "datetime" },
           "updatedAt": { "type": "string", "format": "datetime" },

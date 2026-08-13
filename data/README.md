@@ -7,14 +7,14 @@ under `src/data/`.
 
 ## Directory layout
 
-| Path | Contents |
-| --- | --- |
-| `curated-cameras/` | Camera bodies not supplied by Lensfun |
-| `curated-lenses/` | Lenses not supplied by Lensfun |
-| `curated-film-stocks/` | Film specifications compiled from primary sources |
-| `curated-dev-times/` | Development recipes transcribed from manufacturer technical sheets |
-| `datasheets/` | Manufacturer links that enrich records originating outside the curated files |
-| `lensfun-db/` | Vendored Lensfun source XML and its own license notice |
+| Path                   | Contents                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| `curated-cameras/`     | Camera bodies not supplied by Lensfun                                        |
+| `curated-lenses/`      | Lenses not supplied by Lensfun                                               |
+| `curated-film-stocks/` | Film specifications compiled from primary sources                            |
+| `curated-dev-times/`   | Development recipes transcribed from manufacturer technical sheets           |
+| `datasheets/`          | Manufacturer links that enrich records originating outside the curated files |
+| `lensfun-db/`          | Vendored Lensfun source XML and its own license notice                       |
 
 The curated files use JSON Lines: one complete JSON object per line. Edit these
 files rather than the generated JSON under `src/data/`, then run:
@@ -59,12 +59,12 @@ URL and note any relevant model-family or archival limitation.
 
 The licenses are intentionally split by artifact:
 
-| Material | License |
-| --- | --- |
-| Original curated data and database compilations in this directory | [CC BY-SA 4.0](LICENSE.md) |
-| Vendored Lensfun database | [CC BY-SA 3.0](lensfun-db/NOTICE.md) |
-| Hypo application and data-processing code | [MIT](../LICENSE) |
-| Linked manufacturer datasheets, pages, and images | Copyright remains with their respective owners |
+| Material                                                          | License                                        |
+| ----------------------------------------------------------------- | ---------------------------------------------- |
+| Original curated data and database compilations in this directory | [CC BY-SA 4.0](LICENSE.md)                     |
+| Vendored Lensfun database                                         | [CC BY-SA 3.0](lensfun-db/NOTICE.md)           |
+| Hypo application and data-processing code                         | [MIT](../LICENSE)                              |
+| Linked manufacturer datasheets, pages, and images                 | Copyright remains with their respective owners |
 
 The data license covers **data only**. It does not change the MIT license on the
 code. Conversely, the repository's MIT license does not relicense the data or the

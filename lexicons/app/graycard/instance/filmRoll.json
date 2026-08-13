@@ -8,10 +8,7 @@
       "key": "tid",
       "record": {
         "type": "object",
-        "required": [
-          "stock",
-          "createdAt"
-        ],
+        "required": ["stock", "createdAt"],
         "properties": {
           "stock": {
             "type": "string",
@@ -75,7 +72,7 @@
           "developedWith": {
             "type": "string",
             "format": "at-uri",
-            "description": "Optional app.graycard.instance.developer used to process the roll."
+            "description": "Optional app.graycard.instance.chemistry used as the primary developer or multi-role bath for this roll."
           },
           "lab": {
             "type": "string",
@@ -89,13 +86,7 @@
           },
           "cassetteType": {
             "type": "string",
-            "knownValues": [
-              "factory",
-              "plastic-reload",
-              "metal-reload",
-              "sheet-holder",
-              "other"
-            ]
+            "knownValues": ["factory", "plastic-reload", "metal-reload", "sheet-holder", "other"]
           },
           "camera": {
             "type": "string",
@@ -104,11 +95,63 @@
           },
           "loadedAt": {
             "type": "string",
-            "format": "datetime"
+            "format": "datetime",
+            "description": "When this roll was loaded into a camera."
+          },
+          "partialAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When the first exposure was made on this roll."
+          },
+          "exposedAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When this roll became fully exposed."
+          },
+          "unloadedAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When this roll was unloaded from its camera."
+          },
+          "sentToLabAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When this roll was sent or delivered to a lab."
+          },
+          "developmentStartedAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When development of this roll began."
+          },
+          "developedAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When development of this roll finished."
+          },
+          "developmentLocation": {
+            "type": "string",
+            "knownValues": ["home", "lab", "other"],
+            "description": "Where this roll was developed."
+          },
+          "receivedFromLabAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When this developed roll was received from a lab."
+          },
+          "scannedAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When this roll was first digitized."
+          },
+          "archivedAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When this roll was archived."
           },
           "finishedAt": {
             "type": "string",
-            "format": "datetime"
+            "format": "datetime",
+            "description": "DEPRECATED: ambiguous legacy completion date. Prefer exposedAt or developedAt."
           },
           "labNotes": {
             "type": "string",
@@ -128,11 +171,7 @@
           },
           "image": {
             "type": "blob",
-            "accept": [
-              "image/png",
-              "image/jpeg",
-              "image/webp"
-            ],
+            "accept": ["image/png", "image/jpeg", "image/webp"],
             "maxSize": 3000000,
             "description": "Optional user photo of this specific item; falls back to the catalog type's stock image."
           }

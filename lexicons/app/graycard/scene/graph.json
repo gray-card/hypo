@@ -10,8 +10,16 @@
         "type": "object",
         "required": ["subject", "createdAt"],
         "properties": {
-          "subject": { "type": "string", "format": "at-uri", "description": "A photo (AT-URI) or app.graycard.artifact this graph describes." },
-          "ontologies": { "type": "array", "items": { "type": "string", "format": "at-uri" }, "description": "Ontologies whose terms this graph uses." },
+          "subject": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "A photo (AT-URI) or app.graycard.artifact this graph describes."
+          },
+          "ontologies": {
+            "type": "array",
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Ontologies whose terms this graph uses."
+          },
           "schemaVersion": { "type": "string", "maxLength": 64 },
           "label": { "type": "string", "maxLength": 128 },
           "temporal": { "type": "ref", "ref": "app.graycard.defs#temporalRef" },

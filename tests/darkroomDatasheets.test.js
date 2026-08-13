@@ -3,9 +3,16 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const DATA = join(process.cwd(), "data");
-const rowsIn = (dir) => readdirSync(join(DATA, dir))
-  .filter((name) => name.endsWith(".jsonl"))
-  .flatMap((name) => readFileSync(join(DATA, dir, name), "utf8").trim().split("\n").filter(Boolean).map(JSON.parse));
+const rowsIn = (dir) =>
+  readdirSync(join(DATA, dir))
+    .filter((name) => name.endsWith(".jsonl"))
+    .flatMap((name) =>
+      readFileSync(join(DATA, dir, name), "utf8")
+        .trim()
+        .split("\n")
+        .filter(Boolean)
+        .map(JSON.parse),
+    );
 const fileRows = (file) => readFileSync(join(DATA, file), "utf8").trim().split("\n").filter(Boolean).map(JSON.parse);
 
 describe("structured darkroom datasheet enrichment", () => {
@@ -38,10 +45,12 @@ describe("structured darkroom datasheet enrichment", () => {
     const acros = find("Fujifilm", "Acros 100 II");
     expect(acros.grainRms).toBe(7);
     expect(acros.granularityMeasurements[0]).toMatchObject({ value: 7, scale: 1, kind: "diffuse-rms" });
-    expect(acros.resolvingPowerTests).toEqual(expect.arrayContaining([
-      { linesPerMm: 200, contrastRatio: "1000:1" },
-      { linesPerMm: 60, contrastRatio: "1.6:1" },
-    ]));
+    expect(acros.resolvingPowerTests).toEqual(
+      expect.arrayContaining([
+        { linesPerMm: 200, contrastRatio: "1000:1" },
+        { linesPerMm: 60, contrastRatio: "1.6:1" },
+      ]),
+    );
     expect(find("Adox", "Scala 160").reciprocityPoints).toHaveLength(3);
   });
 
@@ -49,7 +58,13 @@ describe("structured darkroom datasheet enrichment", () => {
     const recipes = rowsIn("curated-dev-times");
     const derived = recipes.filter((row) => row.derived);
     expect(derived).toHaveLength(73);
-    expect(derived.every((row) => /midpoint|representative|mean of|average of|published .*range/i.test(`${row.notes} ${row.derivationNotes || ""}`))).toBe(true);
+    expect(
+      derived.every((row) =>
+        /midpoint|representative|mean of|average of|published .*range/i.test(
+          `${row.notes} ${row.derivationNotes || ""}`,
+        ),
+      ),
+    ).toBe(true);
     expect(recipes.filter((row) => row.gammaTarget)).toHaveLength(269);
     expect(recipes.filter((row) => row.sourceRevision)).toHaveLength(342);
   });
@@ -70,9 +85,16 @@ describe("structured darkroom datasheet enrichment", () => {
   });
 
   it("does not emit unresolved product placeholders as verified enrichment", () => {
-    const products = [...fileRows("datasheets/developers.jsonl"), ...fileRows("datasheets/chemistries.jsonl")]
-      .map((row) => `${row.brand} ${row.name}`.toLowerCase());
-    for (const unresolved of ["kodak d-23", "diafine diafine two-bath", "tetenal colortec c-41", "kodak c-41 blix", "kodak selenium toner"]) {
+    const products = [...fileRows("datasheets/developers.jsonl"), ...fileRows("datasheets/chemistries.jsonl")].map(
+      (row) => `${row.brand} ${row.name}`.toLowerCase(),
+    );
+    for (const unresolved of [
+      "kodak d-23",
+      "diafine diafine two-bath",
+      "tetenal colortec c-41",
+      "kodak c-41 blix",
+      "kodak selenium toner",
+    ]) {
       expect(products).not.toContain(unresolved);
     }
   });

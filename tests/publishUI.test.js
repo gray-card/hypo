@@ -5,7 +5,9 @@ import { mockAgent } from "./setup.js";
 const DID = "did:plc:test";
 const buttons = (modal) => [...modal.querySelectorAll("button")].map((b) => b.textContent);
 
-beforeEach(() => { document.body.innerHTML = ""; });
+beforeEach(() => {
+  document.body.innerHTML = "";
+});
 
 describe("Discover listing modal", () => {
   it("offers publishing when the user is not listed yet", async () => {
@@ -21,7 +23,9 @@ describe("Discover listing modal", () => {
 
   it("becomes an edit form once the user is listed", async () => {
     const existing = {
-      uri: `at://${DID}/app.graycard.setup/x`, cid: "c1", rkey: "x",
+      uri: `at://${DID}/app.graycard.setup/x`,
+      cid: "c1",
+      rkey: "x",
       value: { name: "My 35mm kit", summary: "Tri-X and an F2" },
     };
     await openPublishSetup(mockAgent(), DID, { handle: "alice.test", existing });
@@ -37,18 +41,25 @@ describe("Discover listing modal", () => {
   it("saving an edit updates the existing record in place", async () => {
     const agent = mockAgent();
     const existing = {
-      uri: `at://${DID}/app.graycard.setup/x`, cid: "c1", rkey: "x",
+      uri: `at://${DID}/app.graycard.setup/x`,
+      cid: "c1",
+      rkey: "x",
       value: { name: "old", createdAt: "2020-01-01T00:00:00Z" },
     };
     let changed;
-    await openPublishSetup(agent, DID, { existing, onChange: (s) => { changed = s; } });
+    await openPublishSetup(agent, DID, {
+      existing,
+      onChange: (s) => {
+        changed = s;
+      },
+    });
     const modal = document.querySelector(".modal");
     modal.querySelector('input[type="text"]').value = "new name";
     buttons(modal); // materialize
     [...modal.querySelectorAll("button")].find((b) => b.textContent === "Save changes").click();
 
-    await new Promise((r) => setTimeout(r, 0));
-    expect(agent.created).toHaveLength(0);          // updated, not re-created
+    await expect.poll(() => agent.put.length).toBe(1);
+    expect(agent.created).toHaveLength(0); // updated, not re-created
     expect(agent.put).toHaveLength(1);
     expect(agent.put[0].rkey).toBe("x");
     expect(agent.put[0].record.name).toBe("new name");

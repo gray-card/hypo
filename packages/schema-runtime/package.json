@@ -1,0 +1,13 @@
+{
+  "name": "@hypo/schema-runtime",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@panproto/core": "0.70.1"
+  }
+}

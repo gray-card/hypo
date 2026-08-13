@@ -1,0 +1,347 @@
+.meter-view {
+  --meter-brass: color-mix(in oklch, var(--accent) 76%, #ffd889);
+  --meter-ink: color-mix(in oklch, var(--text) 92%, #fff);
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+#library-view.meter-mounted > .view-head {
+  display: none;
+}
+
+.meter-hero {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 4px 2px 24px;
+}
+
+.meter-hero h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 7vw, 4.8rem);
+  font-weight: 510;
+  line-height: 0.92;
+  letter-spacing: -0.065em;
+}
+
+.meter-kicker,
+.meter-badge,
+.meter-label,
+.meter-result-number,
+.meter-zero,
+.meter-status {
+  font-family: var(--font-mono);
+}
+
+.meter-kicker {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.meter-lede,
+.meter-copy {
+  max-width: 58ch;
+  margin: 12px 0 0;
+  color: var(--muted);
+}
+
+.meter-zero {
+  display: grid;
+  grid-template-columns: auto 36px auto 36px auto;
+  align-items: center;
+  min-width: 188px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.meter-zero i {
+  height: 1px;
+  background: var(--border-strong);
+}
+
+.meter-zero b {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--meter-brass);
+  border-radius: 50%;
+  color: var(--meter-brass);
+  font-weight: 500;
+}
+
+.meter-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(290px, 0.65fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.meter-side {
+  display: grid;
+  gap: 18px;
+}
+
+.meter-card {
+  min-width: 0;
+  margin: 0;
+  padding: clamp(18px, 3vw, 26px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: 0 1px 0 color-mix(in oklch, var(--text) 5%, transparent) inset;
+}
+
+.meter-card h2 {
+  margin: 0;
+  color: var(--meter-ink);
+  font-size: 18px;
+}
+
+.meter-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.meter-badge {
+  align-self: start;
+  padding: 4px 7px;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.meter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.meter-grid-reading,
+.meter-grid-dials {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.meter-grid-reading .meter-field:nth-child(3) {
+  grid-column: span 2;
+}
+
+.meter-field {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.meter-label {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.meter-field input,
+.meter-field select,
+.meter-field textarea {
+  width: 100%;
+  min-width: 0;
+}
+
+.meter-field select:disabled,
+.meter-field input:disabled {
+  border-style: dashed;
+  opacity: 0.66;
+}
+
+.meter-hint {
+  color: var(--faint);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.meter-fieldset {
+  margin: 20px 0 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.meter-fieldset legend {
+  padding: 0 7px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.meter-dial-wrap {
+  margin: 18px 0 8px;
+}
+
+.meter-dial {
+  width: 100%;
+  accent-color: var(--meter-brass);
+}
+
+.meter-dial-ticks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 3px;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.meter-result {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  margin-top: 20px;
+  padding: 24px 20px 20px;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklch, var(--meter-brass) 38%, var(--border));
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--surface-2) 88%, var(--meter-brass));
+}
+
+.meter-result::before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 15px;
+  background: var(--meter-brass);
+  box-shadow: 0 0 9px var(--meter-brass);
+  content: "";
+}
+
+.meter-result-number {
+  color: var(--meter-brass);
+  font-size: clamp(1.65rem, 5vw, 2.7rem);
+  font-weight: 500;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.meter-result-pair {
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.meter-result[data-error="true"] {
+  border-color: color-mix(in oklch, var(--danger) 60%, var(--border));
+}
+
+.meter-result[data-error="true"] .meter-result-number {
+  color: var(--danger);
+}
+
+.meter-details {
+  margin-top: 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.meter-details summary {
+  margin-bottom: 14px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.meter-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.meter-status {
+  min-height: 1.3em;
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  font-size: 10px;
+}
+
+.meter-status.ok {
+  color: var(--ok);
+}
+
+.meter-status.err {
+  color: var(--danger);
+}
+
+.meter-camera {
+  border-top-color: var(--meter-brass);
+}
+
+.meter-camera h2,
+.meter-calibration h2 {
+  margin-bottom: 8px;
+}
+
+.meter-capability-note {
+  margin: 16px 0 0;
+  padding: 10px 12px;
+  border-left: 2px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.meter-preview {
+  width: 100%;
+  max-height: 190px;
+  margin-top: 16px;
+  border-radius: var(--radius-sm);
+  background: #050505;
+  object-fit: cover;
+}
+
+.meter-calibration .meter-grid {
+  grid-template-columns: 1fr;
+  margin-top: 18px;
+}
+
+@media (max-width: 780px) {
+  .meter-hero {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .meter-zero {
+    width: 100%;
+  }
+
+  .meter-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .meter-grid,
+  .meter-grid-reading,
+  .meter-grid-dials {
+    grid-template-columns: 1fr;
+  }
+
+  .meter-grid-reading .meter-field:nth-child(3) {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meter-result::before {
+    box-shadow: none;
+  }
+}

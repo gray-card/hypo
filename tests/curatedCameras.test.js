@@ -7,13 +7,39 @@ import { PRESETS } from "../src/data/presets.js";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = join(ROOT, "data", "curated-cameras");
 
-const FORMAT = new Set(["35mm", "120", "220", "110", "aps", "4x5", "5x7", "8x10", "half-frame", "instax-mini", "instax-wide", "instax-square", "polaroid-600", "polaroid-i-type", "polaroid-sx70", "super8", "16mm", "full-frame-digital", "aps-c-digital", "medium-format-digital", "other"]);
+const FORMAT = new Set([
+  "35mm",
+  "120",
+  "220",
+  "110",
+  "aps",
+  "4x5",
+  "5x7",
+  "8x10",
+  "half-frame",
+  "instax-mini",
+  "instax-wide",
+  "instax-square",
+  "polaroid-600",
+  "polaroid-i-type",
+  "polaroid-sx70",
+  "super8",
+  "16mm",
+  "full-frame-digital",
+  "aps-c-digital",
+  "medium-format-digital",
+  "other",
+]);
 const CATEGORY = new Set(["film", "digital", "instant", "motion-picture", "other"]);
 
 function loadAll() {
   const rows = [];
   for (const f of readdirSync(DIR).filter((f) => f.endsWith(".jsonl"))) {
-    for (const l of readFileSync(join(DIR, f), "utf8").split("\n").map((s) => s.trim()).filter(Boolean)) rows.push(JSON.parse(l));
+    for (const l of readFileSync(join(DIR, f), "utf8")
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean))
+      rows.push(JSON.parse(l));
   }
   return rows;
 }

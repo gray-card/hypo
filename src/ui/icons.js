@@ -12,17 +12,24 @@ const ICONS = {
   copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
   sun: '<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="5" y1="5" x2="7" y2="7"/><line x1="17" y1="17" x2="19" y2="19"/><line x1="19" y1="5" x2="17" y2="7"/><line x1="7" y1="17" x2="5" y2="19"/>',
   moon: '<path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/>',
-  camera: '<path d="M4 7h3l2-2h6l2 2h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.4"/>',
-  image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><polyline points="4 18 9 13 13 16 17 12 20 15"/>',
+  camera:
+    '<path d="M4 7h3l2-2h6l2 2h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.4"/>',
+  image:
+    '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><polyline points="4 18 9 13 13 16 17 12 20 15"/>',
   grid: '<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>',
   list: '<line x1="8" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
   layers: '<polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/>',
   book: '<path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4z"/><line x1="9" y1="8" x2="15" y2="8"/>',
-  package: '<polygon points="12 3 21 7.5 21 16.5 12 21 3 16.5 3 7.5 12 3"/><polyline points="3 7.5 12 12 21 7.5"/><line x1="12" y1="12" x2="12" y2="21"/>',
+  package:
+    '<polygon points="12 3 21 7.5 21 16.5 12 21 3 16.5 3 7.5 12 3"/><polyline points="3 7.5 12 12 21 7.5"/><line x1="12" y1="12" x2="12" y2="21"/>',
   wrench: '<path d="M15.5 6.5a4 4 0 0 0-5.3 5.3L4 18l2 2 6.2-6.2a4 4 0 0 0 5.3-5.3l-2.7 2.7-2-2 2.7-2.7z"/>',
-  users: '<circle cx="9" cy="8" r="3.3"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 5a3.3 3.3 0 0 1 0 6.6"/><path d="M17.5 20a5.5 5.5 0 0 0-2.5-4.6"/>',
-  share: '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><line x1="8.2" y1="11" x2="15.8" y2="7"/><line x1="8.2" y1="13" x2="15.8" y2="17"/>',
+  users:
+    '<circle cx="9" cy="8" r="3.3"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 5a3.3 3.3 0 0 1 0 6.6"/><path d="M17.5 20a5.5 5.5 0 0 0-2.5-4.6"/>',
+  share:
+    '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><line x1="8.2" y1="11" x2="15.8" y2="7"/><line x1="8.2" y1="13" x2="15.8" y2="17"/>',
   info: '<circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.7" fill="currentColor" stroke="none"/>',
+  alert:
+    '<path d="M10.3 3.8L2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r=".7" fill="currentColor" stroke="none"/>',
   refresh: '<path d="M20 11a8 8 0 1 0-1.6 5"/><polyline points="20 4 20 11 13 11"/>',
   code: '<polyline points="9 8 5 12 9 16"/><polyline points="15 8 19 12 15 16"/>',
   command: '<path d="M9 4a2 2 0 1 0 2 2v12a2 2 0 1 0-2-2h6a2 2 0 1 0-2 2V6a2 2 0 1 0 2 2H9z"/>',
@@ -34,9 +41,11 @@ const ICONS = {
   compass: '<circle cx="12" cy="12" r="9"/><polygon points="15.5 8.5 11 11 8.5 15.5 13 13 15.5 8.5"/>',
   upload: '<path d="M12 21V9"/><polyline points="7 14 12 9 17 14"/><path d="M5 4h14"/>',
   user: '<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>',
-  keyboard: '<rect x="2.5" y="6" width="19" height="12" rx="2"/><line x1="6" y1="9.5" x2="6" y2="9.5"/><line x1="9" y1="9.5" x2="9" y2="9.5"/><line x1="12" y1="9.5" x2="12" y2="9.5"/><line x1="15" y1="9.5" x2="15" y2="9.5"/><line x1="18" y1="9.5" x2="18" y2="9.5"/><line x1="7.5" y1="14.5" x2="16.5" y2="14.5"/>',
+  keyboard:
+    '<rect x="2.5" y="6" width="19" height="12" rx="2"/><line x1="6" y1="9.5" x2="6" y2="9.5"/><line x1="9" y1="9.5" x2="9" y2="9.5"/><line x1="12" y1="9.5" x2="12" y2="9.5"/><line x1="15" y1="9.5" x2="15" y2="9.5"/><line x1="18" y1="9.5" x2="18" y2="9.5"/><line x1="7.5" y1="14.5" x2="16.5" y2="14.5"/>',
   "map-pin": '<path d="M12 21s7-5.5 7-11a7 7 0 0 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>',
-  sparkles: '<path d="M12 3.5l1.7 4.3 4.3 1.7-4.3 1.7L12 15.5l-1.7-4.3L6 9.5l4.3-1.7L12 3.5z"/><path d="M18 14.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/>',
+  sparkles:
+    '<path d="M12 3.5l1.7 4.3 4.3 1.7-4.3 1.7L12 15.5l-1.7-4.3L6 9.5l4.3-1.7L12 3.5z"/><path d="M18 14.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/>',
 };
 
 export function icon(name, size = 18) {
@@ -59,9 +68,17 @@ export function icon(name, size = 18) {
 export function iconBtn(name, label, { onclick, cls = "ghost", labelClass = "iconbtn-label", title } = {}) {
   const b = document.createElement("button");
   b.className = cls + " iconbtn";
-  if (title || label) { b.title = title || label; b.setAttribute("aria-label", title || label); }
+  if (title || label) {
+    b.title = title || label;
+    b.setAttribute("aria-label", title || label);
+  }
   if (onclick) b.addEventListener("click", onclick);
   b.append(icon(name));
-  if (label) { const s = document.createElement("span"); s.className = labelClass; s.textContent = label; b.append(s); }
+  if (label) {
+    const s = document.createElement("span");
+    s.className = labelClass;
+    s.textContent = label;
+    b.append(s);
+  }
   return b;
 }

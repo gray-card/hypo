@@ -1,22 +1,56 @@
 import { describe, it, expect } from "vitest";
 import {
-  catalogLabel, instanceLabel, resolvePhotoCapture, projectCaptureToExif, matchGear,
-  scaledToDisplay, displayToScaled, displayToMeasure, measureToDisplay, parseFocalLengthFromModel,
+  catalogLabel,
+  instanceLabel,
+  resolvePhotoCapture,
+  projectCaptureToExif,
+  matchGear,
+  scaledToDisplay,
+  displayToScaled,
+  displayToMeasure,
+  measureToDisplay,
+  parseFocalLengthFromModel,
   savePhotoCapture,
+  saveRecord,
+  NS,
+  compareShootsByDate,
+  shootDateKey,
 } from "../src/graycard.js";
 import { mockAgent } from "./setup.js";
 
 function makeStore() {
   const camType = { uri: "at://t/cam", value: { make: "Leica", model: "M6" } };
-  const lensType = { uri: "at://t/lens", value: { make: "Leica", model: "Summicron 50mm f/2", maxAperture: 2_000_000, focalLengthMin: 50_000_000 } };
+  const lensType = {
+    uri: "at://t/lens",
+    value: { make: "Leica", model: "Summicron 50mm f/2", maxAperture: 2_000_000, focalLengthMin: 50_000_000 },
+  };
   const filmStock = { uri: "at://t/film", value: { brand: "Kodak", name: "Portra 400", iso: 400 } };
   const cam = { uri: "at://i/cam", value: { type: "at://t/cam", nickname: "black M6", serialNumber: "123" } };
   const cam2 = { uri: "at://i/cam2", value: { type: "at://t/cam", nickname: "silver M6" } };
   const lens = { uri: "at://i/lens", value: { type: "at://t/lens" } };
   const roll = { uri: "at://i/roll", value: { stock: "at://t/film", label: "Roll 12", quantity: 5 } };
   const store = {
-    catalog: { cameraType: [camType], lensType: [lensType], filmStock: [filmStock], developerType: [], chemistryType: [], scannerType: [], lab: [], scanProfile: [], paperType: [] },
-    instance: { camera: [cam, cam2], lens: [lens], filmRoll: [roll], developer: [], chemistry: [], scanner: [], labAccount: [], storageLocation: [], enlarger: [], intermediate: [] },
+    catalog: {
+      cameraType: [camType],
+      lensType: [lensType],
+      filmStock: [filmStock],
+      chemistryType: [],
+      scannerType: [],
+      lab: [],
+      scanProfile: [],
+      paperType: [],
+    },
+    instance: {
+      camera: [cam, cam2],
+      lens: [lens],
+      filmRoll: [roll],
+      chemistry: [],
+      scanner: [],
+      labAccount: [],
+      storageLocation: [],
+      enlarger: [],
+      intermediate: [],
+    },
     byUri: new Map(),
   };
   const put = (uri, layer, kind, item) => store.byUri.set(uri, { layer, kind, item });
@@ -31,10 +65,12 @@ function makeStore() {
 }
 
 describe("catalogLabel", () => {
-  it("labels cameras, film, developers", () => {
+  it("labels cameras, film, and multi-role chemistry", () => {
     expect(catalogLabel("cameraType", { make: "Leica", model: "M6" })).toBe("Leica M6");
     expect(catalogLabel("filmStock", { brand: "Kodak", name: "Portra 400" })).toBe("Kodak Portra 400");
-    expect(catalogLabel("developerType", { brand: "Kodak", name: "D-76", role: "developer" })).toBe("Kodak D-76 developer");
+    expect(
+      catalogLabel("chemistryType", { brand: "CineStill", name: "Df96", roles: ["film-developer", "fixer"] }),
+    ).toBe("CineStill Df96 film developer + fixer");
   });
 });
 
@@ -88,15 +124,39 @@ describe("matchGear", () => {
   it("returns both copies when two bodies share a model", () => {
     const { store } = makeStore();
     const m = matchGear({ make: "Leica", model: "M6" }, store);
-    expect(m.camera.instances.map((i) => i.label)).toEqual([
-      "black M6 · Leica M6 · 123",
-      "silver M6 · Leica M6",
-    ]);
+    expect(m.camera.instances.map((i) => i.label)).toEqual(["black M6 · Leica M6 · 123", "silver M6 · Leica M6"]);
   });
   it("matches despite a verbose EXIF make", () => {
     const { store } = makeStore();
     const m = matchGear({ make: "LEICA CAMERA AG", model: "M6" }, store);
     expect(m.camera.instances.length).toBe(2);
+  });
+  it("matches camera and lens EXIF labels through alternative names", () => {
+    const { store } = makeStore();
+    store.catalog.cameraType[0].value.alternativeNames = ["M6 Classic"];
+    store.catalog.lensType[0].value = {
+      ...store.catalog.lensType[0].value,
+      model: "Nikkor 50mm f/1.4 pre-AI",
+      alternativeNames: ["Nikkor 50mm f/1.4 non-AI"],
+    };
+
+    const matched = matchGear(
+      { make: "Leica", model: "M6 Classic", lensMake: "Nikon", lensModel: "Nikkor 50mm f/1.4 non-AI" },
+      store,
+    );
+    expect(matched.camera.instances).toHaveLength(2);
+    expect(matched.lens.instances).toHaveLength(1);
+  });
+  it("matches equivalent lens labels when the AI marker moves", () => {
+    const { store } = makeStore();
+    store.catalog.lensType[0].value = {
+      ...store.catalog.lensType[0].value,
+      make: "Nikon",
+      model: "Nikkor 50mm f/1.4 AI",
+    };
+
+    const matched = matchGear({ lensMake: "Nikon", lensModel: "Nikkor AI 50mm f/1.4" }, store);
+    expect(matched.lens.instances).toHaveLength(1);
   });
   it("reports the exif label but no instances when the gear is not owned", () => {
     const { store } = makeStore();
@@ -139,15 +199,46 @@ describe("savePhotoCapture — frame position on the roll", () => {
 
   it("updates frameIndex in place on an existing capture (stable rkey)", async () => {
     const agent = mockAgent();
-    const existing = { uri: `${PHOTO.replace("social.grain.photo", "app.graycard.photo.capture")}`, cid: "cid0", rkey: "cap1", value: { photo: PHOTO, filmRoll: ROLL, createdAt: "2026-01-01T00:00:00Z" } };
-    await savePhotoCapture(agent, "did:plc:test", PHOTO, { filmRoll: ROLL, frameIndex: 7 }, existing);
+    const existing = {
+      uri: `${PHOTO.replace("social.grain.photo", "app.graycard.photo.capture")}`,
+      cid: "cid0",
+      rkey: "cap1",
+      value: { photo: PHOTO, filmRoll: ROLL, createdAt: "2026-01-01T00:00:00Z" },
+      schemaRuntime: {
+        nativeVersion: "lexicons-v1",
+        viewVersion: "lexicons-v1",
+        chainIds: [],
+      },
+    };
+    const saved = await savePhotoCapture(agent, "did:plc:test", PHOTO, { filmRoll: ROLL, frameIndex: 7 }, existing);
     expect(agent.put).toHaveLength(1);
     expect(agent.put[0].rkey).toBe("cap1");
     expect(agent.put[0].record.frameIndex).toBe(7);
+    expect(saved.schemaRuntime).toBe(existing.schemaRuntime);
   });
 });
 
-import { compareShootsByDate, shootDateKey } from "../src/graycard.js";
+describe("consumable lifecycle write boundary", () => {
+  it("rejects an impossible chronology before enqueuing a write", async () => {
+    const agent = mockAgent();
+    await expect(
+      saveRecord(
+        agent,
+        "did:plc:test",
+        NS.instance.filmRoll,
+        {
+          stock: "at://did:plc:test/app.graycard.catalog.filmStock/stock",
+          loadedAt: "2026-02-01T00:00:00Z",
+          exposedAt: "2026-01-01T00:00:00Z",
+          createdAt: "2026-01-01T00:00:00Z",
+        },
+        null,
+      ),
+    ).rejects.toMatchObject({ name: "ConsumableLifecycleValidationError" });
+    expect(agent.created).toHaveLength(0);
+    expect(agent.put).toHaveLength(0);
+  });
+});
 
 describe("shoot ordering", () => {
   const S = (v) => ({ uri: "at://s", value: v });
@@ -161,7 +252,7 @@ describe("shoot ordering", () => {
       S({ label: "old", startedAt: "2026-01-01T00:00:00Z" }),
       S({ label: "new", startedAt: "2026-06-01T00:00:00Z" }),
       S({ label: "undated" }),
-      S({ label: "mid", createdAt: "2026-03-01T00:00:00Z" }),  // no startedAt -> uses createdAt
+      S({ label: "mid", createdAt: "2026-03-01T00:00:00Z" }), // no startedAt -> uses createdAt
     ];
     shoots.sort(compareShootsByDate);
     expect(shoots.map((s) => s.value.label)).toEqual(["new", "mid", "old", "undated"]);

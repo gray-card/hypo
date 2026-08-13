@@ -124,13 +124,39 @@
       "type": "object",
       "description": "Reference to an asset that belongs to a catalog type: a product photo, a datasheet. Exactly one of url / file / record should be set. A url is preferred: it points at the publisher's own copy, so third-party material (manufacturer product photography, datasheet PDFs) is linked rather than redistributed. Use file only for assets you may lawfully host (your own photograph, a permissively licensed one); use record to point at another atproto record holding the asset.",
       "properties": {
-        "url": { "type": "string", "format": "uri", "maxLength": 2048, "description": "Link to the asset where its publisher hosts it (preferred)." },
-        "file": { "type": "blob", "accept": ["image/png", "image/jpeg", "image/webp", "application/pdf"], "maxSize": 10000000, "description": "The asset itself, uploaded to this repo. Only for content you may lawfully host." },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "Link to the asset where its publisher hosts it (preferred)."
+        },
+        "file": {
+          "type": "blob",
+          "accept": ["image/png", "image/jpeg", "image/webp", "application/pdf"],
+          "maxSize": 10000000,
+          "description": "The asset itself, uploaded to this repo. Only for content you may lawfully host."
+        },
         "record": { "type": "string", "format": "at-uri", "description": "Another atproto record holding the asset." },
-        "mimeType": { "type": "string", "maxLength": 128, "description": "Media type, useful when a url or record does not advertise one." },
-        "title": { "type": "string", "maxLength": 256, "description": "Human label, e.g. \"Tri-X 400 technical data\"." },
-        "source": { "type": "string", "maxLength": 256, "description": "Who published the asset (e.g. \"Eastman Kodak Company\"), for attribution." },
-        "license": { "type": "string", "maxLength": 128, "description": "License or usage terms of the asset, when known." }
+        "mimeType": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Media type, useful when a url or record does not advertise one."
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Human label, e.g. \"Tri-X 400 technical data\"."
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Who published the asset (e.g. \"Eastman Kodak Company\"), for attribution."
+        },
+        "license": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "License or usage terms of the asset, when known."
+        }
       }
     },
     "productDocument": {
@@ -140,16 +166,33 @@
       "properties": {
         "kind": {
           "type": "string",
-          "knownValues": ["technical-data", "manual", "processing-chart", "sds", "service-manual", "catalog", "product-page", "other"]
+          "knownValues": [
+            "technical-data",
+            "manual",
+            "processing-chart",
+            "sds",
+            "service-manual",
+            "catalog",
+            "product-page",
+            "other"
+          ]
         },
         "asset": { "type": "ref", "ref": "#assetRef" },
         "publisher": { "type": "string", "maxLength": 256 },
         "documentNumber": { "type": "string", "maxLength": 128 },
         "revision": { "type": "string", "maxLength": 128 },
         "publishedAt": { "type": "string", "format": "datetime" },
-        "language": { "type": "string", "maxLength": 35, "description": "BCP 47 language tag when known, e.g. en or de-CH." },
+        "language": {
+          "type": "string",
+          "maxLength": 35,
+          "description": "BCP 47 language tag when known, e.g. en or de-CH."
+        },
         "retrievedAt": { "type": "string", "format": "datetime" },
-        "supersedes": { "type": "string", "format": "at-uri", "description": "Older catalog document record superseded by this edition, when one exists." }
+        "supersedes": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "Older catalog document record superseded by this edition, when one exists."
+        }
       }
     },
     "specSource": {
@@ -186,7 +229,16 @@
     },
     "shutterType": {
       "type": "string",
-      "knownValues": ["focal-plane", "leaf", "electronic", "electronic-front-curtain", "global-electronic", "rotary-disc", "guillotine", "other"]
+      "knownValues": [
+        "focal-plane",
+        "leaf",
+        "electronic",
+        "electronic-front-curtain",
+        "global-electronic",
+        "rotary-disc",
+        "guillotine",
+        "other"
+      ]
     },
     "autofocusMode": {
       "type": "string",
@@ -202,29 +254,130 @@
     },
     "lensAutofocusTechnology": {
       "type": "string",
-      "knownValues": ["screw-drive", "dc-motor", "coreless-motor", "ultrasonic-ring", "ultrasonic-micro", "stepping-motor", "linear-motor", "piezoelectric", "manual-focus", "other"]
+      "knownValues": [
+        "screw-drive",
+        "dc-motor",
+        "coreless-motor",
+        "ultrasonic-ring",
+        "ultrasonic-micro",
+        "stepping-motor",
+        "linear-motor",
+        "piezoelectric",
+        "manual-focus",
+        "other"
+      ]
     },
     "filterKind": {
       "type": "string",
-      "knownValues": ["uv", "skylight", "protection", "nd", "nd-variable", "graduated-nd", "polarizer-circular", "polarizer-linear", "color", "gradient-color", "contrast", "warming", "cooling", "infrared", "ir-pass", "ir-cut", "uv-pass", "close-up", "split-diopter", "diffusion", "black-mist", "mist", "soft-focus", "center-spot", "star", "prism", "night", "didymium", "other"]
+      "knownValues": [
+        "uv",
+        "skylight",
+        "protection",
+        "nd",
+        "nd-variable",
+        "graduated-nd",
+        "polarizer-circular",
+        "polarizer-linear",
+        "color",
+        "gradient-color",
+        "contrast",
+        "warming",
+        "cooling",
+        "infrared",
+        "ir-pass",
+        "ir-cut",
+        "uv-pass",
+        "close-up",
+        "split-diopter",
+        "diffusion",
+        "black-mist",
+        "mist",
+        "soft-focus",
+        "center-spot",
+        "star",
+        "prism",
+        "night",
+        "didymium",
+        "other"
+      ]
     },
     "meteringMode": {
       "type": "string",
-      "knownValues": ["matrix", "center-weighted", "spot", "partial", "average", "multi-spot", "highlight-weighted", "unknown", "other"]
+      "knownValues": [
+        "matrix",
+        "center-weighted",
+        "spot",
+        "partial",
+        "average",
+        "multi-spot",
+        "highlight-weighted",
+        "unknown",
+        "other"
+      ]
     },
     "exposureProgram": {
       "type": "string",
-      "knownValues": ["manual", "program", "aperture-priority", "shutter-priority", "creative", "action", "portrait", "landscape", "bulb", "auto", "other"]
+      "knownValues": [
+        "manual",
+        "program",
+        "aperture-priority",
+        "shutter-priority",
+        "creative",
+        "action",
+        "portrait",
+        "landscape",
+        "bulb",
+        "auto",
+        "other"
+      ]
     },
     "captureFormat": {
       "type": "string",
       "description": "The physical format/size of the recorded frame. Open list — grouped: film roll, sheet, instant, cine, digital sensor.",
       "knownValues": [
-        "135", "half-frame", "120", "220", "127", "126", "110", "620", "828", "70mm", "aps", "16mm-still", "minox", "disc",
-        "4x5", "5x7", "8x10", "9x12cm", "13x18cm", "6.5x9cm", "11x14", "ultra-large",
-        "instax-mini", "instax-square", "instax-wide", "polaroid-i-type", "polaroid-600", "polaroid-sx70", "polaroid-spectra", "peel-apart", "instant-8x10",
-        "super8", "regular8", "16mm-cine", "35mm-cine", "65mm",
-        "full-frame-digital", "aps-c-digital", "aps-h-digital", "medium-format-digital", "micro-four-thirds-digital", "one-inch-digital", "foveon-digital",
+        "135",
+        "half-frame",
+        "120",
+        "220",
+        "127",
+        "126",
+        "110",
+        "620",
+        "828",
+        "70mm",
+        "aps",
+        "16mm-still",
+        "minox",
+        "disc",
+        "4x5",
+        "5x7",
+        "8x10",
+        "9x12cm",
+        "13x18cm",
+        "6.5x9cm",
+        "11x14",
+        "ultra-large",
+        "instax-mini",
+        "instax-square",
+        "instax-wide",
+        "polaroid-i-type",
+        "polaroid-600",
+        "polaroid-sx70",
+        "polaroid-spectra",
+        "peel-apart",
+        "instant-8x10",
+        "super8",
+        "regular8",
+        "16mm-cine",
+        "35mm-cine",
+        "65mm",
+        "full-frame-digital",
+        "aps-c-digital",
+        "aps-h-digital",
+        "medium-format-digital",
+        "micro-four-thirds-digital",
+        "one-inch-digital",
+        "foveon-digital",
         "other"
       ]
     },
@@ -280,15 +433,53 @@
     },
     "scannerKind": {
       "type": "string",
-      "knownValues": ["flatbed", "dedicated-film", "drum", "lab-minilab", "dslr-copy-stand", "mirrorless-copy-stand", "smartphone", "other"]
+      "knownValues": [
+        "flatbed",
+        "dedicated-film",
+        "drum",
+        "lab-minilab",
+        "dslr-copy-stand",
+        "mirrorless-copy-stand",
+        "smartphone",
+        "other"
+      ]
     },
     "developerForm": {
       "type": "string",
       "knownValues": ["liquid-concentrate", "liquid-ready", "powder", "tablet", "kit", "other"]
     },
+    "chemistryProductKind": {
+      "type": "string",
+      "description": "How a photographic-chemistry product is packaged. This is independent of the chemical functions it performs.",
+      "knownValues": ["single-chemical", "multi-part-chemical", "process-kit", "other"]
+    },
     "chemistryRole": {
       "type": "string",
-      "knownValues": ["pre-soak", "developer", "first-developer", "color-developer", "reversal-bath", "stop", "bleach", "fixer", "blix", "monobath", "stabilizer", "wash-aid", "hardener", "toner", "wetting-agent", "final-rinse", "other"]
+      "description": "One atomic function performed by a photographic chemical or bath. Combined baths carry more than one role.",
+      "knownValues": [
+        "pre-soak",
+        "film-developer",
+        "paper-developer",
+        "first-developer",
+        "color-developer",
+        "reversal-bath",
+        "stop",
+        "bleach",
+        "fixer",
+        "conditioner",
+        "pre-bleach",
+        "stabilizer",
+        "wash-aid",
+        "clearing-agent",
+        "hardener",
+        "toner",
+        "wetting-agent",
+        "final-rinse",
+        "sensitizer",
+        "intensifier",
+        "reducer",
+        "other"
+      ]
     }
   }
 }

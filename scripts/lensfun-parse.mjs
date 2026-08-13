@@ -26,13 +26,15 @@ export function parseLensSpecs(model) {
   const focalLengthMin = f ? parseFloat(f[1]) : null;
   const focalLengthMax = f ? (f[2] ? parseFloat(f[2]) : focalLengthMin) : null;
   const maxAperture = a ? parseFloat(a[1]) : null;
-  const lensTypeKind =
-    focalLengthMin && focalLengthMax && focalLengthMin !== focalLengthMax ? "zoom" : "prime";
+  const lensTypeKind = focalLengthMin && focalLengthMax && focalLengthMin !== focalLengthMax ? "zoom" : "prime";
   return { focalLengthMin, focalLengthMax, maxAperture, lensTypeKind };
 }
 
 const MOUNT_ALIAS = {
-  "Nikon F AF": "Nikon F", "Nikon F AI-S": "Nikon F", "Canon EF-S": "Canon EF", "Sony E-mount": "Sony E",
+  "Nikon F AF": "Nikon F",
+  "Nikon F AI-S": "Nikon F",
+  "Canon EF-S": "Canon EF",
+  "Sony E-mount": "Sony E",
 };
 export const mapMount = (m) => (m ? MOUNT_ALIAS[m] || m : null);
 
@@ -48,8 +50,7 @@ export function stripMakerPrefix(model, maker) {
 
 // non-body generic markers lensfun ships so lenses can calibrate to a format.
 export const isGenericCamera = (maker, model) =>
-  /^generic$/i.test(maker) ||
-  /film:\s*full frame|crop-factor|^generic\b/i.test(model);
+  /^generic$/i.test(maker) || /film:\s*full frame|crop-factor|^generic\b/i.test(model);
 
 // -- exif model code -> human-friendly camera name ----------------------------
 
@@ -109,9 +110,12 @@ export function parseLenses(xml) {
     if (!model || /film:/i.test(model)) continue;
     const mounts = [...new Set(allTags(block, "mount").map(mapMount).filter(Boolean))];
     out.push({
-      make: maker || model.split(" ")[0], model,
-      mount: mounts[0] || null, mounts,
-      ...parseLensSpecs(model), wikidata: null,
+      make: maker || model.split(" ")[0],
+      model,
+      mount: mounts[0] || null,
+      mounts,
+      ...parseLensSpecs(model),
+      wikidata: null,
     });
   }
   return out;
@@ -128,9 +132,14 @@ export function parseCameras(xml) {
     const model = prettyCameraModel(maker, exifModel);
     const crop = parseFloat(canonicalTag(block, "cropfactor") || "1");
     out.push({
-      make: maker, model, exifModel, category: "digital",
-      format: cropToFormat(crop), cropFactor: crop,
-      mount: mapMount(canonicalTag(block, "mount")), wikidata: null,
+      make: maker,
+      model,
+      exifModel,
+      category: "digital",
+      format: cropToFormat(crop),
+      cropFactor: crop,
+      mount: mapMount(canonicalTag(block, "mount")),
+      wikidata: null,
     });
   }
   return out;

@@ -14,8 +14,13 @@ function mockFetch(map) {
 }
 
 describe("constellation client (the only place the unstable API is touched)", () => {
-  beforeEach(() => { calls.length = 0; localStorage.clear(); });
-  afterEach(() => { vi.restoreAllMocks(); });
+  beforeEach(() => {
+    calls.length = 0;
+    localStorage.clear();
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   it("countSetups reads {total} and queries the anchor/collection/path", async () => {
     global.fetch = mockFetch([["/links/count", { total: 42 }]]);
@@ -34,14 +39,19 @@ describe("constellation client (the only place the unstable API is touched)", ()
   });
 
   it("listSetupPage maps linking_records to at-uris, defaults collection, passes cursor+limit", async () => {
-    global.fetch = mockFetch([["/links?", {
-      total: 2,
-      linking_records: [
-        { did: "did:plc:a", collection: "app.graycard.setup", rkey: "r1" },
-        { did: "did:plc:b", rkey: "r2" }, // collection omitted -> defaults to the setup nsid
+    global.fetch = mockFetch([
+      [
+        "/links?",
+        {
+          total: 2,
+          linking_records: [
+            { did: "did:plc:a", collection: "app.graycard.setup", rkey: "r1" },
+            { did: "did:plc:b", rkey: "r2" }, // collection omitted -> defaults to the setup nsid
+          ],
+          cursor: "next123",
+        },
       ],
-      cursor: "next123",
-    }]]);
+    ]);
     const page = await listSetupPage("cur0", 25);
     expect(page.items).toEqual([
       { did: "did:plc:a", collection: "app.graycard.setup", rkey: "r1", uri: "at://did:plc:a/app.graycard.setup/r1" },
@@ -53,7 +63,9 @@ describe("constellation client (the only place the unstable API is touched)", ()
   });
 
   it("drops rows missing did or rkey and normalizes a null cursor", async () => {
-    global.fetch = mockFetch([["/links?", { total: 1, linking_records: [{ did: "did:plc:a" }, { rkey: "x" }], cursor: null }]]);
+    global.fetch = mockFetch([
+      ["/links?", { total: 1, linking_records: [{ did: "did:plc:a" }, { rkey: "x" }], cursor: null }],
+    ]);
     const page = await listSetupPage();
     expect(page.items).toEqual([]);
     expect(page.cursor).toBeNull();

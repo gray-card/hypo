@@ -1,0 +1,83 @@
+import { lexiconSidebarItems } from "./generated/lexiconSidebar.mjs";
+
+/** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
+const sidebars = {
+  docsSidebar: [
+    {
+      type: "category",
+      label: "Tutorials",
+      link: { type: "doc", id: "tutorials/index" },
+      items: ["tutorials/getting-started", "tutorials/publish-to-discover", "tutorials/import-and-exif"],
+    },
+    {
+      type: "category",
+      label: "Developer tutorials",
+      link: { type: "doc", id: "tutorials/developer" },
+      collapsed: true,
+      items: ["tutorials/schema-development-setup", "tutorials/first-record", "tutorials/run-against-fixture-pds"],
+    },
+    {
+      type: "category",
+      label: "How-to guides",
+      link: { type: "doc", id: "how-to/index" },
+      items: [
+        "how-to/log-offline",
+        "how-to/create-and-run-a-workflow",
+        "how-to/time-c41",
+        "how-to/record-push-pull-processing",
+        "how-to/write-batch-rules",
+        "how-to/ground-a-scene",
+        "how-to/contribute-catalog-data",
+        "how-to/evolve-a-lexicon",
+        "how-to/self-host",
+        "how-to/run-docs-locally",
+        "how-to/regenerate-lexicons",
+        "how-to/validate-a-record",
+        "how-to/build-docs",
+        "how-to/make-breaking-lexicon-change",
+      ],
+    },
+    {
+      type: "category",
+      label: "Explanation",
+      link: { type: "doc", id: "explanation/index" },
+      items: [
+        "explanation/no-backend",
+        "explanation/type-instance-event-artifact",
+        "explanation/workflow-records",
+        "explanation/swap-concurrency",
+        "explanation/provenance-tiers",
+        "explanation/timer-wall-clock",
+        "explanation/measures-and-exif",
+        "explanation/licensing",
+        "explanation/schema-versions",
+      ],
+    },
+    {
+      type: "category",
+      label: "Reference",
+      link: { type: "doc", id: "reference/index" },
+      items: [
+        "reference/schema-status",
+        "bundle-format",
+        "reference/catalog-data-format",
+        "reference/oauth-scopes",
+        "reference/routes",
+        "reference/accessibility-audit",
+        "reference/storage-schema",
+        "reference/fixture-pds-api",
+        "reference/lexicon-conventions",
+        "reference/generated-package",
+        {
+          type: "category",
+          label: "Lexicon NSIDs",
+          link: { type: "doc", id: "reference/lexicons/index" },
+          collapsed: true,
+          items: lexiconSidebarItems,
+        },
+      ],
+    },
+  ],
+};
+
+export default sidebars;

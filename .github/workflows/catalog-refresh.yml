@@ -1,0 +1,43 @@
+name: Refresh gear catalog
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: catalog-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Refresh catalog from lensfun and Wikidata
+        run: node scripts/build-catalog.mjs --fetch --wikidata
+      - name: Summarize catalog changes
+        run: node scripts/catalog-diff-summary.mjs --out /tmp/catalog-refresh-body.md
+      - run: npm run check:lexicons
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run lint
+      - run: npm run build
+      - run: npm run size
+      - name: Open catalog refresh pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/catalog-refresh
+          commit-message: "chore(catalog): refresh lensfun and Wikidata data"
+          delete-branch: true
+          title: "chore(catalog): refresh lensfun and Wikidata data"
+          body-path: /tmp/catalog-refresh-body.md

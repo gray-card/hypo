@@ -1,64 +1,100 @@
-name: Deploy Hypo to GitHub Pages
+name: Release Hypo
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
-  schedule:
-    # weekly: refresh the lensfun + Wikidata gear catalogs, then redeploy
-    - cron: "0 6 * * 1"
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
+    tags:
+      - "v*"
 
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build:
+  validate-tag:
+    name: Validate release tag
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      commit: ${{ steps.release.outputs.commit }}
+      version: ${{ steps.release.outputs.version }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-
-      # On the weekly cron (or manual run) pull fresh lensfun data, resolve
-      # Wikidata QIDs, and commit any changes back to main. The build below
-      # uses the freshly generated files even if the commit itself is a no-op.
-      - name: Refresh gear catalog from lensfun + Wikidata
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: node scripts/build-catalog.mjs --fetch --wikidata
-      - name: Commit refreshed catalog
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+          fetch-depth: 0
+      - name: Fetch main
+        run: git fetch --no-tags origin main:refs/remotes/origin/main
+      - id: release
+        name: Verify the tag, package version, and main ancestry
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          git config user.name "Hypo Bot"
-          git config user.email "bot@users.noreply.github.com"
-          git add src/data/lensfun-lenses.json src/data/lensfun-cameras.json
-          if ! git diff --cached --quiet; then
-            git commit -m "chore(catalog): weekly lensfun + Wikidata refresh ($(date -u +%F))"
-            git push
-          else
-            echo "catalog unchanged"
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Release tags must use semantic versioning (for example, v1.0.0)." >&2
+            exit 1
           fi
 
-      - run: npm run build
-      - run: cp dist/index.html dist/404.html
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
+          PACKAGE_VERSION="$(node -p 'require("./package.json").version')"
+          if [[ "$RELEASE_TAG" != "v$PACKAGE_VERSION" ]]; then
+            echo "Tag $RELEASE_TAG does not match package version $PACKAGE_VERSION." >&2
+            exit 1
+          fi
+
+          RELEASE_COMMIT="$(git rev-list -n 1 "$RELEASE_TAG")"
+          if ! git merge-base --is-ancestor "$RELEASE_COMMIT" origin/main; then
+            echo "Tagged commit $RELEASE_COMMIT is not contained in origin/main." >&2
+            exit 1
+          fi
+
+          echo "commit=$RELEASE_COMMIT" >> "$GITHUB_OUTPUT"
+          echo "version=$PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
+
+  gates:
+    name: Run release gates
+    needs: validate-tag
+    permissions:
+      contents: read
+    uses: ./.github/workflows/ci.yml
+    with:
+      package_pages: true
 
   deploy:
-    needs: build
+    name: Deploy GitHub Pages
+    needs: gates
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  github-release:
+    name: Publish GitHub Release
+    needs:
+      - validate-tag
+      - deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create or repair the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_VERSION: ${{ needs.validate-tag.outputs.version }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" --title "Hypo $RELEASE_VERSION"
+          else
+            gh release create "$RELEASE_TAG" --verify-tag --generate-notes --title "Hypo $RELEASE_VERSION"
+          fi
+
+          echo "### Hypo $RELEASE_VERSION released" >> "$GITHUB_STEP_SUMMARY"
+          echo "The tagged main commit passed all release gates, was deployed to GitHub Pages, and has a GitHub Release." >> "$GITHUB_STEP_SUMMARY"

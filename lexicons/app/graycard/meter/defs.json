@@ -1,0 +1,46 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.meter.defs",
+  "defs": {
+    "meterGeometry": {
+      "type": "string",
+      "description": "How light was gathered for a reading. Incident measures light falling on the subject (dome integrates 3D form; flat disc measures a plane); reflected measures light returning from the scene, either wide-field or through spot optics.",
+      "knownValues": ["incident-dome", "incident-flat", "reflected-average", "reflected-spot"]
+    },
+    "lightKind": {
+      "type": "string",
+      "description": "The temporal character of the measured light.",
+      "knownValues": ["ambient", "flash", "flash-plus-ambient"]
+    },
+    "priorityMode": {
+      "type": "string",
+      "description": "Which exposure variable the meter solved for: aperture priority solves shutter, shutter priority solves aperture, iso priority holds time and aperture and solves sensitivity; ev reports EV only.",
+      "knownValues": ["aperture-priority", "shutter-priority", "iso-priority", "ev-only"]
+    },
+    "flashSyncMode": {
+      "type": "string",
+      "description": "How a flash measurement was triggered/integrated.",
+      "knownValues": ["cordless", "cord", "radio", "hss", "multi-cumulative"]
+    },
+    "readingRole": {
+      "type": "string",
+      "description": "Role of this reading within a multi-reading workflow (spot memory sets, averaging, contrast evaluation). 'single' is a standalone reading; members of a set share a seriesId.",
+      "knownValues": ["single", "member", "average", "shadow", "highlight", "midtone"]
+    },
+    "sensorPath": {
+      "type": "string",
+      "description": "For camera-based (phone) meters: which measurement path produced the value. 'ae-metadata' derives EV from the camera's auto-exposure state; 'raw-patch' integrates linear RAW pixels over the spot patch; 'processed-patch' estimates from tone-mapped frames; 'dedicated-cell' is a hardware photocell (handheld meters).",
+      "knownValues": ["dedicated-cell", "ae-metadata", "raw-patch", "processed-patch", "ambient-sensor"]
+    },
+    "cameraModule": {
+      "type": "string",
+      "description": "Phone camera module used for a camera-based reading.",
+      "knownValues": ["front", "ultra-wide", "wide", "telephoto"]
+    },
+    "calibrationReference": {
+      "type": "string",
+      "description": "What a calibration profile was derived against.",
+      "knownValues": ["reference-meter", "sunny-16", "known-illuminant", "factory", "manufacturer-spec"]
+    }
+  }
+}

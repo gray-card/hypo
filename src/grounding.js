@@ -10,13 +10,17 @@
 
 import { searchConcepts, refineConceptRanking } from "./data/wikidata.js";
 
-const norm = (s) => String(s || "").trim().toLowerCase();
+const norm = (s) =>
+  String(s || "")
+    .trim()
+    .toLowerCase();
 // already grounded if the id is a Wikidata QID (bare "Q123" or "wd:Q123")
 const isGrounded = (id) => /^(wd:)?Q\d+$/i.test(String(id || ""));
 
 // distinct free-text type ids used by nodes and by edges (grounded ones skipped)
 export function distinctTerms(analysis) {
-  const nodes = new Set(), edges = new Set();
+  const nodes = new Set(),
+    edges = new Set();
   for (const n of analysis?.nodes || []) if (n.type?.id && !isGrounded(n.type.id)) nodes.add(n.type.id);
   for (const e of analysis?.edges || []) if (e.type?.id && !isGrounded(e.type.id)) edges.add(e.type.id);
   return { nodes: [...nodes], edges: [...edges] };
@@ -26,14 +30,16 @@ export function distinctTerms(analysis) {
 // `suggested` is the UNIQUE exact-label match (confident); null when ambiguous or absent.
 export async function lookupGroundings(terms) {
   const out = new Map();
-  await Promise.all((terms || []).map(async (text) => {
-    // rank a deeper list than we show: an object detector emits ordinary nouns
-    // ("post", "bat", "trunk"), whose plain sense Wikidata often buries.
-    const deep = await searchConcepts(text, 20).catch(() => []);
-    const candidates = (await refineConceptRanking(deep, text)).slice(0, 6);
-    const exact = candidates.filter((c) => norm(c.label) === norm(text));
-    out.set(text, { candidates, suggested: exact.length === 1 ? exact[0] : null });
-  }));
+  await Promise.all(
+    (terms || []).map(async (text) => {
+      // rank a deeper list than we show: an object detector emits ordinary nouns
+      // ("post", "bat", "trunk"), whose plain sense Wikidata often buries.
+      const deep = await searchConcepts(text, 20).catch(() => []);
+      const candidates = (await refineConceptRanking(deep, text)).slice(0, 6);
+      const exact = candidates.filter((c) => norm(c.label) === norm(text));
+      out.set(text, { candidates, suggested: exact.length === 1 ? exact[0] : null });
+    }),
+  );
   return out;
 }
 

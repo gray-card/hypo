@@ -9,13 +9,24 @@
 
 import { SETUP_NSID, HYPO_REGISTRY } from "./registry.js";
 import { parseAtUri, listRecords } from "./grain.js";
+import { repoClient } from "./pds.js";
+import { prepareSchemaWrite } from "./schemaRuntime.js";
 
 // the user's own published setups, newest-first (loaded straight from their repo,
 // no Constellation needed — you already know whose records to read).
 export async function listMySetups(agent, did) {
-  const records = await listRecords(agent, did, SETUP_NSID);
+  // Publication status is user-controlled external state. Refresh the snapshot
+  // so a publish/unpublish performed by another session is visible immediately;
+  // listRecords still falls back to the durable cache while offline.
+  const records = await listRecords(agent, did, SETUP_NSID, { refresh: true });
   return records
-    .map((r) => ({ uri: r.uri, cid: r.cid, rkey: parseAtUri(r.uri).rkey, value: r.value }))
+    .map((r) => ({
+      uri: r.uri,
+      cid: r.cid,
+      rkey: parseAtUri(r.uri).rkey,
+      value: r.value,
+      schemaRuntime: r.schemaRuntime,
+    }))
     .sort((a, b) => (b.value.createdAt || "").localeCompare(a.value.createdAt || ""));
 }
 
@@ -43,19 +54,31 @@ export async function publishSetup(agent, did, input = {}, existing = null) {
   if (Array.isArray(input.gear) && input.gear.length) value.gear = input.gear.slice(0, 200);
 
   if (existing) {
-    const res = await agent.com.atproto.repo.putRecord({
-      repo: did, collection: SETUP_NSID, rkey: existing.rkey, record: value,
-      swapRecord: existing.cid, validate: false,
+    const prepared = await prepareSchemaWrite(SETUP_NSID, value, existing);
+    const result = await repoClient(agent).put({
+      repo: did,
+      collection: SETUP_NSID,
+      rkey: existing.rkey,
+      record: { ...prepared, $type: SETUP_NSID },
+      swapRecord: existing.cid,
     });
-    return { uri: existing.uri, cid: res.data.cid, rkey: existing.rkey, value };
+    return {
+      uri: existing.uri,
+      cid: result.cid,
+      rkey: existing.rkey,
+      value,
+      schemaRuntime: existing.schemaRuntime,
+    };
   }
-  const res = await agent.com.atproto.repo.createRecord({
-    repo: did, collection: SETUP_NSID, record: value, validate: false,
+  const result = await repoClient(agent).create({
+    repo: did,
+    collection: SETUP_NSID,
+    record: value,
   });
-  return { uri: res.data.uri, cid: res.data.cid, rkey: parseAtUri(res.data.uri).rkey, value };
+  return { uri: result.uri, cid: result.cid, rkey: parseAtUri(result.uri).rkey, value };
 }
 
 // remove a published setup (unpublish from Discover).
 export async function unpublishSetup(agent, did, rkey) {
-  await agent.com.atproto.repo.deleteRecord({ repo: did, collection: SETUP_NSID, rkey });
+  await repoClient(agent).delete({ repo: did, collection: SETUP_NSID, rkey });
 }

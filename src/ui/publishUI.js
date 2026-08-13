@@ -12,21 +12,33 @@ import { getMySetup, publishSetup, unpublishSetup } from "../publish.js";
 export async function openPublishSetup(agent, did, { handle = null, existing = undefined, onChange } = {}) {
   let current = existing;
   if (current === undefined) {
-    try { current = await getMySetup(agent, did); }
-    catch { current = null; }   // offline: treat as not yet published
+    try {
+      current = await getMySetup(agent, did);
+    } catch {
+      current = null;
+    } // offline: treat as not yet published
   }
 
   const nameInput = el("input", {
-    type: "text", maxlength: "100",
+    type: "text",
+    maxlength: "100",
     value: current?.value?.name || (handle ? `@${handle}'s setup` : "My setup"),
     placeholder: "My setup",
   });
-  const summaryInput = el("textarea", { rows: "3", maxlength: "1000", placeholder: "What's in this setup? (optional)" }, current?.value?.summary || "");
+  const summaryInput = el(
+    "textarea",
+    { rows: "3", maxlength: "1000", placeholder: "What's in this setup? (optional)" },
+    current?.value?.summary || "",
+  );
 
   const body = [
-    el("p", { class: "muted small" }, current
-      ? "Your setup is listed in cross-network Discover. Anyone can find it and view your public gear."
-      : "List your public gear setup in cross-network Discover so other photographers can find it. It links only to your public profile; no private data is shared."),
+    el(
+      "p",
+      { class: "muted small" },
+      current
+        ? "Your setup is listed in cross-network Discover. Anyone can find it and view your public gear."
+        : "List your public gear setup in cross-network Discover so other photographers can find it. It links only to your public profile; no private data is shared.",
+    ),
     field("Name", nameInput),
     el("label", { class: "field" }, [el("span", {}, "Summary"), summaryInput]),
   ];
@@ -41,15 +53,22 @@ export async function openPublishSetup(agent, did, { handle = null, existing = u
         toast("Removed from Discover", "ok");
         onChange?.(null);
         modal?.close();
-      } catch (err) { toast(err.message || String(err), "err", 4200); }
+      } catch (err) {
+        toast(err.message || String(err), "err", 4200);
+      }
     });
     body.push(el("div", { class: "row subtle-actions" }, [unpub]));
   }
 
-  modal = openModal(current ? "Edit profile" : "Publish to Discover", body, async () => {
-    const saved = await publishSetup(agent, did, { name: nameInput.value, summary: summaryInput.value }, current);
-    onChange?.(saved);
-  }, { saveLabel: current ? "Save changes" : "Publish to Discover" });
+  modal = openModal(
+    current ? "Edit profile" : "Publish to Discover",
+    body,
+    async () => {
+      const saved = await publishSetup(agent, did, { name: nameInput.value, summary: summaryInput.value }, current);
+      onChange?.(saved);
+    },
+    { saveLabel: current ? "Save changes" : "Publish to Discover" },
+  );
 
   return modal;
 }

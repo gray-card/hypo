@@ -1,7 +1,16 @@
 import { describe, it, expect } from "vitest";
 import {
-  canonicalTag, allTags, parseLensSpecs, mapMount, cleanMaker, stripMakerPrefix,
-  isGenericCamera, cropToFormat, prettyCameraModel, parseLenses, parseCameras, buildCatalog,
+  canonicalTag,
+  parseLensSpecs,
+  mapMount,
+  cleanMaker,
+  stripMakerPrefix,
+  isGenericCamera,
+  cropToFormat,
+  prettyCameraModel,
+  parseLenses,
+  parseCameras,
+  buildCatalog,
 } from "../scripts/lensfun-parse.mjs";
 
 // a realistic slice of the lensfun XML format
@@ -58,7 +67,12 @@ describe("canonicalTag", () => {
 
 describe("parseLensSpecs", () => {
   it("parses a prime", () => {
-    expect(parseLensSpecs("Nikkor 50mm f/1.8")).toEqual({ focalLengthMin: 50, focalLengthMax: 50, maxAperture: 1.8, lensTypeKind: "prime" });
+    expect(parseLensSpecs("Nikkor 50mm f/1.8")).toEqual({
+      focalLengthMin: 50,
+      focalLengthMax: 50,
+      maxAperture: 1.8,
+      lensTypeKind: "prime",
+    });
   });
   it("parses a zoom with an aperture range", () => {
     const s = parseLensSpecs("AF-S 24-70mm f/2.8");
@@ -68,7 +82,12 @@ describe("parseLensSpecs", () => {
     expect(s.lensTypeKind).toBe("zoom");
   });
   it("copes with no parseable spec", () => {
-    expect(parseLensSpecs("Some Mystery Lens")).toEqual({ focalLengthMin: null, focalLengthMax: null, maxAperture: null, lensTypeKind: "prime" });
+    expect(parseLensSpecs("Some Mystery Lens")).toEqual({
+      focalLengthMin: null,
+      focalLengthMax: null,
+      maxAperture: null,
+      lensTypeKind: "prime",
+    });
   });
 });
 
@@ -134,7 +153,7 @@ describe("parseLenses", () => {
     expect(fifty).toBeTruthy();
     expect(fifty.model).toBe("Nikon AF Nikkor 50mm f/1.8D");
     expect(fifty.make).toBe("Nikon");
-    expect(fifty.mount).toBe("Nikon F");            // "Nikon F AF" aliased
+    expect(fifty.mount).toBe("Nikon F"); // "Nikon F AF" aliased
     expect(fifty.maxAperture).toBe(1.8);
     expect(fifty.lensTypeKind).toBe("prime");
   });

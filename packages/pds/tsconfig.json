@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "../../node_modules/.cache/typescript/pds",
+    "rootDir": "src",
+    "tsBuildInfoFile": "../../node_modules/.cache/typescript/pds/tsconfig.tsbuildinfo"
+  },
+  "references": [{ "path": "../lexicon" }],
+  "include": ["src/**/*.ts", "src/**/*.js"]
+}

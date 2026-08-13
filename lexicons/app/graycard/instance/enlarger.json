@@ -7,10 +7,7 @@
       "key": "tid",
       "record": {
         "type": "object",
-        "required": [
-          "type",
-          "createdAt"
-        ],
+        "required": ["type", "createdAt"],
         "properties": {
           "type": {
             "type": "string",
@@ -47,11 +44,7 @@
           },
           "image": {
             "type": "blob",
-            "accept": [
-              "image/png",
-              "image/jpeg",
-              "image/webp"
-            ],
+            "accept": ["image/png", "image/jpeg", "image/webp"],
             "maxSize": 3000000,
             "description": "Optional user photo of this specific item; falls back to the catalog type's stock image."
           }

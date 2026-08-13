@@ -5,13 +5,13 @@
     "step": {
       "type": "object",
       "description": "One chemical bath in a multi-step process (e.g. C-41 developer/blix/stabilizer, E-6 first/color developer).",
-      "required": [
-        "role"
-      ],
+      "required": ["roles"],
       "properties": {
-        "role": {
-          "type": "ref",
-          "ref": "app.graycard.defs#chemistryRole"
+        "roles": {
+          "type": "array",
+          "maxLength": 16,
+          "description": "Atomic functions performed in this bath step.",
+          "items": { "type": "ref", "ref": "app.graycard.defs#chemistryRole" }
         },
         "chemistry": {
           "type": "string",
@@ -58,14 +58,11 @@
     },
     "main": {
       "type": "record",
-      "description": "One development event. References developer/chemistry and optionally film roll instances. steps captures the ordered bath sequence for multi-step chemistry.",
+      "description": "One development event. References photographic chemistry and optionally film roll instances. steps captures the ordered bath sequence for multi-step chemistry.",
       "key": "tid",
       "record": {
         "type": "object",
-        "required": [
-          "process",
-          "createdAt"
-        ],
+        "required": ["process", "createdAt"],
         "properties": {
           "recipe": {
             "type": "string",
@@ -82,15 +79,10 @@
             "ref": "app.graycard.defs#specSource",
             "description": "Exact source location supporting the selected processing values."
           },
-          "developer": {
-            "type": "string",
-            "format": "at-uri",
-            "description": "app.graycard.instance.developer (working solution)."
-          },
           "chemistry": {
             "type": "string",
             "format": "at-uri",
-            "description": "app.graycard.instance.chemistry (primary working solution)."
+            "description": "app.graycard.instance.chemistry used as the primary developer or multi-role working solution."
           },
           "filmRolls": {
             "type": "array",
