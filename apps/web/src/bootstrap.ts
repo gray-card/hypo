@@ -126,6 +126,8 @@ export function createAppBootstrap(services: AppBootstrapServices) {
   let routeRenderRevision = 0;
   let autoFlushRevision = 0;
   let disposeAutoFlush = (): void => {};
+  let onboardingActive = false;
+  let onboardingOpening: Promise<unknown> | null = null;
 
   const stopAutoFlush = (): void => {
     disposeAutoFlush();
@@ -190,21 +192,40 @@ export function createAppBootstrap(services: AppBootstrapServices) {
     }
   };
 
-  const startOnboarding = async (): Promise<unknown> => {
-    const onboarding = await services.loadOnboarding();
-    const session = services.session();
-    return onboarding.openOnboarding({
-      agent: session.agent,
-      did: session.did,
-      onDone: (destination = "setup") => {
-        if (destination.startsWith("setup-")) {
-          services.setLibraryTab(destination.slice("setup-".length));
-          services.navigateSection("setup");
-        } else {
-          services.navigateSection(destination);
-        }
-      },
-    });
+  const startOnboarding = (): Promise<unknown> => {
+    if (onboardingActive) return Promise.resolve(undefined);
+    if (onboardingOpening) return onboardingOpening;
+
+    const opening = (async () => {
+      const onboarding = await services.loadOnboarding();
+      const session = services.session();
+      onboardingActive = true;
+      try {
+        return await onboarding.openOnboarding({
+          agent: session.agent,
+          did: session.did,
+          onDone: (destination = "setup") => {
+            onboardingActive = false;
+            if (destination.startsWith("setup-")) {
+              services.setLibraryTab(destination.slice("setup-".length));
+              services.navigateSection("setup");
+            } else {
+              services.navigateSection(destination);
+            }
+          },
+        });
+      } catch (error) {
+        onboardingActive = false;
+        throw error;
+      }
+    })();
+
+    onboardingOpening = opening;
+    const clearOpening = () => {
+      if (onboardingOpening === opening) onboardingOpening = null;
+    };
+    void opening.then(clearOpening, clearOpening);
+    return opening;
   };
 
   const maybeStartOnboarding = async (): Promise<void> => {

@@ -191,6 +191,8 @@ test("a seeded roll and shoot keep one of three shots queued until reconnection"
 test("offline gear add and edit flush one write for each user mutation", async ({ page, context, request }) => {
   const writes = trackRepoWrites(page);
   await login(page);
+  const cameraRow = page.locator("#library-body .gear-row").filter({ hasText: "black body" });
+  await expect(cameraRow).toBeVisible();
   await setBrowserOffline(page, context, true);
 
   await page.getByRole("button", { name: "Add camera", exact: true }).click();
@@ -203,7 +205,6 @@ test("offline gear add and edit flush one write for each user mutation", async (
   await expect.poll(() => writes.length).toBe(0);
   await closeIfOpen(addDialog);
 
-  const cameraRow = page.locator("#library-body .gear-row").filter({ hasText: "black body" });
   await cameraRow.getByRole("button", { name: "Edit", exact: true }).click();
   const editDialog = page.getByRole("dialog", { name: "Edit camera" });
   await editDialog.getByLabel(/^Nickname/).fill("offline edited body");
