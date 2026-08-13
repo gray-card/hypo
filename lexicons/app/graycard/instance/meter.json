@@ -1,0 +1,45 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.meter",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "An owned metering instrument: a handheld meter referencing its catalog.meterType, or a phone acting as a meter (kind 'phone-camera', identified by deviceModel). Instance conventions follow the other instance.* records. Calibration state lives in app.graycard.meter.calibration records that reference this instance, so recalibration never rewrites gear identity.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["createdAt"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.catalog.meterType (handheld meters and cataloged apps)."
+          },
+          "kind": {
+            "type": "string",
+            "knownValues": ["handheld", "phone-camera", "in-camera", "app"],
+            "description": "What sort of instrument this is. 'in-camera' lets a camera body's own meter be cited as a reading source."
+          },
+          "camera": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "For kind 'in-camera': the app.graycard.instance.camera whose built-in meter this is."
+          },
+          "deviceModel": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "For phone meters: hardware identifier, e.g. 'iPhone17,2'."
+          },
+          "nickname": { "type": "string", "maxLength": 64 },
+          "serial": { "type": "string", "maxLength": 64 },
+          "acquiredAt": { "type": "string", "format": "datetime" },
+          "status": { "type": "string", "knownValues": ["in-use", "backup", "loaned", "sold", "retired", "broken"] },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "note": { "type": "string", "maxLength": 1000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

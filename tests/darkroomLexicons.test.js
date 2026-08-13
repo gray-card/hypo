@@ -7,12 +7,17 @@ const load = (path) => JSON.parse(readFileSync(join(ROOT, path), "utf8"));
 const props = (path) => load(path).defs.main.record.properties;
 
 describe("structured darkroom catalog lexicons", () => {
-  it("keeps every new field optional for existing records", () => {
+  it("requires identity and atomic roles while keeping technical details optional", () => {
     expect(load("catalog/filmStock.json").defs.main.record.required).toEqual(["name", "createdAt"]);
-    expect(load("catalog/developerType.json").defs.main.record.required).toEqual(["name", "process", "createdAt"]);
-    expect(load("catalog/chemistryType.json").defs.main.record.required).toEqual(["name", "role", "createdAt"]);
+    expect(load("catalog/chemistryType.json").defs.main.record.required).toEqual(["name", "roles", "createdAt"]);
     expect(load("catalog/devRecipe.json").defs.main.record.required).toEqual([
-      "developerMake", "developerName", "filmMake", "filmName", "process", "temps", "source",
+      "developerMake",
+      "developerName",
+      "filmMake",
+      "filmName",
+      "process",
+      "temps",
+      "source",
     ]);
     expect(load("process/developSession.json").defs.main.record.required).toEqual(["process", "createdAt"]);
   });
@@ -21,41 +26,85 @@ describe("structured darkroom catalog lexicons", () => {
     const lex = load("catalog/filmStock.json");
     const p = lex.defs.main.record.properties;
     for (const field of [
-      "variants", "reciprocityPoints", "resolvingPowerTests", "granularityMeasurements",
-      "spectralRangeMinNm", "spectralRangeMaxNm", "spectralSamples", "colorBalance",
-      "colorBalanceKelvin", "storageGuidance", "handlingGuidance", "recommendedRecipes",
-    ]) expect(p[field], field).toBeTruthy();
+      "variants",
+      "reciprocityPoints",
+      "resolvingPowerTests",
+      "granularityMeasurements",
+      "spectralRangeMinNm",
+      "spectralRangeMaxNm",
+      "spectralSamples",
+      "colorBalance",
+      "colorBalanceKelvin",
+      "storageGuidance",
+      "handlingGuidance",
+      "recommendedRecipes",
+    ])
+      expect(p[field], field).toBeTruthy();
     expect(p.variants.items.ref).toBe("#formatVariant");
     expect(lex.defs.formatVariant.properties.baseThickness.ref).toBe("app.graycard.defs#measure");
     expect(lex.defs.reciprocityPoint.properties.colorFilter.maxLength).toBeGreaterThan(0);
   });
 
-  it.each(["catalog/developerType.json", "catalog/chemistryType.json"])(
-    "%s models operational, compatibility, safety, and document data",
-    (path) => {
-      const p = props(path);
-      for (const field of [
-        "dilutions", "mixingInstructions", "minimumConcentratePerRoll", "capacity",
-        "replenishment", "oneShot", "reusable", "shelfLives", "temperatureRanges",
-        "compatibleProcesses", "compatibleFilmTypes", "compatibleMaterials", "ph",
-        "kitBathSequence", "technicalDocuments", "sdsDocuments", "hazards",
-        "disposalGuidance", "recommendedRecipes", "specSources",
-      ]) expect(p[field], field).toBeTruthy();
-      expect(p.sdsDocuments.items.ref).toBe("app.graycard.defs#productDocument");
-    },
-  );
+  it("models operational, compatibility, safety, and document data on one chemistry type", () => {
+    const p = props("catalog/chemistryType.json");
+    for (const field of [
+      "dilutions",
+      "mixingInstructions",
+      "minimumConcentratePerRoll",
+      "capacity",
+      "replenishment",
+      "oneShot",
+      "reusable",
+      "shelfLives",
+      "temperatureRanges",
+      "compatibleProcesses",
+      "compatibleFilmTypes",
+      "compatibleMaterials",
+      "ph",
+      "kitBathSequence",
+      "technicalDocuments",
+      "sdsDocuments",
+      "hazards",
+      "disposalGuidance",
+      "recommendedRecipes",
+      "specSources",
+    ])
+      expect(p[field], field).toBeTruthy();
+    expect(p.sdsDocuments.items.ref).toBe("app.graycard.defs#productDocument");
+    expect(p.roles.type).toBe("array");
+    expect(p.productKind.ref).toBe("app.graycard.defs#chemistryProductKind");
+    expect(load("catalog/chemistryType.json").defs.bathStep.properties.roles.type).toBe("array");
+  });
 
   it("keeps film-specific developer-sheet facts on development recipes", () => {
     const p = props("catalog/devRecipe.json");
     for (const field of [
-      "filmStock", "filmName", "developerType", "developerName", "ei", "pushPull",
-      "dilution", "temps", "tankType", "rotaryRpm", "agitation", "contrastTarget",
-      "gammaTarget", "recommendationStatus", "sourceDocument", "sourcePage",
-      "sourceTable", "sourceRevision", "interpolationAllowed", "interpolationMethod",
-      "derived", "derivationNotes",
-    ]) expect(p[field], field).toBeTruthy();
+      "filmStock",
+      "filmName",
+      "chemistryType",
+      "developerName",
+      "ei",
+      "pushPull",
+      "dilution",
+      "temps",
+      "tankType",
+      "rotaryRpm",
+      "agitation",
+      "contrastTarget",
+      "gammaTarget",
+      "recommendationStatus",
+      "sourceDocument",
+      "sourcePage",
+      "sourceTable",
+      "sourceRevision",
+      "interpolationAllowed",
+      "interpolationMethod",
+      "derived",
+      "derivationNotes",
+    ])
+      expect(p[field], field).toBeTruthy();
     expect(p.filmStock.format).toBe("at-uri");
-    expect(p.developerType.format).toBe("at-uri");
+    expect(p.chemistryType.format).toBe("at-uri");
     expect(p.sourceDocument.ref).toBe("app.graycard.defs#productDocument");
   });
 

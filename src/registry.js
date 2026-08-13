@@ -8,7 +8,9 @@
 // PDS, no signaling. This file holds the two constants that pin the query and the
 // (overridable) index location.
 
-export const SETUP_NSID = "app.graycard.setup";
+import { NS } from "@hypo/lexicon";
+
+export const SETUP_NSID = NS.setup;
 
 // The frozen discovery anchor. Every published setup's `registry` field is this
 // exact URL. A plain web URL keeps Hypo fully backendless — Constellation indexes

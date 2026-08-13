@@ -12,17 +12,17 @@ function store() {
       ],
       exposure: [
         { uri: "e1", value: { photo: "at://did/social.grain.photo/p1" } },
-        { uri: "e2", value: {} },   // unlinked
+        { uri: "e2", value: {} }, // unlinked
       ],
       chemistry: [
         { uri: "c1", value: { expiresAt: "2026-01-01T00:00:00Z", volumeMl: 1000, volumeRemainingMl: 500 } }, // expired
-        { uri: "c2", value: { volumeMl: 1000, volumeRemainingMl: 0 } },                                       // spent
+        { uri: "c2", value: { volumeMl: 1000, volumeRemainingMl: 0 } }, // spent
       ],
     },
     photoCaptureByPhoto: new Map([
       ["p1", { value: { camera: "cam", lens: "lens" } }],
-      ["p2", { value: { camera: "cam" } }],   // no lens
-      ["p3", { value: {} }],                   // no camera, no lens
+      ["p2", { value: { camera: "cam" } }], // no lens
+      ["p3", { value: {} }], // no camera, no lens
     ]),
   };
 }

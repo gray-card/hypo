@@ -1,22 +1,45 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
-  compatibilityFindings, detectMediums, matchingDevelopmentRecipes, needsOnboarding,
-  onboardingSteps, openOnboarding, readOnboardingState, workflowPayload, writeOnboardingState,
+  compatibilityFindings,
+  detectMediums,
+  matchingDevelopmentRecipes,
+  needsOnboarding,
+  onboardingSteps,
+  openOnboarding,
+  readOnboardingState,
+  workflowPayload,
+  writeOnboardingState,
 } from "../src/ui/onboarding.js";
 import { mockAgent } from "./setup.js";
 
 function storeWith(cameraTypes = [], cameras = [], extra = {}) {
   const instance = {
-    camera: [], lens: [], filter: [], filmRoll: [], filmStockpile: [], developer: [],
-    scanner: [], chemistry: [], labAccount: [], storageLocation: [], enlarger: [],
-    enlargingLens: [], lightSource: [], printer: [], intermediate: [],
+    camera: [],
+    lens: [],
+    filter: [],
+    filmRoll: [],
+    filmStockpile: [],
+    scanner: [],
+    chemistry: [],
+    labAccount: [],
+    storageLocation: [],
+    enlarger: [],
+    enlargingLens: [],
+    lightSource: [],
+    printer: [],
+    intermediate: [],
     ...extra.instance,
     camera: cameras,
   };
   return {
     catalog: {
-      cameraType: cameraTypes, lensType: [], filmStock: [], developerType: [],
-      chemistryType: [], scannerType: [], lab: [], ...extra.catalog,
+      cameraType: cameraTypes,
+      lensType: [],
+      filmStock: [],
+      chemistryType: [],
+      scannerType: [],
+      lab: [],
+      ...extra.catalog,
     },
     instance,
     workflowTemplates: extra.workflowTemplates || [],
@@ -25,24 +48,21 @@ function storeWith(cameraTypes = [], cameras = [], extra = {}) {
 
 describe("detectMediums", () => {
   it("detects film from a film camera", () => {
-    const store = storeWith(
-      [{ uri: "t1", value: { category: "film", format: "35mm" } }],
-      [{ value: { type: "t1" } }],
-    );
+    const store = storeWith([{ uri: "t1", value: { category: "film", format: "35mm" } }], [{ value: { type: "t1" } }]);
     expect(detectMediums(store)).toMatchObject({ film: true, digital: false });
   });
 
   it("detects digital from format suffix", () => {
-    const store = storeWith(
-      [{ uri: "t1", value: { format: "full-frame-digital" } }],
-      [{ value: { type: "t1" } }],
-    );
+    const store = storeWith([{ uri: "t1", value: { format: "full-frame-digital" } }], [{ value: { type: "t1" } }]);
     expect(detectMediums(store)).toMatchObject({ digital: true, film: false });
   });
 
   it("detects instant and mixed setups", () => {
     const store = storeWith(
-      [{ uri: "t1", value: { format: "instax-mini" } }, { uri: "t2", value: { category: "film", format: "120" } }],
+      [
+        { uri: "t1", value: { format: "instax-mini" } },
+        { uri: "t2", value: { category: "film", format: "120" } },
+      ],
       [{ value: { type: "t1" } }, { value: { type: "t2" } }],
     );
     expect(detectMediums(store)).toMatchObject({ instant: true, film: true, any: true });
@@ -59,7 +79,9 @@ describe("durable onboarding state", () => {
   it("round-trips versioned state", () => {
     writeOnboardingState("did:plc:test", { status: "in-progress", stepKey: "film", practices: ["film-home"] });
     expect(readOnboardingState("did:plc:test")).toMatchObject({
-      status: "in-progress", stepKey: "film", practices: ["film-home"],
+      status: "in-progress",
+      stepKey: "film",
+      practices: ["film-home"],
     });
   });
 
@@ -69,15 +91,31 @@ describe("durable onboarding state", () => {
   });
 
   it("does not let one camera suppress an incomplete setup, but accepts a workflow", () => {
-    expect(needsOnboarding(storeWith([{ uri: "t", value: {} }], [{ value: { type: "t" } }]), "did:plc:test")).toBe(true);
-    expect(needsOnboarding(storeWith([], [], { workflowTemplates: [{ value: { name: "Mine" } }] }), "did:plc:test")).toBe(false);
+    expect(needsOnboarding(storeWith([{ uri: "t", value: {} }], [{ value: { type: "t" } }]), "did:plc:test")).toBe(
+      true,
+    );
+    expect(
+      needsOnboarding(storeWith([], [], { workflowTemplates: [{ value: { name: "Mine" } }] }), "did:plc:test"),
+    ).toBe(false);
   });
 
   it("honors a durable dismissal and resumes an in-progress setup", () => {
     writeOnboardingState("did:plc:test", { status: "dismissed" });
     expect(needsOnboarding(storeWith(), "did:plc:test")).toBe(false);
     writeOnboardingState("did:plc:test", { status: "in-progress", stepKey: "practice" });
-    expect(needsOnboarding(storeWith([{ uri: "t", value: {} }], [{ value: { type: "t" } }]), "did:plc:test")).toBe(true);
+    expect(needsOnboarding(storeWith([{ uri: "t", value: {} }], [{ value: { type: "t" } }]), "did:plc:test")).toBe(
+      true,
+    );
+  });
+
+  it("keeps onboarding state isolated by authenticated DID", () => {
+    writeOnboardingState("did:plc:alice", { status: "dismissed", stepKey: "practice" });
+    writeOnboardingState("did:plc:bob", { status: "in-progress", stepKey: "film" });
+
+    expect(readOnboardingState("did:plc:alice")).toMatchObject({ status: "dismissed", stepKey: "practice" });
+    expect(readOnboardingState("did:plc:bob")).toMatchObject({ status: "in-progress", stepKey: "film" });
+    expect(needsOnboarding(storeWith(), "did:plc:alice")).toBe(false);
+    expect(needsOnboarding(storeWith(), "did:plc:bob")).toBe(true);
   });
 });
 
@@ -85,7 +123,7 @@ describe("adaptive steps", () => {
   it("uses film reserve and separates home chemistry from lab processing", () => {
     const home = onboardingSteps({ practices: ["film-home"], digitize: "own" });
     expect(home.find((x) => x.key === "film").kinds).toEqual(["filmStockpile"]);
-    expect(home.find((x) => x.key === "chemistry").kinds).toEqual(["developer", "chemistry"]);
+    expect(home.find((x) => x.key === "chemistry").kinds).toEqual(["chemistry"]);
     expect(home.some((x) => x.key === "scanner")).toBe(true);
     expect(home.some((x) => x.key === "lab")).toBe(false);
 
@@ -97,7 +135,12 @@ describe("adaptive steps", () => {
 
   it("adds printing equipment only for darkroom users", () => {
     const steps = onboardingSteps({ practices: ["darkroom"], digitize: "none" });
-    expect(steps.find((x) => x.key === "printing").kinds).toEqual(["enlarger", "enlargingLens", "lightSource", "printer"]);
+    expect(steps.find((x) => x.key === "printing").kinds).toEqual([
+      "enlarger",
+      "enlargingLens",
+      "lightSource",
+      "printer",
+    ]);
     expect(onboardingSteps({ practices: ["digital"], digitize: "none" }).some((x) => x.key === "printing")).toBe(false);
   });
 
@@ -108,11 +151,11 @@ describe("adaptive steps", () => {
       {
         catalog: {
           lensType: [{ uri: "lens-type", value: { mount: "nikon-f" } }],
-          developerType: [{ uri: "dev-type", value: { role: "developer" } }],
+          chemistryType: [{ uri: "chem-type", value: { roles: ["film-developer"] } }],
         },
         instance: {
           lens: [{ uri: "lens", value: { type: "lens-type" } }],
-          developer: [{ uri: "dev", value: { type: "dev-type" } }],
+          chemistry: [{ uri: "chem", value: { type: "chem-type" } }],
           scanner: [{ uri: "scan", value: { type: "scan-type" } }],
         },
       },
@@ -123,13 +166,18 @@ describe("adaptive steps", () => {
       { practices: ["film-home"], digitize: "own" },
     );
     expect(payload).toMatchObject({
-      defaultCamera: "cam", defaultLens: "lens", defaultDeveloper: "dev", defaultScanner: "scan",
+      defaultCamera: "cam",
+      defaultLens: "lens",
+      defaultChemistry: "chem",
+      defaultScanner: "scan",
     });
-    expect(payload.stageDefaults).toEqual(expect.arrayContaining([
-      { kind: "capture", fields: { camera: "cam", lens: "lens" } },
-      { kind: "develop", fields: { developer: "dev" } },
-      { kind: "digitize", fields: { scanner: "scan" } },
-    ]));
+    expect(payload.stageDefaults).toEqual(
+      expect.arrayContaining([
+        { kind: "capture", fields: { camera: "cam", lens: "lens" } },
+        { kind: "develop", fields: { chemistry: "chem" } },
+        { kind: "digitize", fields: { scanner: "scan" } },
+      ]),
+    );
   });
 });
 
@@ -149,7 +197,9 @@ describe("compatibility and datasheet guidance", () => {
         },
       },
     );
-    const text = compatibilityFindings(store).map((x) => x.text).join(" ");
+    const text = compatibilityFindings(store)
+      .map((x) => x.text)
+      .join(" ");
     expect(text).toMatch(/mounts/i);
     expect(text).toMatch(/film formats/i);
   });
@@ -170,11 +220,13 @@ describe("compatibility and datasheet guidance", () => {
     const store = storeWith([], [], {
       catalog: {
         filmStock: [{ uri: "film-type", value: { brand: "ILFORD", name: "HP5 Plus" } }],
-        developerType: [{ uri: "dev-type", value: { brand: "ILFORD", name: "ILFOTEC DD-X" } }],
+        chemistryType: [
+          { uri: "dev-type", value: { brand: "ILFORD", name: "ILFOTEC DD-X", roles: ["film-developer"] } },
+        ],
       },
       instance: {
         filmStockpile: [{ value: { stock: "film-type", quantity: 2 } }],
-        developer: [{ value: { type: "dev-type" } }],
+        chemistry: [{ value: { type: "dev-type" } }],
       },
     });
     const recipes = matchingDevelopmentRecipes(store);
@@ -209,12 +261,27 @@ describe("openOnboarding", () => {
     expect(readOnboardingState("did:plc:test").practices).toContain("film-home");
   });
 
-  it("persists dismissal when Escape closes the dialog", async () => {
-    let destination = null;
-    await openOnboarding({ agent: mockAgent(), did: "did:plc:test", onDone: (next) => { destination = next; } });
+  it("persists dismissal, restores focus, and detaches its Escape handler", async () => {
+    const trigger = document.createElement("button");
+    document.body.append(trigger);
+    trigger.focus();
+    const onDone = vi.fn();
+    await openOnboarding({
+      agent: mockAgent(),
+      did: "did:plc:test",
+      onDone,
+    });
+    await new Promise(requestAnimationFrame);
+    expect(document.activeElement).toBe(document.querySelector(".wizard-title"));
+
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     expect(document.querySelector(".wizard")).toBeNull();
     expect(readOnboardingState("did:plc:test").status).toBe("dismissed");
-    expect(destination).toBe("setup");
+    expect(document.activeElement).toBe(trigger);
+    expect(onDone).toHaveBeenCalledOnce();
+    expect(onDone).toHaveBeenCalledWith("setup");
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    expect(onDone).toHaveBeenCalledOnce();
   });
 });

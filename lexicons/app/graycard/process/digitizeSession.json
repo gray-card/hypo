@@ -22,9 +22,21 @@
             "description": "Resulting photo records (e.g. social.grain.photo) produced by the scan."
           },
           "scanner": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.scanner" },
-          "camera": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.camera for copy-stand capture." },
-          "lens": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.lens for copy-stand capture." },
-          "scanProfile": { "type": "string", "format": "at-uri", "description": "app.graycard.catalog.scanProfile applied." },
+          "camera": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.camera for copy-stand capture."
+          },
+          "lens": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.lens for copy-stand capture."
+          },
+          "scanProfile": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.catalog.scanProfile applied."
+          },
           "software": { "type": "string", "maxLength": 128 },
           "driver": { "type": "string", "maxLength": 128 },
           "resolution": { "type": "ref", "ref": "app.graycard.defs#measure" },

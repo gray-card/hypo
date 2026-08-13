@@ -1,0 +1,104 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.meterType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A light-meter model in the shareable gear catalog (handheld ambient/spot/flash meters, color meters, and phone-app meters). Mirrors the conventions of the other catalog.* records: manufacturer identity, structured specifications, and edition-aware document citations via defs#productDocument / defs#specSource.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["make", "model", "createdAt"],
+        "properties": {
+          "make": { "type": "string", "maxLength": 64 },
+          "model": { "type": "string", "maxLength": 128 },
+          "geometries": {
+            "type": "array",
+            "maxLength": 8,
+            "items": { "type": "ref", "ref": "app.graycard.meter.defs#meterGeometry" },
+            "description": "Measurement geometries the instrument supports."
+          },
+          "lightKinds": {
+            "type": "array",
+            "maxLength": 4,
+            "items": { "type": "ref", "ref": "app.graycard.meter.defs#lightKind" }
+          },
+          "spotAngle": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Spot acceptance angle in degrees (1 for a true spot meter)."
+          },
+          "receptorSwivel": { "type": "boolean", "description": "Whether the incident receptor head swivels/rotates." },
+          "retractableDome": {
+            "type": "boolean",
+            "description": "Whether the lumisphere retracts to a flat receptor."
+          },
+          "evMin": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Lower measuring limit at ISO 100 (EV)."
+          },
+          "evMax": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Upper measuring limit at ISO 100 (EV)."
+          },
+          "illuminanceMin": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Lower illuminance limit (lx)."
+          },
+          "illuminanceMax": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Upper illuminance limit (lx)."
+          },
+          "luminanceModes": {
+            "type": "boolean",
+            "description": "Whether direct luminance/illuminance display modes (lx, fc, cd/m², fL) are offered."
+          },
+          "cineModes": {
+            "type": "boolean",
+            "description": "Whether frame-rate / shutter-angle cine modes are offered."
+          },
+          "flashDurationAnalysis": { "type": "boolean" },
+          "hssMeasurement": { "type": "boolean" },
+          "radioTriggering": {
+            "type": "array",
+            "maxLength": 8,
+            "items": { "type": "string", "maxLength": 32 },
+            "description": "Supported radio trigger systems, e.g. 'pocketwizard', 'elinchrom'."
+          },
+          "isoMin": { "type": "integer", "minimum": 1 },
+          "isoMax": { "type": "integer", "minimum": 1 },
+          "constantK": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Manufacturer reflected calibration constant, when published."
+          },
+          "constantC": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Manufacturer incident calibration constant, when published."
+          },
+          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef" },
+          "documents": {
+            "type": "array",
+            "maxLength": 16,
+            "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" }
+          },
+          "specSources": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "ref", "ref": "app.graycard.defs#specSource" }
+          },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "note": { "type": "string", "maxLength": 1000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

@@ -16,8 +16,16 @@
       "type": "object",
       "description": "Paper processing chain for a chemically-developed print (silver-gelatin, RA-4).",
       "properties": {
-        "developer": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.chemistry paper developer." },
-        "developerName": { "type": "string", "maxLength": 128, "description": "Free-text developer when not a tracked instance." },
+        "developer": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "app.graycard.instance.chemistry paper developer."
+        },
+        "developerName": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Free-text developer when not a tracked instance."
+        },
         "dilution": { "type": "string", "maxLength": 64 },
         "timeSeconds": { "type": "integer", "minimum": 0 },
         "temperature": { "type": "ref", "ref": "app.graycard.defs#measure" },
@@ -31,24 +39,58 @@
       "type": "object",
       "description": "Hand-coated / UV-exposed alternative process parameters (cyanotype, pt/pd, salt, van dyke, gum, carbon, …).",
       "properties": {
-        "sensitizer": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.chemistry sensitizer/coating solution." },
+        "sensitizer": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "app.graycard.instance.chemistry sensitizer/coating solution."
+        },
         "sensitizerName": { "type": "string", "maxLength": 128 },
-        "coats": { "type": "integer", "minimum": 1, "description": "Number of sensitizer coats / printing layers (gum bichromate is multi-layer)." },
-        "exposureUnits": { "type": "integer", "minimum": 0, "description": "Integrator units when exposure is measured in units rather than seconds (light source is the top-level `lightSource` ref)." },
+        "coats": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of sensitizer coats / printing layers (gum bichromate is multi-layer)."
+        },
+        "exposureUnits": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Integrator units when exposure is measured in units rather than seconds (light source is the top-level `lightSource` ref)."
+        },
         "humidityPct": { "type": "integer", "description": "Ambient/paper humidity in percent (matters for pt/pd)." },
-        "negativeType": { "type": "string", "knownValues": ["in-camera", "digital-negative", "internegative", "enlarged-negative", "other"] },
-        "developerName": { "type": "string", "maxLength": 128, "description": "Developing agent/bath (e.g. potassium oxalate, water)." }
+        "negativeType": {
+          "type": "string",
+          "knownValues": ["in-camera", "digital-negative", "internegative", "enlarged-negative", "other"]
+        },
+        "developerName": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Developing agent/bath (e.g. potassium oxalate, water)."
+        }
       }
     },
     "digital": {
       "type": "object",
       "description": "Inkjet / digital-lab (Lightjet, Chromira) printing parameters.",
       "properties": {
-        "inkSet": { "type": "string", "maxLength": 128, "description": "e.g. 'UltraChrome PRO10', 'Piezography Carbon'." },
+        "inkSet": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "e.g. 'UltraChrome PRO10', 'Piezography Carbon'."
+        },
         "iccProfile": { "type": "string", "maxLength": 256 },
-        "renderingIntent": { "type": "string", "knownValues": ["perceptual", "relative-colorimetric", "saturation", "absolute-colorimetric"] },
-        "resolution": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Print resolution (unit: dpi)." },
-        "software": { "type": "string", "maxLength": 128, "description": "Driver / RIP (e.g. 'Print Tool', 'ImagePrint')." },
+        "renderingIntent": {
+          "type": "string",
+          "knownValues": ["perceptual", "relative-colorimetric", "saturation", "absolute-colorimetric"]
+        },
+        "resolution": {
+          "type": "ref",
+          "ref": "app.graycard.defs#measure",
+          "description": "Print resolution (unit: dpi)."
+        },
+        "software": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Driver / RIP (e.g. 'Print Tool', 'ImagePrint')."
+        },
         "colorManaged": { "type": "boolean" }
       }
     },
@@ -74,7 +116,27 @@
         "properties": {
           "printProcess": {
             "type": "string",
-            "knownValues": ["silver-gelatin", "ra4", "cyanotype", "platinum-palladium", "kallitype", "salt", "van-dyke", "carbon", "gum-bichromate", "bromoil", "albumen", "wet-plate-collodion", "dye-transfer", "dye-destruction", "photogravure", "lith", "inkjet", "dye-sublimation", "other"]
+            "knownValues": [
+              "silver-gelatin",
+              "ra4",
+              "cyanotype",
+              "platinum-palladium",
+              "kallitype",
+              "salt",
+              "van-dyke",
+              "carbon",
+              "gum-bichromate",
+              "bromoil",
+              "albumen",
+              "wet-plate-collodion",
+              "dye-transfer",
+              "dye-destruction",
+              "photogravure",
+              "lith",
+              "inkjet",
+              "dye-sublimation",
+              "other"
+            ]
           },
           "printMethod": {
             "type": "string",
@@ -82,26 +144,62 @@
             "knownValues": ["enlargement", "contact", "digital-inkjet", "digital-lab", "photogram", "other"]
           },
 
-          "subject": { "type": "string", "format": "at-uri", "description": "What was printed — a photo (social.grain.photo) or scene subject." },
-          "filmRoll": { "type": "string", "format": "at-uri", "description": "Source roll (analog), when printing from a negative." },
+          "subject": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "What was printed — a photo (social.grain.photo) or scene subject."
+          },
+          "filmRoll": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Source roll (analog), when printing from a negative."
+          },
           "frameNumber": { "type": "integer", "minimum": 0, "description": "Source frame on the roll." },
-          "sourcePhoto": { "type": "string", "format": "at-uri", "description": "Digital source file/photo for inkjet or digital-lab prints." },
+          "sourcePhoto": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Digital source file/photo for inkjet or digital-lab prints."
+          },
 
           "paper": { "type": "string", "format": "at-uri", "description": "app.graycard.catalog.paperType used." },
-          "paperInstance": { "type": "string", "maxLength": 128, "description": "Free-text paper batch/box when not a tracked type." },
-          "size": { "type": "string", "maxLength": 64, "description": "Print/paper size, e.g. '8x10 in', '16x20 in', '30x40 cm'." },
+          "paperInstance": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Free-text paper batch/box when not a tracked type."
+          },
+          "size": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Print/paper size, e.g. '8x10 in', '16x20 in', '30x40 cm'."
+          },
           "widthMm": { "type": "integer", "minimum": 0 },
           "heightMm": { "type": "integer", "minimum": 0 },
           "copies": { "type": "integer", "minimum": 1 },
           "edition": { "type": "string", "maxLength": 64, "description": "Edition/print number, e.g. '3/25'." },
 
           "enlarger": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.enlarger used." },
-          "enlargingLens": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.enlargingLens used." },
-          "lightSource": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.lightSource (UV/contact exposure unit) — for alt-process and contact printing." },
-          "printer": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.printer used (inkjet / digital-lab)." },
+          "enlargingLens": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.enlargingLens used."
+          },
+          "lightSource": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.lightSource (UV/contact exposure unit) — for alt-process and contact printing."
+          },
+          "printer": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.printer used (inkjet / digital-lab)."
+          },
           "aperture": { "type": "string", "maxLength": 16, "description": "Enlarging-lens aperture, e.g. 'f/8'." },
           "magnification": { "type": "string", "maxLength": 64, "description": "Enlargement ratio or column height." },
-          "exposureTimeSeconds": { "type": "integer", "minimum": 0, "description": "Base exposure time (enlarger or UV)." },
+          "exposureTimeSeconds": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Base exposure time (enlarger or UV)."
+          },
           "grade": { "type": "string", "maxLength": 32, "description": "Multigrade contrast grade (e.g. '2.5')." },
           "filtration": { "type": "ref", "ref": "#filtration" },
           "testStrip": { "type": "string", "maxLength": 512, "description": "Test-strip findings." },
@@ -111,11 +209,23 @@
           "altProcess": { "type": "ref", "ref": "#altProcess" },
           "digital": { "type": "ref", "ref": "#digital" },
 
-          "toner": { "type": "string", "format": "at-uri", "description": "Primary toner (app.graycard.instance.chemistry). Use `toning` for multiple/split toning." },
+          "toner": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Primary toner (app.graycard.instance.chemistry). Use `toning` for multiple/split toning."
+          },
           "toning": { "type": "array", "items": { "type": "ref", "ref": "#toningStep" } },
 
-          "labService": { "type": "string", "maxLength": 128, "description": "Lab name when the print was made by a lab." },
-          "lab": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.labAccount that made the print." },
+          "labService": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Lab name when the print was made by a lab."
+          },
+          "lab": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.labAccount that made the print."
+          },
 
           "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
           "startedAt": { "type": "string", "format": "datetime" },

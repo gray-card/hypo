@@ -5,17 +5,27 @@ import { mockAgent } from "./setup.js";
 const did = "did:plc:test";
 const stockpile = () => ({
   uri: "at://did:plc:test/app.graycard.instance.filmStockpile/rkS",
-  cid: "cidS", rkey: "rkS",
-  value: { stock: "at://did:plc:test/app.graycard.catalog.filmStock/rkF", quantity: 5, format: "35mm", createdAt: "2026-01-01T00:00:00Z" },
+  cid: "cidS",
+  rkey: "rkS",
+  value: {
+    stock: "at://did:plc:test/app.graycard.catalog.filmStock/rkF",
+    quantity: 5,
+    format: "35mm",
+    createdAt: "2026-01-01T00:00:00Z",
+  },
 });
 
 const fullStockpile = () => ({
   uri: "at://did:plc:test/app.graycard.instance.filmStockpile/rkS",
-  cid: "cidS", rkey: "rkS",
+  cid: "cidS",
+  rkey: "rkS",
   value: {
     stock: "at://did:plc:test/app.graycard.catalog.filmStock/rkF",
-    quantity: 3, format: "120", storage: "freezer",
-    emulsionBatch: "AB-2231", expiresAt: "2027-08-01T00:00:00.000Z",
+    quantity: 3,
+    format: "120",
+    storage: "freezer",
+    emulsionBatch: "AB-2231",
+    expiresAt: "2027-08-01T00:00:00.000Z",
     createdAt: "2026-01-01T00:00:00Z",
   },
 });
@@ -28,8 +38,12 @@ describe("splitRollFromStockpile", () => {
 
     const created = agent.created.find((c) => c.collection === NS.instance.filmRoll);
     expect(created.record).toMatchObject({
-      stock: sp.value.stock, stockpile: sp.uri, status: "loaded",
-      camera: "at://cam", label: "Roll 12", format: "35mm",
+      stock: sp.value.stock,
+      stockpile: sp.uri,
+      status: "loaded",
+      camera: "at://cam",
+      label: "Roll 12",
+      format: "35mm",
     });
     expect(created.record.loadedAt).toBeTruthy();
     expect(rollUri).toContain(NS.instance.filmRoll);
@@ -47,9 +61,9 @@ describe("splitRollFromStockpile", () => {
     sp.value.quantity = 0;
     await splitRollFromStockpile(agent, did, sp, {});
     const created = agent.created.find((c) => c.collection === NS.instance.filmRoll);
-    expect(created.record.status).toBe("loaded");      // no "stored" limbo; splitting loads it
+    expect(created.record.status).toBe("loaded"); // no "stored" limbo; splitting loads it
     expect(created.record.loadedAt).toBeTruthy();
-    expect(created.record.camera).toBeUndefined();     // camera optional
+    expect(created.record.camera).toBeUndefined(); // camera optional
     const put = agent.put.find((p) => p.collection === NS.instance.filmStockpile);
     expect(put.record.quantity).toBe(0); // clamped, not negative
   });

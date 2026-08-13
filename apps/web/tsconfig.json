@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "../../node_modules/.cache/typescript/web",
+    "tsBuildInfoFile": "../../node_modules/.cache/typescript/web.tsbuildinfo"
+  },
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../../packages/catalog" },
+    { "path": "../../packages/domain" },
+    { "path": "../../packages/lexicon" },
+    { "path": "../../packages/pds" },
+    { "path": "../../packages/store" },
+    { "path": "../../packages/sync" },
+    { "path": "../../packages/ui" }
+  ]
+}

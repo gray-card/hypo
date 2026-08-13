@@ -24,12 +24,7 @@
     "bbox": {
       "type": "object",
       "description": "Axis-aligned bounding box in normalized [0,1] coordinates scaled by 1,000,000 (origin top-left; x,y = top-left, w,h = size \u2014 COCO-style).",
-      "required": [
-        "x",
-        "y",
-        "w",
-        "h"
-      ],
+      "required": ["x", "y", "w", "h"],
       "properties": {
         "x": {
           "type": "integer",
@@ -52,9 +47,7 @@
     "term": {
       "type": "object",
       "description": "A reference to a node or edge type declared in an ontology. Either an in-repo ontology term (ontology AT-URI + local id) or an external CURIE/URI.",
-      "required": [
-        "id"
-      ],
+      "required": ["id"],
       "properties": {
         "id": {
           "type": "string",
@@ -76,12 +69,7 @@
     "rbox": {
       "type": "object",
       "description": "Rotated / oriented bounding box (OBB). Center + size in normalized [0,1] scaled by 1,000,000; angleDeg in degrees scaled by 1,000,000 (counter-clockwise).",
-      "required": [
-        "cx",
-        "cy",
-        "w",
-        "h"
-      ],
+      "required": ["cx", "cy", "w", "h"],
       "properties": {
         "cx": {
           "type": "integer",

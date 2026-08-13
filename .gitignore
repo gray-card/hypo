@@ -1,5 +1,11 @@
 node_modules
 dist
+public/catalog
+/test-results/
+/playwright-report/
+/docs/site/.docusaurus/
+/docs/site/build/
+/.lighthouseci/
 .DS_Store
 *.log
 data/research

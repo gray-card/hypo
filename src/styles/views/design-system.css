@@ -1,0 +1,248 @@
+/* ============================================================
+   Styled selects, safelight, camera readout,
+   contact sheet, zone accents, insights charts, a11y
+   ============================================================ */
+/* styled native selects (custom chevron; darkroom look) */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+}
+
+/* spring the buttons + reveal */
+button:active {
+  transform: translateY(1px) scale(0.99);
+}
+.reveal {
+  animation-timing-function: var(--ease-spring);
+}
+
+/* safelight ambiance (dark only) */
+.safelight-amb {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 200px 40px oklch(0.72 0.16 55 / 0.05);
+}
+:root[data-theme="light"] .safelight-amb {
+  display: none;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .safelight-amb {
+    display: none;
+  }
+}
+
+/* EXIF as a camera-readout LCD strip */
+.exif-readout {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 7px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: oklch(0.13 0.01 60);
+  border: 1px solid oklch(0.3 0.01 60);
+  color: oklch(0.78 0.15 58);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 6px oklch(0.78 0.15 58 / 0.4);
+}
+.exif-readout .rd-dim {
+  color: oklch(0.66 0.03 58);
+  text-shadow: none;
+}
+
+/* contact-sheet grid */
+#photos.grid-mode {
+  background: oklch(0.12 0.006 55);
+  border-radius: var(--radius);
+  padding: 14px;
+  gap: 10px;
+}
+#photos.grid-mode .photo-card {
+  position: relative;
+  background: oklch(0.1 0.005 50);
+  border-radius: 3px;
+  border-color: oklch(0.26 0.008 55);
+}
+#photos.grid-mode .photo-card::after {
+  content: attr(data-frame);
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: oklch(0.78 0.15 58);
+  background: oklch(0 0 0 / 0.5);
+  padding: 0 5px;
+  border-radius: 3px;
+}
+#photos.grid-mode .thumb {
+  border-radius: 2px;
+}
+
+/* zone scale accent under the hero */
+.editor-hero {
+  position: relative;
+}
+.editor-hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+  background: linear-gradient(
+    90deg,
+    #1b1813,
+    #28241d,
+    #353029,
+    #443e34,
+    #544d41,
+    #665e4e,
+    #7c7360,
+    #948a75,
+    #b0a692,
+    #cfc8ba
+  );
+}
+
+/* insights: bar chart + animated numbers */
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+.bar-label {
+  color: var(--muted);
+  text-transform: capitalize;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bar-val {
+  text-align: right;
+  color: var(--text);
+}
+.bar-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 32px;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+}
+.bar-track {
+  height: 8px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.6s var(--ease-spring);
+}
+
+/* discover: follow-scan progress (reuse bar track; snappier than insights charts) */
+.discover-progress {
+  margin: 4px 0 2px;
+}
+.discover-progress-bar .bar-fill {
+  transition: width 0.12s linear;
+}
+
+/* delayed phase line under skeletons; indeterminate bar for waits without a total */
+.load-phase {
+  margin: 12px 4px 4px;
+  min-height: 1.2em;
+}
+.busy-wait {
+  margin: 8px 0;
+}
+.busy-bar {
+  position: relative;
+}
+.busy-bar-fill {
+  width: 38%;
+  transition: none;
+  animation: busy-bar-slide 1.15s ease-in-out infinite;
+}
+@keyframes busy-bar-slide {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .busy-bar-fill {
+    animation: none;
+    width: 100%;
+    opacity: 0.55;
+  }
+}
+
+/* empty-state uses an icon now */
+.empty-mark {
+  border: none;
+  background: none;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.empty-mark .icon {
+  width: 34px;
+  height: 34px;
+}
+
+/* segmented control (list / grid) */
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.segmented button {
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  border-radius: 0;
+  padding: 6px 9px;
+}
+.segmented button.active {
+  background: var(--surface-2);
+  color: var(--accent);
+}
+
+/* accessibility: visible focus ring + reduced motion */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+button:focus-visible,
+.term-opt:focus-visible,
+.palette-item:focus-visible {
+  outline-offset: 1px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .safelight {
+    animation: none;
+  }
+  .bar-fill {
+    transition: none;
+  }
+  * {
+    scroll-behavior: auto !important;
+  }
+}

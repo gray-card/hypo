@@ -31,7 +31,9 @@ describe("publishSetup / unpublishSetup", () => {
   it("updates in place with a compare-and-swap, preserving createdAt", async () => {
     const agent = mockAgent();
     const existing = {
-      uri: `at://${DID}/${SETUP_NSID}/abc`, cid: "cidOld", rkey: "abc",
+      uri: `at://${DID}/${SETUP_NSID}/abc`,
+      cid: "cidOld",
+      rkey: "abc",
       value: { createdAt: "2020-01-01T00:00:00Z", name: "old" },
     };
     await publishSetup(agent, DID, { name: "new name" }, existing);
@@ -41,6 +43,27 @@ describe("publishSetup / unpublishSetup", () => {
     expect(agent.put[0].record.name).toBe("new name");
     expect(agent.put[0].record.createdAt).toBe("2020-01-01T00:00:00Z");
     expect(agent.put[0].record.registry).toBe(HYPO_REGISTRY);
+  });
+
+  it("preserves schema-boundary metadata across an update", async () => {
+    const agent = mockAgent();
+    const schemaRuntime = {
+      nativeVersion: "lexicons-v1",
+      viewVersion: "lexicons-v1",
+      chainIds: [],
+    };
+    const existing = {
+      uri: `at://${DID}/${SETUP_NSID}/abc`,
+      cid: "cidOld",
+      rkey: "abc",
+      value: { createdAt: "2020-01-01T00:00:00Z", name: "old" },
+      schemaRuntime,
+    };
+
+    const saved = await publishSetup(agent, DID, { name: "new name" }, existing);
+
+    expect(agent.put[0].record.$type).toBe(SETUP_NSID);
+    expect(saved.schemaRuntime).toBe(schemaRuntime);
   });
 
   it("caps the gear array", async () => {

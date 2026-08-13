@@ -1,5 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { initLibrary, refreshStore, openAddGear, openEditGear, renderLibrary, effectiveShootGear } from "../src/ui/library.js";
+import {
+  initLibrary,
+  refreshStore,
+  openAddGear,
+  openEditGear,
+  renderLibrary,
+  effectiveShootGear,
+} from "../src/ui/library.js";
 import { NS } from "../src/graycard.js";
 import { PRESETS } from "../src/data/presets.js";
 import { mockAgent } from "./setup.js";
@@ -13,7 +20,9 @@ beforeEach(async () => {
 });
 
 const labelInput = (root, prefix) => {
-  const lab = [...root.querySelectorAll("label.field")].find((l) => l.querySelector("span")?.textContent.startsWith(prefix));
+  const lab = [...root.querySelectorAll("label.field")].find((l) =>
+    l.querySelector("span")?.textContent.startsWith(prefix),
+  );
   return lab?.querySelector("input, select, textarea");
 };
 
@@ -64,8 +73,10 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
     const model = labelInput(modal, "Model");
     const mount = labelInput(modal, "Mount");
     const format = labelInput(modal, "Format");
-    make.value = "Nikon"; make.dispatchEvent(new Event("input"));
-    model.value = "Z6 II"; model.dispatchEvent(new Event("input"));
+    make.value = "Nikon";
+    make.dispatchEvent(new Event("input"));
+    model.value = "Z6 II";
+    model.dispatchEvent(new Event("input"));
     expect(mount.value).toBe("Nikon Z");
     expect(format.value).toBe("full-frame-digital");
   });
@@ -106,6 +117,19 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
     await vi.waitFor(() => expect(onDone).toHaveBeenCalled());
   });
 
+  it("stores camera alternative names as a deduplicated string array", async () => {
+    openAddGear("camera", () => {});
+    const modal = document.querySelector(".modal");
+    labelInput(modal, "Make").value = "Leica";
+    labelInput(modal, "Model").value = "M6";
+    labelInput(modal, "Alternative names").value = "M6 Classic\nLeica M6 Classic, M6 Classic";
+    [...modal.querySelectorAll("button")].find((button) => button.textContent === "Save").click();
+
+    await vi.waitFor(() => expect(agent.created.length).toBe(2));
+    const type = agent.created.find((entry) => entry.collection === NS.catalog.cameraType);
+    expect(type.record.alternativeNames).toEqual(["M6 Classic", "Leica M6 Classic"]);
+  });
+
   it("saves a picture and datasheet link onto the catalog type, not the copy", async () => {
     openAddGear("camera", () => {});
     const modal = document.querySelector(".modal");
@@ -128,28 +152,30 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
   it.each([
     ["camera", "cameraType", "Make", "Nikon", "Model", "F3"],
     ["lens", "lensType", "Make", "Canon", "Model", "Canon EF 50mm f/1.8 STM"],
-    ["developer", "developerType", "Brand", "Kodak", "Name", "D-76"],
+    ["chemistry", "chemistryType", "Brand", "Kodak", "Name", "D-76"],
     ["chemistry", "chemistryType", "Brand", "Ilford", "Name", "Ilfostop"],
     ["filmRoll", "filmStock", "Brand", "Kodak", "Name", "Portra 400"],
-  ])("persists the selected %s preset's manufacturer datasheet as an assetRef", async (
-    kind, typeKind, makeLabel, make, primaryLabel, primary,
-  ) => {
-    const preset = PRESETS[typeKind].items.find((item) =>
-      (item.make || item.brand) === make && (item.model || item.name) === primary);
-    expect(preset?.datasheetUrl).toMatch(/^https:\/\//);
+  ])(
+    "persists the selected %s preset's manufacturer datasheet as an assetRef",
+    async (kind, typeKind, makeLabel, make, primaryLabel, primary) => {
+      const preset = PRESETS[typeKind].items.find(
+        (item) => (item.make || item.brand) === make && (item.model || item.name) === primary,
+      );
+      expect(preset?.datasheetUrl).toMatch(/^https:\/\//);
 
-    openAddGear(kind, () => {});
-    const modal = document.querySelector(".modal");
-    labelInput(modal, makeLabel).value = make;
-    const primaryInput = labelInput(modal, primaryLabel);
-    primaryInput.value = primary;
-    primaryInput.dispatchEvent(new Event("input", { bubbles: true }));
-    [...modal.querySelectorAll("button")].find((b) => b.textContent === "Save").click();
+      openAddGear(kind, () => {});
+      const modal = document.querySelector(".modal");
+      labelInput(modal, makeLabel).value = make;
+      const primaryInput = labelInput(modal, primaryLabel);
+      primaryInput.value = primary;
+      primaryInput.dispatchEvent(new Event("input", { bubbles: true }));
+      [...modal.querySelectorAll("button")].find((b) => b.textContent === "Save").click();
 
-    await vi.waitFor(() => expect(agent.created.length).toBe(2));
-    const type = agent.created.find((c) => c.collection === NS.catalog[typeKind]);
-    expect(type?.record.datasheet).toEqual({ url: preset.datasheetUrl });
-  });
+      await vi.waitFor(() => expect(agent.created.length).toBe(2));
+      const type = agent.created.find((c) => c.collection === NS.catalog[typeKind]);
+      expect(type?.record.datasheet).toEqual({ url: preset.datasheetUrl });
+    },
+  );
 
   it("lets an explicit datasheet link override the selected preset link", async () => {
     openAddGear("camera", () => {});
@@ -168,54 +194,101 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
 
   it.each([
     ["camera", "cameraType", "Make", "Nikon", "Model", "F3", "batteryTypes", ["LR44", "SR44"], /Battery types/i],
-    ["lens", "lensType", "Make", "Canon", "Model", "Canon EF 50mm f/1.8 STM", "opticalElements", 6, /Optical elements/i],
-    ["developer", "developerType", "Brand", "Kodak", "Name", "D-76", "dilutions", [{ label: "1+1" }], /Supported dilutions/i],
-    ["chemistry", "chemistryType", "Brand", "Ilford", "Name", "Ilfostop", "kitBathSequence", [{ order: 1, role: "stop" }], /Kit bath sequence/i],
-    ["filmRoll", "filmStock", "Brand", "Kodak", "Name", "Portra 400", "reciprocityPoints", [{ meteredSeconds: 10, correctionStops: 0.5 }], /Reciprocity correction/i],
-  ])("surfaces and persists structured technical fields from a selected %s preset", async (
-    kind, typeKind, makeLabel, make, primaryLabel, primary, technicalKey, technicalValue, visibleLabel,
-  ) => {
-    const preset = PRESETS[typeKind].items.find((item) =>
-      (item.make || item.brand) === make && (item.model || item.name) === primary);
-    const prior = preset[technicalKey];
-    preset[technicalKey] = technicalValue;
-    try {
-      openAddGear(kind, () => {});
-      const modal = document.querySelector(".modal");
-      labelInput(modal, makeLabel).value = make;
-      const primaryInput = labelInput(modal, primaryLabel);
-      primaryInput.value = primary;
-      primaryInput.dispatchEvent(new Event("input", { bubbles: true }));
+    [
+      "lens",
+      "lensType",
+      "Make",
+      "Canon",
+      "Model",
+      "Canon EF 50mm f/1.8 STM",
+      "opticalElements",
+      6,
+      /Optical elements/i,
+    ],
+    [
+      "chemistry",
+      "chemistryType",
+      "Brand",
+      "Kodak",
+      "Name",
+      "D-76",
+      "dilutions",
+      [{ label: "1+1" }],
+      /Supported dilutions/i,
+    ],
+    [
+      "chemistry",
+      "chemistryType",
+      "Brand",
+      "Ilford",
+      "Name",
+      "Ilfostop",
+      "kitBathSequence",
+      [{ order: 1, roles: ["stop"] }],
+      /Kit bath sequence/i,
+    ],
+    [
+      "filmRoll",
+      "filmStock",
+      "Brand",
+      "Kodak",
+      "Name",
+      "Portra 400",
+      "reciprocityPoints",
+      [{ meteredSeconds: 10, correctionStops: { value: 5, unit: "stop", scale: 10 } }],
+      /Reciprocity correction/i,
+    ],
+  ])(
+    "surfaces and persists structured technical fields from a selected %s preset",
+    async (kind, typeKind, makeLabel, make, primaryLabel, primary, technicalKey, technicalValue, visibleLabel) => {
+      const preset = PRESETS[typeKind].items.find(
+        (item) => (item.make || item.brand) === make && (item.model || item.name) === primary,
+      );
+      const prior = preset[technicalKey];
+      preset[technicalKey] = technicalValue;
+      try {
+        openAddGear(kind, () => {});
+        const modal = document.querySelector(".modal");
+        labelInput(modal, makeLabel).value = make;
+        const primaryInput = labelInput(modal, primaryLabel);
+        primaryInput.value = primary;
+        primaryInput.dispatchEvent(new Event("input", { bubbles: true }));
 
-      const disclosure = modal.querySelector("details.technical-specs");
-      expect(disclosure).toBeTruthy();
-      expect(disclosure.textContent).toMatch(visibleLabel);
-      expect(disclosure.querySelector(".technical-spec-json").value).toContain(technicalKey);
+        const disclosure = modal.querySelector("details.technical-specs");
+        expect(disclosure).toBeTruthy();
+        expect(disclosure.textContent).toMatch(visibleLabel);
+        expect(disclosure.querySelector(".technical-spec-json").value).toContain(technicalKey);
 
-      [...modal.querySelectorAll("button")].find((b) => b.textContent === "Save").click();
-      await vi.waitFor(() => expect(agent.created.length).toBe(2));
-      const type = agent.created.find((c) => c.collection === NS.catalog[typeKind]);
-      expect(type.record[technicalKey]).toEqual(technicalValue);
-      expect(type.record.datasheet).toEqual({ url: preset.datasheetUrl });
-    } finally {
-      if (prior === undefined) delete preset[technicalKey]; else preset[technicalKey] = prior;
-    }
-  });
+        [...modal.querySelectorAll("button")].find((b) => b.textContent === "Save").click();
+        await vi.waitFor(() => expect(agent.created.length).toBe(2));
+        const type = agent.created.find((c) => c.collection === NS.catalog[typeKind]);
+        expect(type.record[technicalKey]).toEqual(technicalValue);
+        expect(type.record.datasheet).toEqual({ url: preset.datasheetUrl });
+      } finally {
+        if (prior === undefined) delete preset[technicalKey];
+        else preset[technicalKey] = prior;
+      }
+    },
+  );
 
   it("shows nonempty nested fields from an existing catalog record in the technical disclosure", () => {
     const typeUri = "at://did:plc:test/app.graycard.catalog.cameraType/rk-spec";
     initLibrary({
-      agent, did: "did:plc:test",
+      agent,
+      did: "did:plc:test",
       store: {
         catalog: {
-          cameraType: [{
-            uri: typeUri,
-            value: {
-              make: "Nikon", model: "F3",
-              dimensions: { widthMm: 148.5, heightMm: 96.5, depthMm: 65.5 },
-              specSources: [{ page: "12", fields: ["dimensions"] }],
+          cameraType: [
+            {
+              uri: typeUri,
+              value: {
+                make: "Nikon",
+                model: "F3",
+                dimensions: { widthMm: 148.5, heightMm: 96.5, depthMm: 65.5 },
+                specSources: [{ page: "12", fields: ["dimensions"] }],
+              },
             },
-          }],
+          ],
         },
         instance: { camera: [] },
       },
@@ -231,17 +304,21 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
   it("never presents atproto $-metadata as a technical specification", () => {
     const typeUri = "at://did:plc:test/app.graycard.catalog.lensType/rk-meta";
     initLibrary({
-      agent, did: "did:plc:test",
+      agent,
+      did: "did:plc:test",
       store: {
         catalog: {
-          lensType: [{
-            uri: typeUri,
-            value: {
-              $type: "app.graycard.catalog.lensType",
-              make: "Canon", model: "EF 50mm f/1.8 STM",
-              opticalElements: 6,
+          lensType: [
+            {
+              uri: typeUri,
+              value: {
+                $type: "app.graycard.catalog.lensType",
+                make: "Canon",
+                model: "EF 50mm f/1.8 STM",
+                opticalElements: 6,
+              },
             },
-          }],
+          ],
         },
         instance: { lens: [] },
       },
@@ -259,7 +336,7 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
     labelInput(modal, "Brand").value = "Kodak";
     const nameInput = labelInput(modal, "Name");
     nameInput.value = "Portra 400";
-    nameInput.dispatchEvent(new Event("input", { bubbles: true }));   // fires applyPreset
+    nameInput.dispatchEvent(new Event("input", { bubbles: true })); // fires applyPreset
     // the "also sold as" hint appears for a rebranded stock
     const hint = modal.querySelector(".aka-hint");
     expect(hint).toBeTruthy();
@@ -273,10 +350,15 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
     expect(stock.record.aka).toContain("Ektacolor Pro 400");
     expect(stock.record.formats).toEqual(["135", "120", "4x5"]);
     expect(stock.record.base).toBe("polyester");
-    expect(stock.record.variants).toEqual(expect.arrayContaining([
-      expect.objectContaining({ format: "135", base: "polyester" }),
-      expect.objectContaining({ format: "4x5", baseThickness: expect.objectContaining({ value: 190, unit: "micrometer" }) }),
-    ]));
+    expect(stock.record.variants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ format: "135", base: "polyester" }),
+        expect.objectContaining({
+          format: "4x5",
+          baseThickness: expect.objectContaining({ value: 190, unit: "micrometer" }),
+        }),
+      ]),
+    );
     expect(stock.record.datasheetUrl).toMatch(/^https:\/\/kodakprofessional\.com\//);
     expect(stock.record.datasheet).toEqual({ url: stock.record.datasheetUrl });
   });
@@ -299,15 +381,24 @@ describe("openEditGear — editing an existing copy", () => {
   it("prefills identity + copy and updates the same record in place", async () => {
     const typeUri = "at://did:plc:test/app.graycard.catalog.cameraType/rkT";
     initLibrary({
-      agent, did: "did:plc:test",
+      agent,
+      did: "did:plc:test",
       store: {
         catalog: { cameraType: [{ uri: typeUri, cid: "cidT", rkey: "rkT", value: { make: "Leica", model: "M6" } }] },
         instance: { camera: [] },
       },
     });
     const item = {
-      uri: "at://did:plc:test/app.graycard.instance.camera/rkI", cid: "cidI", rkey: "rkI",
-      value: { type: typeUri, nickname: "black M6", serialNumber: "123", createdAt: "2020-01-01T00:00:00.000Z" },
+      uri: "at://did:plc:test/app.graycard.instance.camera/rkI",
+      cid: "cidI",
+      rkey: "rkI",
+      value: {
+        type: typeUri,
+        nickname: "black M6",
+        serialNumber: "123",
+        notes: "Preserve this undisplayed field",
+        createdAt: "2020-01-01T00:00:00.000Z",
+      },
     };
     const onDone = vi.fn();
     openEditGear("camera", item, onDone);
@@ -319,18 +410,50 @@ describe("openEditGear — editing an existing copy", () => {
     expect(labelInput(modal, "Nickname").value).toBe("black M6");
 
     labelInput(modal, "Nickname").value = "silver M6";
+    labelInput(modal, "Serial number").value = "";
     [...modal.querySelectorAll("button")].find((b) => b.textContent === "Save").click();
 
     await vi.waitFor(() => expect(agent.put.length).toBe(1));
     const rec = agent.put[0];
     expect(rec.collection).toBe(NS.instance.camera);
-    expect(rec.rkey).toBe("rkI");                            // same record, not a new one
+    expect(rec.rkey).toBe("rkI"); // same record, not a new one
     expect(rec.record.nickname).toBe("silver M6");
-    expect(rec.record.type).toBe(typeUri);                  // reused the existing type
+    expect(rec.record.serialNumber).toBeUndefined(); // blank visible fields are deliberately cleared
+    expect(rec.record.notes).toBe("Preserve this undisplayed field");
+    expect(rec.record.type).toBe(typeUri); // reused the existing type
     expect(rec.record.createdAt).toBe("2020-01-01T00:00:00.000Z"); // createdAt preserved
     expect(rec.record.updatedAt).toBeTruthy();
-    expect(agent.created.length).toBe(0);                   // nothing new created
+    expect(agent.created.length).toBe(0); // nothing new created
     await vi.waitFor(() => expect(onDone).toHaveBeenCalled());
+  });
+});
+
+describe("consumable status controls", () => {
+  it("uses chemical statuses rather than film-roll statuses", () => {
+    const typeUri = "at://did:plc:test/app.graycard.catalog.chemistryType/type";
+    initLibrary({
+      agent,
+      did: "did:plc:test",
+      store: {
+        catalog: {
+          chemistryType: [{ uri: typeUri, value: { brand: "Ilford", name: "Rapid Fixer", role: "fixer" } }],
+        },
+        instance: { chemistry: [] },
+      },
+    });
+    openEditGear(
+      "chemistry",
+      {
+        uri: "at://did:plc:test/app.graycard.instance.chemistry/working",
+        cid: "cid-working",
+        rkey: "working",
+        value: { type: typeUri, status: "active", createdAt: "2026-01-01T00:00:00Z" },
+      },
+      () => {},
+    );
+    const options = [...labelInput(document.querySelector(".modal"), "Status").options].map((option) => option.value);
+    expect(options).toEqual(["", "unopened", "active", "exhausted", "discarded", "__custom__"]);
+    expect(options).not.toContain("loaded");
   });
 });
 
@@ -340,21 +463,25 @@ describe("shoots inherit gear from the photos they contain", () => {
     const camB = "at://did:plc:test/app.graycard.instance.camera/rkB";
     const lensX = "at://did:plc:test/app.graycard.instance.lens/rkX";
     initLibrary({
-      agent, did: "did:plc:test",
+      agent,
+      did: "did:plc:test",
       store: {
         instance: {
-          camera: [{ uri: camA, value: {} }, { uri: camB, value: {} }],
+          camera: [
+            { uri: camA, value: {} },
+            { uri: camB, value: {} },
+          ],
           lens: [{ uri: lensX, value: {} }],
           exposure: [
             { uri: "at://e1", value: { shoot: "at://S", camera: camB, lens: lensX } }, // uses camB + lensX
-            { uri: "at://e2", value: { shoot: "at://other", camera: camA } },           // a different shoot
+            { uri: "at://e2", value: { shoot: "at://other", camera: camA } }, // a different shoot
           ],
         },
       },
     });
-    const shoot = { uri: "at://S", value: { cameras: [camA] } };      // explicitly added camA only
+    const shoot = { uri: "at://S", value: { cameras: [camA] } }; // explicitly added camA only
     expect(effectiveShootGear(shoot, "camera").sort()).toEqual([camA, camB].sort()); // camB inherited
-    expect(effectiveShootGear(shoot, "lens")).toEqual([lensX]);        // lens inherited from the exposure
+    expect(effectiveShootGear(shoot, "lens")).toEqual([lensX]); // lens inherited from the exposure
   });
 });
 
@@ -363,28 +490,33 @@ describe("filmRoll camera assignment in the gear form", () => {
     const stockUri = "at://did:plc:test/app.graycard.catalog.filmStock/rkF";
     const camUri = "at://did:plc:test/app.graycard.instance.camera/rkC";
     initLibrary({
-      agent, did: "did:plc:test",
+      agent,
+      did: "did:plc:test",
       store: {
-        catalog: { filmStock: [{ uri: stockUri, cid: "cidF", rkey: "rkF", value: { brand: "Kodak", name: "Portra 400" } }] },
+        catalog: {
+          filmStock: [{ uri: stockUri, cid: "cidF", rkey: "rkF", value: { brand: "Kodak", name: "Portra 400" } }],
+        },
         instance: { camera: [{ uri: camUri, cid: "cidC", rkey: "rkC", value: { nickname: "black M6" } }] },
       },
     });
     const item = {
-      uri: "at://did:plc:test/app.graycard.instance.filmRoll/rkR", cid: "cidR", rkey: "rkR",
+      uri: "at://did:plc:test/app.graycard.instance.filmRoll/rkR",
+      cid: "cidR",
+      rkey: "rkR",
       value: { stock: stockUri, status: "loaded", camera: camUri, createdAt: "2026-01-01T00:00:00.000Z" },
     };
     openEditGear("filmRoll", item, () => {});
     const modal = document.querySelector(".modal");
     const camField = labelInput(modal, "Camera");
-    expect(camField.tagName).toBe("SELECT");            // a body picker, not a text box
-    expect(camField.value).toBe(camUri);                // prefilled to the loaded camera
+    expect(camField.tagName).toBe("SELECT"); // a body picker, not a text box
+    expect(camField.value).toBe(camUri); // prefilled to the loaded camera
 
     [...modal.querySelectorAll("button")].find((b) => b.textContent === "Save").click();
     await vi.waitFor(() => expect(agent.put.length).toBe(1));
     expect(agent.put[0].collection).toBe(NS.instance.filmRoll);
-    expect(agent.put[0].rkey).toBe("rkR");              // same record
-    expect(agent.put[0].record.camera).toBe(camUri);    // camera preserved
-    expect(agent.created.length).toBe(0);               // reused the existing stock
+    expect(agent.put[0].rkey).toBe("rkR"); // same record
+    expect(agent.put[0].record.camera).toBe(camUri); // camera preserved
+    expect(agent.created.length).toBe(0); // reused the existing stock
   });
 });
 
@@ -395,7 +527,18 @@ describe("renderLibrary — Setup with per-category gear tabs", () => {
     await renderLibrary(body);
 
     const tabs = [...body.querySelectorAll(".tab-btn")].map((b) => b.textContent);
-    expect(tabs).toEqual(["Cameras", "Lenses", "Filters", "Film", "Shoots", "Darkroom", "Scanning", "Workflows", "Rules", "Insights"]);
+    expect(tabs).toEqual([
+      "Cameras",
+      "Lenses",
+      "Filters",
+      "Film",
+      "Shoots",
+      "Darkroom",
+      "Scanning",
+      "Workflows",
+      "Rules",
+      "Insights",
+    ]);
   });
 
   it("defaults to the Cameras tab and shows only cameras, no camelCase", async () => {
@@ -406,7 +549,7 @@ describe("renderLibrary — Setup with per-category gear tabs", () => {
     const headings = [...body.querySelectorAll(".gear-section h2")].map((h) => h.textContent);
     expect(headings).toEqual(["Cameras"]); // only the active tab's category
     expect(body.querySelector(".add-gear").textContent).toMatch(/add camera/i);
-    expect(body.textContent).not.toMatch(/cameraType|filmStock|developerType|filmRoll/);
+    expect(body.textContent).not.toMatch(/cameraType|filmStock|chemistryType|filmRoll/);
   });
 
   it("the Film tab splits reserve stockpile from physical rolls", async () => {
@@ -416,5 +559,103 @@ describe("renderLibrary — Setup with per-category gear tabs", () => {
     await renderLibrary(body);
     const headings = [...body.querySelectorAll(".gear-section h2")].map((h) => h.textContent);
     expect(headings).toEqual(["Film in reserve", "Rolls"]);
+  });
+});
+
+describe("photo picker accessibility", () => {
+  const photoRecords = [
+    {
+      uri: "at://did:plc:test/social.grain.photo/sunset",
+      cid: "cid-photo-1",
+      value: {
+        alt: "Sunset over Lake Ontario",
+        photo: { ref: { $link: "blob-1" } },
+        createdAt: "2026-02-01T00:00:00Z",
+      },
+    },
+    {
+      uri: "at://did:plc:test/social.grain.photo/unlabelled",
+      cid: "cid-photo-2",
+      value: { photo: { ref: { $link: "blob-2" } }, createdAt: "2026-01-01T00:00:00Z" },
+    },
+  ];
+
+  function servePhotos() {
+    agent.com.atproto.repo.listRecords = vi.fn(async ({ collection }) => ({
+      data: { records: collection === "social.grain.photo" ? photoRecords : [] },
+    }));
+  }
+
+  it("names the add-frame photo buttons from alt text with a numbered fallback", async () => {
+    servePhotos();
+    const stockUri = "at://did:plc:test/app.graycard.catalog.filmStock/stock";
+    const rollUri = "at://did:plc:test/app.graycard.instance.filmRoll/roll";
+    initLibrary({
+      agent,
+      did: "did:plc:test",
+      store: {
+        catalog: { filmStock: [{ uri: stockUri, value: { brand: "Kodak", name: "Tri-X" } }] },
+        instance: { filmStockpile: [], filmRoll: [{ uri: rollUri, value: { stock: stockUri } }], exposure: [] },
+        photoCaptureByPhoto: new Map(),
+      },
+    });
+    const body = document.createElement("div");
+    body.dataset.tab = "film";
+    document.body.append(body);
+    await renderLibrary(body);
+
+    [...body.querySelectorAll("button")].find((button) => button.textContent.includes("Open")).click();
+    [...document.querySelectorAll(".modal button")].find((button) => button.textContent.includes("Add frame")).click();
+    await vi.waitFor(() => expect(document.querySelectorAll(".photo-pick")).toHaveLength(2));
+
+    const picks = [...document.querySelectorAll(".photo-pick")];
+    expect(picks.map((button) => button.getAttribute("aria-label"))).toEqual(["Sunset over Lake Ontario", "Photo 2"]);
+    expect(picks[0].getAttribute("aria-pressed")).toBe("false");
+    picks[0].click();
+    expect(picks[0].getAttribute("aria-pressed")).toBe("true");
+    picks[0].click();
+    expect(picks[0].getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("names the frame-linker photo buttons and exposes selection state", async () => {
+    servePhotos();
+    const rollUri = "at://did:plc:test/app.graycard.instance.filmRoll/roll";
+    initLibrary({
+      agent,
+      did: "did:plc:test",
+      store: {
+        catalog: {},
+        instance: {
+          filmRoll: [{ uri: rollUri, value: { label: "Roll 1" } }],
+          exposure: [
+            { uri: "at://did:plc:test/app.graycard.instance.exposure/frame", value: { roll: rollUri, frameNumber: 1 } },
+          ],
+        },
+      },
+    });
+    const body = document.createElement("div");
+    body.dataset.tab = "scanning";
+    document.body.append(body);
+    await renderLibrary(body);
+
+    [...body.querySelectorAll("button")].find((button) => button.textContent.includes("Link frames")).click();
+    await vi.waitFor(() => expect(document.querySelector(".modal")).toBeTruthy());
+    const roll = labelInput(document.querySelector(".modal"), "Roll");
+    roll.value = rollUri;
+    roll.dispatchEvent(new Event("change"));
+    await vi.waitFor(() => {
+      const button = [...document.querySelectorAll(".modal button")].find(
+        (candidate) => candidate.textContent === "Link photo",
+      );
+      expect(button?.disabled).toBe(false);
+    });
+    [...document.querySelectorAll(".modal button")].find((button) => button.textContent === "Link photo").click();
+
+    await vi.waitFor(() => expect(document.querySelectorAll(".photo-pick")).toHaveLength(2));
+    const picks = [...document.querySelectorAll(".photo-pick")];
+    expect(picks.map((button) => button.getAttribute("aria-label"))).toEqual(["Sunset over Lake Ontario", "Photo 2"]);
+    picks[1].click();
+    expect(picks[0].getAttribute("aria-pressed")).toBe("false");
+    expect(picks[1].getAttribute("aria-pressed")).toBe("true");
   });
 });

@@ -1,0 +1,215 @@
+/* ============================================================
+   Micro-interactions, loading/empty states, scene-graph editor
+   ============================================================ */
+
+/* view transitions (cross-fade between views + theme) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.28s;
+}
+
+/* staggered entrance */
+@keyframes reveal {
+  from {
+    transform: translateY(7px);
+  }
+  to {
+    transform: none;
+  }
+}
+.reveal {
+  animation: reveal 0.34s both cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation-delay: calc(var(--i, 0) * 42ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none;
+  }
+  .skeleton {
+    animation: none;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* skeleton loaders */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+.skeleton {
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--bg-elev) 40%, var(--surface-2) 60%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+.skeleton-row {
+  pointer-events: none;
+  cursor: default;
+}
+.skeleton-row:hover {
+  border-color: var(--border);
+  background: var(--surface);
+}
+.skeleton-title {
+  height: 15px;
+  width: 52%;
+  margin-bottom: 10px;
+}
+.skeleton-line {
+  height: 11px;
+  width: 78%;
+  margin-bottom: 8px;
+}
+.skeleton-line:last-child {
+  width: 60%;
+}
+.skeleton-tabs {
+  pointer-events: none;
+}
+.skeleton-tab {
+  height: 30px;
+  width: 74px;
+  border-radius: var(--radius-sm);
+}
+
+/* empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 22px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.empty-mark {
+  width: 34px;
+  height: 34px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: conic-gradient(var(--accent) 0 50%, transparent 0 100%);
+}
+.empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.empty-hint {
+  max-width: 40ch;
+  margin: 0 auto;
+}
+
+/* ---------- scene-graph editor ---------- */
+.scene-modal {
+  width: min(780px, 100%);
+}
+
+.scene-stage {
+  margin: 16px 0;
+  text-align: center;
+}
+.scene-img-wrap {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  touch-action: none;
+  cursor: crosshair;
+}
+.scene-img-wrap img {
+  display: block;
+  max-width: 100%;
+  max-height: 52vh;
+  width: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.scene-draw {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-box {
+  position: absolute;
+  border: 1.5px solid var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 1px oklch(0 0 0 / 0.45);
+}
+.scene-box.pending {
+  border-style: dashed;
+  background: transparent;
+}
+.scene-box-label {
+  position: absolute;
+  top: -2px;
+  left: -1px;
+  transform: translateY(-100%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+  background: var(--accent);
+  color: var(--on-accent);
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.scene-pending {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.scene-tags {
+  margin-top: 8px;
+}
+.scene-tag-row {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.scene-tag-row:last-child {
+  border-bottom: none;
+}
+.scene-tag-row.attaching {
+  background: color-mix(in oklch, var(--accent) 8%, transparent);
+  margin: 0 -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: var(--radius-sm);
+}
+.scene-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.scene-edges {
+  margin-top: 12px;
+}
+.scene-edge-form {
+  margin-top: 10px;
+  gap: 8px;
+  align-items: center;
+}
+.scene-edge-form select {
+  width: auto;
+  min-width: 130px;
+}
+.scene-edge-form input {
+  max-width: 140px;
+}

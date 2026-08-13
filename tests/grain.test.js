@@ -22,7 +22,9 @@ describe("blobCid", () => {
 describe("parseAtUri", () => {
   it("splits a valid at-uri", () => {
     expect(parseAtUri("at://did:plc:abc/social.grain.photo/rkey1")).toEqual({
-      did: "did:plc:abc", collection: "social.grain.photo", rkey: "rkey1",
+      did: "did:plc:abc",
+      collection: "social.grain.photo",
+      rkey: "rkey1",
     });
   });
   it("throws on a non at-uri", () => {
@@ -32,7 +34,12 @@ describe("parseAtUri", () => {
 
 describe("exif scaling round-trip", () => {
   it("exifToForm divides scaled integers back to human values", () => {
-    const form = exifToForm({ fNumber: 2_800_000, iSO: 400_000_000, focalLengthIn35mmFormat: 50_000_000, make: "Leica" });
+    const form = exifToForm({
+      fNumber: 2_800_000,
+      iSO: 400_000_000,
+      focalLengthIn35mmFormat: 50_000_000,
+      make: "Leica",
+    });
     expect(form.fNumber).toBe("2.8");
     expect(form.iSO).toBe("400");
     expect(form.focalLengthIn35mmFormat).toBe("50");
@@ -40,7 +47,11 @@ describe("exif scaling round-trip", () => {
   });
 
   it("formToExifValue scales human values back to integers", () => {
-    const v = formToExifValue({ fNumber: "2.8", iSO: "400", focalLengthIn35mmFormat: "50", exposureTime: "1/125" }, "at://p", "2026-01-01T00:00:00Z");
+    const v = formToExifValue(
+      { fNumber: "2.8", iSO: "400", focalLengthIn35mmFormat: "50", exposureTime: "1/125" },
+      "at://p",
+      "2026-01-01T00:00:00Z",
+    );
     expect(v.fNumber).toBe(2_800_000);
     expect(v.iSO).toBe(400_000_000);
     expect(v.focalLengthIn35mmFormat).toBe(50_000_000);

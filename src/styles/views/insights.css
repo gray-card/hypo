@@ -1,0 +1,106 @@
+/* ============================================================
+   Insights, bulk selection, grid view, light-mode pass
+   ============================================================ */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+.metric {
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.metric-num {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.metric-label {
+  margin-top: 2px;
+}
+
+.photo-select {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  accent-color: var(--accent);
+  margin-top: 2px;
+}
+.select-bar {
+  z-index: 36;
+}
+
+#photos.grid-mode {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+#photos.grid-mode .photo-card {
+  padding: 10px;
+  cursor: pointer;
+}
+#photos.grid-mode .photo-card > details,
+#photos.grid-mode .photo-card > .field,
+#photos.grid-mode .photo-card > .row,
+#photos.grid-mode .photo-card > button,
+#photos.grid-mode .photo-card > .status {
+  display: none;
+}
+#photos.grid-mode .photo-head {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  position: relative;
+}
+#photos.grid-mode .photo-select {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 1;
+}
+#photos.grid-mode .thumb {
+  width: 100%;
+  height: 110px;
+  flex-basis: auto;
+}
+
+/* light-mode: darken semantic chip text for contrast on paper */
+:root[data-theme="light"] .chip.c41 {
+  color: oklch(0.5 0.16 40);
+}
+:root[data-theme="light"] .chip.e6 {
+  color: oklch(0.48 0.16 320);
+}
+:root[data-theme="light"] .chip.ecn2 {
+  color: oklch(0.44 0.14 150);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .chip.c41 {
+    color: oklch(0.5 0.16 40);
+  }
+  :root:not([data-theme]) .chip.e6 {
+    color: oklch(0.48 0.16 320);
+  }
+  :root:not([data-theme]) .chip.ecn2 {
+    color: oklch(0.44 0.14 150);
+  }
+}
+
+/* shared-element cover -> editor hero morph */
+.editor-hero {
+  height: 150px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 18px;
+  background: var(--surface-2) center / cover no-repeat;
+  border: 1px solid var(--border);
+}
+::view-transition-group(hero-cover) {
+  animation-duration: 0.34s;
+}
+@media (max-width: 640px) {
+  .editor-hero {
+    height: 110px;
+  }
+}

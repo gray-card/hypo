@@ -1,6 +1,6 @@
-// geo.js: capture the device location for shot logging.
+// Browser compatibility facade for the pure geolocation conversion in @hypo/domain.
 
-import { geoToScaled } from "./graycard.js";
+import { withCapturedAt } from "@hypo/domain";
 
 // capture the current device location via the browser Geolocation API. Resolves
 // to a scaled geoLocation object ready to store on an exposure, or rejects with
@@ -14,14 +14,17 @@ export function captureGeolocation({ timeout = 15000, highAccuracy = true } = {}
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const c = pos.coords || {};
-        const geo = geoToScaled({
-          latitude: c.latitude,
-          longitude: c.longitude,
-          altitude: Number.isFinite(c.altitude) ? c.altitude : undefined,
-          accuracy: Number.isFinite(c.accuracy) ? c.accuracy : undefined,
-        });
-        geo.capturedAt = new Date(pos.timestamp || Date.now()).toISOString();
-        resolve(geo);
+        resolve(
+          withCapturedAt(
+            {
+              latitude: c.latitude,
+              longitude: c.longitude,
+              altitude: Number.isFinite(c.altitude) ? c.altitude : undefined,
+              accuracy: Number.isFinite(c.accuracy) ? c.accuracy : undefined,
+            },
+            pos.timestamp || Date.now(),
+          ),
+        );
       },
       (err) => reject(new Error(err?.message || "Couldn't get a location fix.")),
       { enableHighAccuracy: highAccuracy, timeout, maximumAge: 10000 },

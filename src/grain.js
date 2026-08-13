@@ -13,6 +13,11 @@
 // grain stores all numeric exif fields scaled by 1,000,000 (see lexicon note),
 // so we divide on read and multiply on write.
 
+import { repoClient } from "./pds.js";
+import * as outbox from "./outbox.js";
+import { RecordStore, openRepositoryRecordCache } from "@hypo/store";
+import { decodeSchemaRecord } from "./schemaRuntime.js";
+
 export const COLLECTIONS = {
   gallery: "social.grain.gallery",
   galleryItem: "social.grain.gallery.item",
@@ -21,6 +26,41 @@ export const COLLECTIONS = {
 };
 
 const SCALE = 1_000_000;
+const recordStores = new Map();
+const hydratedCollections = new WeakMap();
+
+export function recordStore(repo) {
+  let store = recordStores.get(repo);
+  if (!store) {
+    store = new RecordStore({ repo });
+    recordStores.set(repo, store);
+    hydratedCollections.set(store, new Set());
+    outbox.subscribeAcknowledgements(repo, async (acknowledgement) => {
+      store.acknowledge(acknowledgement);
+      await (await openRepositoryRecordCache()).applyAcknowledgement(acknowledgement);
+    });
+  }
+  return store;
+}
+
+/** Keep durable cache and live selectors coherent with one queued write. */
+export async function flushRecordOperation(agent, did, operation) {
+  const store = recordStore(did);
+  store.upsertOperation(operation);
+  let settled;
+  try {
+    settled = await outbox.flushOperation(agent, did, operation.id);
+  } catch (error) {
+    store.replaceOperations(await outbox.list(did));
+    throw error;
+  }
+  if (settled.operation) {
+    store.upsertOperation(settled.operation);
+  } else if (!settled.acknowledgement) {
+    store.removeOperation(operation.id);
+  }
+  return settled;
+}
 
 // at://did/collection/rkey -> { did, collection, rkey }
 export function parseAtUri(uri) {
@@ -33,28 +73,39 @@ export function parseAtUri(uri) {
   return { did: m[1], collection: m[2], rkey: m[3] };
 }
 
-// fetch every record in a collection, following pagination cursors.
-export async function listRecords(agent, repo, collection) {
-  const out = [];
-  let cursor;
+export function recordRkey(uri) {
+  if (String(uri).startsWith("outbox://")) return String(uri).split("/").at(-1);
+  return parseAtUri(uri).rkey;
+}
 
-  do {
-    const res = await agent.com.atproto.repo.listRecords({
-      repo,
-      collection,
-      limit: 100,
-      cursor,
-    });
-    out.push(...res.data.records);
-    cursor = res.data.cursor;
-  } while (cursor);
-
-  return out;
+// Read remote ⊕ pending for one collection. A missing snapshot is populated
+// once; only `refresh: true` performs another network collection read.
+export async function listRecords(agent, repo, collection, { refresh = false } = {}) {
+  const cache = await openRepositoryRecordCache();
+  const store = recordStore(repo);
+  const hydrated = hydratedCollections.get(store);
+  if (refresh || !hydrated.has(collection)) {
+    let records = await cache.read(repo, collection);
+    if (refresh || !(await cache.hasSnapshot(repo, collection))) {
+      try {
+        records = await repoClient(agent).listAll({ repo, collection, limit: 100 });
+        await cache.replace(repo, collection, records);
+      } catch (error) {
+        if (!records.length && navigator.onLine !== false && error?.name !== "NetworkError") throw error;
+      }
+    }
+    records = await Promise.all(records.map((record) => decodeSchemaRecord(record, collection)));
+    store.replaceRemote(collection, records);
+    hydrated.add(collection);
+  }
+  const operations = await outbox.list(repo);
+  store.replaceOperations(operations);
+  return [...store.collection(collection).value.values()];
 }
 
 // list the user's photos, newest first (for linking film frames to photos by AT-URI).
 export async function getPhotos(agent, did) {
-  const records = await listRecords(agent, did, COLLECTIONS.photo);
+  const records = await listRecords(agent, did, COLLECTIONS.photo, { refresh: true });
   return records
     .map((r) => ({ uri: r.uri, cid: r.cid, value: r.value }))
     .sort((a, b) => (b.value.createdAt || "").localeCompare(a.value.createdAt || ""));
@@ -62,13 +113,13 @@ export async function getPhotos(agent, did) {
 
 // list the user's galleries, newest first.
 export async function getGalleries(agent, did) {
-  const records = await listRecords(agent, did, COLLECTIONS.gallery);
+  const records = await listRecords(agent, did, COLLECTIONS.gallery, { refresh: true });
 
   return records
     .map((r) => ({
       uri: r.uri,
       cid: r.cid,
-      rkey: parseAtUri(r.uri).rkey,
+      rkey: recordRkey(r.uri),
       value: r.value,
     }))
     .sort((a, b) => (b.value.createdAt || "").localeCompare(a.value.createdAt || ""));
@@ -77,42 +128,33 @@ export async function getGalleries(agent, did) {
 // load one gallery plus its ordered photos and any exif records.
 export async function getGalleryDetail(agent, did, galleryUri) {
   // the gallery record itself (fresh, with current cid for safe swaps).
-  const { rkey } = parseAtUri(galleryUri);
-  const galleryRes = await agent.com.atproto.repo.getRecord({
-    repo: did,
-    collection: COLLECTIONS.gallery,
-    rkey,
-  });
+  const gallery = (await listRecords(agent, did, COLLECTIONS.gallery, { refresh: true })).find(
+    (record) => record.uri === galleryUri,
+  );
+  if (!gallery) throw new Error("Gallery record is unavailable");
+  const rkey = recordRkey(galleryUri);
 
   // all gallery.item rows, then keep only the ones pointing at this gallery.
-  const items = (await listRecords(agent, did, COLLECTIONS.galleryItem))
+  const items = (await listRecords(agent, did, COLLECTIONS.galleryItem, { refresh: true }))
     .filter((r) => r.value.gallery === galleryUri)
     .sort((a, b) => (a.value.position ?? 0) - (b.value.position ?? 0));
 
   // index exif records by the photo uri they describe.
   const exifByPhoto = new Map();
-  for (const r of await listRecords(agent, did, COLLECTIONS.exif)) {
+  for (const r of await listRecords(agent, did, COLLECTIONS.exif, { refresh: true })) {
     exifByPhoto.set(r.value.photo, { uri: r.uri, cid: r.cid, value: r.value });
   }
 
   // resolve each item's photo record.
   const photos = [];
+  const photoRecords = await listRecords(agent, did, COLLECTIONS.photo, { refresh: true });
   for (const item of items) {
     const photoUri = item.value.item;
-    let photo = null;
-
-    try {
-      const { rkey: prkey } = parseAtUri(photoUri);
-      const res = await agent.com.atproto.repo.getRecord({
-        repo: did,
-        collection: COLLECTIONS.photo,
-        rkey: prkey,
-      });
-      photo = { uri: res.data.uri, cid: res.data.cid, value: res.data.value };
-    } catch (err) {
-      // photo record might be missing/deleted. Surface a placeholder.
-      photo = { uri: photoUri, cid: null, value: null, error: String(err) };
-    }
+    const record = photoRecords.find((candidate) => candidate.uri === photoUri);
+    // A photo record might be missing/deleted. Surface a placeholder.
+    const photo = record
+      ? { uri: record.uri, cid: record.cid, value: record.value }
+      : { uri: photoUri, cid: null, value: null, error: "Photo record is unavailable" };
 
     photos.push({
       item: { uri: item.uri, cid: item.cid, value: item.value },
@@ -123,10 +165,10 @@ export async function getGalleryDetail(agent, did, galleryUri) {
 
   return {
     gallery: {
-      uri: galleryRes.data.uri,
-      cid: galleryRes.data.cid,
+      uri: gallery.uri,
+      cid: gallery.cid,
       rkey,
-      value: galleryRes.data.value,
+      value: gallery.value,
     },
     photos,
   };
@@ -171,10 +213,10 @@ export async function blobUrl(agent, did, blob) {
     return null;
   }
 
-  const res = await agent.com.atproto.sync.getBlob({ did, cid });
+  const bytes = await repoClient(agent).getBlob({ did, cid });
   const type = blob.mimeType || "image/jpeg";
 
-  return URL.createObjectURL(new Blob([res.data], { type }));
+  return URL.createObjectURL(new Blob([bytes], { type }));
 }
 
 // fetch a photo blob's raw bytes (for sending to an image-analysis API, etc.).
@@ -182,8 +224,8 @@ export async function blobUrl(agent, did, blob) {
 export async function blobBytes(agent, did, blob) {
   const cid = blobCid(blob);
   if (!cid) return null;
-  const res = await agent.com.atproto.sync.getBlob({ did, cid });
-  return { bytes: res.data, type: blob.mimeType || "image/jpeg" };
+  const bytes = await repoClient(agent).getBlob({ did, cid });
+  return { bytes, type: blob.mimeType || "image/jpeg" };
 }
 
 // -- exif scaling helpers -----------------------------------------------------
@@ -200,9 +242,7 @@ export function exifToForm(value) {
     fNumber: value?.fNumber != null ? String(value.fNumber / SCALE) : "",
     iSO: value?.iSO != null ? String(Math.round(value.iSO / SCALE)) : "",
     focalLengthIn35mmFormat:
-      value?.focalLengthIn35mmFormat != null
-        ? String(Math.round(value.focalLengthIn35mmFormat / SCALE))
-        : "",
+      value?.focalLengthIn35mmFormat != null ? String(Math.round(value.focalLengthIn35mmFormat / SCALE)) : "",
     // exposure shown as a fraction ("1/125") when < 1s, else seconds.
     exposureTime: value?.exposureTime != null ? formatExposure(value.exposureTime) : "",
   };
@@ -282,38 +322,42 @@ export function formToExifValue(form, photoUri, createdAt) {
 
 export async function uploadImage(agent, file) {
   const bytes = new Uint8Array(await file.arrayBuffer());
-  const up = await agent.com.atproto.repo.uploadBlob(bytes, { encoding: file.type || "image/jpeg" });
-  return up.data.blob;
+  return repoClient(agent).uploadBlob({ bytes, mimeType: file.type || "image/jpeg" });
 }
 
 export async function createGallery(agent, did, { title, description }) {
   const value = { title: (title || "").trim() || "Untitled gallery", createdAt: new Date().toISOString() };
   if (description?.trim()) value.description = description.trim();
-  const res = await agent.com.atproto.repo.createRecord({ repo: did, collection: COLLECTIONS.gallery, record: value, validate: false });
-  return res.data.uri;
+  const operation = outbox.enqueue(did, COLLECTIONS.gallery, value);
+  const settled = await flushRecordOperation(agent, did, operation);
+  return settled.acknowledgement?.uri || operation.tempUri;
 }
 
 export async function createPhoto(agent, did, { blob, alt, aspectRatio }) {
   const value = { photo: blob, createdAt: new Date().toISOString() };
   if (alt?.trim()) value.alt = alt.trim();
   if (aspectRatio) value.aspectRatio = aspectRatio;
-  const res = await agent.com.atproto.repo.createRecord({ repo: did, collection: COLLECTIONS.photo, record: value, validate: false });
-  return res.data.uri;
+  const operation = outbox.enqueue(did, COLLECTIONS.photo, value);
+  const settled = await flushRecordOperation(agent, did, operation);
+  return settled.acknowledgement?.uri || operation.tempUri;
 }
 
 export async function addGalleryItem(agent, did, { gallery, item, position = 0 }) {
   const value = { gallery, item, position, createdAt: new Date().toISOString() };
-  const res = await agent.com.atproto.repo.createRecord({ repo: did, collection: COLLECTIONS.galleryItem, record: value, validate: false });
-  return res.data.uri;
+  const operation = outbox.enqueue(did, COLLECTIONS.galleryItem, value);
+  const settled = await flushRecordOperation(agent, did, operation);
+  return settled.acknowledgement?.uri || operation.tempUri;
 }
 
 // update a gallery.item's position (for reordering), preserving everything else.
 export async function setGalleryItemPosition(agent, did, item, position) {
   const value = { ...item.value, position };
-  await agent.com.atproto.repo.putRecord({
-    repo: did, collection: COLLECTIONS.galleryItem, rkey: parseAtUri(item.uri).rkey,
-    record: value, swapRecord: item.cid, validate: false,
+  const operation = outbox.enqueuePut(did, {
+    uri: item.uri,
+    record: value,
+    swapRecord: item.cid,
   });
+  await flushRecordOperation(agent, did, operation);
 }
 
 export async function saveGallery(agent, did, gallery, { title, description }) {
@@ -328,14 +372,12 @@ export async function saveGallery(agent, did, gallery, { title, description }) {
     delete value.description;
   }
 
-  await agent.com.atproto.repo.putRecord({
-    repo: did,
-    collection: COLLECTIONS.gallery,
-    rkey: gallery.rkey,
+  const operation = outbox.enqueuePut(did, {
+    uri: gallery.uri,
     record: value,
-    swapRecord: gallery.cid, // refuse if the record changed underneath us
-    validate: false, // pds doesn't know this custom lexicon
+    swapRecord: gallery.cid,
   });
+  await flushRecordOperation(agent, did, operation);
 }
 
 // update a photo's alt text, preserving the image blob and everything else.
@@ -352,18 +394,13 @@ export async function savePhotoAlt(agent, did, photo, alt) {
     delete value.alt;
   }
 
-  const { rkey } = parseAtUri(photo.uri);
-
-  const res = await agent.com.atproto.repo.putRecord({
-    repo: did,
-    collection: COLLECTIONS.photo,
-    rkey,
+  const operation = outbox.enqueuePut(did, {
+    uri: photo.uri,
     record: value,
     swapRecord: photo.cid,
-    validate: false,
   });
-
-  return res.data.cid;
+  const settled = await flushRecordOperation(agent, did, operation);
+  return settled.acknowledgement?.cid || photo.cid;
 }
 
 // replace the image blob on an existing photo record (same AT-URI / rkey).
@@ -384,18 +421,13 @@ export async function replacePhoto(agent, did, photo, { blob, aspectRatio }) {
     delete value.aspectRatio;
   }
 
-  const { rkey } = parseAtUri(photo.uri);
-
-  const res = await agent.com.atproto.repo.putRecord({
-    repo: did,
-    collection: COLLECTIONS.photo,
-    rkey,
+  const operation = outbox.enqueuePut(did, {
+    uri: photo.uri,
     record: value,
     swapRecord: photo.cid,
-    validate: false,
   });
-
-  return { cid: res.data.cid, value };
+  const settled = await flushRecordOperation(agent, did, operation);
+  return { cid: settled.acknowledgement?.cid || photo.cid, value };
 }
 
 // update an existing exif record (same rkey) or create one if none exists.
@@ -404,26 +436,26 @@ export async function saveExif(agent, did, photoUri, existingExif, form) {
   const value = formToExifValue(form, photoUri, createdAt);
 
   if (existingExif) {
-    const { rkey } = parseAtUri(existingExif.uri);
-
-    const res = await agent.com.atproto.repo.putRecord({
-      repo: did,
-      collection: COLLECTIONS.exif,
-      rkey,
+    const operation = outbox.enqueuePut(did, {
+      uri: existingExif.uri,
       record: value,
       swapRecord: existingExif.cid,
-      validate: false,
     });
-
-    return { uri: existingExif.uri, cid: res.data.cid, value };
+    const settled = await flushRecordOperation(agent, did, operation);
+    return {
+      uri: existingExif.uri,
+      cid: settled.acknowledgement?.cid || existingExif.cid,
+      value,
+      pending: Boolean(settled.operation),
+    };
   }
 
-  const res = await agent.com.atproto.repo.createRecord({
-    repo: did,
-    collection: COLLECTIONS.exif,
-    record: value,
-    validate: false,
-  });
-
-  return { uri: res.data.uri, cid: res.data.cid, value };
+  const operation = outbox.enqueue(did, COLLECTIONS.exif, value);
+  const settled = await flushRecordOperation(agent, did, operation);
+  return {
+    uri: settled.acknowledgement?.uri || operation.tempUri,
+    cid: settled.acknowledgement?.cid,
+    value,
+    pending: Boolean(settled.operation),
+  };
 }

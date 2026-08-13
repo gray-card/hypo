@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { initLibrary, countTypeRefs, resolveTypeForSave } from "../src/ui/library.js";
-import { NS } from "../src/graycard.js";
 import { mockAgent } from "./setup.js";
 
 const did = "did:plc:test";
@@ -20,11 +19,15 @@ function seed(agent, { lensTypes = [], lenses = [] }) {
 }
 
 const lensType = (rk, model) => ({
-  uri: `at://${did}/app.graycard.catalog.lensType/${rk}`, cid: `c${rk}`, rkey: rk,
-  value: { make: "Nikon", model },
+  uri: `at://${did}/app.graycard.catalog.lensType/${rk}`,
+  cid: `c${rk}`,
+  rkey: rk,
+  value: { make: "Nikon", model, createdAt: "2026-01-01T00:00:00.000Z" },
 });
 const lens = (rk, typeUri) => ({
-  uri: `at://${did}/app.graycard.instance.lens/${rk}`, cid: `c${rk}`, rkey: rk,
+  uri: `at://${did}/app.graycard.instance.lens/${rk}`,
+  cid: `c${rk}`,
+  rkey: rk,
   value: { type: typeUri },
 });
 
@@ -35,13 +38,19 @@ describe("resolveTypeForSave — never orphans a catalog type on rename", () => 
     const l = lens("L1", t.uri);
     seed(agent, { lensTypes: [t], lenses: [l] });
 
-    const uri = await resolveTypeForSave("lensType", { make: "Nikon", model: "Nikon Nikkor 50mm f/1.4 pre-AI" }, null, "lens", l);
+    const uri = await resolveTypeForSave(
+      "lensType",
+      { make: "Nikon", model: "Nikon Nikkor 50mm f/1.4 pre-AI" },
+      null,
+      "lens",
+      l,
+    );
 
-    expect(agent.created).toHaveLength(0);                 // no duplicate type created
-    expect(agent.put).toHaveLength(1);                     // old type updated in place
+    expect(agent.created).toHaveLength(0); // no duplicate type created
+    expect(agent.put).toHaveLength(1); // old type updated in place
     expect(agent.put[0].rkey).toBe("A");
     expect(agent.put[0].record.model).toBe("Nikon Nikkor 50mm f/1.4 pre-AI");
-    expect(uri).toBe(t.uri);                               // same URI kept
+    expect(uri).toBe(t.uri); // same URI kept
   });
 
   it("dedups onto an existing type and deletes the now-orphaned old one", async () => {
@@ -53,9 +62,9 @@ describe("resolveTypeForSave — never orphans a catalog type on rename", () => 
 
     const uri = await resolveTypeForSave("lensType", { make: "Nikon", model: "Nikkor 24mm f/2.8 AI" }, null, "lens", l);
 
-    expect(uri).toBe(b.uri);                               // pointed at existing match
+    expect(uri).toBe(b.uri); // pointed at existing match
     expect(agent.created).toHaveLength(0);
-    expect(agent.deleted).toHaveLength(1);                 // orphaned old type removed
+    expect(agent.deleted).toHaveLength(1); // orphaned old type removed
     expect(agent.deleted[0].rkey).toBe("A");
   });
 
@@ -63,13 +72,19 @@ describe("resolveTypeForSave — never orphans a catalog type on rename", () => 
     const agent = mockAgent();
     const a = lensType("A", "Nikkor 50mm f/1.4 AI");
     const l1 = lens("L1", a.uri);
-    const l2 = lens("L2", a.uri);                          // second lens shares type A
+    const l2 = lens("L2", a.uri); // second lens shares type A
     seed(agent, { lensTypes: [a], lenses: [l1, l2] });
 
-    const uri = await resolveTypeForSave("lensType", { make: "Nikon", model: "Nikkor 105mm f/2.5 AI" }, null, "lens", l1);
+    const uri = await resolveTypeForSave(
+      "lensType",
+      { make: "Nikon", model: "Nikkor 105mm f/2.5 AI" },
+      null,
+      "lens",
+      l1,
+    );
 
-    expect(agent.deleted).toHaveLength(0);                 // shared type left intact
-    expect(agent.created).toHaveLength(1);                 // brand-new type for L1
+    expect(agent.deleted).toHaveLength(0); // shared type left intact
+    expect(agent.created).toHaveLength(1); // brand-new type for L1
     expect(agent.created[0].record.model).toBe("Nikkor 105mm f/2.5 AI");
     expect(uri).toBe(`at://${did}/app.graycard.catalog.lensType/rk1`);
   });
@@ -79,7 +94,13 @@ describe("resolveTypeForSave — never orphans a catalog type on rename", () => 
     const a = lensType("A", "Nikkor 50mm f/1.4 AI");
     seed(agent, { lensTypes: [a], lenses: [] });
 
-    const uri = await resolveTypeForSave("lensType", { make: "Nikon", model: "Nikkor 50mm f/1.4 AI" }, null, "lens", null);
+    const uri = await resolveTypeForSave(
+      "lensType",
+      { make: "Nikon", model: "Nikkor 50mm f/1.4 AI" },
+      null,
+      "lens",
+      null,
+    );
 
     expect(uri).toBe(a.uri);
     expect(agent.created).toHaveLength(0);

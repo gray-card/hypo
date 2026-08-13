@@ -12,6 +12,12 @@
         "properties": {
           "make": { "type": "string", "maxLength": 128 },
           "model": { "type": "string", "maxLength": 256 },
+          "alternativeNames": {
+            "type": "array",
+            "maxLength": 32,
+            "description": "Alternative model or EXIF labels for this lens. Clients use these names when matching imported photo metadata.",
+            "items": { "type": "string", "maxLength": 256 }
+          },
           "mount": { "type": "ref", "ref": "app.graycard.defs#mount" },
           "mounts": {
             "type": "array",
@@ -29,27 +35,59 @@
           "focalLengthMin": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" },
           "focalLengthMax": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" },
           "focalLength35mm": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" },
-          "maxAperture": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Widest aperture (smallest f-number), e.g. f/2.8." },
-          "minAperture": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Smallest aperture (largest f-number), e.g. f/22." },
+          "maxAperture": {
+            "type": "ref",
+            "ref": "app.graycard.defs#scaledInteger",
+            "description": "Widest aperture (smallest f-number), e.g. f/2.8."
+          },
+          "minAperture": {
+            "type": "ref",
+            "ref": "app.graycard.defs#scaledInteger",
+            "description": "Smallest aperture (largest f-number), e.g. f/22."
+          },
           "maxApertureAtTele": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" },
           "apertureSteps": {
             "type": "array",
             "description": "Exact f-numbers for the shot logger dial at 1e6 scale. When present, overrides min/max and stop-fraction generation.",
             "items": { "type": "ref", "ref": "app.graycard.defs#scaledInteger" }
           },
-          "apertureStopIncrement": { "type": "ref", "ref": "app.graycard.defs#stopFraction", "description": "Default stop fraction when generating aperture options from min/max (shot logger may override when steps are absent)." },
-          "closestFocus": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Minimum focusing distance as specified by the manufacturer." },
-          "maxReproductionRatio": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Maximum image-to-subject reproduction ratio at 1e6 scale; 1:1 is 1000000 and 1:2 is 500000." },
-          "filterThreadDiameter": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Front filter thread diameter, normally in millimetres." },
+          "apertureStopIncrement": {
+            "type": "ref",
+            "ref": "app.graycard.defs#stopFraction",
+            "description": "Default stop fraction when generating aperture options from min/max (shot logger may override when steps are absent)."
+          },
+          "closestFocus": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Minimum focusing distance as specified by the manufacturer."
+          },
+          "maxReproductionRatio": {
+            "type": "ref",
+            "ref": "app.graycard.defs#scaledInteger",
+            "description": "Maximum image-to-subject reproduction ratio at 1e6 scale; 1:1 is 1000000 and 1:2 is 500000."
+          },
+          "filterThreadDiameter": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Front filter thread diameter, normally in millimetres."
+          },
           "opticalElements": { "type": "integer", "minimum": 1, "maximum": 100 },
           "opticalGroups": { "type": "integer", "minimum": 1, "maximum": 100 },
           "diaphragmBladeCount": { "type": "integer", "minimum": 1, "maximum": 64 },
           "stabilized": { "type": "boolean", "description": "Whether the lens includes optical image stabilization." },
-          "stabilizationStops": { "type": "ref", "ref": "app.graycard.defs#scaledInteger", "description": "Manufacturer-rated stabilization benefit in stops at 1e6 scale." },
+          "stabilizationStops": {
+            "type": "ref",
+            "ref": "app.graycard.defs#scaledInteger",
+            "description": "Manufacturer-rated stabilization benefit in stops at 1e6 scale."
+          },
           "autofocusTechnology": { "type": "ref", "ref": "app.graycard.defs#lensAutofocusTechnology" },
           "dimensions": { "type": "ref", "ref": "app.graycard.defs#physicalDimensions" },
           "weight": { "type": "ref", "ref": "app.graycard.defs#measure" },
-          "imageCircleDiameter": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Usable image-circle diameter at the manufacturer-specified focus/aperture." },
+          "imageCircleDiameter": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Usable image-circle diameter at the manufacturer-specified focus/aperture."
+          },
           "coveredFormats": {
             "type": "array",
             "maxLength": 24,
@@ -67,8 +105,16 @@
             "maxLength": 32,
             "items": { "type": "string", "maxLength": 128 }
           },
-          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
-          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "image": {
+            "type": "ref",
+            "ref": "app.graycard.defs#assetRef",
+            "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image."
+          },
+          "datasheet": {
+            "type": "ref",
+            "ref": "app.graycard.defs#assetRef",
+            "description": "Official datasheet: a link (preferred), an uploaded file, or another record."
+          },
           "documents": {
             "type": "array",
             "maxLength": 16,

@@ -5,9 +5,17 @@ import { formatExposure } from "./grain.js";
 const SCALE = 1_000_000;
 
 const TAGS = [
-  "Make", "Model", "LensMake", "LensModel",
-  "FNumber", "ExposureTime", "ISO", "ISOSpeedRatings",
-  "FocalLengthIn35mmFormat", "Flash", "DateTimeOriginal",
+  "Make",
+  "Model",
+  "LensMake",
+  "LensModel",
+  "FNumber",
+  "ExposureTime",
+  "ISO",
+  "ISOSpeedRatings",
+  "FocalLengthIn35mmFormat",
+  "Flash",
+  "DateTimeOriginal",
 ];
 
 function str(v) {

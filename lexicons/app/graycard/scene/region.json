@@ -8,11 +8,7 @@
       "key": "tid",
       "record": {
         "type": "object",
-        "required": [
-          "photo",
-          "kind",
-          "createdAt"
-        ],
+        "required": ["photo", "kind", "createdAt"],
         "properties": {
           "photo": {
             "type": "string",
@@ -33,10 +29,7 @@
           },
           "maskBlob": {
             "type": "blob",
-            "accept": [
-              "image/png",
-              "application/octet-stream"
-            ],
+            "accept": ["image/png", "application/octet-stream"],
             "maxSize": 8000000,
             "description": "Optional raster mask."
           },

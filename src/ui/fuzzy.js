@@ -10,13 +10,15 @@ const WORD_START = /[\s\-/._(,]/;
 // score one whitespace-free token as a subsequence of `t` (already lowercased).
 // returns a number, or null if the token's characters are not all present in order.
 function tokenScore(token, t) {
-  let ti = 0, score = 0, prev = -2;
+  let ti = 0,
+    score = 0,
+    prev = -2;
   for (let i = 0; i < token.length; i++) {
     const j = t.indexOf(token[i], ti);
     if (j === -1) return null;
     let s = 1;
-    if (j === prev + 1) s += 4;                        // consecutive run
-    if (j === 0 || WORD_START.test(t[j - 1])) s += 5;  // start of a word
+    if (j === prev + 1) s += 4; // consecutive run
+    if (j === 0 || WORD_START.test(t[j - 1])) s += 5; // start of a word
     score += s;
     prev = j;
     ti = j + 1;

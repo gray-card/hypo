@@ -13,13 +13,19 @@ const TTL = 30 * 864e5; // 30 days
 
 const mem = new Map(); // cacheKey -> Promise<string|null>
 let disk = {};
-try { disk = JSON.parse(localStorage.getItem(LS_KEY) || "{}"); } catch { /* ignore */ }
+try {
+  disk = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+} catch {
+  /* ignore */
+}
 
 function persist(key, val) {
   try {
     disk[key] = { v: val, t: Date.now() };
     localStorage.setItem(LS_KEY, JSON.stringify(disk));
-  } catch { /* quota / private mode */ }
+  } catch {
+    /* quota / private mode */
+  }
 }
 
 const commonsThumb = (file, width = 240) =>
@@ -28,9 +34,17 @@ const commonsThumb = (file, width = 240) =>
 export async function searchEntities(query, limit = 7) {
   if (!query || query.trim().length < 2) return [];
   try {
-    const j = await api({ action: "wbsearchentities", search: query.trim(), language: "en", type: "item", limit: String(limit) });
+    const j = await api({
+      action: "wbsearchentities",
+      search: query.trim(),
+      language: "en",
+      type: "item",
+      limit: String(limit),
+    });
     return (j.search || []).map((r) => ({ id: r.id, label: r.label || r.id, description: r.description || "" }));
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }
 
 // Wikidata orders wbsearchentities by its own relevance, which favours named
@@ -51,10 +65,19 @@ const SENSE_DEMOTIONS = [
   [/\bwikimedia (disambiguation|category|list|template|project)\b/i, 6],
   [/\b(family|last|given|male given|female given) name\b/i, 5],
   // particular things: a nudge, not a burial
-  [/\b(album|studio album|single|song|film|movie|television series|tv series|episode|novel|manga|anime|video game|opera|musical|poem)\b/i, 1],
+  [
+    /\b(album|studio album|single|song|film|movie|television series|tv series|episode|novel|manga|anime|video game|opera|musical|poem)\b/i,
+    1,
+  ],
   [/\b(political party|newspaper|magazine|website|record label|company|corporation|business|organi[sz]ation)\b/i, 1],
-  [/\b(city|town|village|commune|municipality|hamlet|county|district|province|parish|borough|neighbou?rhood|suburb)\b\s+(in|of)\b/i, 1],
-  [/\b(footballer|politician|actor|actress|singer|musician|composer|writer|author|painter|poet|philosopher|physicist|scientist|economist|historian|journalist|artist)\b/i, 1],
+  [
+    /\b(city|town|village|commune|municipality|hamlet|county|district|province|parish|borough|neighbou?rhood|suburb)\b\s+(in|of)\b/i,
+    1,
+  ],
+  [
+    /\b(footballer|politician|actor|actress|singer|musician|composer|writer|author|painter|poet|philosopher|physicist|scientist|economist|historian|journalist|artist)\b/i,
+    1,
+  ],
   [/\b(19|20)\d{2}\b/, 1],
 ];
 
@@ -66,8 +89,14 @@ const SENSE_DEMOTIONS = [
 // all; everything else is merely a particular thing rather than a kind, which is
 // a much weaker reason to rank it down.
 const UNPHOTOGRAPHABLE_TYPES = new Set([
-  "Q101352", "Q12308941", "Q11879590", "Q3409032",  // family name, given names
-  "Q4167410", "Q4167836", "Q13406463", "Q11266439", // disambiguation, category, list, template
+  "Q101352",
+  "Q12308941",
+  "Q11879590",
+  "Q3409032", // family name, given names
+  "Q4167410",
+  "Q4167836",
+  "Q13406463",
+  "Q11266439", // disambiguation, category, list, template
 ]);
 
 // Reorder search hits so the ordinary-noun sense of a term rises. Ties keep
@@ -79,7 +108,9 @@ const UNPHOTOGRAPHABLE_TYPES = new Set([
 // available it dominates. The description patterns above remain the instant and
 // offline fallback, and still break ties.
 export function rankConceptSenses(hits, query = "", kinds = null) {
-  const q = String(query || "").trim().toLowerCase();
+  const q = String(query || "")
+    .trim()
+    .toLowerCase();
   return hits
     .map((h, i) => {
       const d = h.description || "";
@@ -91,8 +122,8 @@ export function rankConceptSenses(hits, query = "", kinds = null) {
         // element is a subclass of structural element; a surname is not.
         if (k.isClass) score += 5;
         else if ([...k.types].some((t) => UNPHOTOGRAPHABLE_TYPES.has(t))) score -= 6;
-        else if (k.types.size) score -= 1;   // a particular thing: still photographable,
-                                             // but a bare noun usually means the kind
+        else if (k.types.size) score -= 1; // a particular thing: still photographable,
+        // but a bare noun usually means the kind
       }
 
       for (const [re, penalty] of SENSE_DEMOTIONS) if (re.test(d)) score -= penalty;
@@ -102,7 +133,7 @@ export function rankConceptSenses(hits, query = "", kinds = null) {
       // but typing "Brooklyn Bridge" clearly means that one particular bridge.
       if (q && label === q) score += 8;
       else if (q && label.startsWith(q)) score += 1;
-      if (!d) score -= 1;                          // an undescribed sense is rarely the one meant
+      if (!d) score -= 1; // an undescribed sense is rarely the one meant
       return { h, score, i };
     })
     .sort((a, b) => b.score - a.score || a.i - b.i)
@@ -123,7 +154,7 @@ export async function searchConcepts(query, limit = 25) {
 // classes a particular thing belongs to. One batched query, cached in memory +
 // localStorage like ancestorsOf, and degrading to "unknown" so ranking silently
 // falls back to the description heuristic when WDQS is unreachable.
-const kindMem = new Map();   // qid -> { isClass, types:Set<qid> }
+const kindMem = new Map(); // qid -> { isClass, types:Set<qid> }
 
 async function sparqlKinds(qids) {
   const values = qids.map((q) => `wd:${q}`).join(" ");
@@ -135,7 +166,9 @@ async function sparqlKinds(qids) {
   if (!r.ok) throw new Error(`wdqs ${r.status}`);
   const j = await r.json();
   return (j.results?.bindings || []).map((b) => ({
-    item: qidOf(b.item?.value), rel: b.rel?.value, val: qidOf(b.val?.value),
+    item: qidOf(b.item?.value),
+    rel: b.rel?.value,
+    val: qidOf(b.val?.value),
   }));
 }
 
@@ -144,11 +177,16 @@ export async function conceptKinds(qids) {
   const out = new Map();
   const missing = [];
   for (const q of want) {
-    if (kindMem.has(q)) { out.set(q, kindMem.get(q)); continue; }
+    if (kindMem.has(q)) {
+      out.set(q, kindMem.get(q));
+      continue;
+    }
     const d = disk[`kind1:${q}`];
     if (d && Date.now() - d.t < TTL) {
       const v = { isClass: d.v.c, types: new Set(d.v.t) };
-      kindMem.set(q, v); out.set(q, v); continue;
+      kindMem.set(q, v);
+      out.set(q, v);
+      continue;
     }
     missing.push(q);
   }
@@ -160,14 +198,20 @@ export async function conceptKinds(qids) {
       for (const { item, rel, val } of await sparqlKinds(chunk)) {
         const e = byItem.get(item);
         if (!e || !val) continue;
-        if (rel === "s") e.isClass = true; else e.types.add(val);
+        if (rel === "s") e.isClass = true;
+        else e.types.add(val);
       }
-    } catch { ok = false; }   // WDQS unreachable / rate-limited
+    } catch {
+      ok = false;
+    } // WDQS unreachable / rate-limited
     for (const [q, v] of byItem) {
       out.set(q, v);
       // only cache a verified answer: caching a failure would pin every qid to
       // "unknown" for the whole TTL and quietly disable structural ranking
-      if (ok) { kindMem.set(q, v); persist(`kind1:${q}`, { c: v.isClass, t: [...v.types] }); }
+      if (ok) {
+        kindMem.set(q, v);
+        persist(`kind1:${q}`, { c: v.isClass, t: [...v.types] });
+      }
     }
   }
   return out;
@@ -181,7 +225,7 @@ export async function refineConceptRanking(hits, query = "") {
   try {
     return rankConceptSenses(hits, query, await conceptKinds(hits.map((h) => h.id)));
   } catch {
-    return hits;   // keep whatever order we already had
+    return hits; // keep whatever order we already had
   }
 }
 
@@ -222,8 +266,11 @@ export async function resolveConcepts(text, k = 3) {
 // memory + localStorage; degrades to self-only on failure so search keeps working
 // (exact-QID + label matching) offline.
 const WDQS = "https://query.wikidata.org/sparql";
-const ancMem = new Map();   // qid -> Set<qid>
-const qidOf = (uri) => { const m = /Q\d+$/.exec(uri || ""); return m ? m[0] : null; };
+const ancMem = new Map(); // qid -> Set<qid>
+const qidOf = (uri) => {
+  const m = /Q\d+$/.exec(uri || "");
+  return m ? m[0] : null;
+};
 
 async function sparqlAncestors(qids) {
   const values = qids.map((q) => `wd:${q}`).join(" ");
@@ -242,23 +289,37 @@ export async function ancestorsOf(qids) {
   const out = new Map();
   const missing = [];
   for (const q of want) {
-    if (ancMem.has(q)) { out.set(q, ancMem.get(q)); continue; }
+    if (ancMem.has(q)) {
+      out.set(q, ancMem.get(q));
+      continue;
+    }
     const d = disk[`anc2:${q}`];
-    if (d && Date.now() - d.t < TTL) { const s = new Set(d.v); ancMem.set(q, s); out.set(q, s); continue; }
+    if (d && Date.now() - d.t < TTL) {
+      const s = new Set(d.v);
+      ancMem.set(q, s);
+      out.set(q, s);
+      continue;
+    }
     missing.push(q);
   }
   for (let i = 0; i < missing.length; i += 100) {
     const chunk = missing.slice(i, i + 100);
-    const byItem = new Map(chunk.map((q) => [q, new Set([q])]));   // always include self
+    const byItem = new Map(chunk.map((q) => [q, new Set([q])])); // always include self
     let ok = true;
     try {
-      for (const { item, anc } of await sparqlAncestors(chunk)) if (item && anc && byItem.has(item)) byItem.get(item).add(anc);
-    } catch { ok = false; }   // WDQS unreachable/limited
+      for (const { item, anc } of await sparqlAncestors(chunk))
+        if (item && anc && byItem.has(item)) byItem.get(item).add(anc);
+    } catch {
+      ok = false;
+    } // WDQS unreachable/limited
     for (const [q, s] of byItem) {
-      out.set(q, s);   // the current search still gets a (self-only) set so it degrades gracefully
+      out.set(q, s); // the current search still gets a (self-only) set so it degrades gracefully
       // but only CACHE a verified result — otherwise one transient failure would
       // pin every qid to self-only for the whole TTL and silently kill expansion.
-      if (ok) { ancMem.set(q, s); persist(`anc2:${q}`, [...s]); }
+      if (ok) {
+        ancMem.set(q, s);
+        persist(`anc2:${q}`, [...s]);
+      }
     }
   }
   return out;

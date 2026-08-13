@@ -8,7 +8,7 @@
 // dynamic-imported so it code-splits, and a missing/empty asset degrades cleanly
 // to the base tokenizer (normalize+stem) — search still works fully offline.
 
-let cached;   // undefined = not tried; null = unavailable; array = phrase list
+let cached; // undefined = not tried; null = unavailable; array = phrase list
 
 // Returns the phrases array (underscore-joined stemmed tokens) or null.
 export async function loadPhraseModel() {

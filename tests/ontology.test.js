@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { deriveVocabulary, RELATION_CONCEPTS, resolveRelation, relationConcept, SPATIAL_SEED } from "../src/ontology.js";
+import {
+  deriveVocabulary,
+  RELATION_CONCEPTS,
+  resolveRelation,
+  relationConcept,
+  SPATIAL_SEED,
+} from "../src/ontology.js";
 
 const N = (uri, typeId, label) => ({ uri, value: { type: { id: typeId, label: typeId }, label } });
 const E = (from, to, typeId) => ({ value: { type: { id: typeId, label: typeId }, from, to } });
@@ -17,7 +23,7 @@ describe("deriveVocabulary (ontology vocabulary as a byproduct of instance autho
 
     expect(v.nodeTypes.map((t) => t.id).sort()).toEqual(["fire", "firepit", "log"]); // "log" once
     expect(v.edgeTypes.map((t) => t.id).sort()).toEqual(["burning", "inside"]);
-    expect(v).not.toHaveProperty("edges");        // type-to-type relation edges are punted
+    expect(v).not.toHaveProperty("edges"); // type-to-type relation edges are punted
     expect(v).not.toHaveProperty("attestations");
   });
 
@@ -26,7 +32,7 @@ describe("deriveVocabulary (ontology vocabulary as a byproduct of instance autho
     const edges = [E("at://a", "at://b", "inside"), E("at://c", "at://b", "inside")]; // log inside firepit; rock inside firepit
     const inside = deriveVocabulary(nodes, edges).edgeTypes.find((t) => t.id === "inside");
     expect(inside.domainIncludes.sort()).toEqual(["log", "rock"]); // two witnessed source types
-    expect(inside.rangeIncludes).toEqual(["firepit"]);             // one witnessed target type (deduped)
+    expect(inside.rangeIncludes).toEqual(["firepit"]); // one witnessed target type (deduped)
   });
 
   it("enriches recognized edge types with relation algebra (which is NOT observable from instances)", () => {
@@ -38,13 +44,24 @@ describe("deriveVocabulary (ontology vocabulary as a byproduct of instance autho
     const v = deriveVocabulary([N("at://n1", "a"), N("at://n2", "b")], [E("at://n1", "at://n2", "into")]);
     const into = v.edgeTypes.find((t) => t.id === "into");
     expect(into.opposite).toBe("out-from");
-    expect(into.inverse).toBeUndefined();   // path relations have no lexicalized converse
+    expect(into.inverse).toBeUndefined(); // path relations have no lexicalized converse
   });
 
   it("keeps derived edge types lexicon-conformant: no lex/category/axis leaks onto them", () => {
     const v = deriveVocabulary([N("at://n1", "a"), N("at://n2", "b")], [E("at://n1", "at://n2", "below")]);
     const et = v.edgeTypes.find((t) => t.id === "below");
-    const allowed = new Set(["id", "label", "inverse", "opposite", "symmetric", "transitive", "reflexive", "functional", "domainIncludes", "rangeIncludes"]);
+    const allowed = new Set([
+      "id",
+      "label",
+      "inverse",
+      "opposite",
+      "symmetric",
+      "transitive",
+      "reflexive",
+      "functional",
+      "domainIncludes",
+      "rangeIncludes",
+    ]);
     for (const k of Object.keys(et)) expect(allowed.has(k), `unexpected field "${k}" on derived edge type`).toBe(true);
     for (const gone of ["lex", "category", "axis", "contact", "arity"]) expect(et[gone], gone).toBeUndefined();
   });
@@ -64,14 +81,14 @@ describe("deriveVocabulary (ontology vocabulary as a byproduct of instance autho
     const v = deriveVocabulary([N("at://a", "x"), N("at://b", "y")], [E("at://a", "at://b", "under")]);
     const under = v.edgeTypes.find((t) => t.id === "under");
     expect(under).toBeTruthy();
-    expect(under.inverse).toBeUndefined();   // no algebra grafted onto an ambiguous string
+    expect(under.inverse).toBeUndefined(); // no algebra grafted onto an ambiguous string
   });
 
   it("keeps an edge type in the vocabulary even when its endpoints are untyped/unknown", () => {
     const v = deriveVocabulary([], [E("at://ghost1", "at://ghost2", "near")]);
     const near = v.edgeTypes.find((t) => t.id === "near");
     expect(near).toBeTruthy();
-    expect(near.domainIncludes).toEqual([]);   // no witnesses, but the relation is in use
+    expect(near.domainIncludes).toEqual([]); // no witnesses, but the relation is in use
     expect(near.symmetric).toBe(true);
   });
 
@@ -82,11 +99,11 @@ describe("deriveVocabulary (ontology vocabulary as a byproduct of instance autho
 
 describe("resolveRelation (surface form -> concept)", () => {
   it("resolves a canonical id, label, or lexical realization to the same concept", () => {
-    expect(relationConcept("below")).toBe("below");            // id
-    expect(relationConcept("beneath")).toBe("below");          // lex (unique: only below in this norm... see ambiguity test)
-    expect(relationConcept("lower than")).toBe("below");       // multi-word lex
+    expect(relationConcept("below")).toBe("below"); // id
+    expect(relationConcept("beneath")).toBe("below"); // lex (unique: only below in this norm... see ambiguity test)
+    expect(relationConcept("lower than")).toBe("below"); // multi-word lex
     expect(relationConcept("in front of")).toBe("in-front-of"); // label == id-with-spaces
-    expect(relationConcept("ahead of")).toBe("in-front-of");   // synonym
+    expect(relationConcept("ahead of")).toBe("in-front-of"); // synonym
   });
 
   it("returns candidates but no unique id for a genuinely ambiguous form", () => {
@@ -170,7 +187,16 @@ describe("RELATION_CONCEPTS integrity", () => {
 
   it("covers a broad concept inventory including complex realizations", () => {
     expect(Object.keys(RELATION_CONCEPTS).length).toBeGreaterThan(50);
-    for (const id of ["in-front-of", "left-of", "on-top-of", "in-the-middle-of", "north-of", "surrounded-by", "part-of", "into"]) {
+    for (const id of [
+      "in-front-of",
+      "left-of",
+      "on-top-of",
+      "in-the-middle-of",
+      "north-of",
+      "surrounded-by",
+      "part-of",
+      "into",
+    ]) {
       expect(RELATION_CONCEPTS[id], id).toBeTruthy();
     }
   });

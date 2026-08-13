@@ -4,15 +4,19 @@ import { describe, expect, it } from "vitest";
 import { PRESETS } from "../src/data/presets.js";
 
 const load = (path) => JSON.parse(readFileSync(resolve(path), "utf8"));
-const jsonl = (path) => existsSync(resolve(path))
-  ? readFileSync(resolve(path), "utf8").split("\n").map((line) => line.trim()).filter(Boolean).map(JSON.parse)
-  : [];
+const jsonl = (path) =>
+  existsSync(resolve(path))
+    ? readFileSync(resolve(path), "utf8")
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map(JSON.parse)
+    : [];
 
 const lexicons = {
   cameraType: load("lexicons/app/graycard/catalog/cameraType.json"),
   lensType: load("lexicons/app/graycard/catalog/lensType.json"),
   filmStock: load("lexicons/app/graycard/catalog/filmStock.json"),
-  developerType: load("lexicons/app/graycard/catalog/developerType.json"),
   chemistryType: load("lexicons/app/graycard/catalog/chemistryType.json"),
   devRecipe: load("lexicons/app/graycard/catalog/devRecipe.json"),
 };
@@ -20,12 +24,52 @@ const defs = load("lexicons/app/graycard/defs.json");
 const properties = (kind) => lexicons[kind].defs.main.record.properties;
 const propertyNames = (kind) => new Set(Object.keys(properties(kind)));
 
+const chemistrySource = (record, sourceKind) => {
+  if (sourceKind === "developer") {
+    const roles =
+      record.process === "monobath"
+        ? ["film-developer", "fixer"]
+        : record.form !== "kit"
+          ? ["film-developer"]
+          : record.process === "e6"
+            ? ["first-developer", "color-developer", "bleach", "fixer", "stabilizer"]
+            : record.process === "c41"
+              ? ["color-developer", "bleach", "fixer", "stabilizer"]
+              : record.process === "ecn2"
+                ? ["color-developer", "bleach", "fixer"]
+                : ["film-developer"];
+    return { ...record, roles, productKind: record.form === "kit" ? "process-kit" : "single-chemical" };
+  }
+  const roles =
+    record.role === "blix"
+      ? ["bleach", "fixer"]
+      : record.role === "monobath"
+        ? ["film-developer", "fixer"]
+        : record.role === "developer"
+          ? ["film-developer"]
+          : record.role === "other" && record.name === "Hypo Clearing Agent"
+            ? ["clearing-agent"]
+            : [record.role];
+  const { role: _role, ...rest } = record;
+  return {
+    ...rest,
+    roles,
+    productKind: record.form === "kit" ? "multi-part-chemical" : "single-chemical",
+    specSources: record.specSources?.map((source) => ({
+      ...source,
+      fields: source.fields?.map((field) => (field === "role" ? "roles" : field)),
+    })),
+  };
+};
+
 const generated = {
   cameraType: [...load("src/data/curated-cameras.json").cameras, ...load("src/data/lensfun-cameras.json").cameras],
   lensType: [...load("src/data/curated-lenses.json").lenses, ...load("src/data/lensfun-lenses.json").lenses],
   filmStock: load("src/data/curated-film-stocks.json").stocks,
-  developerType: jsonl("data/datasheets/developers.jsonl"),
-  chemistryType: jsonl("data/datasheets/chemistries.jsonl"),
+  chemistryType: [
+    ...jsonl("data/datasheets/developers.jsonl").map((record) => chemistrySource(record, "developer")),
+    ...jsonl("data/datasheets/chemistries.jsonl").map((record) => chemistrySource(record, "chemistry")),
+  ],
   devRecipe: load("src/data/curated-dev-times.json").recipes,
 };
 
@@ -33,7 +77,6 @@ const SEED_ONLY = {
   cameraType: new Set(["datasheetUrl", "exifModel", "image", "source", "wikidata"]),
   lensType: new Set(["datasheetUrl", "image", "source", "wikidata"]),
   filmStock: new Set(["image", "productUrl", "resolvingPower"]),
-  developerType: new Set(),
   chemistryType: new Set(),
   devRecipe: new Set(),
 };
@@ -85,15 +128,19 @@ function validate(value, schema, localLexicon, path) {
 
 function atprotoPayload(kind, record) {
   const schema = propertyNames(kind);
-  const out = Object.fromEntries(Object.entries(record).filter(([key, value]) =>
-    schema.has(key) && value != null && !(key === "image" && typeof value === "string")));
+  const out = Object.fromEntries(
+    Object.entries(record).filter(
+      ([key, value]) => schema.has(key) && value != null && !(key === "image" && typeof value === "string"),
+    ),
+  );
   // Lensfun/curated seed identity values are display units because the normal
   // form accepts millimetres and f-numbers; catalog creation scales them.
   if (kind === "lensType") {
     for (const key of ["focalLengthMin", "focalLengthMax", "maxAperture", "maxApertureAtTele", "minAperture"]) {
       if (typeof out[key] === "number") out[key] = Math.round(out[key] * 1_000_000);
     }
-    if (Array.isArray(out.apertureSteps)) out.apertureSteps = out.apertureSteps.map((value) => Math.round(value * 1_000_000));
+    if (Array.isArray(out.apertureSteps))
+      out.apertureSteps = out.apertureSteps.map((value) => Math.round(value * 1_000_000));
   }
   if (kind === "cameraType" && typeof out.cropFactor === "number" && Math.abs(out.cropFactor) < 1000) {
     out.cropFactor = Math.round(out.cropFactor * 1_000_000);
@@ -109,7 +156,11 @@ function walkUrls(value, path = "record", out = []) {
   else if (value && typeof value === "object") {
     for (const [key, nested] of Object.entries(value)) {
       const next = `${path}.${key}`;
-      if ((key === "url" || key === "datasheetUrl" || key === "source" || key === "productUrl") && typeof nested === "string" && /^https?:/.test(nested)) {
+      if (
+        (key === "url" || key === "datasheetUrl" || key === "source" || key === "productUrl") &&
+        typeof nested === "string" &&
+        /^https?:/.test(nested)
+      ) {
         out.push([next, nested]);
       }
       walkUrls(nested, next, out);
@@ -132,15 +183,16 @@ function assertProvenance(kind, record, label) {
 
 describe("catalog technical data is schema-native", () => {
   it("retains the expected manufacturer-sourced coverage", () => {
-    const sourced = Object.fromEntries(Object.entries(generated).map(([kind, records]) => [
-      kind,
-      records.filter((record) => record.specSources?.length).length,
-    ]));
+    const sourced = Object.fromEntries(
+      Object.entries(generated).map(([kind, records]) => [
+        kind,
+        records.filter((record) => record.specSources?.length).length,
+      ]),
+    );
     expect(sourced.cameraType).toBeGreaterThanOrEqual(5);
     expect(sourced.lensType).toBeGreaterThanOrEqual(26);
     expect(sourced.filmStock).toBe(103);
-    expect(sourced.developerType).toBe(24);
-    expect(sourced.chemistryType).toBe(13);
+    expect(sourced.chemistryType).toBe(37);
     expect(sourced.devRecipe).toBe(993);
   });
 
@@ -150,7 +202,10 @@ describe("catalog technical data is schema-native", () => {
       generated[kind].forEach((record, i) => {
         const label = `${kind}[${i}]`;
         for (const key of Object.keys(record)) {
-          expect(schema.has(key) || SEED_ONLY[kind].has(key), `${label}.${key} is neither schema-native nor declared seed metadata`).toBe(true);
+          expect(
+            schema.has(key) || SEED_ONLY[kind].has(key),
+            `${label}.${key} is neither schema-native nor declared seed metadata`,
+          ).toBe(true);
         }
         validate(atprotoPayload(kind, record), lexicons[kind].defs.main.record, lexicons[kind], label);
         assertProvenance(kind, record, label);
@@ -174,7 +229,9 @@ describe("datasheet enrichment contracts", () => {
       const byIdentity = new Map(generated[kind].map((record) => [identity(record), record]));
       rows.forEach((row, i) => {
         expect(row.datasheetUrl, `${fileKind}[${i}].datasheetUrl`).toMatch(/^https:\/\//);
-        expect(new Set(row.verifiedFields || []).size, `${fileKind}[${i}] duplicate verifiedFields`).toBe((row.verifiedFields || []).length);
+        expect(new Set(row.verifiedFields || []).size, `${fileKind}[${i}] duplicate verifiedFields`).toBe(
+          (row.verifiedFields || []).length,
+        );
         const record = byIdentity.get(identity(row));
         expect(record, `${fileKind}[${i}] did not match a generated record`).toBeTruthy();
         for (const field of row.verifiedFields || []) {
@@ -183,8 +240,12 @@ describe("datasheet enrichment contracts", () => {
           expect(record?.[field], `${fileKind}[${i}] generated '${field}'`).toEqual(row[field]);
         }
         const source = record?.specSources?.find((item) => item.document?.asset?.url === row.datasheetUrl);
-        if (row.verifiedFields?.length) expect(source?.fields, `${fileKind}[${i}] generated specSource`).toEqual(row.verifiedFields);
-        expect(record?.documents?.some((doc) => doc.asset?.url === row.datasheetUrl), `${fileKind}[${i}] generated document`).toBe(true);
+        if (row.verifiedFields?.length)
+          expect(source?.fields, `${fileKind}[${i}] generated specSource`).toEqual(row.verifiedFields);
+        expect(
+          record?.documents?.some((doc) => doc.asset?.url === row.datasheetUrl),
+          `${fileKind}[${i}] generated document`,
+        ).toBe(true);
       });
     });
   }
@@ -195,17 +256,23 @@ describe("preset round trips", () => {
     ["cameraType", "make", "model"],
     ["lensType", "make", "model"],
     ["filmStock", "brand", "name"],
-    ["developerType", "brand", "name"],
     ["chemistryType", "brand", "name"],
   ]) {
     it(`${kind}: datasheet-backed fields remain available to catalog creation`, () => {
       const presetItems = PRESETS[kind].items;
       const schema = propertyNames(kind);
-      const records = generated[kind].filter((record) =>
-        record.documents?.length || record.technicalDocuments?.length || record.sdsDocuments?.length || record.datasheetUrl);
+      const records = generated[kind].filter(
+        (record) =>
+          record.documents?.length ||
+          record.technicalDocuments?.length ||
+          record.sdsDocuments?.length ||
+          record.datasheetUrl,
+      );
       expect(records.length, `${kind} has representative sourced records`).toBeGreaterThan(0);
       for (const record of records) {
-        const preset = presetItems.find((item) => item[makeKey] === record[makeKey] && item[primaryKey] === record[primaryKey]);
+        const preset = presetItems.find(
+          (item) => item[makeKey] === record[makeKey] && item[primaryKey] === record[primaryKey],
+        );
         expect(preset, `${kind} preset ${record[makeKey]} ${record[primaryKey]}`).toBeTruthy();
         if (!preset) continue;
         for (const key of Object.keys(record).filter((field) => schema.has(field) && record[field] != null)) {

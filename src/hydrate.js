@@ -5,6 +5,7 @@
 // batch-resolve author profiles (handle / display name / avatar) for the card.
 // No auth, no backend.
 
+import { PublicRepoClient } from "@hypo/pds";
 import { resolvePds } from "./profile.js";
 
 const PUBLIC = "https://public.api.bsky.app/xrpc";
@@ -20,7 +21,16 @@ const READ_TIMEOUT_MS = 10_000;
 function withTimeout(promise, ms) {
   return new Promise((resolve, reject) => {
     const t = setTimeout(() => reject(new Error("timeout")), ms);
-    promise.then((v) => { clearTimeout(t); resolve(v); }, (e) => { clearTimeout(t); reject(e); });
+    promise.then(
+      (v) => {
+        clearTimeout(t);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(t);
+        reject(e);
+      },
+    );
   });
 }
 
@@ -28,7 +38,13 @@ function withTimeout(promise, ms) {
 const pdsCache = new Map();
 function pdsFor(did) {
   if (!pdsCache.has(did)) {
-    pdsCache.set(did, resolvePds(did).catch((e) => { pdsCache.delete(did); throw e; }));
+    pdsCache.set(
+      did,
+      resolvePds(did).catch((e) => {
+        pdsCache.delete(did);
+        throw e;
+      }),
+    );
   }
   return pdsCache.get(did);
 }
@@ -40,13 +56,12 @@ function pdsFor(did) {
 export async function hydrateSetup(ref) {
   try {
     const pds = await pdsFor(ref.did);
-    const u = new URL(`${pds}/xrpc/com.atproto.repo.getRecord`);
-    u.searchParams.set("repo", ref.did);
-    u.searchParams.set("collection", ref.collection);
-    u.searchParams.set("rkey", ref.rkey);
-    const j = await withTimeout(json(u), READ_TIMEOUT_MS);
-    if (!j?.value) return null;
-    return { uri: ref.uri, did: ref.did, rkey: ref.rkey, value: j.value };
+    const record = await withTimeout(
+      new PublicRepoClient(pds).get({ repo: ref.did, collection: ref.collection, rkey: ref.rkey }),
+      READ_TIMEOUT_MS,
+    );
+    if (!record?.value) return null;
+    return { uri: ref.uri, did: ref.did, rkey: ref.rkey, value: record.value };
   } catch {
     return null;
   }
@@ -65,7 +80,9 @@ export async function resolveProfiles(dids) {
       for (const p of j.profiles || []) {
         profileCache.set(p.did, { did: p.did, handle: p.handle, displayName: p.displayName, avatar: p.avatar });
       }
-    } catch { /* skip batch; unresolved DIDs fall back below */ }
+    } catch {
+      /* skip batch; unresolved DIDs fall back below */
+    }
   }
   const out = new Map();
   for (const d of dids) out.set(d, profileCache.get(d) || { did: d, handle: d });

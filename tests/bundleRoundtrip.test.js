@@ -19,31 +19,38 @@ function memAgent(did = "did:plc:test") {
   const cid = (c, rk) => `cid-${c}-${rk}`;
   return {
     store,
-    com: { atproto: { repo: {
-      createRecord: async ({ collection, record }) => {
-        const rkey = `rk${++seq}`;
-        store.set(`${collection}|${rkey}`, record);
-        return { data: { uri: uri(collection, rkey), cid: cid(collection, rkey) } };
+    com: {
+      atproto: {
+        repo: {
+          createRecord: async ({ collection, record }) => {
+            const rkey = `rk${++seq}`;
+            store.set(`${collection}|${rkey}`, record);
+            return { data: { uri: uri(collection, rkey), cid: cid(collection, rkey) } };
+          },
+          putRecord: async ({ collection, rkey, record }) => {
+            store.set(`${collection}|${rkey}`, record);
+            return { data: { uri: uri(collection, rkey), cid: cid(collection, rkey) } };
+          },
+          getRecord: async ({ collection, rkey }) => {
+            const v = store.get(`${collection}|${rkey}`);
+            if (v === undefined) throw new Error("not found");
+            return { data: { value: v, cid: cid(collection, rkey) } };
+          },
+          listRecords: async ({ collection }) => {
+            const records = [];
+            for (const [k, value] of store) {
+              const [c, rkey] = k.split("|");
+              if (c === collection) records.push({ uri: uri(collection, rkey), value, cid: cid(collection, rkey) });
+            }
+            return { data: { records } };
+          },
+          deleteRecord: async ({ collection, rkey }) => {
+            store.delete(`${collection}|${rkey}`);
+            return {};
+          },
+        },
       },
-      putRecord: async ({ collection, rkey, record }) => {
-        store.set(`${collection}|${rkey}`, record);
-        return { data: { uri: uri(collection, rkey), cid: cid(collection, rkey) } };
-      },
-      getRecord: async ({ collection, rkey }) => {
-        const v = store.get(`${collection}|${rkey}`);
-        if (v === undefined) throw new Error("not found");
-        return { data: { value: v, cid: cid(collection, rkey) } };
-      },
-      listRecords: async ({ collection }) => {
-        const records = [];
-        for (const [k, value] of store) {
-          const [c, rkey] = k.split("|");
-          if (c === collection) records.push({ uri: uri(collection, rkey), value, cid: cid(collection, rkey) });
-        }
-        return { data: { records } };
-      },
-      deleteRecord: async ({ collection, rkey }) => { store.delete(`${collection}|${rkey}`); return {}; },
-    } } },
+    },
   };
 }
 
@@ -51,11 +58,28 @@ const DID = "did:plc:test";
 const CAP = "app.graycard.photo.capture";
 const SHOOT = "app.graycard.session.capture";
 const ROLL = "app.graycard.instance.filmRoll";
+const atUri = (collection, rkey) => `at://${DID}/${collection}/${rkey}`;
 
 function seed(agent) {
-  agent.store.set(`${SHOOT}|s1`, { $type: SHOOT, label: "A shoot", createdAt: "2026-06-01T00:00:00Z", cameras: ["at://x/cam"] });
-  agent.store.set(`${CAP}|c1`, { $type: CAP, photo: "at://x/p1", filmRoll: "at://x/r1", frameIndex: 12, createdAt: "2026-06-01T00:00:00Z" });
-  agent.store.set(`${ROLL}|r1`, { $type: ROLL, stock: "at://x/stock", label: "Roll 1", createdAt: "2026-06-01T00:00:00Z" });
+  agent.store.set(`${SHOOT}|s1`, {
+    $type: SHOOT,
+    label: "A shoot",
+    createdAt: "2026-06-01T00:00:00Z",
+    cameras: [atUri("app.graycard.instance.camera", "cam")],
+  });
+  agent.store.set(`${CAP}|c1`, {
+    $type: CAP,
+    photo: atUri("social.grain.photo", "p1"),
+    filmRoll: atUri(ROLL, "r1"),
+    frameIndex: 12,
+    createdAt: "2026-06-01T00:00:00Z",
+  });
+  agent.store.set(`${ROLL}|r1`, {
+    $type: ROLL,
+    stock: atUri("app.graycard.catalog.filmStock", "stock"),
+    label: "Roll 1",
+    createdAt: "2026-06-01T00:00:00Z",
+  });
 }
 
 describe("bundle export covers every app.graycard record type", () => {
@@ -94,14 +118,36 @@ describe("export -> import is idempotent (a no-op)", () => {
     seed(agent);
     const bundle = await exportBundle(agent, DID);
     const cap = bundle.records.find((r) => r.collection === CAP);
-    expect(cap.value).toMatchObject({ photo: "at://x/p1", filmRoll: "at://x/r1", frameIndex: 12 });
+    expect(cap.value).toMatchObject({
+      photo: atUri("social.grain.photo", "p1"),
+      filmRoll: atUri(ROLL, "r1"),
+      frameIndex: 12,
+    });
   });
 
   it("compare is key-order independent (no spurious 'update')", async () => {
     const agent = memAgent();
-    agent.store.set(`${CAP}|c1`, { $type: CAP, photo: "at://x/p1", frameIndex: 3, createdAt: "t", location: { latitude: 1, longitude: 2 } });
+    agent.store.set(`${CAP}|c1`, {
+      $type: CAP,
+      photo: atUri("social.grain.photo", "p1"),
+      frameIndex: 3,
+      createdAt: "t",
+      location: { latitude: 1, longitude: 2 },
+    });
     // same content, keys in a different order
-    const reordered = [{ collection: CAP, rkey: "c1", value: { createdAt: "t", location: { longitude: 2, latitude: 1 }, frameIndex: 3, photo: "at://x/p1", $type: CAP } }];
+    const reordered = [
+      {
+        collection: CAP,
+        rkey: "c1",
+        value: {
+          createdAt: "t",
+          location: { longitude: 2, latitude: 1 },
+          frameIndex: 3,
+          photo: atUri("social.grain.photo", "p1"),
+          $type: CAP,
+        },
+      },
+    ];
     const plan = await diffBundle(agent, DID, reordered);
     expect(plan[0].status).toBe("unchanged");
   });
@@ -128,5 +174,26 @@ describe("import -> export is idempotent (round-trips into an empty repo)", () =
     // and importing again is a no-op
     const plan2 = await diffBundle(dest, DID, bundle2.records);
     expect(plan2.every((p) => p.status === "unchanged")).toBe(true);
+  });
+
+  it("rejects chronologically invalid consumable records before writing them", async () => {
+    const dest = memAgent();
+    const results = await writeBundle(dest, DID, [
+      {
+        collection: ROLL,
+        rkey: "bad-dates",
+        status: "create",
+        value: {
+          $type: ROLL,
+          stock: atUri("app.graycard.catalog.filmStock", "stock"),
+          createdAt: "2026-06-01T00:00:00Z",
+          loadedAt: "2026-06-03T00:00:00Z",
+          developedAt: "2026-06-02T00:00:00Z",
+        },
+      },
+    ]);
+
+    expect(results).toMatchObject([{ result: "error", error: expect.stringMatching(/loadedAt.*developedAt/) }]);
+    expect(dest.store.has(`${ROLL}|bad-dates`)).toBe(false);
   });
 });

@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./node_modules/.cache/typescript/tests",
+    "tsBuildInfoFile": "./node_modules/.cache/typescript/tests.tsbuildinfo",
+    "types": ["node", "vitest/globals"]
+  },
+  "files": [
+    "tests/domain-modules.test.ts",
+    "tests/meter-domain.test.ts",
+    "tests/schema-runtime.test.ts",
+    "tests/schema-static-store.test.ts",
+    "tests/store-signals.test.ts",
+    "tests/store-overlay.test.ts",
+    "tests/sync-outbox.test.ts"
+  ],
+  "references": [
+    { "path": "./packages/domain" },
+    { "path": "./packages/schema-runtime" },
+    { "path": "./packages/store" },
+    { "path": "./packages/sync" }
+  ]
+}

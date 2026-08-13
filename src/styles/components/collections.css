@@ -1,0 +1,223 @@
+/* ---------- gallery list ---------- */
+/* One column on phones, two once there is room for it. auto-fill + minmax lets
+   each row keep a sensible minimum width and simply reflows, so nothing else in
+   the layout needs to know how many columns there are. The min(360px, 100%)
+   matters: a bare 360px minimum would overflow any viewport narrower than that
+   (small phones), so it collapses to the container width there. Gap replaces the
+   rows' old margin-bottom so the columns align top-to-bottom, and any non-row
+   child (empty state, "no galleries" line) spans the full width. */
+.gallery-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr));
+}
+.gallery-list > :not(.gallery-row) {
+  grid-column: 1 / -1;
+}
+
+.gallery-row {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 15px 17px;
+  cursor: pointer;
+  background: var(--surface);
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    transform 0.06s ease;
+}
+.gallery-row:hover {
+  border-color: var(--accent);
+  background: var(--bg-elev);
+}
+
+.g-title {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.g-desc {
+  font-size: 13px;
+  margin-top: 3px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.g-id {
+  margin-top: 6px;
+}
+
+/* ---------- photo card ---------- */
+.photo-head {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.thumb {
+  width: 100px;
+  height: 100px;
+  flex: 0 0 100px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-meta {
+  min-width: 0;
+  word-break: break-all;
+}
+
+.exif {
+  margin: 14px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  background: var(--surface-2);
+}
+.exif summary {
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.exif-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 18px;
+  margin-top: 10px;
+}
+@media (max-width: 560px) {
+  .exif-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- library / gear ---------- */
+.gear-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+.gear-row {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.gear-row:last-child {
+  border-bottom: none;
+}
+
+/* Row layout for gear / reserve / roll / workflow / scene-tag rows.
+   Each is an identity (name + metadata) on the left and an action cluster on
+   the right. On anything short of a wide desktop the fixed-width action cluster
+   would otherwise crush the identity into a one-word-per-line sliver — most
+   visibly the six-button film-reserve rows. Let the whole row wrap so the
+   action cluster drops onto its own right-aligned line, give the identity the
+   width priority, and let the identity's own chip rows wrap cleanly rather than
+   shrinking each chip below its content width. */
+.gear-row,
+.workflow-step,
+.scene-tag-row {
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+.gear-row > :first-child,
+.workflow-step > :first-child,
+.scene-tag-row > :first-child {
+  flex: 1 1 15em;
+  min-width: 0;
+}
+.gear-row > :last-child:not(:first-child),
+.workflow-step > :last-child:not(:first-child),
+.scene-tag-row > :last-child:not(:first-child) {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+/* action clusters (and the identity's inline chip rows) wrap their own contents */
+.gear-row > .row:last-child,
+.workflow-step > .row:last-child {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  column-gap: 8px;
+  row-gap: 6px;
+}
+.gear-row .type-label,
+.gear-row .reserve-id > .row {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+/* ---------- tabs ---------- */
+.tab-bar {
+  /* mobile-first: a single scrollable row of tabs, no wrapping */
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 14px;
+  margin: 18px 0 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.tab-bar::-webkit-scrollbar {
+  display: none;
+}
+.tab-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 8px 2px;
+  margin-bottom: -1px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+@media (min-width: 720px) {
+  .tab-bar {
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+}
+/* scroll affordance: in the single-row (mobile) mode, fade the trailing edge so
+   a clipped last tab (e.g. SCANNING) reads as "scrolls sideways" rather than
+   "cut off". At >=720px the bar wraps instead of scrolling, so no fade. */
+@media (max-width: 719px) {
+  .tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+  }
+}
+.tab-btn:hover {
+  color: var(--text);
+  background: transparent;
+}
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: transparent;
+}

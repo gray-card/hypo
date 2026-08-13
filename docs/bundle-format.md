@@ -1,8 +1,10 @@
-# Gray Card bundle format
+# Hypo bundle format
 
 Hypo's **Bundle** feature (dump → diff → write) reads and writes a plain JSON
-file. This is the contract the Gray Card desktop app should emit on "dump to
-ATProto", and what Hypo produces on **Export**.
+file. Hypo produces this envelope on **Export** and accepts it on import. Other
+clients that use the shared `app.graycard.*` metadata model, including Gray
+Card, can produce the same envelope; their exporter interfaces are documented
+with those products.
 
 ## Shape
 
@@ -39,13 +41,13 @@ For each record, Hypo compares against the current repo:
   collection the bundle touches, whose `rkey` is not in the bundle. These are
   `deleteRecord`-ed.
 
-## Notes for the desktop exporter
+## Requirements for bundle producers
 
 - Keep `rkey`s stable across dumps so re-imports are idempotent (diff to
   "unchanged" when nothing changed).
 - Record `value`s reference other records by **AT-URI**, which embeds the source
   `did`. A same-repo round-trip (backup/restore) is safe; importing into a
-  *different* repo leaves those references pointing at the source repo unless the
+  _different_ repo leaves those references pointing at the source repo unless the
   exporter rewrites them. Hypo does not rewrite refs.
 - Scene graphs, workflow runs, artifacts, edit recipes, and catalog/instance/process
   records (anything under `app.graycard.*`) can travel in one bundle.

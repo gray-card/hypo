@@ -14,6 +14,7 @@ images. Manufacturer datasheets, pages, and product images are linked rather
 than copied and are not relicensed by Hypo.
 
 ## lensfun: lenses & digital cameras
+
 `src/data/lensfun-lenses.json` and `lensfun-cameras.json` are generated from the
 **lensfun** database (<https://github.com/lensfun/lensfun>, `data/db/`), which is
 licensed **CC-BY-SA 3.0** (<https://creativecommons.org/licenses/by-sa/3.0/>).
@@ -32,6 +33,7 @@ the **same license**, with attribution to the lensfun project and an indication 
 changes were made. lensfun is the single source of truth for digital camera bodies.
 
 ## Wikidata: canonical identifiers + images
+
 When present, `wikidata` QIDs are resolved from **Wikidata** (<https://www.wikidata.org>),
 which is dedicated to the public domain under **CC0 1.0**. They are stored on
 records via `app.graycard.defs#catalogLinks.externalIds` (`scheme: "wikidata"`).
@@ -40,6 +42,7 @@ Wikidata" method (SPARQL by manufacturer QID) used to seed QIDs and P18 default
 images; point it at any manufacturer.
 
 ## Curated lenses not in lensfun (e.g. Nikon's manual-focus line)
+
 `data/curated-lenses.jsonl` is a JSON Lines file (one lens per line, editable by
 hand or PR) of lenses lensfun does not carry, most notably Nikon's pre-AI, AI,
 AI-S, Series E, PC, and older manual-focus Nikkors. The factual fields (model
@@ -84,6 +87,7 @@ permissively licensed one to their own catalog records.
 casino-affiliate content. Ferrania's real site is `filmferrania.com`.
 
 ## Film stocks, developers, chemistry, papers, film + instant cameras
+
 Compiled from general reference knowledge (factual name/attribute lists). Not
 derived from any licensed database. lensfun has essentially no film or instant
 bodies, so those are curated (`CURATED_CAMERAS` in `presets.js`), along with a

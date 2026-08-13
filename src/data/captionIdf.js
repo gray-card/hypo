@@ -7,7 +7,7 @@
 // missing/empty/placeholder asset degrades cleanly to per-profile IDF — search
 // still works fully offline.
 
-let cached;   // undefined = not tried; null = unavailable; function = idf lookup
+let cached; // undefined = not tried; null = unavailable; function = idf lookup
 
 // Build idf(term) from a { N, dfFloor, df } table. Out-of-vocabulary terms get
 // the IDF of the least-frequent kept term (high but bounded), so a rare query
@@ -18,7 +18,10 @@ export function buildIdfLookup(table) {
   const df = table.df instanceof Map ? table.df : new Map(Object.entries(table.df || {}));
   const idfOf = (d) => Math.log(1 + (N - d + 0.5) / (d + 0.5));
   const defaultIdf = idfOf(Math.max(1, table.dfFloor || 1));
-  return (term) => { const d = df.get(term); return d ? idfOf(d) : defaultIdf; };
+  return (term) => {
+    const d = df.get(term);
+    return d ? idfOf(d) : defaultIdf;
+  };
 }
 
 export async function loadCaptionIdf() {

@@ -1,0 +1,15 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./apps/web" },
+    { "path": "./packages/catalog" },
+    { "path": "./packages/domain" },
+    { "path": "./packages/lexicon" },
+    { "path": "./packages/pds" },
+    { "path": "./packages/schema-runtime" },
+    { "path": "./packages/store" },
+    { "path": "./packages/sync" },
+    { "path": "./packages/ui" },
+    { "path": "./tsconfig.tests.json" }
+  ]
+}

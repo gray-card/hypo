@@ -6,90 +6,154 @@
 // copyrightable. Nothing here is derived from a licensed database. Users get
 // incremental match-as-you-type suggestions and may enter anything freely.
 
-import lensfunLenses from "./lensfun-lenses.json";
-import lensfunCameras from "./lensfun-cameras.json";
-import curatedLenses from "./curated-lenses.json";
-import curatedCameras from "./curated-cameras.json";
-import curatedFilmStocks from "./curated-film-stocks.json";
-import curatedDarkroomProducts from "./curated-darkroom-products.json";
+import { getDefaultCatalogClient } from "@hypo/catalog";
+import { CURATED_MOUNT_NAMES, GEAR_FIELD_ENUM_OPTIONS, LEXICON_ENUM_OPTIONS } from "@hypo/lexicon";
 
 // lensfun (CC-BY-SA) plus the curated non-lensfun additions (e.g. Nikon's
 // manual-focus line), deduped at build time so a lens never appears twice.
-const ALL_LENSES = [...(lensfunLenses.lenses || []), ...(curatedLenses.lenses || [])];
+const ALL_LENSES = [];
 
 export const ENUMS = {
-  format: [
-    // film roll
-    "135", "half-frame", "120", "220", "127", "126", "110", "620", "828", "70mm", "aps", "16mm-still", "minox", "disc",
-    // sheet / large format
-    "4x5", "5x7", "8x10", "9x12cm", "13x18cm", "6.5x9cm", "11x14", "ultra-large",
-    // instant
-    "instax-mini", "instax-square", "instax-wide", "polaroid-i-type", "polaroid-600", "polaroid-sx70", "polaroid-spectra", "peel-apart", "instant-8x10",
-    // cine
-    "super8", "regular8", "16mm-cine", "35mm-cine", "65mm",
-    // digital sensor
-    "full-frame-digital", "aps-c-digital", "aps-h-digital", "medium-format-digital", "micro-four-thirds-digital", "one-inch-digital", "foveon-digital",
-    "other",
-  ],
-  process: ["bw", "monobath", "c41", "e6", "ecn2", "reversal-bw", "other"],
-  filmType: ["color-negative", "color-slide", "bw-negative", "bw-slide", "chromogenic-bw", "other"],
-  category: ["film", "digital", "instant", "motion-picture", "other"],
-  role: ["pre-soak", "developer", "first-developer", "color-developer", "reversal-bath", "stop", "bleach", "fixer", "blix", "monobath", "stabilizer", "wash-aid", "hardener", "toner", "wetting-agent", "final-rinse", "other"],
-  form: ["liquid-concentrate", "liquid-ready", "powder", "tablet", "kit", "other"],
-  scannerKind: ["flatbed", "dedicated-film", "drum", "lab-minilab", "dslr-copy-stand", "mirrorless-copy-stand", "smartphone", "other"],
-  base: ["fiber", "resin-coated", "baryta", "other"],
-  surface: ["glossy", "satin", "luster", "pearl", "semi-matte", "matte", "textured", "other"],
-  lensTypeKind: ["prime", "zoom", "macro", "fisheye", "tilt-shift", "other"],
-  filterKind: ["uv", "skylight", "protection", "nd", "nd-variable", "graduated-nd", "polarizer-circular", "polarizer-linear", "color", "gradient-color", "contrast", "warming", "cooling", "infrared", "ir-pass", "ir-cut", "uv-pass", "close-up", "split-diopter", "diffusion", "black-mist", "mist", "soft-focus", "center-spot", "star", "prism", "night", "didymium", "other"],
-  meteringMode: ["matrix", "center-weighted", "spot", "partial", "average", "multi-spot", "highlight-weighted", "unknown", "other"],
-  exposureProgram: ["manual", "program", "aperture-priority", "shutter-priority", "creative", "action", "portrait", "landscape", "bulb", "auto", "other"],
-  stopFraction: ["1", "1/2", "1/3"],
-  printProcess: ["silver-gelatin", "ra4", "cyanotype", "platinum-palladium", "kallitype", "salt", "van-dyke", "carbon", "gum-bichromate", "bromoil", "albumen", "wet-plate-collodion", "dye-transfer", "dye-destruction", "photogravure", "lith", "inkjet", "dye-sublimation", "other"],
-  // paper attributes
-  medium: ["silver-gelatin", "ra4", "alt-process", "inkjet", "dye-sublimation", "other"],
-  contrast: ["graded", "variable-contrast", "other"],
-  tone: ["neutral", "warm", "cool", "other"],
-  // print-gear attributes
-  maxFormat: ["35mm", "6x4.5", "6x6", "6x7", "6x9", "4x5", "5x7", "8x10", "other"],
-  coversFormat: ["35mm", "6x4.5", "6x6", "6x7", "6x9", "4x5", "5x7", "8x10", "other"],
-  headType: ["condenser", "diffusion", "cold-cathode", "dichroic-color", "led", "point-source", "other"],
-  printerTechnology: ["inkjet", "dye-sublimation", "laser-c-print", "thermal", "other"],
-  inkType: ["pigment", "dye", "other"],
-  lightTechnology: ["uv-led", "uv-fluorescent", "metal-halide", "mercury-vapor", "led", "tungsten", "sunlight", "other"],
-  mount: [
-    "Nikon F", "Nikon Z", "Canon EF", "Canon EF-M", "Canon FD", "Canon RF", "Leica M", "Leica L",
-    "Leica R", "Leica screw (LTM)", "Sony E", "Sony A", "Pentax K", "Pentax 645", "Pentax 67",
-    "Fujifilm X", "Fujifilm G", "Micro Four Thirds", "Four Thirds", "M42", "Contax/Yashica",
-    "Contax G", "Olympus OM", "Minolta MD", "Minolta A", "Konica AR", "Hasselblad V", "Hasselblad X",
-    "Mamiya RB/RZ", "Mamiya 645", "Bronica SQ", "Bronica ETR", "medium format", "large format", "fixed", "other",
-  ],
-  storage: ["room", "cool-dark", "fridge", "freezer", "dry-cabinet", "other"],
-  rollStatus: ["loaded", "partial", "exposed", "at-lab", "developing", "developed", "scanned", "archived"],
-  cassetteType: ["factory", "reloadable-metal", "reloadable-plastic", "120-spool", "bulk-loaded", "other"],
-  artifactKind: ["scene", "digital-raw", "digital-raster", "film-roll-latent", "film-negative", "film-slide", "paper-negative", "glass-plate", "instant-print", "physical-print", "alt-process-print", "contact-sheet", "internegative", "interpositive", "video-clip", "video-frame", "other"],
+  format: LEXICON_ENUM_OPTIONS.captureFormat,
+  process: LEXICON_ENUM_OPTIONS.filmProcess,
+  filmType: LEXICON_ENUM_OPTIONS.filmType,
+  category: LEXICON_ENUM_OPTIONS.cameraCategory,
+  roles: LEXICON_ENUM_OPTIONS.chemistryRole,
+  form: LEXICON_ENUM_OPTIONS.developerForm,
+  scannerKind: LEXICON_ENUM_OPTIONS.scannerKind,
+  base: LEXICON_ENUM_OPTIONS.paperBase,
+  surface: LEXICON_ENUM_OPTIONS.paperSurface,
+  lensTypeKind: LEXICON_ENUM_OPTIONS.lensTypeKind,
+  filterKind: LEXICON_ENUM_OPTIONS.filterKind,
+  meteringMode: LEXICON_ENUM_OPTIONS.meteringMode,
+  exposureProgram: LEXICON_ENUM_OPTIONS.exposureProgram,
+  stopFraction: LEXICON_ENUM_OPTIONS.stopFraction,
+  printProcess: LEXICON_ENUM_OPTIONS.printProcess,
+  medium: LEXICON_ENUM_OPTIONS.paperMedium,
+  contrast: LEXICON_ENUM_OPTIONS.paperContrast,
+  tone: LEXICON_ENUM_OPTIONS.paperTone,
+  maxFormat: LEXICON_ENUM_OPTIONS.negativeFormat,
+  coversFormat: LEXICON_ENUM_OPTIONS.negativeFormat,
+  headType: LEXICON_ENUM_OPTIONS.headType,
+  printerTechnology: LEXICON_ENUM_OPTIONS.printerTechnology,
+  inkType: LEXICON_ENUM_OPTIONS.inkType,
+  lightTechnology: LEXICON_ENUM_OPTIONS.lightTechnology,
+  mount: CURATED_MOUNT_NAMES,
+  storage: LEXICON_ENUM_OPTIONS.storage,
+  rollStatus: LEXICON_ENUM_OPTIONS.rollStatus,
+  cassetteType: LEXICON_ENUM_OPTIONS.cassetteType,
+  artifactKind: LEXICON_ENUM_OPTIONS.artifactKind,
 };
 
 export const MANUFACTURERS = [
-  "Kodak", "Ilford", "Fujifilm", "Harman", "Kentmere", "Cinestill", "Foma", "Adox", "Rollei",
-  "Lomography", "Japan Camera Hunter", "Kosmo Foto", "Bergger", "Washi", "CatLABS", "Flic Film",
-  "Nikon", "Canon", "Leica", "Hasselblad", "Pentax", "Olympus", "OM System", "Minolta", "Konica",
-  "Konica Minolta", "Contax", "Zeiss", "Zeiss Ikon", "Voigtländer", "Mamiya", "Bronica", "Rolleiflex",
-  "Yashica", "Fujica", "Sony", "Ricoh", "Sigma", "Panasonic", "Polaroid", "Instax", "Phase One",
-  "Praktica", "Exakta", "Zenit", "FED", "Kiev", "Chinon", "Cosina", "Petri", "Argus",
-  "Epson", "Plustek", "Noritsu", "Valoi", "Negative Supply", "Tetenal", "Bellini",
-  "Photographers' Formulary", "Moersch", "Paterson", "TTArtisan", "7Artisans",
-  "Tamron", "Tokina", "Samyang", "Intrepid", "Chamonix",
-].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a.localeCompare(b));
+  "Kodak",
+  "Ilford",
+  "Fujifilm",
+  "Harman",
+  "Kentmere",
+  "Cinestill",
+  "Foma",
+  "Adox",
+  "Rollei",
+  "Lomography",
+  "Japan Camera Hunter",
+  "Kosmo Foto",
+  "Bergger",
+  "Washi",
+  "CatLABS",
+  "Flic Film",
+  "Nikon",
+  "Canon",
+  "Leica",
+  "Hasselblad",
+  "Pentax",
+  "Olympus",
+  "OM System",
+  "Minolta",
+  "Konica",
+  "Konica Minolta",
+  "Contax",
+  "Zeiss",
+  "Zeiss Ikon",
+  "Voigtländer",
+  "Mamiya",
+  "Bronica",
+  "Rolleiflex",
+  "Yashica",
+  "Fujica",
+  "Sony",
+  "Ricoh",
+  "Sigma",
+  "Panasonic",
+  "Polaroid",
+  "Instax",
+  "Phase One",
+  "Praktica",
+  "Exakta",
+  "Zenit",
+  "FED",
+  "Kiev",
+  "Chinon",
+  "Cosina",
+  "Petri",
+  "Argus",
+  "Epson",
+  "Plustek",
+  "Noritsu",
+  "Valoi",
+  "Negative Supply",
+  "Tetenal",
+  "Bellini",
+  "Photographers' Formulary",
+  "Moersch",
+  "Paterson",
+  "TTArtisan",
+  "7Artisans",
+  "Tamron",
+  "Tokina",
+  "Samyang",
+  "Intrepid",
+  "Chamonix",
+]
+  .filter((v, i, a) => a.indexOf(v) === i)
+  .sort((a, b) => a.localeCompare(b));
 
 // `aka` lists other names the SAME emulsion is sold under (a rebrand). Both names
 // stay as their own entries — a photographer may hold a box under either label —
 // but each points at the other so clients can treat them as one film.
-const film = (brand, name, iso, filmType, process, aka) => ({ brand, name, iso, filmType, process, ...(aka ? { aka } : {}) });
-const dev = (brand, name, process, form, defaultDilution, datasheetUrl) => ({
-  brand, name, process, form, defaultDilution, ...(datasheetUrl ? { datasheetUrl } : {}),
+const film = (brand, name, iso, filmType, process, aka) => ({
+  brand,
+  name,
+  iso,
+  filmType,
+  process,
+  ...(aka ? { aka } : {}),
 });
-const chem = (brand, name, role, form, datasheetUrl) => ({
-  brand, name, role, form, ...(datasheetUrl ? { datasheetUrl } : {}),
+const developerRoles = (process, form) => {
+  if (process === "monobath") return ["film-developer", "fixer"];
+  if (form !== "kit") return ["film-developer"];
+  if (process === "e6") return ["first-developer", "color-developer", "bleach", "fixer", "stabilizer"];
+  if (process === "c41") return ["color-developer", "bleach", "fixer", "stabilizer"];
+  if (process === "ecn2") return ["color-developer", "bleach", "fixer"];
+  return ["film-developer"];
+};
+const dev = (brand, name, process, form, defaultDilution, datasheetUrl) => ({
+  brand,
+  name,
+  roles: developerRoles(process, form),
+  productKind: form === "kit" ? "process-kit" : "single-chemical",
+  process,
+  form,
+  defaultDilution,
+  ...(datasheetUrl ? { datasheetUrl } : {}),
+});
+const chem = (brand, name, roles, form, datasheetUrl) => ({
+  brand,
+  name,
+  roles: Array.isArray(roles) ? roles : [roles],
+  productKind: form === "kit" ? "multi-part-chemical" : "single-chemical",
+  form,
+  ...(datasheetUrl ? { datasheetUrl } : {}),
 });
 const scan = (make, model, scannerKind) => ({ make, model, scannerKind });
 const paper = (brand, name, surface) => ({ brand, name, surface });
@@ -99,8 +163,10 @@ const filt = (make, name, filterKind, threadDiameterMm) => ({ make, name, filter
 // same way lensfun cameras/lenses do. Groups are split by mount where a make's
 // bodies span several mounts (e.g. Canon FD manual vs EF autofocus).
 const fc = (make, format, mount, models) => models.map((model) => ({ make, model, category: "film", format, mount }));
-const dc = (make, format, mount, models) => models.map((model) => ({ make, model, category: "digital", format, mount }));
-const ic = (make, format, models) => models.map((model) => ({ make, model, category: "instant", format, mount: "fixed" }));
+const dc = (make, format, mount, models) =>
+  models.map((model) => ({ make, model, category: "digital", format, mount }));
+const ic = (make, format, models) =>
+  models.map((model) => ({ make, model, category: "instant", format, mount: "fixed" }));
 
 // Camera catalog = curated + lensfun. lensfun (the single source of truth for
 // digital bodies) has almost no film/instant cameras and lacks a handful of
@@ -108,16 +174,71 @@ const ic = (make, format, models) => models.map((model) => ({ make, model, categ
 // body comes from lensfun and is deduped out below.
 const CURATED_CAMERAS = [
   // --- Nikon film ---
-  ...fc("Nikon", "35mm", "Nikon F", ["F", "F2", "F3", "F4", "F5", "F6", "FM", "FM2", "FM2n", "FM3A", "FE", "FE2", "FA", "FG", "EM", "FM10", "Nikkormat FT2", "Nikkormat EL", "N80 / F80", "N90 / F90X", "F100"]),
+  ...fc("Nikon", "35mm", "Nikon F", [
+    "F",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "FM",
+    "FM2",
+    "FM2n",
+    "FM3A",
+    "FE",
+    "FE2",
+    "FA",
+    "FG",
+    "EM",
+    "FM10",
+    "Nikkormat FT2",
+    "Nikkormat EL",
+    "N80 / F80",
+    "N90 / F90X",
+    "F100",
+  ]),
   ...fc("Nikon", "35mm", "fixed", ["L35AF", "28Ti", "35Ti"]),
   ...fc("Nikon", "35mm", "other", ["Nikonos V"]),
   // --- Canon film ---
-  ...fc("Canon", "35mm", "Canon FD", ["F-1", "F-1N", "A-1", "AE-1", "AE-1 Program", "AT-1", "AV-1", "AL-1", "T70", "T90"]),
-  ...fc("Canon", "35mm", "Canon EF", ["EOS 1", "EOS 1N", "EOS 1V", "EOS 3", "EOS 5", "EOS 30 / 33", "EOS 300", "EOS Rebel 2000"]),
+  ...fc("Canon", "35mm", "Canon FD", [
+    "F-1",
+    "F-1N",
+    "A-1",
+    "AE-1",
+    "AE-1 Program",
+    "AT-1",
+    "AV-1",
+    "AL-1",
+    "T70",
+    "T90",
+  ]),
+  ...fc("Canon", "35mm", "Canon EF", [
+    "EOS 1",
+    "EOS 1N",
+    "EOS 1V",
+    "EOS 3",
+    "EOS 5",
+    "EOS 30 / 33",
+    "EOS 300",
+    "EOS Rebel 2000",
+  ]),
   ...fc("Canon", "35mm", "fixed", ["Canonet QL17 GIII", "Sure Shot"]),
   // --- Pentax film ---
   ...fc("Pentax", "35mm", "M42", ["Spotmatic", "Spotmatic F", "ES II"]),
-  ...fc("Pentax", "35mm", "Pentax K", ["K1000", "KX", "KM", "ME Super", "MX", "MG", "LX", "Super Program", "P30", "MZ-5 / ZX-5", "MZ-S", "*ist"]),
+  ...fc("Pentax", "35mm", "Pentax K", [
+    "K1000",
+    "KX",
+    "KM",
+    "ME Super",
+    "MX",
+    "MG",
+    "LX",
+    "Super Program",
+    "P30",
+    "MZ-5 / ZX-5",
+    "MZ-S",
+    "*ist",
+  ]),
   ...fc("Pentax", "120", "Pentax 645", ["645", "645N", "645NII"]),
   ...fc("Pentax", "120", "Pentax 67", ["67", "67II", "6x7"]),
   // --- Olympus film ---
@@ -126,7 +247,16 @@ const CURATED_CAMERAS = [
   ...fc("Olympus", "half-frame", "other", ["Pen F", "Pen FT"]),
   ...fc("Olympus", "half-frame", "fixed", ["Pen EE"]),
   // --- Minolta film ---
-  ...fc("Minolta", "35mm", "Minolta MD", ["SRT-101", "SRT-102", "XD-11 / XD7", "XE", "X-300", "X-500", "X-700", "X-570"]),
+  ...fc("Minolta", "35mm", "Minolta MD", [
+    "SRT-101",
+    "SRT-102",
+    "XD-11 / XD7",
+    "XE",
+    "X-300",
+    "X-500",
+    "X-700",
+    "X-570",
+  ]),
   ...fc("Minolta", "35mm", "Minolta A", ["Maxxum 7000", "Maxxum 9", "Maxxum 7 / Dynax 7"]),
   ...fc("Minolta", "35mm", "fixed", ["TC-1", "Hi-Matic 7s", "Hi-Matic E"]),
   // --- Konica film ---
@@ -139,7 +269,17 @@ const CURATED_CAMERAS = [
   ...fc("Leica", "35mm", "Leica R", ["R6", "R7"]),
   ...fc("Leica", "35mm", "fixed", ["Minilux"]),
   // --- medium format + rangefinder film ---
-  ...fc("Hasselblad", "120", "Hasselblad V", ["500C", "500C/M", "501CM", "503CW", "503CX", "553ELX", "903SWC", "905SWC", "2000FCW"]),
+  ...fc("Hasselblad", "120", "Hasselblad V", [
+    "500C",
+    "500C/M",
+    "501CM",
+    "503CW",
+    "503CX",
+    "553ELX",
+    "903SWC",
+    "905SWC",
+    "2000FCW",
+  ]),
   ...fc("Hasselblad", "35mm", "other", ["XPan", "XPan II"]),
   ...fc("Mamiya", "120", "Mamiya RB/RZ", ["RB67 Pro-S", "RB67 Pro-SD", "RZ67 Pro", "RZ67 Pro II"]),
   ...fc("Mamiya", "120", "Mamiya 645", ["645 1000S", "645 Super", "645 Pro TL"]),
@@ -154,7 +294,17 @@ const CURATED_CAMERAS = [
   ...fc("Fujica", "120", "fixed", ["GW690III", "GSW690III", "GA645", "GF670"]),
   ...fc("Fujica", "35mm", "M42", ["ST701", "ST801"]),
   ...fc("Fujica", "35mm", "fixed", ["Klasse S", "Natura Classica"]),
-  ...fc("Contax", "35mm", "Contax/Yashica", ["RTS", "RTS III", "139 Quartz", "159MM", "167MT", "Aria", "RX", "S2", "AX"]),
+  ...fc("Contax", "35mm", "Contax/Yashica", [
+    "RTS",
+    "RTS III",
+    "139 Quartz",
+    "159MM",
+    "167MT",
+    "Aria",
+    "RX",
+    "S2",
+    "AX",
+  ]),
   ...fc("Contax", "35mm", "Contax G", ["G1", "G2"]),
   ...fc("Contax", "35mm", "fixed", ["T2", "T3", "TVS"]),
   ...fc("Yashica", "35mm", "Contax/Yashica", ["FX-3 Super 2000"]),
@@ -167,7 +317,13 @@ const CURATED_CAMERAS = [
   ...ic("Polaroid", "polaroid-sx70", ["SX-70", "SX-70 Sonar", "SLR 680"]),
   ...ic("Polaroid", "polaroid-600", ["600", "OneStep 2", "OneStep+"]),
   ...ic("Polaroid", "polaroid-i-type", ["Now", "Now+", "Now Gen 2", "I-2"]),
-  ...ic("Fujifilm", "instax-mini", ["Instax Mini 11", "Instax Mini 12", "Instax Mini 40", "Instax Mini 90", "Instax Mini Evo"]),
+  ...ic("Fujifilm", "instax-mini", [
+    "Instax Mini 11",
+    "Instax Mini 12",
+    "Instax Mini 40",
+    "Instax Mini 90",
+    "Instax Mini Evo",
+  ]),
   ...ic("Fujifilm", "instax-wide", ["Instax Wide 300"]),
   ...ic("Fujifilm", "instax-square", ["Instax Square SQ1", "Instax Square SQ6", "Instax Square SQ40"]),
   // --- digital bodies verified absent from the lensfun snapshot ---
@@ -182,14 +338,17 @@ const CURATED_CAMERAS = [
 ];
 
 const cameraNorm = (make, model) =>
-  `${make} ${model}`.toLowerCase().replace(/\b(eos|mark|mk|lumix)\b/g, " ").replace(/[^a-z0-9]/g, "");
+  `${make} ${model}`
+    .toLowerCase()
+    .replace(/\b(eos|mark|mk|lumix)\b/g, " ")
+    .replace(/[^a-z0-9]/g, "");
 
 const ALL_CAMERAS = (() => {
   const seen = new Set();
   const out = [];
-  // Prefer the canonical JSONL record, which can carry provenance, images, and
-  // datasheets. The older inline list is a fallback, followed by lensfun digital.
-  for (const src of [(curatedCameras.cameras || []), CURATED_CAMERAS, (lensfunCameras.cameras || [])]) {
+  // The compact inline records keep manual entry useful while the catalog
+  // shard is loading. The fetched catalog replaces this fallback in place.
+  for (const src of [CURATED_CAMERAS]) {
     for (const c of src) {
       const k = cameraNorm(c.make, c.model);
       if (seen.has(k)) continue;
@@ -294,54 +453,265 @@ export const PRESETS = {
     primary: "name",
     label: (i) => `${i.brand} ${i.name}`,
     items: [
-      dev("Kodak", "D-76", "bw", "powder", "1+1", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
-      dev("Kodak", "HC-110", "bw", "liquid-concentrate", "1+31 (dil. B)", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
-      dev("Kodak", "XTOL", "bw", "powder", "1+1", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
+      dev(
+        "Kodak",
+        "D-76",
+        "bw",
+        "powder",
+        "1+1",
+        "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf",
+      ),
+      dev(
+        "Kodak",
+        "HC-110",
+        "bw",
+        "liquid-concentrate",
+        "1+31 (dil. B)",
+        "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf",
+      ),
+      dev(
+        "Kodak",
+        "XTOL",
+        "bw",
+        "powder",
+        "1+1",
+        "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf",
+      ),
       dev("Kodak", "D-23", "bw", "powder", "stock"),
-      dev("Ilford", "ID-11", "bw", "powder", "1+1", "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"),
-      dev("Ilford", "DD-X", "bw", "liquid-concentrate", "1+4", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
-      dev("Ilford", "Ilfosol 3", "bw", "liquid-concentrate", "1+9", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
-      dev("Ilford", "Microphen", "bw", "powder", "stock", "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"),
-      dev("Ilford", "Perceptol", "bw", "powder", "1+1", "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"),
-      dev("Adox", "Rodinal / Adonal", "bw", "liquid-concentrate", "1+25", "https://www.adox.de/adox-film-developer/rodinal-adonal/"),
+      dev(
+        "Ilford",
+        "ID-11",
+        "bw",
+        "powder",
+        "1+1",
+        "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/",
+      ),
+      dev(
+        "Ilford",
+        "DD-X",
+        "bw",
+        "liquid-concentrate",
+        "1+4",
+        "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf",
+      ),
+      dev(
+        "Ilford",
+        "Ilfosol 3",
+        "bw",
+        "liquid-concentrate",
+        "1+9",
+        "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf",
+      ),
+      dev(
+        "Ilford",
+        "Microphen",
+        "bw",
+        "powder",
+        "stock",
+        "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/",
+      ),
+      dev(
+        "Ilford",
+        "Perceptol",
+        "bw",
+        "powder",
+        "1+1",
+        "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/",
+      ),
+      dev(
+        "Adox",
+        "Rodinal / Adonal",
+        "bw",
+        "liquid-concentrate",
+        "1+25",
+        "https://www.adox.de/adox-film-developer/rodinal-adonal/",
+      ),
       dev("Adox", "XT-3", "bw", "powder", "1+1", "https://www.adox.de/xt3-en/"),
       dev("Adox", "FX-39 II", "bw", "liquid-concentrate", "1+9", "https://www.adox.de/adox-film-developer/adox-fx-39/"),
-      dev("Cinestill", "Df96 Monobath", "monobath", "liquid-ready", "stock", "https://cdn.shopify.com/s/files/1/0339/5113/files/Df96_instructions_Instructions_Complete.pdf"),
-      dev("Bellini", "Hydrofen", "bw", "liquid-concentrate", "1+19", "https://www.bellinifoto.it/wp-content/uploads/2020/08/BWDROD.pdf"),
-      dev("Foma", "Fomadon R09", "bw", "liquid-concentrate", "1+25", "https://www.foma.cz/en/catalogue-fomadon-r09-detail-421"),
+      dev(
+        "Cinestill",
+        "Df96 Monobath",
+        "monobath",
+        "liquid-ready",
+        "stock",
+        "https://cdn.shopify.com/s/files/1/0339/5113/files/Df96_instructions_Instructions_Complete.pdf",
+      ),
+      dev(
+        "Bellini",
+        "Hydrofen",
+        "bw",
+        "liquid-concentrate",
+        "1+19",
+        "https://www.bellinifoto.it/wp-content/uploads/2020/08/BWDROD.pdf",
+      ),
+      dev(
+        "Foma",
+        "Fomadon R09",
+        "bw",
+        "liquid-concentrate",
+        "1+25",
+        "https://www.foma.cz/en/catalogue-fomadon-r09-detail-421",
+      ),
       dev("Foma", "Fomadon Excel", "bw", "powder", "1+1", "https://www.foma.cz/en/catalogue-fomadon-excel-detail-422"),
-      dev("Photographers' Formulary", "Pyrocat-HD", "bw", "liquid-concentrate", "1+1+100", "https://site.photoformulary.com/Catalog.pdf"),
-      dev("Photographers' Formulary", "PMK Pyro", "bw", "liquid-concentrate", "1+2+100", "https://site.photoformulary.com/Catalog.pdf"),
+      dev(
+        "Photographers' Formulary",
+        "Pyrocat-HD",
+        "bw",
+        "liquid-concentrate",
+        "1+1+100",
+        "https://site.photoformulary.com/Catalog.pdf",
+      ),
+      dev(
+        "Photographers' Formulary",
+        "PMK Pyro",
+        "bw",
+        "liquid-concentrate",
+        "1+2+100",
+        "https://site.photoformulary.com/Catalog.pdf",
+      ),
       dev("Diafine", "Diafine Two-Bath", "bw", "powder", "two-bath"),
-      dev("Kodak", "Flexicolor C-41", "c41", "kit", "stock", "https://business.kodakmoments.com/sites/default/files/wysiwyg/pro/chemistry/z131.pdf"),
-      dev("Bellini", "C-41", "c41", "kit", "stock", "https://www.bellinifoto.it/wp-content/uploads/2019/07/C41_scheda-tecnica-5.pdf"),
-      dev("Cinestill", "Cs41 Color Simplified", "c41", "kit", "stock", "https://cdn.shopify.com/s/files/1/0339/5113/files/CS41powder_Instructions_Complete.pdf"),
+      dev(
+        "Kodak",
+        "Flexicolor C-41",
+        "c41",
+        "kit",
+        "stock",
+        "https://business.kodakmoments.com/sites/default/files/wysiwyg/pro/chemistry/z131.pdf",
+      ),
+      dev(
+        "Bellini",
+        "C-41",
+        "c41",
+        "kit",
+        "stock",
+        "https://www.bellinifoto.it/wp-content/uploads/2019/07/C41_scheda-tecnica-5.pdf",
+      ),
+      dev(
+        "Cinestill",
+        "Cs41 Color Simplified",
+        "c41",
+        "kit",
+        "stock",
+        "https://cdn.shopify.com/s/files/1/0339/5113/files/CS41powder_Instructions_Complete.pdf",
+      ),
       dev("Tetenal", "Colortec C-41", "c41", "kit", "stock"),
       dev("Bellini", "E-6", "e6", "kit", "stock", "https://www.bellinifoto.it/en/prodotto/kit-amateur-e6/"),
-      dev("Cinestill", "Cs6 Creative Slide E-6", "e6", "kit", "stock", "https://cinestillfilm.com/collections/tcs-temp/products/cs6-creative-slide-3-bath-kits-for-color-timing-chrome-reversal-and-e-6-film"),
+      dev(
+        "Cinestill",
+        "Cs6 Creative Slide E-6",
+        "e6",
+        "kit",
+        "stock",
+        "https://cinestillfilm.com/collections/tcs-temp/products/cs6-creative-slide-3-bath-kits-for-color-timing-chrome-reversal-and-e-6-film",
+      ),
       dev("Cinestill", "Cs2 ECN-2", "ecn2", "kit", "stock", "https://cinestillfilm.com/collections/cs2-cine"),
-      dev("Kodak", "Ektachrome E-6", "e6", "kit", "stock", "https://business.kodakmoments.com/sites/default/files/files/resources/j83.pdf"),
+      dev(
+        "Kodak",
+        "Ektachrome E-6",
+        "e6",
+        "kit",
+        "stock",
+        "https://business.kodakmoments.com/sites/default/files/files/resources/j83.pdf",
+      ),
     ],
   },
   chemistryType: {
     primary: "name",
     label: (i) => `${i.brand} ${i.name}`,
     items: [
-      chem("Ilford", "Ilfostop", "stop", "liquid-concentrate", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
-      chem("Kodak", "Indicator Stop Bath", "stop", "liquid-concentrate", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
-      chem("Ilford", "Rapid Fixer", "fixer", "liquid-concentrate", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
-      chem("Ilford", "Hypam", "fixer", "liquid-concentrate", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
-      chem("Kodak", "Professional Fixer", "fixer", "powder", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
-      chem("Kodak", "Kodafix", "fixer", "liquid-concentrate", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
-      chem("Photographers' Formulary", "TF-4 Archival Fixer", "fixer", "liquid-ready", "https://site.photoformulary.com/Catalog.pdf"),
-      chem("Photographers' Formulary", "TF-5 Archival Fixer", "fixer", "liquid-ready", "https://site.photoformulary.com/Catalog.pdf"),
-      chem("Kodak", "Hypo Clearing Agent", "other", "powder", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
-      chem("Ilford", "Ilfotol", "wetting-agent", "liquid-concentrate", "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"),
-      chem("Kodak", "Photo-Flo 200", "wetting-agent", "liquid-concentrate", "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"),
-      chem("Kodak", "C-41 Blix", "blix", "kit"),
-      chem("Adox", "Adostab II", "stabilizer", "liquid-ready", "https://www.adox.de/chemistry/toners-helping-aids/adostab/"),
+      chem(
+        "Ilford",
+        "Ilfostop",
+        "stop",
+        "liquid-concentrate",
+        "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf",
+      ),
+      chem(
+        "Kodak",
+        "Indicator Stop Bath",
+        "stop",
+        "liquid-concentrate",
+        "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf",
+      ),
+      chem(
+        "Ilford",
+        "Rapid Fixer",
+        "fixer",
+        "liquid-concentrate",
+        "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf",
+      ),
+      chem(
+        "Ilford",
+        "Hypam",
+        "fixer",
+        "liquid-concentrate",
+        "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf",
+      ),
+      chem(
+        "Kodak",
+        "Professional Fixer",
+        "fixer",
+        "powder",
+        "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf",
+      ),
+      chem(
+        "Kodak",
+        "Kodafix",
+        "fixer",
+        "liquid-concentrate",
+        "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf",
+      ),
+      chem(
+        "Photographers' Formulary",
+        "TF-4 Archival Fixer",
+        "fixer",
+        "liquid-ready",
+        "https://site.photoformulary.com/Catalog.pdf",
+      ),
+      chem(
+        "Photographers' Formulary",
+        "TF-5 Archival Fixer",
+        "fixer",
+        "liquid-ready",
+        "https://site.photoformulary.com/Catalog.pdf",
+      ),
+      chem(
+        "Kodak",
+        "Hypo Clearing Agent",
+        "clearing-agent",
+        "powder",
+        "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf",
+      ),
+      chem(
+        "Ilford",
+        "Ilfotol",
+        "wetting-agent",
+        "liquid-concentrate",
+        "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf",
+      ),
+      chem(
+        "Kodak",
+        "Photo-Flo 200",
+        "wetting-agent",
+        "liquid-concentrate",
+        "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf",
+      ),
+      chem("Kodak", "C-41 Blix", ["bleach", "fixer"], "kit"),
+      chem(
+        "Adox",
+        "Adostab II",
+        "stabilizer",
+        "liquid-ready",
+        "https://www.adox.de/chemistry/toners-helping-aids/adostab/",
+      ),
       chem("Kodak", "Selenium Toner", "toner", "liquid-concentrate"),
-      chem("Moersch", "Sepia Toner", "toner", "liquid-concentrate", "https://www.moersch-photochemie.de/en/product/mt5-sepia-schwefeltoner/"),
+      chem(
+        "Moersch",
+        "Sepia Toner",
+        "toner",
+        "liquid-concentrate",
+        "https://www.moersch-photochemie.de/en/product/mt5-sepia-schwefeltoner/",
+      ),
     ],
   },
   cameraType: {
@@ -393,7 +763,8 @@ export const PRESETS = {
   },
   lensType: {
     primary: "model",
-    label: (i) => (i.make && !i.model.toLowerCase().startsWith(i.make.toLowerCase()) ? `${i.make} ${i.model}` : i.model),
+    label: (i) =>
+      i.make && !i.model.toLowerCase().startsWith(i.make.toLowerCase()) ? `${i.make} ${i.model}` : i.model,
     items: ALL_LENSES,
   },
   filterType: {
@@ -401,40 +772,65 @@ export const PRESETS = {
     label: (i) => [i.make, i.name].filter(Boolean).join(" "),
     items: [
       // B&W contrast filters (Wratten numbers)
-      filt("Tiffen", "Yellow #6 (K2)", "contrast"), filt("Tiffen", "Yellow #8 (K2)", "contrast"),
-      filt("Tiffen", "Yellow-Green #11", "contrast"), filt("Tiffen", "Orange #21", "contrast"),
-      filt("Tiffen", "Red #25", "contrast"), filt("Tiffen", "Red #29", "contrast"),
-      filt("Tiffen", "Green #58", "contrast"), filt("Tiffen", "Blue #47", "contrast"),
-      filt("Hoya", "Yellow (K2)", "contrast"), filt("Hoya", "Orange (G)", "contrast"),
-      filt("Hoya", "Red 25A", "contrast"), filt("Hoya", "Yellow-Green (X0)", "contrast"),
+      filt("Tiffen", "Yellow #6 (K2)", "contrast"),
+      filt("Tiffen", "Yellow #8 (K2)", "contrast"),
+      filt("Tiffen", "Yellow-Green #11", "contrast"),
+      filt("Tiffen", "Orange #21", "contrast"),
+      filt("Tiffen", "Red #25", "contrast"),
+      filt("Tiffen", "Red #29", "contrast"),
+      filt("Tiffen", "Green #58", "contrast"),
+      filt("Tiffen", "Blue #47", "contrast"),
+      filt("Hoya", "Yellow (K2)", "contrast"),
+      filt("Hoya", "Orange (G)", "contrast"),
+      filt("Hoya", "Red 25A", "contrast"),
+      filt("Hoya", "Yellow-Green (X0)", "contrast"),
       // UV / protection
-      filt("B+W", "010 UV-Haze", "uv"), filt("Hoya", "UV(C) HMC", "uv"),
-      filt("Tiffen", "UV Protector", "protection"), filt("Nikon", "NC (Neutral Clear)", "protection"),
+      filt("B+W", "010 UV-Haze", "uv"),
+      filt("Hoya", "UV(C) HMC", "uv"),
+      filt("Tiffen", "UV Protector", "protection"),
+      filt("Nikon", "NC (Neutral Clear)", "protection"),
       // polarizers
-      filt("B+W", "Circular Polarizer", "polarizer-circular"), filt("Hoya", "Circular PL", "polarizer-circular"),
+      filt("B+W", "Circular Polarizer", "polarizer-circular"),
+      filt("Hoya", "Circular PL", "polarizer-circular"),
       filt("Tiffen", "Circular Polarizer", "polarizer-circular"),
       // neutral density
-      filt("B+W", "ND 0.6 (2-stop)", "nd"), filt("B+W", "ND 0.9 (3-stop)", "nd"),
-      filt("B+W", "ND 1.8 (6-stop)", "nd"), filt("B+W", "ND 3.0 (10-stop)", "nd"),
-      filt("Hoya", "ProND8", "nd"), filt("Hoya", "ProND64", "nd"), filt("Hoya", "ProND1000", "nd"),
+      filt("B+W", "ND 0.6 (2-stop)", "nd"),
+      filt("B+W", "ND 0.9 (3-stop)", "nd"),
+      filt("B+W", "ND 1.8 (6-stop)", "nd"),
+      filt("B+W", "ND 3.0 (10-stop)", "nd"),
+      filt("Hoya", "ProND8", "nd"),
+      filt("Hoya", "ProND64", "nd"),
+      filt("Hoya", "ProND1000", "nd"),
       // graduated ND / special
-      filt("Lee", "0.6 ND Grad (soft)", "graduated-nd"), filt("Cokin", "Gradual ND8", "graduated-nd"),
-      filt("Tiffen", "Black Pro-Mist 1/4", "black-mist"), filt("Hoya", "Infrared R72", "infrared"),
-      filt("Tiffen", "81A Warming", "warming"), filt("Tiffen", "80A Cooling", "cooling"),
+      filt("Lee", "0.6 ND Grad (soft)", "graduated-nd"),
+      filt("Cokin", "Gradual ND8", "graduated-nd"),
+      filt("Tiffen", "Black Pro-Mist 1/4", "black-mist"),
+      filt("Hoya", "Infrared R72", "infrared"),
+      filt("Tiffen", "81A Warming", "warming"),
+      filt("Tiffen", "80A Cooling", "cooling"),
       filt("Nikon", "Close-up No. 3T", "close-up"),
     ],
   },
 };
 
-// Merge the datasheet-farmed film stocks (data/curated-film-stocks, each with a
-// cited datasheetUrl) into the film-stock suggestions, deduped by normalized name
-// so a film never appears twice. This keeps the "start a roll" / reserve list in
-// step with the development-time database — the same canonical names on both sides.
-{
-  const norm = (s) => String(s || "").toLowerCase().replace(/plus/g, "").replace(/[^a-z0-9]/g, "");
+// Developers are photographic chemistry. Keep the large compact fallback list
+// colocated above for reviewability, then expose one runtime catalog only.
+PRESETS.chemistryType.items.unshift(...PRESETS.developerType.items);
+delete PRESETS.developerType;
+
+// Merge fetched, datasheet-backed film stocks into the compact offline seeds.
+// The exported arrays are mutated in place so already-open autocomplete
+// controls observe a shard that finishes loading after the modal opens.
+function mergeFilmStocks(stocks) {
+  const norm = (s) =>
+    String(s || "")
+      .toLowerCase()
+      .replace(/plus/g, "")
+      .replace(/[^a-z0-9]/g, "");
   const items = PRESETS.filmStock.items;
   const byName = new Map(items.map((i) => [norm(i.name), i]));
-  for (const s of (curatedFilmStocks.stocks || [])) {
+  for (const raw of stocks || []) {
+    const { catalogKind: _catalogKind, ...s } = raw;
     const key = norm(s.name);
     const existing = byName.get(key);
     if (existing) {
@@ -451,36 +847,164 @@ export const PRESETS = {
   items.sort((a, b) => (a.brand + " " + a.name).localeCompare(b.brand + " " + b.name));
 }
 
-// Enrich the compact built-in developer and chemistry lists with structured
-// manufacturer specifications. Identity fields from the built-ins remain the
-// display canonicalization; datasheet fields fill only missing values.
-{
-  const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-  for (const [presetKind, sourceKey] of [["developerType", "developers"], ["chemistryType", "chemistries"]]) {
-    const items = PRESETS[presetKind].items;
-    const byIdentity = new Map(items.map((item) => [`${norm(item.brand)}\0${norm(item.name)}`, item]));
-    for (const spec of (curatedDarkroomProducts[sourceKey] || [])) {
-      const key = `${norm(spec.brand)}\0${norm(spec.name)}`;
-      const existing = byIdentity.get(key);
-      if (existing) {
-        for (const [field, value] of Object.entries(spec)) {
-          if (value != null && existing[field] == null) existing[field] = value;
-        }
-        continue;
+// Enrich the compact photographic-chemistry list with structured manufacturer
+// specifications from its shard.
+function mergeDarkroomProducts(products) {
+  const norm = (s) =>
+    String(s || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+  const items = PRESETS.chemistryType.items;
+  const byIdentity = new Map(items.map((item) => [`${norm(item.brand)}\0${norm(item.name)}`, item]));
+  for (const raw of products.filter((item) => item.catalogKind === "chemistryType")) {
+    const { catalogKind: _catalogKind, ...spec } = raw;
+    const key = `${norm(spec.brand)}\0${norm(spec.name)}`;
+    const existing = byIdentity.get(key);
+    if (existing) {
+      for (const [field, value] of Object.entries(spec)) {
+        if (value != null && existing[field] == null) existing[field] = value;
       }
-      const added = { ...spec };
-      byIdentity.set(key, added);
-      items.push(added);
+      continue;
     }
+    const added = { ...spec };
+    byIdentity.set(key, added);
+    items.push(added);
   }
 }
 
-export const FIELD_ENUMS = {
-  format: ENUMS.format, process: ENUMS.process, filmType: ENUMS.filmType,
-  category: ENUMS.category, role: ENUMS.role, form: ENUMS.form,
-  scannerKind: ENUMS.scannerKind, surface: ENUMS.surface, mount: ENUMS.mount,
-  lensTypeKind: ENUMS.lensTypeKind, filterKind: ENUMS.filterKind,
-  meteringMode: ENUMS.meteringMode, exposureProgram: ENUMS.exposureProgram,
-  apertureStopIncrement: ENUMS.stopFraction, shutterStopIncrement: ENUMS.stopFraction,
-  storage: ENUMS.storage, status: ENUMS.rollStatus, cassetteType: ENUMS.cassetteType, kind: ENUMS.artifactKind,
+const PRESET_DOMAINS = {
+  cameraType: "cameras",
+  lensType: "lenses",
+  filmStock: "film-stocks",
+  chemistryType: "darkroom-products",
 };
+const domainLoads = new Map();
+
+function replaceUnique(target, records, identity) {
+  const seen = new Set();
+  const next = [];
+  for (const raw of records) {
+    const { catalogKind: _catalogKind, ...record } = raw;
+    const key = identity(record);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    next.push(record);
+  }
+  target.splice(0, target.length, ...next);
+}
+
+function applyCatalogDomain(domain, items) {
+  if (domain === "cameras") {
+    const cameras = [...items, ...CURATED_CAMERAS].map((item) => ({
+      ...item,
+      ...(item.exifModel && cameraNorm(item.make, item.exifModel) !== cameraNorm(item.make, item.model)
+        ? { alternativeNames: [...new Set([...(item.alternativeNames || []), item.exifModel])] }
+        : {}),
+    }));
+    replaceUnique(PRESETS.cameraType.items, cameras, (item) => cameraNorm(item.make, item.model));
+  } else if (domain === "lenses") {
+    replaceUnique(PRESETS.lensType.items, items, (item) =>
+      `${item.make || ""}\0${item.model || ""}`.trim().toLowerCase(),
+    );
+  } else if (domain === "film-stocks") mergeFilmStocks(items);
+  else if (domain === "darkroom-products") mergeDarkroomProducts(items);
+}
+
+function loadState(domain) {
+  if (!domainLoads.has(domain)) domainLoads.set(domain, { status: "idle", error: null, promise: null });
+  return domainLoads.get(domain);
+}
+
+/** Return the lazy-load state used by setup forms to render progress/errors. */
+export function presetCatalogStatus(kind) {
+  const domain = PRESET_DOMAINS[kind];
+  return domain ? { ...loadState(domain), promise: undefined } : { status: "ready", error: null };
+}
+
+/**
+ * Fetch only the shards needed by the requested preset kinds. Repeated and
+ * concurrent calls share one promise, while failures remain retryable.
+ */
+export async function loadCatalogPresets(kinds = Object.keys(PRESET_DOMAINS), options = {}) {
+  const requested = Array.isArray(kinds) ? kinds : [kinds];
+  const domains = [...new Set(requested.map((kind) => PRESET_DOMAINS[kind]).filter(Boolean))];
+  const client = options.client || getDefaultCatalogClient();
+  await Promise.all(
+    domains.map(async (domain) => {
+      const state = loadState(domain);
+      if (state.status === "ready") return;
+      if (!state.promise) {
+        state.status = "loading";
+        state.error = null;
+        state.promise = client
+          .getDomain(domain)
+          .then((items) => {
+            applyCatalogDomain(domain, items);
+            state.status = "ready";
+          })
+          .catch((error) => {
+            state.status = "error";
+            state.error = error;
+            throw error;
+          })
+          .finally(() => {
+            state.promise = null;
+          });
+      }
+      await state.promise;
+    }),
+  );
+}
+
+// Vitest exercises the legacy synchronous helpers directly. Production builds
+// replace MODE and remove this fixture-only branch, so none of these JSON files
+// are emitted into the application graph.
+if (import.meta.env.MODE === "test") {
+  const [cameras, lensfunCameras, lenses, lensfunLenses, filmStocks, darkroomProducts] = await Promise.all([
+    import("./curated-cameras.json"),
+    import("./lensfun-cameras.json"),
+    import("./curated-lenses.json"),
+    import("./lensfun-lenses.json"),
+    import("./curated-film-stocks.json"),
+    import("./curated-darkroom-products.json"),
+  ]);
+  const fixtures = {
+    cameras: [...(cameras.default.cameras || []), ...(lensfunCameras.default.cameras || [])],
+    lenses: [...(lenses.default.lenses || []), ...(lensfunLenses.default.lenses || [])],
+    "film-stocks": filmStocks.default.stocks || [],
+    "darkroom-products": [
+      ...(darkroomProducts.default.developers || []).map((item) => ({
+        ...item,
+        roles: developerRoles(item.process, item.form),
+        productKind: item.form === "kit" ? "process-kit" : "single-chemical",
+        catalogKind: "chemistryType",
+      })),
+      ...(darkroomProducts.default.chemistries || []).map((item) => ({
+        ...Object.fromEntries(Object.entries(item).filter(([key]) => key !== "role")),
+        roles:
+          item.roles ||
+          (item.role === "blix"
+            ? ["bleach", "fixer"]
+            : item.role === "monobath"
+              ? ["film-developer", "fixer"]
+              : item.role === "developer"
+                ? ["film-developer"]
+                : item.role === "other" && item.name === "Hypo Clearing Agent"
+                  ? ["clearing-agent"]
+                  : [item.role]),
+        specSources: item.specSources?.map((source) => ({
+          ...source,
+          fields: source.fields?.map((field) => (field === "role" ? "roles" : field)),
+        })),
+        productKind: item.productKind || (item.form === "kit" ? "multi-part-chemical" : "single-chemical"),
+        catalogKind: "chemistryType",
+      })),
+    ],
+  };
+  for (const [domain, items] of Object.entries(fixtures)) {
+    applyCatalogDomain(domain, items);
+    loadState(domain).status = "ready";
+  }
+}
+
+export const FIELD_ENUMS = GEAR_FIELD_ENUM_OPTIONS;

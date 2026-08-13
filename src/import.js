@@ -3,18 +3,27 @@
 // record against the user's repo, then write (create/putRecord) on confirm,
 // using swapRecord for optimistic concurrency on updates.
 
+import { PublicRepoClient } from "@hypo/pds";
+import { assertConsumableLifecycle } from "@hypo/domain";
 import { parseAtUri, listRecords, blobCid } from "./grain.js";
 import { NS } from "./graycard.js";
+import { repoClient } from "./pds.js";
 import { resolvePds } from "./profile.js";
 
-const stripType = (v) => { const { $type, ...rest } = v || {}; return rest; };
+const stripType = (v) => {
+  const { $type, ...rest } = v || {};
+  return rest;
+};
 // stable, key-sorted serialisation so two records with identical content but a
 // different key order compare equal. this is what makes export -> import a true
 // no-op (unchanged) rather than a pile of spurious "update" rows.
 function stableStringify(v) {
   if (Array.isArray(v)) return `[${v.map(stableStringify).join(",")}]`;
   if (v && typeof v === "object") {
-    return `{${Object.keys(v).sort().map((k) => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",")}}`;
+    return `{${Object.keys(v)
+      .sort()
+      .map((k) => JSON.stringify(k) + ":" + stableStringify(v[k]))
+      .join(",")}}`;
   }
   return JSON.stringify(v);
 }
@@ -22,7 +31,7 @@ const eq = (a, b) => stableStringify(stripType(a)) === stableStringify(stripType
 
 export function parseBundle(text) {
   const b = JSON.parse(text);
-  const records = Array.isArray(b) ? b : (b.records || []);
+  const records = Array.isArray(b) ? b : b.records || [];
   if (!Array.isArray(records) || !records.length) throw new Error("Bundle has no records[]");
   for (const r of records) {
     if (!r.collection || !r.value) throw new Error("Each record needs a collection and value");
@@ -33,13 +42,18 @@ export function parseBundle(text) {
 export async function diffBundle(agent, did, records) {
   const plan = [];
   for (const r of records) {
-    let status = "create", existingCid = null, existingValue = null;
+    let status = "create",
+      existingCid = null,
+      existingValue = null;
     if (r.rkey) {
       try {
-        const res = await agent.com.atproto.repo.getRecord({ repo: did, collection: r.collection, rkey: r.rkey });
-        existingValue = res.data.value; existingCid = res.data.cid;
+        const existing = await repoClient(agent).get({ repo: did, collection: r.collection, rkey: r.rkey });
+        existingValue = existing.value;
+        existingCid = existing.cid;
         status = eq(existingValue, r.value) ? "unchanged" : "update";
-      } catch { status = "create"; }
+      } catch {
+        status = "create";
+      }
     }
     plan.push({ collection: r.collection, rkey: r.rkey || null, value: r.value, status, existingCid, existingValue });
   }
@@ -71,15 +85,20 @@ function isBlobRef(v) {
 
 // re-upload blobs referenced in a record when importing across repos: fetch the
 // bytes from the source PDS and upload to the target, swapping in the new ref.
-async function rehydrateBlobs(agent, sourcePds, sourceDid, value) {
+async function rehydrateBlobs(agent, sourceClient, sourceDid, value) {
   const walk = async (v) => {
     if (isBlobRef(v)) {
       const cid = blobCid(v);
-      const res = await fetch(`${sourcePds}/xrpc/com.atproto.sync.getBlob?did=${encodeURIComponent(sourceDid)}&cid=${encodeURIComponent(cid)}`);
-      if (!res.ok) return v;
-      const bytes = new Uint8Array(await res.arrayBuffer());
-      const up = await agent.com.atproto.repo.uploadBlob(bytes, { encoding: v.mimeType || "application/octet-stream" });
-      return up.data.blob;
+      let bytes;
+      try {
+        bytes = await sourceClient.getBlob({ did: sourceDid, cid });
+      } catch {
+        return v;
+      }
+      return repoClient(agent).uploadBlob({
+        bytes,
+        mimeType: v.mimeType || "application/octet-stream",
+      });
     }
     if (Array.isArray(v)) return Promise.all(v.map(walk));
     if (v && typeof v === "object") {
@@ -95,29 +114,46 @@ async function rehydrateBlobs(agent, sourcePds, sourceDid, value) {
 export async function writeBundle(agent, did, plan, onProgress, sourceDid = null) {
   const results = [];
   let sourcePds = null;
+  let sourceClient = null;
   const crossRepo = sourceDid && sourceDid !== did;
-  if (crossRepo) { try { sourcePds = await resolvePds(sourceDid); } catch { sourcePds = null; } }
+  if (crossRepo) {
+    try {
+      sourcePds = await resolvePds(sourceDid);
+      sourceClient = new PublicRepoClient(sourcePds);
+    } catch {
+      sourcePds = null;
+    }
+  }
   const work = plan.filter((p) => p.status !== "unchanged" && !p.skip);
   let done = 0;
   for (const item of plan) {
-    if (item.status === "unchanged" || item.skip) { results.push({ ...item, result: "skipped" }); continue; }
+    if (item.status === "unchanged" || item.skip) {
+      results.push({ ...item, result: "skipped" });
+      continue;
+    }
     done++;
     onProgress?.(item, done, work.length);
     try {
       if (item.status === "delete") {
-        await agent.com.atproto.repo.deleteRecord({ repo: did, collection: item.collection, rkey: item.rkey });
+        await repoClient(agent).delete({ repo: did, collection: item.collection, rkey: item.rkey });
         results.push({ ...item, result: "deleted" });
         continue;
       }
       let record = { ...item.value };
-      if (crossRepo && sourcePds) record = await rehydrateBlobs(agent, sourcePds, sourceDid, record);
+      assertConsumableLifecycle(item.collection, record);
+      if (crossRepo && sourceClient) record = await rehydrateBlobs(agent, sourceClient, sourceDid, record);
+      const validation = item.collection.startsWith("social.grain.") ? { validate: false } : {};
       if (item.rkey) {
-        await agent.com.atproto.repo.putRecord({
-          repo: did, collection: item.collection, rkey: item.rkey, record,
-          ...(item.existingCid ? { swapRecord: item.existingCid } : {}), validate: false,
+        await repoClient(agent).put({
+          repo: did,
+          collection: item.collection,
+          rkey: item.rkey,
+          record,
+          ...(item.existingCid ? { swapRecord: item.existingCid } : {}),
+          ...validation,
         });
       } else {
-        await agent.com.atproto.repo.createRecord({ repo: did, collection: item.collection, record, validate: false });
+        await repoClient(agent).create({ repo: did, collection: item.collection, record, ...validation });
       }
       results.push({ ...item, result: "written" });
     } catch (e) {
@@ -133,7 +169,11 @@ export async function writeBundle(agent, did, plan, onProgress, sourceDid = null
 // exported automatically (a test asserts NS covers every record lexicon).
 export function graycardCollections() {
   const out = [];
-  const walk = (v) => { if (typeof v === "string") { if (v.startsWith("app.graycard.")) out.push(v); } else if (v) Object.values(v).forEach(walk); };
+  const walk = (v) => {
+    if (typeof v === "string") {
+      if (v.startsWith("app.graycard.")) out.push(v);
+    } else if (v) Object.values(v).forEach(walk);
+  };
   walk(NS);
   return [...new Set(out)].sort();
 }
@@ -144,9 +184,11 @@ export async function exportBundle(agent, did) {
     try {
       const recs = (await listRecords(agent, did, collection))
         .map((r) => ({ collection, rkey: parseAtUri(r.uri).rkey, value: r.value }))
-        .sort((a, b) => a.rkey.localeCompare(b.rkey));   // deterministic order for stable round-trips
+        .sort((a, b) => a.rkey.localeCompare(b.rkey)); // deterministic order for stable round-trips
       records.push(...recs);
-    } catch { /* collection may not exist yet */ }
+    } catch {
+      /* collection may not exist yet */
+    }
   }
   return { $type: "app.graycard.bundle", exportedAt: new Date().toISOString(), did, records };
 }

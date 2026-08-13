@@ -7,11 +7,7 @@
       "key": "tid",
       "record": {
         "type": "object",
-        "required": [
-          "subject",
-          "kind",
-          "createdAt"
-        ],
+        "required": ["subject", "kind", "createdAt"],
         "properties": {
           "subject": {
             "type": "string",
@@ -20,14 +16,7 @@
           },
           "kind": {
             "type": "string",
-            "knownValues": [
-              "cla",
-              "sensor-clean",
-              "shutter-service",
-              "fungus-clean",
-              "calibration",
-              "other"
-            ]
+            "knownValues": ["cla", "sensor-clean", "shutter-service", "fungus-clean", "calibration", "other"]
           },
           "performedAt": {
             "type": "string",

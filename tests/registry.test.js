@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
-  constellationBase, setConstellationBase, DEFAULT_CONSTELLATION,
-  HYPO_REGISTRY, ANCHOR_PATH, SETUP_NSID,
+  constellationBase,
+  setConstellationBase,
+  DEFAULT_CONSTELLATION,
+  HYPO_REGISTRY,
+  ANCHOR_PATH,
+  SETUP_NSID,
 } from "../src/registry.js";
 
 describe("registry constants + Constellation config", () => {

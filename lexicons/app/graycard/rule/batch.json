@@ -10,7 +10,23 @@
         "field": { "type": "string", "maxLength": 256 },
         "op": {
           "type": "string",
-          "knownValues": ["empty", "notEmpty", "exists", "notExists", "eq", "neq", "matches", "contains", "startsWith", "endsWith", "gt", "gte", "lt", "lte", "in"]
+          "knownValues": [
+            "empty",
+            "notEmpty",
+            "exists",
+            "notExists",
+            "eq",
+            "neq",
+            "matches",
+            "contains",
+            "startsWith",
+            "endsWith",
+            "gt",
+            "gte",
+            "lt",
+            "lte",
+            "in"
+          ]
         },
         "value": { "type": "unknown" },
         "pattern": { "type": "string", "maxLength": 512, "description": "Regex source for op=matches." },
@@ -33,7 +49,20 @@
       "properties": {
         "op": {
           "type": "string",
-          "knownValues": ["setAlt", "setGalleryDescription", "setExif", "projectCaptureToExif", "associateCamera", "associateLens", "setField", "clearField", "applyWorkflowTemplate", "addToGallery", "linkInstance", "tag"]
+          "knownValues": [
+            "setAlt",
+            "setGalleryDescription",
+            "setExif",
+            "projectCaptureToExif",
+            "associateCamera",
+            "associateLens",
+            "setField",
+            "clearField",
+            "applyWorkflowTemplate",
+            "addToGallery",
+            "linkInstance",
+            "tag"
+          ]
         },
         "field": { "type": "string", "maxLength": 256 },
         "value": { "type": "unknown" },

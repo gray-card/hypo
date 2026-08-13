@@ -1,5 +1,5 @@
 // catalogImage.js: resolve the display image for a CATALOG TYPE — a film stock,
-// a camera model, a lens model, a developer — as opposed to an owned instance
+// a camera model, a lens model, a chemical — as opposed to an owned instance
 // (that is gearImage.js). Resolution order:
 //
 //   1. The type record's own `image` (app.graycard.defs#assetRef): a `url` the
@@ -12,31 +12,42 @@
 //   3. Wikidata P18, via the type's QID or a name search (the original behavior,
 //      and still the fallback for everything we have not curated).
 
-import curatedFilmStocks from "./curated-film-stocks.json";
 import { typeImage } from "./wikidata.js";
 import { catalogLabel } from "../graycard.js";
 
-const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+const norm = (s) =>
+  String(s || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
 const keyOf = (kind, a, b) => `${kind}::${norm(a)}::${norm(b)}`;
 
 // brand/make + name/model -> manufacturer product-shot URL, for curated kinds.
-const CURATED = new Map();
-for (const s of curatedFilmStocks.stocks || []) {
-  if (s.image) CURATED.set(keyOf("filmStock", s.brand, s.name), s.image);
+let curatedPromise;
+async function curatedImages() {
+  if (!curatedPromise) {
+    curatedPromise = import("./curated-film-stocks.json").then(({ default: catalog }) => {
+      const images = new Map();
+      for (const stock of catalog.stocks || []) {
+        if (stock.image) images.set(keyOf("filmStock", stock.brand, stock.name), stock.image);
+      }
+      return images;
+    });
+  }
+  return curatedPromise;
 }
 
 // the two identity fields differ by kind: film is brand+name, gear is make+model.
 function identityOf(kind, value) {
-  return kind === "filmStock" || kind === "paperType" || kind === "developerType" || kind === "chemistryType"
+  return kind === "filmStock" || kind === "paperType" || kind === "chemistryType"
     ? [value.brand, value.name]
     : [value.make, value.model];
 }
 
 // a curated manufacturer shot for this type, or null when we have not curated it.
-export function curatedImageUrl(kind, value) {
+export async function curatedImageUrl(kind, value) {
   if (!value) return null;
   const [a, b] = identityOf(kind, value);
-  return CURATED.get(keyOf(kind, a, b)) || null;
+  return (await curatedImages()).get(keyOf(kind, a, b)) || null;
 }
 
 // Full resolution chain. `blobUrl(blob) -> Promise<string|null>` is optional and
@@ -49,9 +60,11 @@ export async function catalogImageUrl(kind, value, { blobUrl } = {}) {
     try {
       const u = await blobUrl(ref.file);
       if (u) return u;
-    } catch { /* fall through to the shared sources */ }
+    } catch {
+      /* fall through to the shared sources */
+    }
   }
-  const curated = curatedImageUrl(kind, value);
+  const curated = await curatedImageUrl(kind, value);
   if (curated) return curated;
   try {
     return await typeImage(value, catalogLabel(kind, value));

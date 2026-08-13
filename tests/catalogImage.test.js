@@ -5,7 +5,9 @@ import { catalogImageUrl, curatedImageUrl, datasheetRef } from "../src/data/cata
 // bottoms out at null instead of reaching wikidata.org.
 beforeEach(() => {
   localStorage.clear();
-  global.fetch = vi.fn(async () => { throw new Error("offline"); });
+  global.fetch = vi.fn(async () => {
+    throw new Error("offline");
+  });
 });
 afterEach(() => vi.restoreAllMocks());
 
@@ -45,25 +47,27 @@ describe("catalogImageUrl resolution order", () => {
 });
 
 describe("curatedImageUrl", () => {
-  it("returns null for a stock we have not curated", () => {
-    expect(curatedImageUrl("filmStock", { brand: "Nope", name: "Not A Real Film" })).toBeNull();
+  it("returns null for a stock we have not curated", async () => {
+    await expect(curatedImageUrl("filmStock", { brand: "Nope", name: "Not A Real Film" })).resolves.toBeNull();
   });
 
-  it("resolves a curated stock to a manufacturer-hosted image", () => {
-    const url = curatedImageUrl("filmStock", { brand: "Kodak", name: "Gold 200" });
+  it("resolves a curated stock to a manufacturer-hosted image", async () => {
+    const url = await curatedImageUrl("filmStock", { brand: "Kodak", name: "Gold 200" });
     expect(url).toMatch(/^https:\/\/www\.kodak\.com\//);
   });
 
-  it("resolves the Kodacolor rebrands to their official box shots", () => {
-    expect(curatedImageUrl("filmStock", { brand: "Kodak", name: "Kodacolor 100" }))
-      .toMatch(/kodak\.com\/.*kodacolor-film-100-36exp-box\.jpg/);
-    expect(curatedImageUrl("filmStock", { brand: "Kodak", name: "Kodacolor 200" }))
-      .toMatch(/kodak\.com\/.*kodacolor-film-200-36exp-box\.jpg/);
+  it("resolves the Kodacolor rebrands to their official box shots", async () => {
+    expect(await curatedImageUrl("filmStock", { brand: "Kodak", name: "Kodacolor 100" })).toMatch(
+      /kodak\.com\/.*kodacolor-film-100-36exp-box\.jpg/,
+    );
+    expect(await curatedImageUrl("filmStock", { brand: "Kodak", name: "Kodacolor 200" })).toMatch(
+      /kodak\.com\/.*kodacolor-film-200-36exp-box\.jpg/,
+    );
   });
 
-  it("matches case- and punctuation-insensitively", () => {
-    const a = curatedImageUrl("filmStock", { brand: "Kodak", name: "Gold 200" });
-    const b = curatedImageUrl("filmStock", { brand: "  kodak ", name: "gold-200" });
+  it("matches case- and punctuation-insensitively", async () => {
+    const a = await curatedImageUrl("filmStock", { brand: "Kodak", name: "Gold 200" });
+    const b = await curatedImageUrl("filmStock", { brand: "  kodak ", name: "gold-200" });
     expect(b).toBe(a);
   });
 
@@ -85,13 +89,16 @@ describe("curatedImageUrl", () => {
 
 describe("datasheetRef", () => {
   it("prefers the richer datasheet link", () => {
-    expect(datasheetRef({ datasheet: { url: "https://x.test/a.pdf" }, datasheetUrl: "https://old.test/b.pdf" }))
-      .toMatchObject({ url: "https://x.test/a.pdf", kind: "url" });
+    expect(
+      datasheetRef({ datasheet: { url: "https://x.test/a.pdf" }, datasheetUrl: "https://old.test/b.pdf" }),
+    ).toMatchObject({ url: "https://x.test/a.pdf", kind: "url" });
   });
 
   it("surfaces a record reference", () => {
-    expect(datasheetRef({ datasheet: { record: "at://did:plc:x/app.graycard.artifact/1" } }))
-      .toMatchObject({ kind: "record", record: "at://did:plc:x/app.graycard.artifact/1" });
+    expect(datasheetRef({ datasheet: { record: "at://did:plc:x/app.graycard.artifact/1" } })).toMatchObject({
+      kind: "record",
+      record: "at://did:plc:x/app.graycard.artifact/1",
+    });
   });
 
   it("surfaces an uploaded file", () => {
@@ -100,8 +107,10 @@ describe("datasheetRef", () => {
   });
 
   it("falls back to the legacy flat datasheetUrl", () => {
-    expect(datasheetRef({ datasheetUrl: "https://old.test/b.pdf" }))
-      .toMatchObject({ url: "https://old.test/b.pdf", kind: "url" });
+    expect(datasheetRef({ datasheetUrl: "https://old.test/b.pdf" })).toMatchObject({
+      url: "https://old.test/b.pdf",
+      kind: "url",
+    });
   });
 
   it("returns null when there is no datasheet at all", () => {

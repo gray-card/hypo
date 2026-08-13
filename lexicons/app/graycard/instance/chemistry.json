@@ -7,14 +7,17 @@
       "key": "tid",
       "record": {
         "type": "object",
-        "required": [
-          "type",
-          "createdAt"
-        ],
+        "required": ["type", "createdAt"],
         "properties": {
           "type": {
             "type": "string",
-            "format": "at-uri"
+            "format": "at-uri",
+            "description": "app.graycard.catalog.chemistryType"
+          },
+          "componentName": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "For a process kit, the particular bath or component represented by this instance. Separate instances allow each mixed bath to have its own lifecycle dates."
           },
           "nickname": {
             "type": "string",
@@ -23,6 +26,19 @@
           "dilution": {
             "type": "string",
             "maxLength": 64
+          },
+          "status": {
+            "type": "string",
+            "knownValues": ["unopened", "active", "exhausted", "discarded"],
+            "description": "Current lifecycle state of this chemistry instance."
+          },
+          "acquiredAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "openedAt": {
+            "type": "string",
+            "format": "datetime"
           },
           "mixedAt": {
             "type": "string",
@@ -48,9 +64,26 @@
             "type": "integer",
             "minimum": 0
           },
+          "maxRollsRecommended": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Manufacturer or user limit before replenishment or discard."
+          },
           "storageLocation": {
             "type": "string",
             "format": "at-uri"
+          },
+          "replenishedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "exhaustedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "discardedAt": {
+            "type": "string",
+            "format": "datetime"
           },
           "notes": {
             "type": "string",
@@ -66,17 +99,13 @@
           },
           "image": {
             "type": "blob",
-            "accept": [
-              "image/png",
-              "image/jpeg",
-              "image/webp"
-            ],
+            "accept": ["image/png", "image/jpeg", "image/webp"],
             "maxSize": 3000000,
             "description": "Optional user photo of this specific item; falls back to the catalog type's stock image."
           }
         }
       },
-      "description": "A specific chemistry working solution the user mixed or owns (developer, stop, fixer, toner, …). References catalog.chemistryType."
+      "description": "A specific photographic chemical, working solution, or separately tracked bath from a process kit. References catalog.chemistryType."
     }
   }
 }

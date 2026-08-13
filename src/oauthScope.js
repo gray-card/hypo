@@ -10,7 +10,7 @@
 // Derived from the namespace map so it can't drift from the code, and mirrored
 // verbatim into public/client-metadata.json (asserted equal by a test).
 
-import { NS, CATALOG_KINDS, INSTANCE_KINDS } from "./graycard.js";
+import { NS, CATALOG_KINDS, INSTANCE_KINDS } from "../packages/lexicon/src/namespaces.ts";
 
 // exactly the collections the app creates / updates / deletes.
 export const WRITTEN_COLLECTIONS = [
@@ -18,24 +18,46 @@ export const WRITTEN_COLLECTIONS = [
   ...CATALOG_KINDS.map((k) => NS.catalog[k]),
   // the user's own gear instances
   ...INSTANCE_KINDS.map((k) => NS.instance[k]),
+  // one-release migration scope: replace legacy developer records atomically
+  "app.graycard.catalog.developerType",
+  "app.graycard.instance.developer",
+  // user-authored recipe references are updated during the same migration
+  NS.catalog.devRecipe,
   // darkroom / scanning / maintenance sessions
-  NS.process.developSession, NS.process.digitizeSession, NS.process.maintenanceSession,
+  NS.process.developSession,
+  NS.process.digitizeSession,
+  NS.process.editSession,
+  NS.process.maintenanceSession,
+  NS.process.printSession,
+  NS.process.renderSession,
   // shoots
   NS.session.capture,
+  // meter readings and instrument calibration profiles
+  NS.meter.reading,
+  NS.meter.calibration,
   // workflows (template + per-photo runs/stages)
-  NS.workflow.template, NS.workflow.run, NS.workflow.stage,
+  NS.workflow.template,
+  NS.workflow.run,
+  NS.workflow.stage,
   // per-photo graycard metadata
-  NS.photo.capture, NS.photo.workflow,
+  NS.photo.capture,
+  NS.photo.workflow,
   // gallery defaults
   NS.gallery.defaults,
   // batch rules
   NS.rule.batch,
   // scene graph (tags/regions/relations)
-  NS.scene.graph, NS.scene.node, NS.scene.edge, NS.scene.region,
+  NS.scene.graph,
+  NS.scene.node,
+  NS.scene.edge,
+  NS.scene.region,
   // public "setup" record that opts the user into cross-network Discover
   NS.setup,
   // the grain collections we write to on the user's behalf (upload + EXIF + linking)
-  "social.grain.gallery", "social.grain.photo", "social.grain.gallery.item", "social.grain.photo.exif",
+  "social.grain.gallery",
+  "social.grain.photo",
+  "social.grain.gallery.item",
+  "social.grain.photo.exif",
 ];
 
 // the OAuth scope string: base `atproto`, one repo write-scope per collection, and

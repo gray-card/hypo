@@ -24,14 +24,25 @@ describe("OAuth scope is granular and minimal", () => {
 
   it("only ever requests write on our own namespace + the grain collections we integrate with", () => {
     for (const c of WRITTEN_COLLECTIONS) {
-      expect(c === "social.grain.gallery" || c === "social.grain.photo" ||
-        c === "social.grain.gallery.item" || c === "social.grain.photo.exif" ||
-        c.startsWith("app.graycard.")).toBe(true);
+      expect(
+        c === "social.grain.gallery" ||
+          c === "social.grain.photo" ||
+          c === "social.grain.gallery.item" ||
+          c === "social.grain.photo.exif" ||
+          c.startsWith("app.graycard."),
+      ).toBe(true);
     }
   });
 
   it("never requests rpc / identity / account scopes", () => {
     for (const bad of ["rpc:", "identity:", "account:"]) expect(OAUTH_SCOPE).not.toContain(bad);
+  });
+
+  it("grants the canonical process records and excludes removed experimental collections", () => {
+    expect(WRITTEN_COLLECTIONS).toContain("app.graycard.process.renderSession");
+    expect(WRITTEN_COLLECTIONS).not.toContain("app.graycard.process.captureSession");
+    expect(WRITTEN_COLLECTIONS).not.toContain("app.graycard.process.digitalSession");
+    expect(WRITTEN_COLLECTIONS).not.toContain("app.graycard.photo.derivative");
   });
 
   it("the static client-metadata.json declares exactly this scope", () => {

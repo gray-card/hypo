@@ -1,0 +1,322 @@
+/* ---------- top bar / brand ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 26px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: color-mix(in oklch, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  z-index: 40;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-mark {
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.safelight {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 1px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 9px 1px var(--accent);
+  vertical-align: baseline;
+  animation: pulse 3.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .safelight {
+    animation: none;
+  }
+}
+
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.session {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.session .muted {
+  max-width: 42ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- layout ---------- */
+main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 30px 26px 96px;
+  position: relative;
+  z-index: 1;
+}
+
+.view-head {
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+/* ---------- typography ---------- */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+h2 {
+  font-size: 17px;
+  margin: 0 0 10px;
+}
+h2.section {
+  margin: 30px 0 12px;
+}
+h3 {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.muted {
+  color: var(--muted);
+}
+.small {
+  font-size: 12px;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
+/* ---------- rows / fields ---------- */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.row.between {
+  justify-content: space-between;
+}
+.row.wrap {
+  flex-wrap: wrap;
+}
+
+.field,
+.exif-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 14px 0;
+}
+
+.field > span,
+.exif-field > span {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+input,
+textarea,
+select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  width: 100%;
+  resize: vertical;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+/* numeric / id-ish inputs read as data */
+input[type="text"] {
+  font-variant-numeric: tabular-nums;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--faint);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* ---------- buttons ---------- */
+button {
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease,
+    transform 0.04s ease;
+}
+
+/* A button must never break its label into a column of words. In a flex row an
+   item may shrink to its min-content, which for wrapping text is its longest
+   WORD, so "How it works" collapses to three stacked lines. Keeping the label on
+   one line makes min-content the button's full width, so the row yields instead
+   of the button folding. Rows that then run out of space wrap (below). */
+button,
+.linkbtn {
+  white-space: nowrap;
+}
+
+button:hover {
+  background: var(--accent-press);
+}
+button:active {
+  transform: translateY(1px);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+button.ghost:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+
+button.danger {
+  color: var(--danger);
+  background: transparent;
+  border: 1px solid var(--border);
+}
+button.danger:hover {
+  border-color: var(--danger);
+  background: transparent;
+}
+
+.small-btn {
+  padding: 5px 11px;
+  font-size: 12.5px;
+}
+/* small buttons that pair an icon with a label (Load, Open, Log, …) need the
+   icon and text laid out as a centered flex row with a gap; otherwise the icon
+   butts directly against the word ("⌾Load"). Icon-only small buttons match too
+   and simply centre their single icon. */
+.small-btn:has(> .icon) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+}
+.icon-btn:hover {
+  color: var(--text);
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+
+/* ---------- status ---------- */
+.status {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+.status.ok {
+  color: var(--ok);
+}
+.error,
+.status.err {
+  color: var(--danger);
+}
+.error {
+  font-size: 13px;
+}

@@ -11,7 +11,11 @@
         "catalogNumber": { "type": "string", "maxLength": 64 },
         "exposures": { "type": "integer", "minimum": 1, "maximum": 1000 },
         "base": { "type": "string", "knownValues": ["acetate", "triacetate", "polyester", "paper", "other"] },
-        "baseThickness": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Physical base thickness; micrometres are preferred." },
+        "baseThickness": {
+          "type": "ref",
+          "ref": "app.graycard.defs#measure",
+          "description": "Physical base thickness; micrometres are preferred."
+        },
         "sheetCount": { "type": "integer", "minimum": 1, "maximum": 10000 },
         "notes": { "type": "string", "maxLength": 500 }
       }
@@ -21,10 +25,23 @@
       "description": "A published long-exposure correction at a metered exposure time.",
       "required": ["meteredSeconds"],
       "properties": {
-        "meteredSeconds": { "type": "integer", "minimum": 0, "maximum": 315360000, "description": "Uncorrected meter-indicated exposure time." },
+        "meteredSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 315360000,
+          "description": "Uncorrected meter-indicated exposure time."
+        },
         "correctedSeconds": { "type": "integer", "minimum": 0, "maximum": 315360000 },
-        "correctionStops": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Exposure correction in stops." },
-        "colorFilter": { "type": "string", "maxLength": 128, "description": "Published color-compensating filter, when applicable." },
+        "correctionStops": {
+          "type": "ref",
+          "ref": "app.graycard.defs#measure",
+          "description": "Exposure correction in stops."
+        },
+        "colorFilter": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Published color-compensating filter, when applicable."
+        },
         "notes": { "type": "string", "maxLength": 256 }
       }
     },
@@ -33,7 +50,11 @@
       "description": "A resolving-power measurement under a stated test contrast.",
       "required": ["linesPerMm"],
       "properties": {
-        "contrastRatio": { "type": "string", "maxLength": 32, "description": "Test-target contrast, e.g. 1.6:1 or 1000:1." },
+        "contrastRatio": {
+          "type": "string",
+          "maxLength": 32,
+          "description": "Test-target contrast, e.g. 1.6:1 or 1000:1."
+        },
         "linesPerMm": { "type": "integer", "minimum": 1, "maximum": 10000 },
         "developer": { "type": "string", "maxLength": 128 },
         "method": { "type": "string", "maxLength": 256 }
@@ -47,7 +68,11 @@
         "value": { "type": "integer", "description": "Published value multiplied by scale; scale defaults to 1." },
         "scale": { "type": "integer", "minimum": 1, "maximum": 1000000 },
         "kind": { "type": "string", "knownValues": ["rms", "diffuse-rms", "print-grain-index", "other"] },
-        "aperture": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Measurement aperture; micrometres are preferred." },
+        "aperture": {
+          "type": "ref",
+          "ref": "app.graycard.defs#measure",
+          "description": "Measurement aperture; micrometres are preferred."
+        },
         "density": { "type": "ref", "ref": "app.graycard.defs#measure" },
         "method": { "type": "string", "maxLength": 256 }
       }
@@ -83,11 +108,23 @@
         "properties": {
           "brand": { "type": "string", "maxLength": 128 },
           "name": { "type": "string", "maxLength": 128 },
-          "iso": { "type": "integer", "minimum": 1, "description": "Box speed or lower end of a manufacturer-published ISO/ASA range." },
-          "isoMax": { "type": "integer", "minimum": 1, "description": "Upper end of a manufacturer-published ISO/ASA range when the stock is explicitly rated across more than one speed." },
+          "iso": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Box speed or lower end of a manufacturer-published ISO/ASA range."
+          },
+          "isoMax": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Upper end of a manufacturer-published ISO/ASA range when the stock is explicitly rated across more than one speed."
+          },
           "filmType": { "type": "ref", "ref": "app.graycard.defs#filmType" },
           "process": { "type": "ref", "ref": "app.graycard.defs#filmProcess" },
-          "format": { "type": "ref", "ref": "app.graycard.defs#captureFormat", "description": "Primary/legacy format. Prefer `formats` for the full list." },
+          "format": {
+            "type": "ref",
+            "ref": "app.graycard.defs#captureFormat",
+            "description": "Primary/legacy format. Prefer `formats` for the full list."
+          },
           "formats": {
             "type": "array",
             "maxLength": 64,
@@ -123,14 +160,26 @@
             "maxLength": 32,
             "items": { "type": "ref", "ref": "#granularityMeasurement" }
           },
-          "resolvingPowerLpMm": { "type": "integer", "minimum": 1, "description": "Resolving power in lines/mm at high contrast (1000:1), per datasheet." },
+          "resolvingPowerLpMm": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Resolving power in lines/mm at high contrast (1000:1), per datasheet."
+          },
           "resolvingPowerTests": {
             "type": "array",
             "maxLength": 32,
             "items": { "type": "ref", "ref": "#resolvingPowerTest" }
           },
-          "exposureLatitude": { "type": "string", "maxLength": 256, "description": "Manufacturer exposure-latitude or usable-EI guidance." },
-          "reciprocity": { "type": "string", "maxLength": 512, "description": "Reciprocity-failure guidance from the datasheet." },
+          "exposureLatitude": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Manufacturer exposure-latitude or usable-EI guidance."
+          },
+          "reciprocity": {
+            "type": "string",
+            "maxLength": 512,
+            "description": "Reciprocity-failure guidance from the datasheet."
+          },
           "reciprocityPoints": {
             "type": "array",
             "maxLength": 128,
@@ -156,12 +205,29 @@
           "dxNumber": { "type": "string", "maxLength": 16 },
           "discontinued": { "type": "boolean" },
           "releasedYear": { "type": "integer" },
-          "datasheetUrl": { "type": "string", "maxLength": 512, "description": "URL of the official manufacturer datasheet this record was farmed from." },
+          "datasheetUrl": {
+            "type": "string",
+            "maxLength": 512,
+            "description": "URL of the official manufacturer datasheet this record was farmed from."
+          },
           "exposuresPerRoll": { "type": "integer", "minimum": 1 },
           "catalogNumber": { "type": "string", "maxLength": 64 },
-          "aka": { "type": "array", "maxLength": 12, "description": "Other names the SAME emulsion is sold under (e.g. a rebrand: Ektacolor Pro 400 is Portra 400). Facts, not AT-URIs, so two brandings can be treated as one film even before both exist as records.", "items": { "type": "string", "maxLength": 128 } },
-          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
-          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
+          "aka": {
+            "type": "array",
+            "maxLength": 12,
+            "description": "Other names the SAME emulsion is sold under (e.g. a rebrand: Ektacolor Pro 400 is Portra 400). Facts, not AT-URIs, so two brandings can be treated as one film even before both exist as records.",
+            "items": { "type": "string", "maxLength": 128 }
+          },
+          "image": {
+            "type": "ref",
+            "ref": "app.graycard.defs#assetRef",
+            "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image."
+          },
+          "datasheet": {
+            "type": "ref",
+            "ref": "app.graycard.defs#assetRef",
+            "description": "Official datasheet: a link (preferred), an uploaded file, or another record."
+          },
           "documents": {
             "type": "array",
             "maxLength": 32,

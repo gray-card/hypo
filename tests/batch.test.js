@@ -35,17 +35,23 @@ describe("evaluateCondition", () => {
     expect(evaluateCondition(ctx, { field: "exif.make", op: "matches", pattern: "^lei", flags: "i" })).toBe(true);
   });
   it("evaluates boolean groups (and / or / not)", () => {
-    const and = { operator: "and", operands: [
-      { field: "exif.make", op: "eq", value: "Leica" },
-      { field: "exif.model", op: "eq", value: "M6" },
-    ] };
+    const and = {
+      operator: "and",
+      operands: [
+        { field: "exif.make", op: "eq", value: "Leica" },
+        { field: "exif.model", op: "eq", value: "M6" },
+      ],
+    };
     expect(evaluateCondition(ctx, and)).toBe(true);
     const not = { operator: "not", operands: [{ field: "exif.make", op: "eq", value: "Nikon" }] };
     expect(evaluateCondition(ctx, not)).toBe(true);
-    const or = { operator: "or", operands: [
-      { field: "exif.make", op: "eq", value: "Nikon" },
-      { field: "exif.model", op: "eq", value: "M6" },
-    ] };
+    const or = {
+      operator: "or",
+      operands: [
+        { field: "exif.make", op: "eq", value: "Nikon" },
+        { field: "exif.model", op: "eq", value: "M6" },
+      ],
+    };
     expect(evaluateCondition(ctx, or)).toBe(true);
   });
 });

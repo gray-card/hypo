@@ -1,24 +1,25 @@
 # app.graycard lexicons
 
-Provenance, workflow, and scene-graph schemas for **graycard** (`app.graycard.*`),
-used with grain (`social.grain.photo`, `social.grain.photo.exif`). Records live in the
-user's own repo and reference grain records by AT-URI. Grain's data model is treated as
-frozen. Gray Card is the source of truth: it can emit these records in a dump-to-ATProto
-pass. **Hypo** writes them to the PDS from the browser.
+The `app.graycard.*` namespace is the metadata model shared by **Hypo** and **Gray Card**.
+It defines provenance, workflow, and scene-graph records used with Grain
+(`social.grain.photo`, `social.grain.photo.exif`). Records live in the user's own repo
+and reference Grain records by AT-URI. Hypo writes metadata from the browser. Gray Card
+is a separate photo editor that reads and writes the same model.
 
 All lexicons validate with `@atproto/lexicon` (structural checks plus record-level ref
 resolution).
 
 ## Type / instance / event / artifact
 
-- **catalog.\***: shareable, forkable **types** (camera model, film stock, developer,
-  lab, scan profile, paper, chemistry, scanner). Catalog records carry
+- **catalog.\***: shareable, forkable **types** (camera model, film stock, photographic
+  chemistry, lab, scan profile, paper, scanner). Catalog records carry
   `links` (`app.graycard.defs#catalogLinks`): `sameAs` / `forkedFrom` AT-URIs and
   `externalIds` for external ontologies (Wikidata, camera-wiki, Getty AAT, and so on).
 - **instance.\***: owned **individuals** that point at a type (two Nikon F2 bodies, one
   HC-110 bottle, one loaded roll).
-- **process.\***: one-off **sessions** (develop, digitize, capture, edit, print, digital,
-  maintenance). `process.developSession` has an ordered `steps[]` bath sequence for
+- **process.\***: one-off **sessions** (develop, digitize, edit, render/export, print,
+  maintenance). Capture is represented by `session.capture`, not a duplicate process
+  record. `process.developSession` has an ordered `steps[]` bath sequence for
   multi-step chemistry (C-41, E-6) and reusable measures.
 - **artifact** (`app.graycard.artifact`): a first-class node in a workflow (RAW, negative
   strip, glass plate, print, video clip), with `parents` lineage and `producedBy`.
@@ -31,6 +32,8 @@ resolution).
 - **workflow.stage**: one step (discriminated union).
 
 Stage variants: capture, develop, digitize, digital, print, edit, output, **other**.
+The `digitalStage` discriminator is retained for record compatibility, but it means a
+render/export stage and links to `process.renderSession`; editing belongs in `editStage`.
 `otherStage` is an open escape hatch (`kind` + `params`) for steps outside the closed
 set (coating, toning, mounting). Stages accept `inputs[]` for multi-input steps (a print
 from a negative plus a mask).
@@ -40,7 +43,7 @@ target, not hard-coded into the taxonomy.
 
 ## Scene graphs
 
-A typed graph where node and edge *types* are data, not fixed in a lexicon, so external
+A typed graph where node and edge _types_ are data, not fixed in a lexicon, so external
 ontologies (Visual Genome, WordNet, a research schema) can be expressed. Aligns with
 Gray Card's internal panproto scene tier.
 
@@ -53,8 +56,10 @@ Gray Card's internal panproto scene tier.
 
 ## Reproducible edits
 
-- **edit.recipe**: engine-native, versioned edit graph (module DAG / history stack) that
-  renders a derivative. `process.editSession` points at it via `recipe`.
+- **edit.recipe**: engine-native, versioned edit graph (module DAG / history stack).
+  `process.editSession` records the editing event. `process.renderSession` records a
+  render/export event, while `artifact.parents` and `artifact.producedBy` carry the
+  resulting file's lineage. There is no separate derivative record.
 
 ## Shared conventions (`app.graycard.defs`)
 
@@ -65,8 +70,8 @@ Gray Card's internal panproto scene tier.
   and graphs so the same records can ground video without a schema fork.
 - **provenance** / **fieldProvenance**: record- and field-level source and confidence.
 - **productDocument** / **specSource**: edition-aware manufacturer documents and the
-  exact catalog fields, pages, or tables they support. Camera, lens, film,
-  developer, and chemistry records can expose these citations alongside their
+  exact catalog fields, pages, or tables they support. Camera, lens, film, and
+  chemistry records can expose these citations alongside their
   structured technical specifications.
 
 Film/developer processing recommendations belong in `catalog.devRecipe`, where

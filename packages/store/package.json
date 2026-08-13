@@ -1,0 +1,16 @@
+{
+  "name": "@hypo/store",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@hypo/lexicon": "*",
+    "@hypo/pds": "*",
+    "@hypo/sync": "*",
+    "@preact/signals-core": "^1.8.0"
+  }
+}

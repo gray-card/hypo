@@ -11,7 +11,10 @@ const DATASHEET_FILE = join(ROOT, "data", "datasheets", "lenses.jsonl");
 function loadAllCurated() {
   const rows = [];
   for (const f of readdirSync(CURATED_DIR).filter((f) => f.endsWith(".jsonl"))) {
-    for (const l of readFileSync(join(CURATED_DIR, f), "utf8").split("\n").map((s) => s.trim()).filter(Boolean)) {
+    for (const l of readFileSync(join(CURATED_DIR, f), "utf8")
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean)) {
       rows.push(JSON.parse(l));
     }
   }
@@ -45,17 +48,17 @@ describe("data/curated-lenses/*.jsonl", () => {
 
   it("fills the manual-focus gap that lensfun lacks (pre-AI / AI / Series E 50mm)", () => {
     const models = new Set(rows.map((r) => r.model));
-    expect(models).toContain("Nikon Nikkor 50mm f/1.4");      // pre-AI
-    expect(models).toContain("Nikon AI Nikkor 50mm f/1.4");   // AI
-    expect(models).toContain("Nikon Series E 50mm f/1.8");    // Series E
+    expect(models).toContain("Nikon Nikkor 50mm f/1.4"); // pre-AI
+    expect(models).toContain("Nikon AI Nikkor 50mm f/1.4"); // AI
+    expect(models).toContain("Nikon Series E 50mm f/1.8"); // Series E
   });
 });
 
 describe("PRESETS.lensType merges curated with lensfun (deduped)", () => {
   it("includes the curated manual Nikkors alongside lensfun", () => {
     const models = new Set(PRESETS.lensType.items.map((l) => l.model));
-    expect(models).toContain("Nikon Nikkor 50mm f/1.4");        // curated pre-AI
-    expect(models).toContain("Nikon AI-S Nikkor 50mm f/1.4");   // from lensfun
+    expect(models).toContain("Nikon Nikkor 50mm f/1.4"); // curated pre-AI
+    expect(models).toContain("Nikon AI-S Nikkor 50mm f/1.4"); // from lensfun
   });
 
   it("never lists the same lens model twice", () => {
@@ -65,18 +68,13 @@ describe("PRESETS.lensType merges curated with lensfun (deduped)", () => {
 
   it("applies every exact manufacturer datasheet overlay", () => {
     const links = readFileSync(DATASHEET_FILE, "utf8")
-      .split("\n").map((s) => s.trim()).filter(Boolean).map((s) => JSON.parse(s));
-    const allowedHosts = new Set([
-      "dl.fujifilm-x.com",
-      "global.canon",
-      "imaging.nikon.com",
-      "www.sigma-global.com",
-    ]);
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((s) => JSON.parse(s));
+    const allowedHosts = new Set(["dl.fujifilm-x.com", "global.canon", "imaging.nikon.com", "www.sigma-global.com"]);
     expect(links).toHaveLength(26);
-    const presets = new Map(PRESETS.lensType.items.map((l) => [
-      `${l.make}\0${l.model}`.toLowerCase(),
-      l,
-    ]));
+    const presets = new Map(PRESETS.lensType.items.map((l) => [`${l.make}\0${l.model}`.toLowerCase(), l]));
     for (const link of links) {
       const url = new URL(link.datasheetUrl);
       expect(url.protocol, `${link.make} ${link.model}`).toBe("https:");

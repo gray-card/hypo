@@ -54,7 +54,17 @@
       "description": "Published life of a concentrate, stock, or working solution under stated conditions.",
       "required": ["solutionState"],
       "properties": {
-        "solutionState": { "type": "string", "knownValues": ["unopened", "opened-concentrate", "stock-solution", "working-solution", "replenished-solution", "other"] },
+        "solutionState": {
+          "type": "string",
+          "knownValues": [
+            "unopened",
+            "opened-concentrate",
+            "stock-solution",
+            "working-solution",
+            "replenished-solution",
+            "other"
+          ]
+        },
         "durationDays": { "type": "integer", "minimum": 0, "maximum": 36500 },
         "container": { "type": "string", "maxLength": 128 },
         "conditions": { "type": "string", "maxLength": 500 }
@@ -82,10 +92,15 @@
     "bathStep": {
       "type": "object",
       "description": "One ordered bath in a multi-bath product kit.",
-      "required": ["order", "role"],
+      "required": ["order", "roles"],
       "properties": {
         "order": { "type": "integer", "minimum": 1, "maximum": 100 },
-        "role": { "type": "ref", "ref": "app.graycard.defs#chemistryRole" },
+        "roles": {
+          "type": "array",
+          "maxLength": 16,
+          "description": "Atomic functions performed by this bath; e.g. bleach and fixer for a blix bath.",
+          "items": { "type": "ref", "ref": "app.graycard.defs#chemistryRole" }
+        },
         "name": { "type": "string", "maxLength": 128 },
         "dilution": { "type": "string", "maxLength": 64 },
         "temperature": { "type": "ref", "ref": "app.graycard.defs#measure" },
@@ -95,29 +110,53 @@
     },
     "main": {
       "type": "record",
-      "description": "Chemistry product type: developer, stop, fixer, blix, stabilizer, wetting agent, toner.",
+      "description": "A photographic-chemistry product. Atomic roles distinguish film and paper developers, stop, fixer, bleach, wetting agent, and other functions without splitting them into separate record types.",
       "key": "tid",
       "record": {
         "type": "object",
-        "required": ["name", "role", "createdAt"],
+        "required": ["name", "roles", "createdAt"],
         "properties": {
           "brand": { "type": "string", "maxLength": 128 },
           "name": { "type": "string", "maxLength": 128 },
-          "role": { "type": "ref", "ref": "app.graycard.defs#chemistryRole" },
+          "roles": {
+            "type": "array",
+            "maxLength": 16,
+            "description": "Atomic functions performed by this product. Combined baths use multiple entries: a monobath is film-developer plus fixer; blix is bleach plus fixer.",
+            "items": { "type": "ref", "ref": "app.graycard.defs#chemistryRole" }
+          },
+          "productKind": { "type": "ref", "ref": "app.graycard.defs#chemistryProductKind" },
           "process": { "type": "ref", "ref": "app.graycard.defs#filmProcess" },
           "form": { "type": "ref", "ref": "app.graycard.defs#developerForm" },
           "defaultDilution": { "type": "string", "maxLength": 64 },
+          "defaultTemperature": { "type": "ref", "ref": "app.graycard.defs#measure" },
+          "defaultTimeSeconds": { "type": "integer", "minimum": 0 },
           "dilutions": { "type": "array", "maxLength": 64, "items": { "type": "ref", "ref": "#dilutionOption" } },
           "mixingInstructions": { "type": "array", "maxLength": 64, "items": { "type": "ref", "ref": "#mixingStep" } },
           "minimumConcentratePerRoll": { "type": "ref", "ref": "app.graycard.defs#measure" },
           "capacity": { "type": "array", "maxLength": 32, "items": { "type": "ref", "ref": "#capacityRule" } },
-          "replenishment": { "type": "array", "maxLength": 32, "items": { "type": "ref", "ref": "#replenishmentRule" } },
+          "replenishment": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "ref", "ref": "#replenishmentRule" }
+          },
           "oneShot": { "type": "boolean" },
           "reusable": { "type": "boolean" },
           "shelfLives": { "type": "array", "maxLength": 32, "items": { "type": "ref", "ref": "#shelfLife" } },
-          "temperatureRanges": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "#temperatureRange" } },
-          "compatibleProcesses": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "app.graycard.defs#filmProcess" } },
-          "compatibleFilmTypes": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "app.graycard.defs#filmType" } },
+          "temperatureRanges": {
+            "type": "array",
+            "maxLength": 16,
+            "items": { "type": "ref", "ref": "#temperatureRange" }
+          },
+          "compatibleProcesses": {
+            "type": "array",
+            "maxLength": 16,
+            "items": { "type": "ref", "ref": "app.graycard.defs#filmProcess" }
+          },
+          "compatibleFilmTypes": {
+            "type": "array",
+            "maxLength": 16,
+            "items": { "type": "ref", "ref": "app.graycard.defs#filmType" }
+          },
           "compatibleMaterials": {
             "type": "array",
             "maxLength": 16,
@@ -129,16 +168,45 @@
             "description": "Film-specific app.graycard.catalog.devRecipe records when this chemistry supplies the developer bath.",
             "items": { "type": "string", "format": "at-uri" }
           },
-          "ph": { "type": "ref", "ref": "app.graycard.defs#measure", "description": "Published pH and associated scale." },
+          "ph": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Published pH and associated scale."
+          },
           "kitBathSequence": { "type": "array", "maxLength": 32, "items": { "type": "ref", "ref": "#bathStep" } },
           "hazards": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "#hazardClassification" } },
           "disposalGuidance": { "type": "string", "maxLength": 2000 },
-          "image": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image." },
-          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef", "description": "Official datasheet: a link (preferred), an uploaded file, or another record." },
-          "documents": { "type": "array", "maxLength": 32, "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" } },
-          "technicalDocuments": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" } },
-          "sdsDocuments": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" } },
-          "specSources": { "type": "array", "maxLength": 64, "items": { "type": "ref", "ref": "app.graycard.defs#specSource" } },
+          "catalogNumber": { "type": "string", "maxLength": 64 },
+          "image": {
+            "type": "ref",
+            "ref": "app.graycard.defs#assetRef",
+            "description": "Product photo for this type, typically the manufacturer box/product shot. When unset, clients fall back to a Wikidata image."
+          },
+          "datasheet": {
+            "type": "ref",
+            "ref": "app.graycard.defs#assetRef",
+            "description": "Official datasheet: a link (preferred), an uploaded file, or another record."
+          },
+          "documents": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" }
+          },
+          "technicalDocuments": {
+            "type": "array",
+            "maxLength": 16,
+            "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" }
+          },
+          "sdsDocuments": {
+            "type": "array",
+            "maxLength": 16,
+            "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" }
+          },
+          "specSources": {
+            "type": "array",
+            "maxLength": 64,
+            "items": { "type": "ref", "ref": "app.graycard.defs#specSource" }
+          },
           "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
           "notes": { "type": "string", "maxLength": 2000 },
           "createdAt": { "type": "string", "format": "datetime" },

@@ -1,0 +1,232 @@
+name: CI
+
+on:
+  workflow_call:
+    inputs:
+      package_pages:
+        description: Package the validated application and documentation for GitHub Pages
+        required: false
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 22
+  PANPROTO_VERSION: 0.70.1
+
+jobs:
+  schema:
+    name: Schema compatibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Install Panproto ${{ env.PANPROTO_VERSION }}
+        env:
+          PANPROTO_INSTALLER_SHA256: 4d8cae5f15c5ae5ed28aa9a5366c47ce60d49e740b46c133661f88031b129482
+          PANPROTO_CLI_INSTALL_DIR: ${{ runner.temp }}/panproto-cli
+          PANPROTO_CLI_NO_MODIFY_PATH: 1
+        run: |
+          installer="$RUNNER_TEMP/panproto-cli-installer.sh"
+          curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location \
+            "https://github.com/panproto/panproto/releases/download/v${PANPROTO_VERSION}/panproto-cli-installer.sh" \
+            --output "$installer"
+          echo "$PANPROTO_INSTALLER_SHA256  $installer" | sha256sum --check --strict
+          sh "$installer" --quiet
+          echo "$PANPROTO_CLI_INSTALL_DIR/bin" >> "$GITHUB_PATH"
+      - name: Validate the Panproto project and fixtures
+        run: npm run check:panproto
+      - name: Classify schema compatibility against the pull-request merge base
+        if: github.event_name == 'pull_request'
+        env:
+          PANPROTO_BASE_REF: origin/${{ github.base_ref }}
+        run: npm run check:panproto-pr
+      - name: Check generated lexicon code
+        run: npm run check:lexicons
+      - name: Check generated lexicon documentation
+        run: npm run check:lexicon-docs
+
+  static-analysis:
+    name: Types, lint, and format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Check formatting
+        run: npm run format:check
+
+  unit-tests:
+    name: Unit and integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  browser-tests:
+    name: Browser tests (Chromium desktop)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run the desktop Chromium suite
+        run: npx playwright test --project=chromium
+      - name: Upload browser-test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-desktop-diagnostics
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  mobile-browser-tests:
+    name: Browser tests (mobile Chromium and WebKit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Install mobile browsers
+        run: npx playwright install --with-deps chromium webkit
+      - name: Run release-critical mobile tests
+        run: npx playwright test --config .github/playwright.mobile.config.ts
+      - name: Upload mobile-test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-mobile-diagnostics
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  production-build:
+    name: Production builds, budgets, and Lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Build Hypo
+        run: npm run build
+      - name: Build documentation
+        run: npm run docs:build
+      - name: Check bundle budgets
+        run: npm run size
+      - name: Check Lighthouse performance budget
+        run: npm run lighthouse
+      - name: Assemble the release site
+        if: inputs.package_pages
+        run: |
+          mkdir -p dist/docs
+          cp -R docs/site/build/. dist/docs/
+          cp dist/index.html dist/404.html
+      - name: Upload the validated Pages artifact
+        if: inputs.package_pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  dependency-audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Require zero known production dependency vulnerabilities
+        run: npm audit --omit=dev --audit-level=low
+      - name: Report high-severity development-tool vulnerabilities
+        id: development_audit
+        continue-on-error: true
+        run: npm audit --audit-level=high
+      - name: Summarize the development-tool audit
+        if: steps.development_audit.outcome == 'failure'
+        run: |
+          echo "### Development dependency audit" >> "$GITHUB_STEP_SUMMARY"
+          echo "High-severity findings exist in the development toolchain. They are advisory under the repository security audit policy; production dependencies remain a blocking zero-vulnerability gate." >> "$GITHUB_STEP_SUMMARY"
+
+  release-gates:
+    name: Release gates
+    if: always()
+    needs:
+      - schema
+      - static-analysis
+      - unit-tests
+      - browser-tests
+      - mobile-browser-tests
+      - production-build
+      - dependency-audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every release gate
+        env:
+          SCHEMA_RESULT: ${{ needs.schema.result }}
+          STATIC_RESULT: ${{ needs.static-analysis.result }}
+          UNIT_RESULT: ${{ needs.unit-tests.result }}
+          BROWSER_RESULT: ${{ needs.browser-tests.result }}
+          MOBILE_RESULT: ${{ needs.mobile-browser-tests.result }}
+          BUILD_RESULT: ${{ needs.production-build.result }}
+          AUDIT_RESULT: ${{ needs.dependency-audit.result }}
+        run: |
+          for result in \
+            "$SCHEMA_RESULT" \
+            "$STATIC_RESULT" \
+            "$UNIT_RESULT" \
+            "$BROWSER_RESULT" \
+            "$MOBILE_RESULT" \
+            "$BUILD_RESULT" \
+            "$AUDIT_RESULT"
+          do
+            if [[ "$result" != "success" ]]; then
+              echo "One or more required release gates did not succeed." >&2
+              exit 1
+            fi
+          done

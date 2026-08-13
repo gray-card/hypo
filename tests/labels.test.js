@@ -1,7 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  kindLabel, kindLabelPlural, enumLabel, collectionLabel, humanize, GEAR_GROUPS,
-} from "../src/ui/labels.js";
+import { kindLabel, kindLabelPlural, enumLabel, collectionLabel, humanize, GEAR_GROUPS } from "../src/ui/labels.js";
 
 describe("kindLabel / kindLabelPlural", () => {
   it("gives human singular and plural for instance kinds", () => {
@@ -13,7 +11,7 @@ describe("kindLabel / kindLabelPlural", () => {
   });
 
   it("never returns the raw camelCase identifier", () => {
-    for (const k of ["cameraType", "filmStock", "developerType", "labAccount", "storageLocation"]) {
+    for (const k of ["cameraType", "filmStock", "chemistryType", "labAccount", "storageLocation"]) {
       expect(kindLabel(k)).not.toBe(k);
       expect(kindLabel(k)).not.toMatch(/[a-z][A-Z]/);
     }

@@ -1,0 +1,54 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.process.renderSession",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "One render or export event that materializes digital output from existing workflow artifacts. Editing decisions belong in app.graycard.edit.recipe and app.graycard.process.editSession; artifact lineage belongs in app.graycard.artifact.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["createdAt"],
+        "properties": {
+          "sourceArtifacts": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Input app.graycard.artifact records rendered or exported in this event."
+          },
+          "outputArtifacts": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Output app.graycard.artifact records produced by this event. Each output should also identify this session in artifact.producedBy."
+          },
+          "recipe": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.edit.recipe used to render the output, when applicable."
+          },
+          "software": { "type": "string", "maxLength": 128 },
+          "softwareVersion": { "type": "string", "maxLength": 64 },
+          "outputFormat": { "type": "string", "maxLength": 32 },
+          "colorSpace": { "type": "string", "maxLength": 64 },
+          "iccProfile": { "type": "string", "maxLength": 256 },
+          "widthPx": { "type": "integer", "minimum": 1 },
+          "heightPx": { "type": "integer", "minimum": 1 },
+          "bitDepth": { "type": "integer", "minimum": 1 },
+          "quality": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Encoder quality on a 0–100 scale, when the output format exposes that setting."
+          },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "startedAt": { "type": "string", "format": "datetime" },
+          "finishedAt": { "type": "string", "format": "datetime" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "$type": "app.graycard.setup",
+  "registry": "https://hypo.graycard.app/ns/registry/1",
+  "name": "Panproto conformance setup",
+  "summary": "A small record retained with the schema sidecar to exercise versioned data staging.",
+  "schemaVersion": "unreleased",
+  "createdAt": "2026-08-12T00:00:00.000Z"
+}

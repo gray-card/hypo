@@ -15,13 +15,17 @@ describe("parseBundle", () => {
 
 describe("diffBundle", () => {
   const agent = {
-    com: { atproto: { repo: {
-      getRecord: async ({ rkey }) => {
-        if (rkey === "same") return { data: { value: { a: 1 }, cid: "c1" } };
-        if (rkey === "diff") return { data: { value: { a: 2 }, cid: "c2" } };
-        throw new Error("not found");
+    com: {
+      atproto: {
+        repo: {
+          getRecord: async ({ rkey }) => {
+            if (rkey === "same") return { data: { value: { a: 1 }, cid: "c1" } };
+            if (rkey === "diff") return { data: { value: { a: 2 }, cid: "c2" } };
+            throw new Error("not found");
+          },
+        },
       },
-    } } },
+    },
   };
 
   it("classifies unchanged / update / create", async () => {
@@ -37,12 +41,20 @@ describe("diffBundle", () => {
 
 describe("pruneCandidates", () => {
   const agent = {
-    com: { atproto: { repo: {
-      listRecords: async () => ({ data: { records: [
-        { uri: "at://did:plc:test/x/keep", value: {}, cid: "c1" },
-        { uri: "at://did:plc:test/x/gone", value: {}, cid: "c2" },
-      ] } }),
-    } } },
+    com: {
+      atproto: {
+        repo: {
+          listRecords: async () => ({
+            data: {
+              records: [
+                { uri: "at://did:plc:test/x/keep", value: {}, cid: "c1" },
+                { uri: "at://did:plc:test/x/gone", value: {}, cid: "c2" },
+              ],
+            },
+          }),
+        },
+      },
+    },
   };
   it("flags repo records not present in the bundle as deletes", async () => {
     const out = await pruneCandidates(agent, "did:plc:test", [{ collection: "x", rkey: "keep", value: {} }]);

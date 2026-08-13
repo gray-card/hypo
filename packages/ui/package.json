@@ -1,0 +1,19 @@
+{
+  "name": "@hypo/ui",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./check-list": "./src/check-list.ts",
+    "./element": "./src/element.ts",
+    "./feedback": "./src/feedback.ts",
+    "./fields": "./src/fields.ts",
+    "./lazy-thumb": "./src/lazy-thumb.ts",
+    "./modal": "./src/modal.ts",
+    "./palette": "./src/palette.ts",
+    "./roving-dial": "./src/roving-dial.ts",
+    "./toast": "./src/toast.ts"
+  }
+}

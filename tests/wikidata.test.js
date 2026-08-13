@@ -1,5 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { typeImage, qidFromRecord, searchEntities, searchConcepts, rankConceptSenses, refineConceptRanking } from "../src/data/wikidata.js";
+import {
+  typeImage,
+  qidFromRecord,
+  searchEntities,
+  searchConcepts,
+  rankConceptSenses,
+  refineConceptRanking,
+} from "../src/data/wikidata.js";
 
 // stub the Wikidata HTTP API. `handler(action, params)` returns the JSON body.
 function stubWikidata(handler) {
@@ -11,7 +18,10 @@ function stubWikidata(handler) {
 const withQid = (qid) => ({ links: { externalIds: [{ scheme: "wikidata", value: qid }] } });
 const claimsWithImage = (file) => ({ claims: { P18: [{ mainsnak: { datavalue: { value: file } } }] } });
 
-beforeEach(() => { localStorage.clear(); vi.restoreAllMocks(); });
+beforeEach(() => {
+  localStorage.clear();
+  vi.restoreAllMocks();
+});
 
 describe("qidFromRecord", () => {
   it("reads a stored wikidata QID", () => {
@@ -25,7 +35,7 @@ describe("qidFromRecord", () => {
 
 describe("typeImage — stock thumbnail resolution", () => {
   it("builds a Commons thumbnail from the record's QID via P18", async () => {
-    stubWikidata((action) => action === "wbgetclaims" ? claimsWithImage("Leica M6.jpg") : {});
+    stubWikidata((action) => (action === "wbgetclaims" ? claimsWithImage("Leica M6.jpg") : {}));
     const url = await typeImage(withQid("Q-cam-1"), "Leica M6");
     expect(url).toContain("commons.wikimedia.org/wiki/Special:FilePath/");
     expect(url).toContain(encodeURIComponent("Leica M6.jpg"));
@@ -51,7 +61,7 @@ describe("typeImage — stock thumbnail resolution", () => {
   });
 
   it("caches by QID so a repeat lookup does not re-query", async () => {
-    stubWikidata((action) => action === "wbgetclaims" ? claimsWithImage("Cached.jpg") : {});
+    stubWikidata((action) => (action === "wbgetclaims" ? claimsWithImage("Cached.jpg") : {}));
     const rec = withQid("Q-cache-key");
     const a = await typeImage(rec, "Cam");
     const b = await typeImage(rec, "Cam");
@@ -91,10 +101,12 @@ describe("searchEntities", () => {
   it("leaves Wikidata's own order alone, for catalog product lookups", async () => {
     // a company or brand IS the answer when resolving a camera or film, so the
     // raw search must not inherit the scene ranking
-    stubWikidata(() => ({ search: [
-      { id: "Q1", label: "Leica", description: "German camera company" },
-      { id: "Q2", label: "Leica", description: "genus of moths" },
-    ] }));
+    stubWikidata(() => ({
+      search: [
+        { id: "Q1", label: "Leica", description: "German camera company" },
+        { id: "Q2", label: "Leica", description: "genus of moths" },
+      ],
+    }));
     const r = await searchEntities("leica", 5);
     expect(r.map((x) => x.id)).toEqual(["Q1", "Q2"]);
   });
@@ -125,7 +137,7 @@ const POST_SENSES = [
 describe("rankConceptSenses — ordinary nouns over named individuals", () => {
   it("lifts the thing you can photograph above surname, town, album and film", () => {
     const ranked = rankConceptSenses(POST_SENSES, "post");
-    expect(ranked[0].id).toBe("Q8");                     // the vertical structural element
+    expect(ranked[0].id).toBe("Q8"); // the vertical structural element
     const pos = (id) => ranked.findIndex((h) => h.id === id);
     for (const buried of ["Q1", "Q2", "Q3", "Q7"]) {
       expect(pos("Q8")).toBeLessThan(pos(buried));
@@ -167,17 +179,18 @@ describe("searchConcepts", () => {
 
 // What Wikidata actually says these entities ARE (P31 instance-of / P279
 // subclass-of), which is the structured answer the prose heuristic only guesses.
-const kinds = (m) => new Map(Object.entries(m).map(([id, v]) => [id, { isClass: !!v.isClass, types: new Set(v.types || []) }]));
+const kinds = (m) =>
+  new Map(Object.entries(m).map(([id, v]) => [id, { isClass: !!v.isClass, types: new Set(v.types || []) }]));
 
 describe("rankConceptSenses — structural signal from P31 / P279", () => {
   it("prefers a class (has subclass-of) over a named individual", () => {
     const hits = [
-      { id: "Q1", label: "Post", description: "" },     // no description at all
+      { id: "Q1", label: "Post", description: "" }, // no description at all
       { id: "Q8", label: "post", description: "" },
     ];
     const k = kinds({
-      Q1: { types: ["Q101352"] },                       // instance of: family name
-      Q8: { isClass: true },                            // subclass of: structural element
+      Q1: { types: ["Q101352"] }, // instance of: family name
+      Q8: { isClass: true }, // subclass of: structural element
     });
     expect(rankConceptSenses(hits, "post", k)[0].id).toBe("Q8");
   });
@@ -191,9 +204,9 @@ describe("rankConceptSenses — structural signal from P31 / P279", () => {
       { id: "Qname", label: "Ridge", description: "" },
     ];
     const k = kinds({
-      Qalbum: { types: ["Q482994"] },                   // instance of: album
-      Qcity: { types: ["Q515"] },                       // instance of: city
-      Qname: { types: ["Q101352"] },                    // instance of: family name
+      Qalbum: { types: ["Q482994"] }, // instance of: album
+      Qcity: { types: ["Q515"] }, // instance of: city
+      Qname: { types: ["Q101352"] }, // instance of: family name
     });
     const ranked = rankConceptSenses(hits, "ridge", k);
     // the surname sinks; the album and the town stay together above it
@@ -233,8 +246,13 @@ describe("rankConceptSenses — structural signal from P31 / P279", () => {
 
 describe("refineConceptRanking", () => {
   it("falls back to the given order when the query service is unreachable", async () => {
-    global.fetch = vi.fn(async () => { throw new Error("offline"); });
-    const hits = [{ id: "Q1", label: "a", description: "" }, { id: "Q2", label: "b", description: "" }];
+    global.fetch = vi.fn(async () => {
+      throw new Error("offline");
+    });
+    const hits = [
+      { id: "Q1", label: "a", description: "" },
+      { id: "Q2", label: "b", description: "" },
+    ];
     expect((await refineConceptRanking(hits, "a")).map((h) => h.id)).toEqual(["Q1", "Q2"]);
   });
 

@@ -1,0 +1,113 @@
+.logger-overlay.quick .logger-extended {
+  display: none;
+}
+
+.logger-overlay.quick .logger-inc {
+  display: none;
+}
+
+.logger-mode-btn[aria-pressed="true"],
+.logger-optin[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.logger-sticky-summary {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logger-quick-tools {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.logger-meter-field {
+  flex: 1 1 230px;
+  min-width: 0;
+}
+
+.logger-meter-field .logger-select {
+  width: 100%;
+}
+
+.logger-reading-status {
+  min-height: 1.2em;
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.logger-overlay.quick .logger-scroll {
+  gap: 8px;
+}
+
+.logger-overlay.quick .logger-group {
+  gap: 3px;
+}
+
+.logger-overlay.quick .dial-btn {
+  padding-block: 7px;
+}
+
+.logger-overlay.quick .logger-quick-tools {
+  padding-top: 2px;
+  border-top: 1px solid var(--border);
+}
+
+.devtimer-exposure-evidence {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in oklch, var(--accent) 38%, var(--border));
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--accent-soft) 72%, transparent);
+}
+
+.devtimer-exposure-evidence strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 12px;
+}
+
+.devtimer-exposure-evidence p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.devtimer-suggested {
+  border-color: color-mix(in oklch, var(--accent) 60%, var(--border));
+}
+
+.devtimer-suggestion-tag {
+  margin-left: auto;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-height: 700px) {
+  .logger-overlay.quick {
+    gap: 5px;
+    padding-top: 8px;
+  }
+
+  .logger-overlay.quick .logger-frame {
+    font-size: 13px;
+  }
+
+  .logger-overlay.quick .log-btn {
+    padding-block: 13px;
+  }
+}

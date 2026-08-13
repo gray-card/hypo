@@ -7,11 +7,7 @@
       "key": "tid",
       "record": {
         "type": "object",
-        "required": [
-          "photo",
-          "run",
-          "createdAt"
-        ],
+        "required": ["photo", "run", "createdAt"],
         "properties": {
           "photo": {
             "type": "string",

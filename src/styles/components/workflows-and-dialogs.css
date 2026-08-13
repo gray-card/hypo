@@ -1,0 +1,469 @@
+/* ---------- workflow builder ---------- */
+.workflow-steps {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.workflow-step {
+  display: grid;
+  grid-template-columns: 30px minmax(140px, 1fr) auto;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+  background: var(--surface);
+}
+.workflow-step:last-child {
+  border-bottom: none;
+}
+
+.workflow-step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid color-mix(in oklch, var(--accent) 42%, var(--border));
+  border-radius: 50%;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.workflow-step-identity,
+.workflow-step-title {
+  min-width: 0;
+}
+.workflow-step-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.workflow-step-summary {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.workflow-step-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.workflow-icon-action {
+  min-width: 34px;
+  padding-inline: 8px;
+}
+.workflow-step-empty {
+  padding: 16px;
+  text-align: center;
+}
+.workflow-step-add {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) auto;
+  gap: 8px;
+}
+.workflow-step-select {
+  min-width: 0;
+}
+.workflow-step-status {
+  min-height: 1.2em;
+  margin: 7px 0 0;
+}
+.workflow-optional-check {
+  margin: 12px 0;
+}
+.workflow-cardinality-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.workflow-connections {
+  display: grid;
+  gap: 7px;
+}
+.workflow-connection-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: 13px;
+}
+.workflow-connection-add {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(120px, 1fr) auto;
+  gap: 7px;
+  padding-top: 3px;
+}
+.workflow-topology-summary {
+  margin: 0;
+  text-align: right;
+}
+.workflow-run-row {
+  align-items: center;
+  gap: 14px;
+}
+.workflow-run-identity {
+  min-width: 0;
+}
+.workflow-run-actions {
+  justify-content: flex-end;
+}
+
+.step-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--muted);
+  margin-left: 0;
+}
+
+/* Workflow summaries are compact in the photo header, then open into a true
+   stage ledger. The sequence marker is structural: order is the metadata. */
+.photo-workflow-summary {
+  margin-top: 4px;
+  max-width: 560px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-2);
+  word-break: normal;
+}
+.photo-workflow-summary > summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 9px;
+  cursor: pointer;
+  color: var(--muted);
+}
+.photo-workflow-summary > summary::-webkit-details-marker {
+  display: none;
+}
+.photo-workflow-summary > summary::after {
+  content: "+";
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+.photo-workflow-summary[open] > summary::after {
+  content: "−";
+}
+.workflow-summary-label {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 650;
+}
+.photo-workflow-stages {
+  list-style: none;
+  margin: 0;
+  padding: 0 9px 6px;
+}
+.photo-workflow-stages li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  gap: 7px;
+  align-items: start;
+  padding: 7px 0;
+  border-top: 1px solid var(--border);
+}
+.photo-workflow-stages li > span:nth-child(2) > span {
+  display: block;
+  margin-top: 1px;
+}
+.workflow-stage-state {
+  color: var(--faint);
+  font-family: var(--font-mono);
+}
+.photo-workflow-stages .complete .workflow-stage-state {
+  color: var(--ok);
+}
+.photo-workflow-stages .next .workflow-stage-state {
+  color: var(--accent);
+}
+.workflow-branch-note {
+  margin: 0;
+  padding: 0 9px 9px 34px;
+}
+.workflow-run-status {
+  margin: 0;
+  padding: 0 9px 9px 34px;
+  text-transform: capitalize;
+}
+.photo-workflow-stages .blocked .workflow-stage-state,
+.photo-workflow-stages .failed .workflow-stage-state {
+  color: var(--danger);
+}
+.workflow-empty-link {
+  appearance: none;
+  display: inline-flex;
+  margin-top: 4px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+.workflow-empty-link:hover {
+  color: var(--accent);
+}
+
+.roll-chip.has-workflow {
+  white-space: normal;
+  overflow: visible;
+}
+.roll-chip-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.roll-workflow-progress {
+  display: grid;
+  gap: 4px;
+  margin-top: 5px;
+}
+.roll-progress-track {
+  display: block;
+  width: 100%;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--border);
+}
+.roll-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .workflow-step {
+    grid-template-columns: 30px minmax(0, 1fr);
+    align-items: start;
+  }
+  .workflow-step-actions {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .workflow-step-actions .workflow-configure {
+    grid-column: 1 / -1;
+  }
+  .workflow-step-actions button {
+    min-height: 42px;
+    padding-inline: 7px;
+  }
+  .workflow-step-add {
+    grid-template-columns: 1fr;
+  }
+  .workflow-cardinality-grid {
+    grid-template-columns: 1fr;
+  }
+  .workflow-connection-row {
+    align-items: flex-start;
+  }
+  .workflow-connection-add {
+    grid-template-columns: 1fr;
+  }
+  .workflow-connection-add button {
+    width: 100%;
+  }
+  .workflow-step-add button {
+    width: 100%;
+  }
+  .workflow-run-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .workflow-run-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+  .workflow-run-actions button {
+    width: 100%;
+    min-height: 44px;
+  }
+  .photo-workflow-summary > summary {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+  .photo-workflow-summary > summary::after {
+    margin-left: auto;
+  }
+  .photo-workflow-stages li {
+    grid-template-columns: 16px minmax(0, 1fr);
+  }
+  .photo-workflow-stages li > span:last-child {
+    grid-column: 2;
+  }
+}
+.step-badge.ok {
+  color: var(--ok);
+  border-color: color-mix(in oklch, var(--ok) 40%, var(--border));
+}
+
+.stage-kind-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-bottom: 14px;
+}
+
+.inline-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--muted);
+}
+.inline-check input {
+  width: auto;
+}
+
+/* ---------- modal ---------- */
+.modal-sub {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin: 18px 0 8px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: oklch(0 0 0 / 0.6);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  z-index: 200;
+}
+.modal {
+  width: min(500px, 100%);
+  max-height: 90vh;
+  max-height: min(90vh, calc(100dvh - 40px));
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: var(--shadow);
+  border-color: var(--border-strong);
+}
+
+/* ---------- batch preview ---------- */
+.batch-preview {
+  margin: 14px 0 0;
+  padding: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 240px;
+  overflow: auto;
+}
+
+/* ---------- login ---------- */
+/* centered login: the view fills the available height and centers the card in
+   the viewport (both axes). Text inside the card keeps its normal left align. */
+.login-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100dvh - 140px);
+}
+.login-card {
+  width: 100%;
+  max-width: 460px;
+}
+.login-card .login-learn {
+  margin-top: 14px;
+}
+
+/* topbar "Log in" button shown in place of the avatar when signed out. */
+.login-btn {
+  white-space: nowrap;
+}
+
+form#login-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+form#login-form .handle-wrap {
+  flex: 1;
+  position: relative;
+}
+form#login-form input {
+  width: 100%;
+}
+
+.handle-suggestions {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 5px;
+  list-style: none;
+  background: var(--bg-elev);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  max-height: 260px;
+  overflow-y: auto;
+}
+.handle-option {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.handle-option:hover,
+.handle-option.active {
+  background: var(--surface-2);
+}
+.handle-option .handle-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

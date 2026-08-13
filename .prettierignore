@@ -1,0 +1,18 @@
+coverage
+dist
+docs/site/.docusaurus
+docs/site/build
+node_modules
+.panproto
+
+# Generated catalogs and model data.
+src/data/caption-idf.json
+src/data/curated-*.json
+src/data/lensfun-cameras.json
+src/data/lensfun-lenses.json
+src/data/tokenizer-model.json
+
+# Generated from lexicons and OAuth scope declarations.
+packages/lexicon/src/generated.ts
+packages/lexicon/src/namespaces.ts
+public/client-metadata.json

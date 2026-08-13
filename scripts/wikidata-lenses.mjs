@@ -24,8 +24,9 @@ export async function resolveMakerQid(name) {
   const u = `${API}?action=wbsearchentities&search=${encodeURIComponent(name)}&language=en&format=json&type=item&limit=5`;
   const j = await (await fetch(u, { headers: { "User-Agent": UA } })).json();
   // prefer a hit whose description mentions a company / manufacturer
-  const hit = (j.search || []).find((s) => /company|corporation|manufacturer|brand/i.test(s.description || ""))
-           || (j.search || [])[0];
+  const hit =
+    (j.search || []).find((s) => /company|corporation|manufacturer|brand/i.test(s.description || "")) ||
+    (j.search || [])[0];
   return hit?.id || null;
 }
 
@@ -48,7 +49,11 @@ export async function fetchWikidataLenses(makerQid) {
   for (const b of j.results?.bindings || []) {
     const label = b.itemLabel?.value;
     if (!label || /^Q\d+$/.test(label)) continue; // skip unlabelled items
-    const focals = (b.focals?.value || "").split(",").map(Number).filter((n) => n > 0).sort((a, z) => a - z);
+    const focals = (b.focals?.value || "")
+      .split(",")
+      .map(Number)
+      .filter((n) => n > 0)
+      .sort((a, z) => a - z);
     rows.push({
       wikidata: b.item.value.split("/").pop(),
       model: label,

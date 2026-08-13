@@ -1,0 +1,120 @@
+name: Weekly real PDS smoke
+
+on:
+  schedule:
+    - cron: "30 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: weekly-real-pds-smoke
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    name: Real dev-env PDS (advisory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - id: install
+        name: Install pinned dependencies
+        continue-on-error: true
+        run: npm ci
+      - id: pds_smoke
+        name: Exercise typed PDS client against @atproto/dev-env
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        run: npm run smoke:pds-real
+      - name: Open or update the advisory issue
+        if: always() && (steps.install.outcome == 'failure' || steps.pds_smoke.outcome == 'failure')
+        uses: actions/github-script@v7
+        env:
+          INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          SMOKE_OUTCOME: ${{ steps.pds_smoke.outcome }}
+          SMOKE_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            const title = "[advisory] Weekly real PDS smoke is failing";
+            const body = [
+              "The scheduled smoke against a real `@atproto/dev-env` PDS failed.",
+              "",
+              `Latest failed run: ${process.env.SMOKE_RUN_URL}`,
+              `Commit: ${context.sha}`,
+              `Install outcome: ${process.env.INSTALL_OUTCOME}`,
+              `Smoke outcome: ${process.env.SMOKE_OUTCOME}`,
+              "",
+              "This check is advisory and does not block deploys. Inspect the run logs for the failing create/get/put-swap/delete/blob step.",
+            ].join("\n");
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            const existing = issues.find((issue) => !issue.pull_request && issue.title === title);
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Smoke failed again: ${process.env.SMOKE_RUN_URL}`,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+              });
+            }
+      - name: Close the advisory issue after recovery
+        if: steps.install.outcome == 'success' && steps.pds_smoke.outcome == 'success'
+        uses: actions/github-script@v7
+        env:
+          SMOKE_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            const title = "[advisory] Weekly real PDS smoke is failing";
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            const existing = issues.find((issue) => !issue.pull_request && issue.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Recovered in ${process.env.SMOKE_RUN_URL}.`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: "closed",
+                state_reason: "completed",
+              });
+            }
+      - name: Publish advisory result
+        if: always()
+        env:
+          INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          SMOKE_OUTCOME: ${{ steps.pds_smoke.outcome }}
+        run: echo "### Real PDS smoke — install ${INSTALL_OUTCOME}, smoke ${SMOKE_OUTCOME}" >> "$GITHUB_STEP_SUMMARY"

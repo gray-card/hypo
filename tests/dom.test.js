@@ -2,7 +2,10 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { el, field, toast, openModal, confirmModal, isAdvanced, setAdvanced, autocomplete } from "../src/ui/dom.js";
 import { icon, iconBtn } from "../src/ui/icons.js";
 
-beforeEach(() => { document.body.innerHTML = ""; localStorage.clear(); });
+beforeEach(() => {
+  document.body.innerHTML = "";
+  localStorage.clear();
+});
 
 describe("el", () => {
   it("applies class, text, attributes, events, and children", () => {
@@ -53,6 +56,9 @@ describe("toast", () => {
     toast("Saved", "ok", 9999, { label: "Undo", fn });
     const host = document.querySelector(".toast-host");
     expect(host.textContent).toContain("Saved");
+    const notice = host.querySelector(".toast");
+    expect(notice.getAttribute("aria-live")).toBe("polite");
+    expect(notice.getAttribute("aria-atomic")).toBe("true");
     const btn = host.querySelector(".toast-action");
     expect(btn.textContent).toBe("Undo");
     btn.click();
@@ -72,10 +78,62 @@ describe("openModal", () => {
     expect(onSave).toHaveBeenCalled();
   });
   it("closes on Escape", () => {
+    const trigger = el("button", {}, "Open");
+    document.body.append(trigger);
+    trigger.focus();
     openModal("X", [], async () => {});
+    const modal = document.querySelector(".modal");
+    expect(modal.getAttribute("aria-modal")).toBe("true");
     expect(document.querySelector(".modal-overlay")).toBeTruthy();
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
     expect(document.querySelector(".modal-overlay")).toBeFalsy();
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it("traps focus in both tab directions", () => {
+    const input = el("input", {});
+    openModal("X", [input], async () => {});
+    const buttons = document.querySelectorAll(".modal button");
+    const last = buttons[buttons.length - 1];
+
+    last.focus();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab" }));
+    expect(document.activeElement).toBe(input);
+
+    input.focus();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", shiftKey: true }));
+    expect(document.activeElement).toBe(last);
+  });
+
+  it("restores modal focus after a browser-owned popover returns focus to the page", async () => {
+    const outside = el("button", {}, "Outside");
+    const input = el("input", {});
+    document.body.append(outside);
+    openModal("X", [input], async () => {});
+    input.focus();
+
+    window.dispatchEvent(new Event("blur"));
+    outside.focus();
+    window.dispatchEvent(new Event("focus"));
+    await Promise.resolve();
+
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("lets only the topmost nested modal handle Escape", () => {
+    openModal("First", [], async () => {});
+    openModal("Second", [], async () => {});
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    const modals = [...document.querySelectorAll(".modal")];
+    expect(modals).toHaveLength(1);
+    expect(modals[0].getAttribute("aria-label")).toBe("First");
+  });
+
+  it("supports read-only trays with only a close action", () => {
+    openModal("Needs attention", [], async () => true, { hideSave: true, cancelLabel: "Close" });
+    const buttons = [...document.querySelectorAll(".modal button")];
+    expect(buttons.map((button) => button.textContent)).toEqual(["Close"]);
+    expect(document.activeElement).toBe(buttons[0]);
   });
 });
 
@@ -100,6 +158,25 @@ describe("confirmModal", () => {
     expect(box.checked).toBe(false);
     [...document.querySelectorAll(".modal button")].find((b) => b.textContent === "Replace").click();
     expect(await p).toEqual({ confirmed: true, checks: { rereadExif: false } });
+  });
+
+  it("traps focus, exposes modal semantics, and restores focus on Escape", async () => {
+    const trigger = el("button", {}, "Remove");
+    document.body.append(trigger);
+    trigger.focus();
+    const result = confirmModal("Delete this photo?");
+    const modal = document.querySelector(".modal");
+    expect(modal.getAttribute("aria-modal")).toBe("true");
+    expect(modal.getAttribute("aria-label")).toBe("Delete this photo?");
+
+    const buttons = modal.querySelectorAll("button");
+    buttons[buttons.length - 1].focus();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab" }));
+    expect(document.activeElement).toBe(buttons[0]);
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(await result).toBe(false);
+    expect(document.activeElement).toBe(trigger);
   });
 });
 
