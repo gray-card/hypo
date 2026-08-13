@@ -98,12 +98,13 @@ npm run preview   # serve dist/ on http://127.0.0.1:5173
 
 Hypo is a GitHub Pages project site published at `https://hypo.graycard.app/`.
 
-| Piece                          | Role                                                                                   |
-| ------------------------------ | -------------------------------------------------------------------------------------- |
-| `vite.config.js`               | `base: '/'` (custom domain is the site root)                                           |
-| `public/CNAME`                 | `hypo.graycard.app`                                                                    |
-| `public/client-metadata.json`  | public atproto OAuth client (`client_id`, redirect URI, scope)                         |
-| `.github/workflows/deploy.yml` | validate a `v*` tag from `main`, rerun release gates, and publish the app and `/docs/` |
+| Piece                          | Role                                                                                           |
+| ------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `vite.config.js`               | `base: '/'` (custom domain is the site root)                                                   |
+| `public/CNAME`                 | `hypo.graycard.app`                                                                            |
+| `public/client-metadata.json`  | public atproto OAuth client (`client_id`, redirect URI, scope)                                 |
+| `.github/workflows/ci.yml`     | validate and deploy the app and `/docs/` after every fully green `main` push                   |
+| `.github/workflows/deploy.yml` | validate a `v*` tag at the current `main` commit, rerun release gates, and publish the release |
 
 Production OAuth uses `https://hypo.graycard.app/client-metadata.json` as `client_id`.
 Changing that URL invalidates existing sessions; users must sign in again. Keep the OAuth

@@ -41,8 +41,9 @@ jobs:
           fi
 
           RELEASE_COMMIT="$(git rev-list -n 1 "$RELEASE_TAG")"
-          if ! git merge-base --is-ancestor "$RELEASE_COMMIT" origin/main; then
-            echo "Tagged commit $RELEASE_COMMIT is not contained in origin/main." >&2
+          MAIN_COMMIT="$(git rev-parse origin/main)"
+          if [[ "$RELEASE_COMMIT" != "$MAIN_COMMIT" ]]; then
+            echo "Tagged commit $RELEASE_COMMIT must be the current main commit $MAIN_COMMIT." >&2
             exit 1
           fi
 
@@ -55,28 +56,12 @@ jobs:
     permissions:
       contents: read
     uses: ./.github/workflows/ci.yml
-    with:
-      package_pages: true
-
-  deploy:
-    name: Deploy GitHub Pages
-    needs: gates
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
 
   github-release:
     name: Publish GitHub Release
     needs:
       - validate-tag
-      - deploy
+      - gates
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -97,4 +82,4 @@ jobs:
           fi
 
           echo "### Hypo $RELEASE_VERSION released" >> "$GITHUB_STEP_SUMMARY"
-          echo "The tagged main commit passed all release gates, was deployed to GitHub Pages, and has a GitHub Release." >> "$GITHUB_STEP_SUMMARY"
+          echo "The current main commit passed all release gates and has a GitHub Release. GitHub Pages deployment remains restricted to main CI." >> "$GITHUB_STEP_SUMMARY"

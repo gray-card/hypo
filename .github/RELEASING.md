@@ -1,6 +1,6 @@
 # Releasing Hypo
 
-Hypo releases are immutable `v*` tags on commits already contained in `main`. Merging a pull request runs CI but does not deploy production.
+Hypo releases are immutable `v*` tags on the current `main` commit. Every fully green `main` push deploys the application and documentation; tags publish GitHub Releases but never receive deployment permission.
 
 ## Prepare the release
 
@@ -8,7 +8,7 @@ Hypo releases are immutable `v*` tags on commits already contained in `main`. Me
 2. Set the root package version to the intended semantic version and update `CHANGELOG.md`. Changesets may prepare this as a version pull request.
 3. Review schema compatibility and migrations, including fixture coverage for any changed `app.graycard.*` record.
 4. Review the production and development dependency audit results under [the dependency audit policy](./SECURITY_AUDIT_POLICY.md).
-5. Merge the version pull request and wait for CI on `main` to pass.
+5. Merge the version pull request and wait for both CI and the **Deploy GitHub Pages** job on `main` to pass.
 
 ## Ship the release
 
@@ -21,10 +21,10 @@ git tag -a v1.0.0 -m "Hypo 1.0.0"
 git push origin v1.0.0
 ```
 
-The **Release Hypo** workflow verifies that (i) the tag is a semantic version, (ii) it matches `package.json`, and (iii) its commit is contained in `origin/main`. It then reruns all release gates, deploys the validated artifact to GitHub Pages, and creates the GitHub Release. A failed gate leaves production unchanged.
+The **Release Hypo** workflow verifies that (i) the tag is a semantic version, (ii) it matches `package.json`, and (iii) it points to the current `origin/main` commit. It then reruns all release gates and creates the GitHub Release. Pages deployment is performed only by the green `main` CI run that precedes the tag.
 
 After the workflow succeeds, verify the public application, `/docs/`, OAuth login, a fixture-independent read path, and the GitHub Release notes.
 
 ## Repository settings
 
-Protect `main` with pull requests and the **CI / Release gates** check. Protect `v*` tags from updates or deletion, and configure the `github-pages` environment with required reviewers if production deployment needs manual approval.
+Protect `main` with pull requests and the **CI / Release gates** check. Protect `v*` tags from updates or deletion. Configure the `github-pages` environment to allow only the `main` branch, with required reviewers if production deployment needs manual approval.
