@@ -147,6 +147,33 @@ describe("web bootstrap boundary", () => {
     expect(harness.services.navigateSection).toHaveBeenCalledWith("setup");
   });
 
+  it("opens at most one onboarding wizard across automatic and manual requests", async () => {
+    const harness = bootstrapHarness({
+      session: { agent: { kind: "agent" }, did: "did:plc:alice" },
+    });
+    let resolveOnboarding;
+    harness.services.loadOnboarding.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveOnboarding = resolve;
+        }),
+    );
+
+    const automatic = harness.bootstrap.startOnboarding();
+    const manual = harness.bootstrap.startOnboarding();
+    await vi.waitFor(() => expect(harness.services.loadOnboarding).toHaveBeenCalledOnce());
+    resolveOnboarding(harness.onboarding);
+    await Promise.all([automatic, manual]);
+
+    expect(harness.onboarding.openOnboarding).toHaveBeenCalledOnce();
+    await harness.bootstrap.startOnboarding();
+    expect(harness.onboarding.openOnboarding).toHaveBeenCalledOnce();
+
+    harness.onboarding.openOnboarding.mock.calls[0][0].onDone("setup");
+    await harness.bootstrap.startOnboarding();
+    expect(harness.onboarding.openOnboarding).toHaveBeenCalledTimes(2);
+  });
+
   it("keeps the authenticated session and auto-flush scheduler when onboarding cannot load", async () => {
     const harness = bootstrapHarness();
     const disposeAutoFlush = vi.fn();

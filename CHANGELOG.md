@@ -2,6 +2,13 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.0.1] - 2026-08-13
+
+### Fixed
+
+- Prevent automatic onboarding and the Guided setup button from opening two
+  setup wizards when they are triggered at nearly the same time.
+
 ## [1.0.0] - 2026-08-13
 
 ### Added
@@ -88,3 +95,4 @@ Notable changes to Hypo are recorded here.
 
 [0.2.0]: https://github.com/gray-card/hypo/compare/v0.1.0...v0.2.0
 [1.0.0]: https://github.com/gray-card/hypo/compare/v0.2.0...v1.0.0
+[1.0.1]: https://github.com/gray-card/hypo/compare/v1.0.0...v1.0.1
