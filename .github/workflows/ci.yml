@@ -2,12 +2,6 @@ name: CI
 
 on:
   workflow_call:
-    inputs:
-      package_pages:
-        description: Package the validated application and documentation for GitHub Pages
-        required: false
-        type: boolean
-        default: false
   push:
     branches: [main]
   pull_request:
@@ -160,13 +154,13 @@ jobs:
       - name: Check Lighthouse performance budget
         run: npm run lighthouse
       - name: Assemble the release site
-        if: inputs.package_pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           mkdir -p dist/docs
           cp -R docs/site/build/. dist/docs/
           cp dist/index.html dist/404.html
       - name: Upload the validated Pages artifact
-        if: inputs.package_pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
@@ -230,3 +224,18 @@ jobs:
               exit 1
             fi
           done
+
+  deploy-pages:
+    name: Deploy GitHub Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: release-gates
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
