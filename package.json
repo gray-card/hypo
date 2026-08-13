@@ -12,7 +12,7 @@
     "url": "https://github.com/gray-card/hypo.git"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "packageManager": "npm@10.9.4",
   "workspaces": [
@@ -20,6 +20,7 @@
     "packages/*"
   ],
   "scripts": {
+    "predev": "npm run build:catalog-shards",
     "dev": "vite",
     "prebuild": "npm run build:catalog-shards",
     "build": "vite build",

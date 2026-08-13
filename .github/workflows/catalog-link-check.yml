@@ -16,6 +16,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Check catalog provenance links (advisory)
         run: node scripts/check-catalog-links.mjs

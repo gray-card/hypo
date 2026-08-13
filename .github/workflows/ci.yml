@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: 20
+  NODE_VERSION: 22
   PANPROTO_VERSION: 0.70.1
 
 jobs:
@@ -38,7 +38,18 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Install Panproto ${{ env.PANPROTO_VERSION }}
-        run: cargo install panproto-cli --version "${PANPROTO_VERSION}" --locked
+        env:
+          PANPROTO_INSTALLER_SHA256: 4d8cae5f15c5ae5ed28aa9a5366c47ce60d49e740b46c133661f88031b129482
+          PANPROTO_CLI_INSTALL_DIR: ${{ runner.temp }}/panproto-cli
+          PANPROTO_CLI_NO_MODIFY_PATH: 1
+        run: |
+          installer="$RUNNER_TEMP/panproto-cli-installer.sh"
+          curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location \
+            "https://github.com/panproto/panproto/releases/download/v${PANPROTO_VERSION}/panproto-cli-installer.sh" \
+            --output "$installer"
+          echo "$PANPROTO_INSTALLER_SHA256  $installer" | sha256sum --check --strict
+          sh "$installer" --quiet
+          echo "$PANPROTO_CLI_INSTALL_DIR/bin" >> "$GITHUB_PATH"
       - name: Validate the Panproto project and fixtures
         run: npm run check:panproto
       - name: Classify schema compatibility against the pull-request merge base

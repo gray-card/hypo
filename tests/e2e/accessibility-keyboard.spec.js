@@ -269,7 +269,7 @@ test("setup view supports keyboard nav, modal focus restoration, and seeded gear
   await page.keyboard.press("Enter");
   const dialog = page.getByRole("dialog", { name: "Edit camera" });
   await expect(dialog).toBeVisible();
-  await expect(dialog.locator("input,textarea,select,button").first()).toBeFocused();
+  await expect(dialog.getByLabel("Make *", { exact: true })).toBeFocused();
   await expectAccessible(page, ".modal-overlay");
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();

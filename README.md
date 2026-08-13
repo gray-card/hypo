@@ -77,6 +77,8 @@ Hypo is a pure client. There is no server holding your data or your session:
 
 ## Run locally
 
+Hypo requires Node.js 22 or newer and npm 10.
+
 ```bash
 npm install
 npm run dev
