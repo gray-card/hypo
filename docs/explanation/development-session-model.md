@@ -36,9 +36,11 @@ Planned and observed values remain distinct. `temperatureSetpoint` and `publishe
 
 Saving a home-development session updates every linked chemistry instance. `sessionsUsed` increases once, `rollsProcessed` increases by the number of rolls in the session, and `lastUsedAt` records the latest use. Duplicate links within one session are counted once. The selected rolls also receive their development dates, location, status, and the first linked developer-role chemistry as `developedWith`.
 
-## Existing records
+## Legacy record migration
 
-Hypo 1.2 migrates earlier `app.graycard.process.developSession` records before loading the store. Panproto compiles the reviewed summary-to-stage transformation. Application migration code then merges existing steps, converts shortcut stop, fixer, and blix fields into stages, removes redundant singular or summary fields, and updates the original record key with a repository commit guard. A failed write leaves the previous record unchanged.
+Before loading the store, Hypo migrates a development record when it still uses superseded summary or shortcut fields. Panproto compiles the reviewed summary-to-stage transformation. Application migration code then merges existing steps, converts shortcut stop, fixer, and blix fields into stages, removes redundant singular or summary fields, and updates the original record key with a repository commit guard. A failed write leaves the previous record unchanged.
+
+The processing-history editor writes changes back to that same record. Changing its rolls or chemistry also reconciles the affected roll status, development fields, chemistry session counts, roll counts, and latest-use dates.
 
 ## Process references
 

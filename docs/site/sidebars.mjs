@@ -25,6 +25,7 @@ const sidebars = {
         "how-to/create-and-run-a-workflow",
         "how-to/time-c41",
         "how-to/log-completed-processing",
+        "how-to/import-frames-files",
         "how-to/record-push-pull-processing",
         "how-to/write-batch-rules",
         "how-to/ground-a-scene",

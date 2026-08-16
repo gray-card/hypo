@@ -9,7 +9,7 @@ Hypo's **provenance ladder** represents evidence at the narrowest level supporte
 
 ## 1. Record-level assertion
 
-`app.graycard.defs#provenance` answers how and when a value or record was asserted. Its source values are `manual`, `imported-exif`, `inferred`, `analysis`, `batch-rule`, and `workflow-template`; confidence is `certain`, `likely`, or `guess`. The object may also name `assertedAt`, `assertedBy`, and a note.
+`app.graycard.defs#provenance` answers how and when a value or record was asserted. Its source values distinguish `manual` entry, `imported-exif` photo metadata, `inferred` values, `analysis`, `batch-rule`, and `workflow-template`; confidence is `certain`, `likely`, or `guess`. The object may also name `assertedAt`, `assertedBy`, and a note. Records imported from a `.frames` capture log use that note to identify their source without treating the file as EXIF.
 
 This tier is appropriate when one method accounts for the record as a whole.
 

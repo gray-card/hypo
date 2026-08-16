@@ -11,6 +11,7 @@ import {
   scaledToDisplay,
   measureToDisplay,
   chemistryRoles,
+  matchGear,
   saveWorkflowTemplate,
   splitRollFromStockpile,
 } from "../graycard.js";
@@ -77,6 +78,7 @@ import {
 } from "../../apps/web/src/views/library/maintenance-selectors.ts";
 import {
   openManualDevelopment,
+  openDevelopmentSession,
   renderDarkroomHeader as renderDarkroomHeaderView,
   saveCompletedDevelopmentRecords,
 } from "../../apps/web/src/views/library/maintenance-darkroom.ts";
@@ -168,6 +170,10 @@ function gearServices() {
       ctx.store = await loadStore(ctx.agent, ctx.did);
     },
     saveRecord: (collection, value, existing) => saveRecord(ctx.agent, ctx.did, collection, value, existing),
+    uploadBlob: async (file, fallbackMime) => {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      return repoClient(ctx.agent).uploadBlob({ bytes, mimeType: file.type || fallbackMime });
+    },
     deleteRecord: (uri) => deleteRecord(ctx.agent, ctx.did, uri),
     uploadBlob: async (file, fallbackMime) => {
       const bytes = new Uint8Array(await file.arrayBuffer());
@@ -290,6 +296,7 @@ function filmViewServices(body) {
       filmStockpile: NS.instance.filmStockpile,
       filmRoll: NS.instance.filmRoll,
       exposure: NS.instance.exposure,
+      capture: NS.session.capture,
     },
     getStore: () => ctx.store,
     reloadStore: async () => {
@@ -315,6 +322,7 @@ function filmViewServices(body) {
     openRoll: openRollRoute,
     openCompletedDevelopment: (roll, onDone) =>
       openManualDevelopment(onDone, activityServices(), { selectedRolls: [roll.uri] }),
+    editDevelopment: (session, onDone) => openDevelopmentSession(session, onDone, activityServices()),
     openScanSession: (roll, onDone) => openScanSession(onDone, activityServices(), { selectedRoll: roll.uri }),
     instanceSelect,
     instanceThumb,
@@ -324,10 +332,12 @@ function filmViewServices(body) {
     icon,
     isAdvanced,
     inspect: openInspector,
+    matchGear: (exif) => matchGear(exif, ctx.store),
     getPhotos: () => getPhotos(ctx.agent, ctx.did),
     blobUrl: (blob) => blobUrl(ctx.agent, ctx.did, blob),
     rollStatuses: ENUMS.rollStatus,
     cassetteTypes: ENUMS.cassetteType,
+    captureFormats: ENUMS.format,
   };
 }
 

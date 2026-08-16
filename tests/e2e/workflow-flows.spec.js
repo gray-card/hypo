@@ -97,7 +97,7 @@ test("a rich workflow can be authored, launched, advanced, and used on mobile", 
 
   await body.getByRole("button", { name: "Shoots", exact: true }).click();
   const shoot = body.locator(".gear-row").filter({ hasText: "Fixture photo walk" });
-  await shoot.getByRole("button", { name: "Edit", exact: true }).click();
+  await shoot.getByRole("button", { name: "Edit details", exact: true }).click();
 
   const shootDialog = page.getByRole("dialog", { name: "Edit shoot" });
   await shootDialog.getByLabel("Ended (optional)").fill("2026-08-13T12:00");

@@ -10,11 +10,12 @@ beforeEach(() => {
 
 function services(store, overrides = {}) {
   return {
-    collections: { filmStockpile: "stockpile", filmRoll: "roll", exposure: "exposure" },
+    collections: { filmStockpile: "stockpile", filmRoll: "roll", exposure: "exposure", capture: "capture" },
     getStore: () => store,
     reloadStore: vi.fn(async () => {}),
     renderLibrary: vi.fn(),
     saveRecord: vi.fn(async () => "at://saved"),
+    uploadBlob: vi.fn(async () => ({ ref: { $link: "bafyphoto" } })),
     deleteRecord: vi.fn(async () => {}),
     splitRoll: vi.fn(async () => "at://roll"),
     addGear: vi.fn(),
@@ -28,10 +29,13 @@ function services(store, overrides = {}) {
     icon: () => document.createElement("span"),
     isAdvanced: () => false,
     inspect: vi.fn(),
+    editDevelopment: vi.fn(),
+    matchGear: vi.fn(() => ({})),
     getPhotos: vi.fn(async () => []),
     blobUrl: vi.fn(async () => null),
     rollStatuses: ["loaded", "partial", "exposed"],
     cassetteTypes: [],
+    captureFormats: ["135", "120", "220", "sheet", "instant", "other"],
     ...overrides,
   };
 }
@@ -68,11 +72,49 @@ describe("extracted Film view", () => {
     renderFilmView(body, services(store));
     expect([...body.querySelectorAll("h2")].map((heading) => heading.textContent)).toEqual([
       "Film in reserve",
-      "Rolls",
+      "Roll library",
     ]);
     expect(body.textContent).toContain("Kodak Tri-X");
     expect(body.textContent).toContain("×2");
     expect(body.textContent).toContain("Roll 1");
+  });
+
+  it("filters and searches a mixed roll library without losing the full collection", () => {
+    const triX = "at://stock/tri-x";
+    const hp5 = "at://stock/hp5";
+    const store = {
+      catalog: {
+        filmStock: [
+          { uri: triX, value: { brand: "Kodak", name: "Tri-X" } },
+          { uri: hp5, value: { brand: "Ilford", name: "HP5 Plus" } },
+        ],
+      },
+      instance: {
+        filmRoll: [
+          { uri: "at://roll/loaded", value: { stock: triX, label: "Camera roll", status: "loaded" } },
+          { uri: "at://roll/waiting", value: { stock: hp5, label: "Lab queue", status: "exposed" } },
+          { uri: "at://roll/done", value: { stock: triX, label: "Finished roll", status: "developed" } },
+        ],
+        exposure: [],
+      },
+    };
+    const body = document.createElement("div");
+    renderFilmView(body, services(store, { rollStatuses: ["loaded", "exposed", "developed"] }));
+
+    [...body.querySelectorAll(".library-scope")]
+      .find((button) => button.textContent.includes("Needs processing"))
+      .click();
+    expect(body.querySelector(".roll-library-list").textContent).toContain("Lab queue");
+    expect(body.querySelector(".roll-library-list").textContent).not.toContain("Camera roll");
+    expect(body.querySelector('[role="status"]').textContent).toBe("1 roll");
+
+    [...body.querySelectorAll(".library-scope")].find((button) => button.textContent.includes("All")).click();
+    const search = body.querySelector('[aria-label="Search film rolls"]');
+    search.value = "Kodak";
+    search.dispatchEvent(new Event("input"));
+    expect(body.querySelector(".roll-library-list").textContent).toContain("Camera roll");
+    expect(body.querySelector(".roll-library-list").textContent).toContain("Finished roll");
+    expect(body.querySelector(".roll-library-list").textContent).not.toContain("Lab queue");
   });
 
   it("derives roll usage and lifecycle through the injected record writer", async () => {
@@ -199,7 +241,7 @@ describe("extracted Film view", () => {
     [...modal.querySelectorAll("button")].find((button) => button.textContent.includes("Log scan")).click();
     expect(openCompletedDevelopment).toHaveBeenCalledWith(roll, expect.any(Function));
     expect(openScanSession).toHaveBeenCalledWith(roll, expect.any(Function));
-    modal.querySelector('[title="Inspect development session"]').click();
-    expect(api.inspect).toHaveBeenCalledWith(development);
+    modal.querySelector('[title="Edit development session"]').click();
+    expect(api.editDevelopment).toHaveBeenCalledWith(development, expect.any(Function));
   });
 });

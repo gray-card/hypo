@@ -2,6 +2,46 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.3.0] - 2026-08-16
+
+### Added
+
+- Import one or more `.frames` files, map them to existing rolls, and match
+  cameras and lenses through catalog names, alternative names, and serial
+  numbers.
+- Infer an unrestricted number of shoot proposals from frame timestamps and
+  optional location changes, with sensitivity controls and review actions to
+  rename, merge, or split the result before writing records.
+- Filter, search, sort, summarize, and page the film-roll and shoot libraries.
+
+### Changed
+
+- Replace the overlapping roll **Open** and **Edit** actions with one **Manage**
+  action for roll identity, lifecycle, processing history, and frames.
+- Name shoot actions **Add frames** and **Edit details** to distinguish logging
+  exposures from changing the capture session.
+- Open development history entries in the complete process editor, including
+  records entered through the earlier interface.
+
+### Fixed
+
+- Keep both frame-logging actions inside the mobile viewport after **Same
+  frame** becomes available.
+- Reconcile roll development fields and chemistry usage totals when an existing
+  development session changes its rolls, chemistry, dates, or stages.
+- Skip source frames already imported without creating empty duplicate shoots.
+- Keep `.frames` coordinates and altitude off the PDS unless the user explicitly
+  selects location publication; location may still refine shoot boundaries in
+  the browser.
+
+### Migration
+
+- This release adds only optional exposure and development-session fields, so
+  it requires no new record rewrite. `.frames` imports identify their source in
+  each exposure's provenance note.
+  Existing legacy development records continue through the Panproto 0.70.1
+  summary-to-stage migration before editing.
+
 ## [1.2.0] - 2026-08-16
 
 ### Added
@@ -178,3 +218,4 @@ Notable changes to Hypo are recorded here.
 [1.1.0]: https://github.com/gray-card/hypo/compare/v1.0.1...v1.1.0
 [1.1.1]: https://github.com/gray-card/hypo/compare/v1.1.0...v1.1.1
 [1.2.0]: https://github.com/gray-card/hypo/compare/v1.1.1...v1.2.0
+[1.3.0]: https://github.com/gray-card/hypo/compare/v1.2.0...v1.3.0

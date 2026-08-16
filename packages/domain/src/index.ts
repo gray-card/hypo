@@ -7,3 +7,4 @@ export * from "./geo.ts";
 export * from "./profileFilter.ts";
 export * from "./batch.ts";
 export * from "./consumableLifecycle.ts";
+export * from "./frames.ts";

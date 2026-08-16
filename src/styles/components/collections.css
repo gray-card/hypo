@@ -165,6 +165,110 @@
   row-gap: 4px;
 }
 
+/* Film and shoot ledgers: dense enough for a large archive, with the status
+   rail doing real navigation work instead of acting as decorative summary. */
+.library-section-intro {
+  margin: 3px 0 0;
+}
+.library-ledger-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin: 14px 0 12px;
+  padding: 10px 12px;
+  border-block: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface-2) 76%, transparent);
+  color: var(--muted);
+  font: 500 12px/1.4 var(--font-mono);
+}
+.library-ledger-strip > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.library-ledger-strip strong {
+  color: var(--text);
+  font-size: 15px;
+}
+.library-scope-bar {
+  display: flex;
+  gap: 7px;
+  margin: 14px 0 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.library-scope-bar::-webkit-scrollbar {
+  display: none;
+}
+.library-scope {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 7px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: 600 12px/1 var(--font-body);
+}
+.library-scope:hover,
+.library-scope.active {
+  border-color: color-mix(in oklab, var(--accent) 64%, var(--border));
+  color: var(--text);
+  background: color-mix(in oklab, var(--accent) 9%, transparent);
+}
+.library-scope-count {
+  min-width: 1.55em;
+  padding: 2px 5px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  text-align: center;
+}
+.library-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, auto);
+  gap: 10px;
+  align-items: end;
+}
+.library-filter-bar .field,
+.library-filter-input {
+  margin: 0;
+}
+.library-result-summary {
+  margin: 10px 0 2px;
+}
+.shoot-row-identity {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.status-chip.active {
+  border-color: color-mix(in oklab, var(--accent) 50%, var(--border));
+  color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .library-filter-bar {
+    grid-template-columns: 1fr;
+  }
+  .library-scope-bar {
+    margin-inline: -4px;
+    padding-inline: 4px;
+  }
+  .roll-library-list .gear-row > .row:last-child,
+  .shoot-library-list .gear-row > .row:last-child {
+    width: 100%;
+  }
+  .roll-library-list .gear-row > .row:last-child .primary-btn,
+  .shoot-library-list .gear-row > .row:last-child .primary-btn {
+    flex: 1 1 auto;
+  }
+}
+
 /* ---------- tabs ---------- */
 .tab-bar {
   /* mobile-first: a single scrollable row of tabs, no wrapping */

@@ -157,8 +157,53 @@ describe("extracted Shoots view", () => {
     expect(body.textContent).toContain("1 shot queued offline");
     expect(body.querySelector(".gear-row")?.textContent).toContain("2 cameras");
     expect(body.querySelector(".gear-row")?.textContent).toContain("2 shots");
-    [...body.querySelectorAll("button")].find((button) => button.textContent.includes("Log")).click();
+    [...body.querySelectorAll("button")].find((button) => button.textContent.includes("Add frames")).click();
     expect(actions.openLogger).toHaveBeenCalledWith(shoot);
+  });
+
+  it("filters film shoots and searches inherited roll and place metadata", () => {
+    const active = item("at://shoot/active", { label: "Digital walk", startedAt: "2026-01-03T00:00:00Z" });
+    const film = item("at://shoot/film", {
+      label: "Market morning",
+      startedAt: "2026-01-02T00:00:00Z",
+      endedAt: "2026-01-02T02:00:00Z",
+      places: [{ placemark: { locality: "Rochester" } }],
+      rolls: ["at://roll/one"],
+    });
+    const studio = item("at://shoot/studio", {
+      label: "Studio test",
+      startedAt: "2026-01-01T00:00:00Z",
+      endedAt: "2026-01-01T01:00:00Z",
+    });
+    const store = {
+      catalog: {},
+      instance: {
+        camera: [],
+        lens: [],
+        filter: [],
+        filmRoll: [item("at://roll/one", { label: "Rochester roll" })],
+        exposure: [],
+      },
+      shoots: [active, film, studio],
+    };
+    const body = document.createElement("div");
+    renderShootsView(body, createServices(store), {
+      startShoot: vi.fn(),
+      editShoot: vi.fn(),
+      openLogger: vi.fn(),
+      render: vi.fn(),
+    });
+
+    [...body.querySelectorAll(".library-scope")].find((button) => button.textContent.includes("Film shoots")).click();
+    expect(body.querySelector(".shoot-library-list").textContent).toContain("Market morning");
+    expect(body.querySelector(".shoot-library-list").textContent).not.toContain("Digital walk");
+
+    [...body.querySelectorAll(".library-scope")].find((button) => button.textContent.includes("All shoots")).click();
+    const search = body.querySelector('[aria-label="Search shoots"]');
+    search.value = "Rochester";
+    search.dispatchEvent(new Event("input"));
+    expect(body.querySelector(".shoot-library-list").textContent).toContain("Market morning");
+    expect(body.querySelector(".shoot-library-list").textContent).not.toContain("Studio test");
   });
 
   it("gives the logger explicit and queued-inherited gear", () => {

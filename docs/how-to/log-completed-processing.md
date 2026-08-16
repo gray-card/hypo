@@ -34,7 +34,7 @@ Hypo creates an `app.graycard.process.digitizeSession`, links it to the roll and
 
 ## Review processing history
 
-The roll's **Processing history** lists its development and scan sessions. Development entries show the primary chemistry, duration, agitation schedule, and ordered stages; scan entries show the scanner, method, and resolution. Select an entry to inspect the complete session record.
+The roll's **Processing history** lists its development and scan sessions. Development entries show the primary chemistry, duration, agitation schedule, and ordered stages; scan entries show the scanner, method, and resolution. Select a development entry to edit its rolls, chemistry, timing, agitation, or stages. Hypo updates the same session record and reconciles the derived roll fields and chemistry usage totals. Select a scan entry to inspect its complete record.
 
 Hypo keeps these associations on session records because one roll may be developed once but scanned more than once. A session history preserves each scan rather than replacing one scanner field on the roll.
 
