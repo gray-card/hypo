@@ -1,0 +1,285 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.workflow.defs",
+  "defs": {
+    "artifactKind": {
+      "type": "string",
+      "description": "Artifact kinds shared by workflow stages, app.graycard.artifact, and app.graycard.instance.intermediate.",
+      "knownValues": [
+        "scene",
+        "digital-raw",
+        "digital-raster",
+        "film-roll-latent",
+        "film-negative",
+        "film-slide",
+        "paper-negative",
+        "glass-plate",
+        "instant-print",
+        "physical-print",
+        "alt-process-print",
+        "contact-sheet",
+        "internegative",
+        "interpositive",
+        "video-clip",
+        "video-frame",
+        "other"
+      ]
+    },
+    "medium": {
+      "type": "string",
+      "knownValues": [
+        "digital",
+        "film",
+        "instant",
+        "motion-picture",
+        "alt-process",
+        "scan-of-print",
+        "scan-of-negative",
+        "scan-of-slide",
+        "other"
+      ]
+    },
+    "stageKind": {
+      "type": "string",
+      "description": "A workflow operation. Known values cover Hypo's built-in stage editors; custom values remain valid.",
+      "knownValues": ["capture", "develop", "digitize", "digital", "print", "edit", "output", "other"]
+    },
+    "runStatus": {
+      "type": "string",
+      "knownValues": ["planned", "ready", "in-progress", "blocked", "completed", "failed", "cancelled"]
+    },
+    "stageStatus": {
+      "type": "string",
+      "knownValues": ["planned", "ready", "in-progress", "blocked", "completed", "failed", "skipped", "cancelled"]
+    },
+    "sessionScope": {
+      "type": "string",
+      "description": "How process-session records are shared when a template is instantiated.",
+      "knownValues": ["per-stage", "per-subject", "per-batch", "per-run", "shared", "none"]
+    },
+    "cardinality": {
+      "type": "object",
+      "description": "Allowed occurrence count. An absent max is unbounded. Domain validation checks max >= min.",
+      "properties": {
+        "min": { "type": "integer", "minimum": 0 },
+        "max": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "port": {
+      "type": "object",
+      "description": "A named input or output on a template step. artifactKinds lists the values the port can carry.",
+      "required": ["id", "artifactKinds"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "label": { "type": "string", "maxLength": 128 },
+        "artifactKinds": {
+          "type": "array",
+          "minLength": 1,
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "#artifactKind" }
+        },
+        "cardinality": { "type": "ref", "ref": "#cardinality" },
+        "external": {
+          "type": "boolean",
+          "description": "Whether a run may satisfy this port directly from a run subject or expose it as a run product."
+        },
+        "description": { "type": "string", "maxLength": 512 }
+      }
+    },
+    "processDefaults": {
+      "type": "object",
+      "description": "Typed defaults used to create or populate the process session associated with a stage.",
+      "properties": {
+        "camera": { "type": "string", "format": "at-uri" },
+        "lens": { "type": "string", "format": "at-uri" },
+        "filmRoll": { "type": "string", "format": "at-uri" },
+        "chemistry": { "type": "string", "format": "at-uri" },
+        "scanner": { "type": "string", "format": "at-uri" },
+        "scanProfile": { "type": "string", "format": "at-uri" },
+        "lab": { "type": "string", "format": "at-uri" },
+        "printer": { "type": "string", "format": "at-uri" },
+        "enlarger": { "type": "string", "format": "at-uri" },
+        "enlargingLens": { "type": "string", "format": "at-uri" },
+        "paper": { "type": "string", "format": "at-uri" },
+        "lightSource": { "type": "string", "format": "at-uri" },
+        "filters": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "string", "format": "at-uri" }
+        },
+        "recipe": { "type": "string", "format": "at-uri" },
+        "method": { "type": "string", "maxLength": 128 },
+        "params": {
+          "type": "unknown",
+          "description": "Stage-kind-specific process defaults not yet represented by a shared typed field."
+        }
+      }
+    },
+    "stageDefaults": {
+      "type": "object",
+      "description": "Typed defaults written on the workflow-stage record rather than its process session.",
+      "properties": {
+        "input": { "type": "ref", "ref": "#artifactRef" },
+        "inputs": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "#artifactRef" }
+        },
+        "output": { "type": "ref", "ref": "#artifactRef" },
+        "outputs": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "#artifactRef" }
+        },
+        "inputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "#artifactBinding" }
+        },
+        "outputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "#artifactBinding" }
+        },
+        "target": { "type": "ref", "ref": "#publishTarget" },
+        "recipe": { "type": "string", "format": "at-uri" },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "params": {
+          "type": "unknown",
+          "description": "Stage-kind-specific stage defaults not yet represented by a shared typed field."
+        }
+      }
+    },
+    "templateStep": {
+      "type": "object",
+      "description": "A stable, identified step in an ordered workflow template. IDs, rather than kinds, distinguish repeated operations.",
+      "required": ["id", "kind"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "kind": { "type": "ref", "ref": "#stageKind" },
+        "label": { "type": "string", "maxLength": 128 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "optional": { "type": "boolean" },
+        "cardinality": { "type": "ref", "ref": "#cardinality" },
+        "sessionScope": { "type": "ref", "ref": "#sessionScope" },
+        "inputs": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "#port" }
+        },
+        "outputs": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "#port" }
+        },
+        "processDefaults": { "type": "ref", "ref": "#processDefaults" },
+        "stageDefaults": { "type": "ref", "ref": "#stageDefaults" }
+      }
+    },
+    "templateConnection": {
+      "type": "object",
+      "description": "A directed artifact flow between a source output port and target input port.",
+      "required": ["id", "fromStep", "fromPort", "toStep", "toPort"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "fromStep": { "type": "string", "maxLength": 64 },
+        "fromPort": { "type": "string", "maxLength": 64 },
+        "toStep": { "type": "string", "maxLength": 64 },
+        "toPort": { "type": "string", "maxLength": 64 },
+        "artifactKind": { "type": "ref", "ref": "#artifactKind" },
+        "label": { "type": "string", "maxLength": 128 }
+      }
+    },
+    "digitizeMethod": {
+      "type": "string",
+      "knownValues": [
+        "direct-digital",
+        "tethered-capture",
+        "file-import",
+        "raw-export",
+        "dslr-copy-stand",
+        "mirrorless-copy-stand",
+        "flatbed-negative",
+        "flatbed-print",
+        "dedicated-film-scanner",
+        "drum-scanner",
+        "lab-scan",
+        "smartphone",
+        "other"
+      ]
+    },
+    "publishTarget": {
+      "type": "object",
+      "description": "A terminal destination a workflow publishes to. Abstracts the publish target (e.g. social.grain.photo) so other targets can be added without a contract change.",
+      "required": ["service"],
+      "properties": {
+        "service": {
+          "type": "string",
+          "knownValues": ["social.grain", "other"]
+        },
+        "ref": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "The published record, e.g. a social.grain.photo AT-URI."
+        },
+        "label": { "type": "string", "maxLength": 256 }
+      }
+    },
+    "artifactRef": {
+      "type": "object",
+      "description": "A reference to an artifact flowing through a stage. ref may point at an app.graycard.artifact record (preferred) or any AT-URI; kind names its taxonomy slot.",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "type": "ref", "ref": "#artifactKind" },
+        "ref": { "type": "string", "format": "at-uri" },
+        "label": { "type": "string", "maxLength": 256 },
+        "temporal": { "type": "ref", "ref": "app.graycard.defs#temporalRef" }
+      }
+    },
+    "artifactBinding": {
+      "type": "object",
+      "description": "Binds a named template port to an artifact in a planned or performed stage.",
+      "required": ["port", "artifact"],
+      "properties": {
+        "port": { "type": "string", "maxLength": 64 },
+        "artifact": { "type": "ref", "ref": "#artifactRef" }
+      }
+    },
+    "stageLink": {
+      "type": "object",
+      "required": ["stage", "position"],
+      "properties": {
+        "stage": { "type": "string", "format": "at-uri" },
+        "position": { "type": "integer", "minimum": 0 },
+        "templateStepId": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Stable ID of the template step instantiated by this stage."
+        },
+        "occurrence": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "One-based occurrence when a cardinality permits repeated stage instances."
+        }
+      }
+    },
+    "branchLink": {
+      "type": "object",
+      "description": "Legacy run-stage branch edge. New template topology uses templateConnection.",
+      "required": ["fromStage", "toStage", "label"],
+      "properties": {
+        "fromStage": { "type": "string", "format": "at-uri" },
+        "toStage": { "type": "string", "format": "at-uri" },
+        "templateConnectionId": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Stable ID of the template connection instantiated by this run edge."
+        },
+        "fromPort": { "type": "string", "maxLength": 64 },
+        "toPort": { "type": "string", "maxLength": 64 },
+        "artifactKind": { "type": "ref", "ref": "#artifactKind" },
+        "label": { "type": "string", "maxLength": 128 }
+      }
+    }
+  }
+}

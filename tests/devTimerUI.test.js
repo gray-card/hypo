@@ -108,18 +108,19 @@ describe("development timer logging", () => {
 
       await vi.waitFor(() => expect(pending(ctx.did, NS.process.developSession)).toHaveLength(1));
       const rec = pending(ctx.did, NS.process.developSession)[0].record;
-      expect(rec.recipe).toBe(recipeUri);
-      expect(rec.sourceDocument.revision).toBe("test-revision");
-      expect(rec.sourceSpec.page).toBe("3");
-      expect(rec.sourceSpec.table).toBe("Film development");
-      expect(rec.sourceSpec.method).toBe("derived");
-      expect(rec.temperatureSetpoint).toEqual({ unit: "celsius", value: recipe.temps[0].tempC10, scale: 10 });
-      expect(rec.actualTemperature).toEqual({ unit: "celsius", value: 215, scale: 10 });
-      expect(rec.publishedTimeSeconds).toBe(recipe.temps[0].timeSec);
-      expect(rec.actualTimeSeconds).toBe(0);
-      expect(rec.agitationScheme).toEqual(recipe.agitation);
-      expect(rec.timeSeconds).toBe(rec.actualTimeSeconds);
-      expect(rec.temperature).toEqual(rec.actualTemperature);
+      const develop = rec.steps[0];
+      expect(develop.recipe).toBe(recipeUri);
+      expect(develop.sourceDocument.revision).toBe("test-revision");
+      expect(develop.sourceSpec.page).toBe("3");
+      expect(develop.sourceSpec.table).toBe("Film development");
+      expect(develop.sourceSpec.method).toBe("derived");
+      expect(develop.temperatureSetpoint).toEqual({ unit: "celsius", value: recipe.temps[0].tempC10, scale: 10 });
+      expect(develop.actualTemperature).toEqual({ unit: "celsius", value: 215, scale: 10 });
+      expect(develop.publishedTimeSeconds).toBe(recipe.temps[0].timeSec);
+      expect(develop.actualTimeSeconds).toBe(0);
+      expect(develop.agitationScheme).toEqual(recipe.agitation);
+      expect(develop.timeSeconds).toBeUndefined();
+      expect(develop.temperature).toBeUndefined();
       expect(rec.provenance.note).toMatch(/exact published recipe row \(derived\)/i);
     } finally {
       Object.assign(recipe, saved);
@@ -188,10 +189,11 @@ describe("development timer logging", () => {
 
       await vi.waitFor(() => expect(pending(ctx.did, NS.process.developSession)).toHaveLength(1));
       const rec = pending(ctx.did, NS.process.developSession)[0].record;
-      expect(rec.publishedTimeSeconds).toBe(450);
-      expect(rec.temperatureSetpoint).toEqual({ unit: "celsius", value: 220, scale: 10 });
-      expect(rec.sourceSpec.method).toBe("derived");
-      expect(rec.sourceSpec.note).toMatch(/interpolated.*20°C\/10:00.*24°C\/5:00/i);
+      const develop = rec.steps[0];
+      expect(develop.publishedTimeSeconds).toBe(450);
+      expect(develop.temperatureSetpoint).toEqual({ unit: "celsius", value: 220, scale: 10 });
+      expect(develop.sourceSpec.method).toBe("derived");
+      expect(develop.sourceSpec.note).toMatch(/interpolated.*20°C\/10:00.*24°C\/5:00/i);
       expect(rec.provenance).toMatchObject({ source: "manual" });
       expect(rec.provenance.note).toMatch(/derived by interpolation/i);
     } finally {
@@ -260,7 +262,7 @@ describe("development timer logging", () => {
 });
 
 describe("manual development session form", () => {
-  it("keeps legacy summaries while also saving structured recipe observations", () => {
+  it("stores recipe observations on the ordered developer stage", () => {
     const agent = mockAgent();
     const chemistryUri = "at://did:plc:test/app.graycard.instance.chemistry/dev1";
     const chemistryTypeUri = "at://did:plc:test/app.graycard.catalog.chemistryType/id11";
@@ -309,16 +311,18 @@ describe("manual development session form", () => {
     );
 
     const rec = form.read();
-    expect(rec.recipe).toBe(recipeUri);
-    expect(rec.temperature).toEqual({ value: 20000000, scale: 1000000, unit: "celsius" });
-    expect(rec.temperatureSetpoint).toEqual(rec.temperature);
-    expect(rec.actualTemperature).toEqual(rec.temperature);
-    expect(rec.timeSeconds).toBe(600);
-    expect(rec.publishedTimeSeconds).toBe(600);
-    expect(rec.actualTimeSeconds).toBe(600);
-    expect(rec.agitation).toBe("4 inversions each minute");
-    expect(rec.agitationScheme).toEqual({ everySec: 60, inversions: 4 });
-    expect(rec.sourceSpec.page).toBe("2");
+    const develop = rec.steps[0];
+    expect(develop.recipe).toBe(recipeUri);
+    expect(develop.temperatureSetpoint).toEqual({ value: 20000000, scale: 1000000, unit: "celsius" });
+    expect(develop.actualTemperature).toEqual(develop.temperatureSetpoint);
+    expect(develop.publishedTimeSeconds).toBe(600);
+    expect(develop.actualTimeSeconds).toBe(600);
+    expect(develop.agitationScheme).toEqual({
+      everySec: 60,
+      inversions: 4,
+      note: "4 inversions each minute",
+    });
+    expect(develop.sourceSpec.page).toBe("2");
   });
 
   it("shows and retains derived selection provenance separately from observations", () => {
@@ -369,10 +373,11 @@ describe("manual development session form", () => {
     );
 
     const rec = form.read();
-    expect(rec.publishedTimeSeconds).toBe(450);
-    expect(rec.actualTimeSeconds).toBe(465);
-    expect(rec.timeSeconds).toBe(465);
-    expect(rec.sourceSpec.method).toBe("derived");
+    const develop = rec.steps[0];
+    expect(develop.publishedTimeSeconds).toBe(450);
+    expect(develop.actualTimeSeconds).toBe(465);
+    expect(develop.timeSeconds).toBeUndefined();
+    expect(develop.sourceSpec.method).toBe("derived");
     expect(rec.provenance.source).toBe("manual");
     expect(rec.provenance.note).toMatch(/derived interpolation.*observed manually/i);
   });

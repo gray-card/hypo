@@ -85,11 +85,15 @@ interface BathStepInitial {
 
 interface DevelopmentStep {
   roles: string[];
-  chemistry?: string;
+  name?: string;
+  kind?: string;
+  chemistries?: string[];
   dilution?: string;
-  temperature?: Measure;
-  timeSeconds?: number;
-  agitation?: string;
+  temperatureSetpoint?: Measure;
+  actualTemperature?: Measure;
+  publishedTimeSeconds?: number;
+  actualTimeSeconds?: number;
+  agitationScheme?: AgitationScheme;
 }
 
 interface ProcessFormInitial {
@@ -650,35 +654,40 @@ export function buildProcessSessionForm(
             : recipeRecommendationStatus(recipe);
         const steps = stepRows
           .map((r) => {
-            const s: DevelopmentStep = { roles: [...r.roles.selectedOptions].map((option) => option.value) };
-            if (r.chem.value) s.chemistry = r.chem.value;
+            const selectedRoles = [...r.roles.selectedOptions].map((option) => option.value);
+            const s: DevelopmentStep = {
+              name: selectedRoles.map(enumLabel).join(" + ") || "Process stage",
+              kind: selectedRoles.includes("wash") ? "wash" : "chemical-bath",
+              roles: selectedRoles,
+            };
+            if (r.chem.value) {
+              s.chemistries = [r.chem.value];
+            }
             if (r.dil.value.trim()) s.dilution = r.dil.value.trim();
             const t = r.tempC.value.trim();
             if (t) {
               const m = displayToMeasure(t, "celsius");
-              if (m) s.temperature = m;
+              if (m) s.actualTemperature = m;
             }
             const sec = parseInt(r.secs.value, 10);
-            if (Number.isFinite(sec)) s.timeSeconds = sec;
-            if (r.agit.value.trim()) s.agitation = r.agit.value.trim();
+            if (Number.isFinite(sec)) s.actualTimeSeconds = sec;
+            if (r.agit.value.trim()) s.agitationScheme = { note: r.agit.value.trim() };
             return s;
           })
           .filter((s) => s.roles.length);
-        return {
-          ...resolveWorkingSolutionUri(ws, store),
-          process: inputs.process.value,
+        const primaryRole =
+          inputs.process.value === "e6"
+            ? "first-developer"
+            : ["c41", "ecn2"].includes(inputs.process.value)
+              ? "color-developer"
+              : "film-developer";
+        const primaryStep: JsonObject = {
+          name: enumLabel(primaryRole),
+          kind: "chemical-bath",
+          roles: [primaryRole],
+          chemistries: ws ? [ws] : undefined,
           recipe: inputs.recipe.value || undefined,
-          filmRolls: inputs.filmRoll.value ? [inputs.filmRoll.value] : undefined,
-          provenance: {
-            source: "manual",
-            assertedAt: new Date().toISOString(),
-            note: selectedMatchesRecipe
-              ? `Selected time used ${resolved.kind === "interpolated" ? "a derived interpolation" : `an exact ${selectedStatus} recipe row`}; actual time and temperature were observed manually.`
-              : "Selected time and actual processing values were entered or observed manually.",
-          },
           dilution: inputs.dilution.value.trim() || undefined,
-          ...readMeasure(inputs, { temperature: ["temperatureC", "celsius"] }),
-          ...readInts(inputs, ["timeSeconds"]),
           temperatureSetpoint: setpointTemperature,
           actualTemperature: observedTemperature,
           publishedTimeSeconds: Number.isFinite(publishedTimeSeconds)
@@ -691,16 +700,46 @@ export function buildProcessSessionForm(
             : Number.isFinite(summaryTime)
               ? summaryTime
               : undefined,
-          agitation: inputs.agitation.value.trim() || undefined,
-          agitationScheme: hasAgitationScheme ? agitationScheme : undefined,
+          agitationScheme:
+            hasAgitationScheme || inputs.agitation.value.trim()
+              ? {
+                  ...agitationScheme,
+                  note: agitationScheme.note || inputs.agitation.value.trim() || undefined,
+                }
+              : undefined,
           sourceDocument: readJson(inputs.sourceDocument, "Source document"),
           sourceSpec: selectedSourceSpec,
+        };
+        const developerIndex = steps.findIndex((step) =>
+          step.roles.some((role) => ["film-developer", "first-developer", "color-developer"].includes(role)),
+        );
+        if (developerIndex >= 0)
+          steps[developerIndex] = { ...primaryStep, ...steps[developerIndex] } as DevelopmentStep;
+        else steps.unshift(primaryStep as DevelopmentStep);
+        const addShortcutBath = (role: string, chemistry: string, label: string) => {
+          if (!chemistry && !label) return;
+          if (steps.some((step) => step.roles.includes(role))) return;
+          steps.push({
+            name: label || enumLabel(role),
+            kind: "chemical-bath",
+            roles: [role],
+            chemistries: chemistry ? [chemistry] : undefined,
+          });
+        };
+        addShortcutBath("stop", inputs.stopBathChemistry.value, inputs.stopBath.value.trim());
+        addShortcutBath("fixer", inputs.fixerChemistry.value, inputs.fixer.value.trim());
+        return {
+          process: inputs.process.value,
+          filmRolls: inputs.filmRoll.value ? [inputs.filmRoll.value] : undefined,
+          provenance: {
+            source: "manual",
+            assertedAt: new Date().toISOString(),
+            note: selectedMatchesRecipe
+              ? `Selected time used ${resolved.kind === "interpolated" ? "a derived interpolation" : `an exact ${selectedStatus} recipe row`}; actual time and temperature were observed manually.`
+              : "Selected time and actual processing values were entered or observed manually.",
+          },
           tankType: inputs.tankType.value || undefined,
-          stopBathChemistry: inputs.stopBathChemistry.value || undefined,
-          fixerChemistry: inputs.fixerChemistry.value || undefined,
-          stopBath: inputs.stopBath.value.trim() || undefined,
-          fixer: inputs.fixer.value.trim() || undefined,
-          steps: steps.length ? steps : undefined,
+          steps,
           notes: inputs.notes.value.trim() || undefined,
           createdAt: new Date().toISOString(),
         };

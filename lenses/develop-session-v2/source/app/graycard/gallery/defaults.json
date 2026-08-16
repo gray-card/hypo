@@ -1,0 +1,28 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.gallery.defaults",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Default gear/film/location/workflow applied to a gallery's photos that lack their own capture record.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["gallery", "createdAt"],
+        "properties": {
+          "gallery": { "type": "string", "format": "at-uri" },
+          "camera": { "type": "string", "format": "at-uri" },
+          "lens": { "type": "string", "format": "at-uri" },
+          "filmRoll": { "type": "string", "format": "at-uri" },
+          "shoot": { "type": "string", "format": "at-uri" },
+          "location": { "type": "ref", "ref": "app.graycard.defs#geoLocation" },
+          "workflowTemplate": { "type": "string", "format": "at-uri" },
+          "projectMode": { "type": "ref", "ref": "app.graycard.defs#projectMode" },
+          "notes": { "type": "string", "maxLength": 1000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

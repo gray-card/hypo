@@ -74,25 +74,35 @@ try {
     if (!transitions.length) throw new Error("lenses/breaking-change.json must declare at least one transition");
 
     for (const transition of transitions) {
-      for (const field of ["source", "target", "mapping", "chain", "data"]) {
+      for (const field of ["source", "target", "lens", "projection", "data", "verify"]) {
         if (typeof transition[field] !== "string" || !existsSync(join(root, transition[field]))) {
           throw new Error(`Breaking-change transition has no readable ${field} path`);
         }
       }
-      run(schemaBin, [
-        "check",
-        "--src",
+      const transitionCompat = run(
+        schemaBin,
+        ["compat", transition.source, transition.target, "--protocol", "atproto", "--format", "json"],
+        { allowFailure: true },
+      );
+      if (transitionCompat.status !== 1) {
+        throw new Error(
+          `Breaking transition ${transition.id || transition.lens} is not classified as breaking:\n${transitionCompat.stdout}${transitionCompat.stderr}`,
+        );
+      }
+      const report = JSON.parse(transitionCompat.stdout);
+      if (report.classification !== "breaking") {
+        throw new Error(`Breaking transition ${transition.id || transition.lens} reported ${report.classification}`);
+      }
+      run("node", [
+        "--import",
+        "tsx",
+        transition.verify,
+        transition.lens,
+        transition.data,
         transition.source,
-        "--tgt",
         transition.target,
-        "--mapping",
-        transition.mapping,
-        "--typecheck",
       ]);
-      run(schemaBin, ["lens", "check", "--protocol", "atproto", transition.chain, "lexicons"]);
-      run(schemaBin, ["lens", "verify", "--protocol", "atproto", transition.data, transition.target]);
     }
-    run(schemaBin, ["data", "migrate", "--coverage", "--dry-run", "fixtures/records"]);
     console.log(`Panproto PR compatibility: acknowledged break verified against merge base ${mergeBase}.`);
   }
 } finally {

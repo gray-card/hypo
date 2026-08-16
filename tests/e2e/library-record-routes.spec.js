@@ -145,12 +145,18 @@ test("rolls show processing history and open preselected completed-session forms
   await createRecord(request, "app.graycard.process.developSession", "development-processing", {
     $type: "app.graycard.process.developSession",
     process: "bw",
-    chemistry,
     filmRolls: [roll],
-    actualTimeSeconds: 570,
-    timeSeconds: 570,
-    agitation: "Inversion",
-    agitationScheme: { initialSec: 30, everySec: 60, forSec: 10, inversions: 4 },
+    steps: [
+      {
+        name: "Developer",
+        kind: "chemical-bath",
+        roles: ["film-developer"],
+        chemistries: [chemistry],
+        actualTimeSeconds: 570,
+        agitationMethod: "inversion",
+        agitationScheme: { initialSec: 30, everySec: 60, forSec: 10, inversions: 4 },
+      },
+    ],
     startedAt: "2026-01-10T09:50:30.000Z",
     finishedAt: "2026-01-10T10:00:00.000Z",
     createdAt: "2026-01-10T10:00:00.000Z",
@@ -179,12 +185,22 @@ test("rolls show processing history and open preselected completed-session forms
   const developmentDialog = page.getByRole("dialog", { name: "Log completed development" });
   await expect(developmentDialog.getByText(/same session record as the timer/)).toBeVisible();
   await expect(developmentDialog.getByRole("checkbox", { name: /Processed fixture roll/ })).toBeChecked();
-  await expect(developmentDialog.getByLabel("Development time minutes")).toBeVisible();
+  await expect(developmentDialog.getByLabel("Actual minutes").first()).toBeVisible();
+  await developmentDialog.getByText("Dates, targets, agitation, and bath details").click();
   await expect(developmentDialog.getByText("Inversions per cycle")).toBeVisible();
-  await expect(developmentDialog).toHaveJSProperty(
-    "scrollWidth",
-    await developmentDialog.evaluate((node) => node.clientWidth),
-  );
+  const developmentEditor = developmentDialog.locator(".development-stage-editor");
+  const overflowingDevelopmentControls = await developmentEditor.evaluate((node) => {
+    const editorRight = node.getBoundingClientRect().right;
+    return [...node.querySelectorAll("*")]
+      .filter((child) => child.getBoundingClientRect().right > editorRight + 1)
+      .map((child) => ({
+        tag: child.tagName,
+        className: child.className,
+        right: Math.ceil(child.getBoundingClientRect().right),
+        editorRight: Math.ceil(editorRight),
+      }));
+  });
+  expect(overflowingDevelopmentControls).toEqual([]);
   await developmentDialog.getByRole("button", { name: "Cancel", exact: true }).click();
 
   await rollDialog.getByRole("button", { name: "Log scan" }).click();

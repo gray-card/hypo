@@ -2,6 +2,41 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.2.0] - 2026-08-16
+
+### Added
+
+- Add an ordered development-stage editor for completed sessions, with process
+  presets for black-and-white, monobath, C-41, E-6, ECN-2, and
+  black-and-white reversal processing.
+- Record every bath or physical operation with multiple chemical roles,
+  multiple tracked chemistry instances, planned and observed time and
+  temperature, optional timestamps, agitation method and schedule, working
+  volume, post-use disposition, source, recipe, and notes.
+- Track the last use of chemistry and update roll and session usage counts for
+  every chemistry instance linked to a completed or timed development.
+
+### Changed
+
+- Model a development session as batch-level facts plus ordered stages instead
+  of duplicating developer summaries and stop, fixer, or blix shortcuts on the
+  session.
+- Show stage sequences in roll processing history and recent darkroom activity.
+
+### Fixed
+
+- Update the selected rolls and all linked chemistry after completed
+  development is logged, including development lifecycle dates and the roll's
+  primary developer.
+- Reject session or stage timestamps that reverse the recorded process order.
+
+### Migration
+
+- Rewrite existing `app.graycard.process.developSession` records in place with
+  Panproto 0.70.1. The migration moves legacy summary fields and shortcut baths
+  into ordered stages and removes the superseded fields after a successful,
+  swap-protected repository write.
+
 ## [1.1.1] - 2026-08-16
 
 ### Changed
@@ -138,3 +173,4 @@ Notable changes to Hypo are recorded here.
 [1.0.1]: https://github.com/gray-card/hypo/compare/v1.0.0...v1.0.1
 [1.1.0]: https://github.com/gray-card/hypo/compare/v1.0.1...v1.1.0
 [1.1.1]: https://github.com/gray-card/hypo/compare/v1.1.0...v1.1.1
+[1.2.0]: https://github.com/gray-card/hypo/compare/v1.1.1...v1.2.0

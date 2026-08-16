@@ -690,7 +690,7 @@ export type AppGraycardDefsDeveloperForm = KnownValue<"liquid-concentrate" | "li
 
 export type AppGraycardDefsChemistryProductKind = KnownValue<"single-chemical" | "multi-part-chemical" | "process-kit" | "other">;
 
-export type AppGraycardDefsChemistryRole = KnownValue<"pre-soak" | "film-developer" | "paper-developer" | "first-developer" | "color-developer" | "reversal-bath" | "stop" | "bleach" | "fixer" | "conditioner" | "pre-bleach" | "stabilizer" | "wash-aid" | "clearing-agent" | "hardener" | "toner" | "wetting-agent" | "final-rinse" | "sensitizer" | "intensifier" | "reducer" | "other">;
+export type AppGraycardDefsChemistryRole = KnownValue<"pre-soak" | "film-developer" | "paper-developer" | "first-developer" | "color-developer" | "reversal-bath" | "stop" | "bleach" | "fixer" | "conditioner" | "pre-bleach" | "stabilizer" | "wash" | "wash-aid" | "clearing-agent" | "hardener" | "toner" | "wetting-agent" | "final-rinse" | "sensitizer" | "intensifier" | "reducer" | "other">;
 
 export type AppGraycardEditRecipeMain = {
   "engine": KnownValue<"graycard" | "darktable" | "lightroom" | "capture-one" | "other">;
@@ -749,6 +749,7 @@ export type AppGraycardInstanceChemistryMain = {
   "volumeRemainingMl"?: number;
   "rollsProcessed"?: number;
   "sessionsUsed"?: number;
+  "lastUsedAt"?: string;
   "maxRollsRecommended"?: number;
   "storageLocation"?: string;
   "replenishedAt"?: string;
@@ -1100,35 +1101,37 @@ export type AppGraycardPhotoWorkflowMain = {
 };
 
 export type AppGraycardProcessDevelopSessionStep = {
-  "roles": Array<AppGraycardDefsChemistryRole>;
-  "chemistry"?: string;
-  "dilution"?: string;
-  "temperature"?: AppGraycardDefsMeasure;
-  "temperatureSetpoint"?: AppGraycardDefsMeasure;
-  "actualTemperature"?: AppGraycardDefsMeasure;
-  "timeSeconds"?: number;
-  "publishedTimeSeconds"?: number;
-  "actualTimeSeconds"?: number;
-  "agitation"?: string;
-};
-
-export type AppGraycardProcessDevelopSessionMain = {
+  "name"?: string;
   "recipe"?: string;
   "sourceDocument"?: AppGraycardDefsProductDocument;
   "sourceSpec"?: AppGraycardDefsSpecSource;
-  "chemistry"?: string;
+  "kind"?: AppGraycardProcessDevelopSessionStepKind;
+  "roles": Array<AppGraycardDefsChemistryRole>;
+  "chemistries"?: Array<string>;
+  "dilution"?: string;
+  "temperatureSetpoint"?: AppGraycardDefsMeasure;
+  "actualTemperature"?: AppGraycardDefsMeasure;
+  "publishedTimeSeconds"?: number;
+  "actualTimeSeconds"?: number;
+  "startedAt"?: string;
+  "finishedAt"?: string;
+  "agitationMethod"?: AppGraycardProcessDevelopSessionAgitationMethod;
+  "agitationScheme"?: AppGraycardCatalogDevRecipeAgitation;
+  "volumeMl"?: number;
+  "disposition"?: AppGraycardProcessDevelopSessionBathDisposition;
+  "notes"?: string;
+};
+
+export type AppGraycardProcessDevelopSessionStepKind = KnownValue<"chemical-bath" | "water-bath" | "rinse" | "wash" | "rem-jet-removal" | "re-exposure" | "drain" | "dry" | "other">;
+
+export type AppGraycardProcessDevelopSessionAgitationMethod = KnownValue<"none" | "inversion" | "rotary" | "swizzle-stick" | "tray-rocking" | "dip-and-dunk" | "roller-transport" | "nitrogen-burst" | "manual" | "other">;
+
+export type AppGraycardProcessDevelopSessionBathDisposition = KnownValue<"one-shot-discarded" | "discarded" | "returned-to-stock" | "retained" | "replenished" | "exhausted" | "not-applicable" | "unknown">;
+
+export type AppGraycardProcessDevelopSessionMain = {
   "filmRolls"?: Array<string>;
   "process": AppGraycardDefsFilmProcess;
   "steps"?: Array<AppGraycardProcessDevelopSessionStep>;
-  "dilution"?: string;
-  "temperature"?: AppGraycardDefsMeasure;
-  "temperatureSetpoint"?: AppGraycardDefsMeasure;
-  "actualTemperature"?: AppGraycardDefsMeasure;
-  "timeSeconds"?: number;
-  "publishedTimeSeconds"?: number;
-  "actualTimeSeconds"?: number;
-  "agitation"?: string;
-  "agitationScheme"?: AppGraycardCatalogDevRecipeAgitation;
   "tankType"?: AppGraycardDefsTankType;
   "provenance"?: AppGraycardDefsProvenance;
   "pushPull"?: AppGraycardDefsMeasure;
@@ -1139,11 +1142,6 @@ export type AppGraycardProcessDevelopSessionMain = {
   "notes"?: string;
   "createdAt": string;
   "updatedAt"?: string;
-  "stopBath"?: string;
-  "stopBathChemistry"?: string;
-  "fixer"?: string;
-  "fixerChemistry"?: string;
-  "bleachFix"?: string;
   $type?: "app.graycard.process.developSession";
 };
 
@@ -2379,6 +2377,7 @@ export const KNOWN_VALUES = {
     "conditioner",
     "pre-bleach",
     "stabilizer",
+    "wash",
     "wash-aid",
     "clearing-agent",
     "hardener",
@@ -2480,6 +2479,39 @@ export const KNOWN_VALUES = {
     "known-illuminant",
     "factory",
     "manufacturer-spec"
+  ],
+  "app.graycard.process.developSession/defs/stepKind": [
+    "chemical-bath",
+    "water-bath",
+    "rinse",
+    "wash",
+    "rem-jet-removal",
+    "re-exposure",
+    "drain",
+    "dry",
+    "other"
+  ],
+  "app.graycard.process.developSession/defs/agitationMethod": [
+    "none",
+    "inversion",
+    "rotary",
+    "swizzle-stick",
+    "tray-rocking",
+    "dip-and-dunk",
+    "roller-transport",
+    "nitrogen-burst",
+    "manual",
+    "other"
+  ],
+  "app.graycard.process.developSession/defs/bathDisposition": [
+    "one-shot-discarded",
+    "discarded",
+    "returned-to-stock",
+    "retained",
+    "replenished",
+    "exhausted",
+    "not-applicable",
+    "unknown"
   ],
   "app.graycard.process.maintenanceSession/defs/main/record/properties/kind": [
     "cla",
@@ -6155,7 +6187,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
       },
       "chemistryRole": {
         "type": "string",
-        "description": "One atomic function performed by a photographic chemical or bath. Combined baths carry more than one role.",
+        "description": "One atomic function performed by a photographic chemical, bath, or water step. Combined baths carry more than one role. The wash value represents a water-washing operation; wash-aid identifies a chemical treatment that shortens or improves washing.",
         "knownValues": [
           "pre-soak",
           "film-developer",
@@ -6169,6 +6201,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
           "conditioner",
           "pre-bleach",
           "stabilizer",
+          "wash",
           "wash-aid",
           "clearing-agent",
           "hardener",
@@ -6456,6 +6489,11 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "sessionsUsed": {
               "type": "integer",
               "minimum": 0
+            },
+            "lastUsedAt": {
+              "type": "string",
+              "format": "datetime",
+              "description": "Most recent recorded use of this chemistry in a process session."
             },
             "maxRollsRecommended": {
               "type": "integer",
@@ -8160,11 +8198,36 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
     "defs": {
       "step": {
         "type": "object",
-        "description": "One chemical bath in a multi-step process (e.g. C-41 developer/blix/stabilizer, E-6 first/color developer).",
+        "description": "One ordered chemical bath or physical operation in a film-development process.",
         "required": [
           "roles"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Human-readable bath or operation name, such as 'Wash' or 'Bleach + fix'."
+          },
+          "recipe": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.catalog.devRecipe selected for this stage."
+          },
+          "sourceDocument": {
+            "type": "ref",
+            "ref": "app.graycard.defs#productDocument",
+            "description": "Structured manufacturer document used when no catalog recipe record is available."
+          },
+          "sourceSpec": {
+            "type": "ref",
+            "ref": "app.graycard.defs#specSource",
+            "description": "Exact source location supporting this stage's selected processing values."
+          },
+          "kind": {
+            "type": "ref",
+            "ref": "#stepKind",
+            "description": "The physical kind of stage. roles may be empty for a stage such as drying or re-exposure."
+          },
           "roles": {
             "type": "array",
             "maxLength": 16,
@@ -8174,19 +8237,18 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "ref": "app.graycard.defs#chemistryRole"
             }
           },
-          "chemistry": {
-            "type": "string",
-            "format": "at-uri",
-            "description": "app.graycard.instance.chemistry used for this bath."
+          "chemistries": {
+            "type": "array",
+            "maxLength": 16,
+            "description": "All tracked app.graycard.instance.chemistry records combined in or otherwise consumed by this stage. The first item is the primary chemistry when the distinction matters.",
+            "items": {
+              "type": "string",
+              "format": "at-uri"
+            }
           },
           "dilution": {
             "type": "string",
             "maxLength": 64
-          },
-          "temperature": {
-            "type": "ref",
-            "ref": "app.graycard.defs#measure",
-            "description": "Legacy/summary bath temperature; prefer temperatureSetpoint and actualTemperature."
           },
           "temperatureSetpoint": {
             "type": "ref",
@@ -8195,11 +8257,6 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
           "actualTemperature": {
             "type": "ref",
             "ref": "app.graycard.defs#measure"
-          },
-          "timeSeconds": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "Legacy/summary bath duration; prefer publishedTimeSeconds and actualTimeSeconds."
           },
           "publishedTimeSeconds": {
             "type": "integer",
@@ -8211,11 +8268,79 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "minimum": 0,
             "maximum": 604800
           },
-          "agitation": {
+          "startedAt": {
             "type": "string",
-            "maxLength": 256
+            "format": "datetime"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "agitationMethod": {
+            "type": "ref",
+            "ref": "#agitationMethod"
+          },
+          "agitationScheme": {
+            "type": "ref",
+            "ref": "app.graycard.catalog.devRecipe#agitation"
+          },
+          "volumeMl": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Working bath volume used for this stage."
+          },
+          "disposition": {
+            "type": "ref",
+            "ref": "#bathDisposition",
+            "description": "What happened to the bath after this session."
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 1000
           }
         }
+      },
+      "stepKind": {
+        "type": "string",
+        "knownValues": [
+          "chemical-bath",
+          "water-bath",
+          "rinse",
+          "wash",
+          "rem-jet-removal",
+          "re-exposure",
+          "drain",
+          "dry",
+          "other"
+        ]
+      },
+      "agitationMethod": {
+        "type": "string",
+        "knownValues": [
+          "none",
+          "inversion",
+          "rotary",
+          "swizzle-stick",
+          "tray-rocking",
+          "dip-and-dunk",
+          "roller-transport",
+          "nitrogen-burst",
+          "manual",
+          "other"
+        ]
+      },
+      "bathDisposition": {
+        "type": "string",
+        "knownValues": [
+          "one-shot-discarded",
+          "discarded",
+          "returned-to-stock",
+          "retained",
+          "replenished",
+          "exhausted",
+          "not-applicable",
+          "unknown"
+        ]
       },
       "main": {
         "type": "record",
@@ -8228,26 +8353,6 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "createdAt"
           ],
           "properties": {
-            "recipe": {
-              "type": "string",
-              "format": "at-uri",
-              "description": "app.graycard.catalog.devRecipe selected for the primary development step."
-            },
-            "sourceDocument": {
-              "type": "ref",
-              "ref": "app.graycard.defs#productDocument",
-              "description": "Structured manufacturer document used when no catalog recipe record is available."
-            },
-            "sourceSpec": {
-              "type": "ref",
-              "ref": "app.graycard.defs#specSource",
-              "description": "Exact source location supporting the selected processing values."
-            },
-            "chemistry": {
-              "type": "string",
-              "format": "at-uri",
-              "description": "app.graycard.instance.chemistry used as the primary developer or multi-role working solution."
-            },
             "filmRolls": {
               "type": "array",
               "items": {
@@ -8262,56 +8367,12 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             },
             "steps": {
               "type": "array",
+              "maxLength": 64,
+              "description": "Ordered baths and physical operations. Recipe, chemistry, observations, and agitation belong to the stage where they occurred.",
               "items": {
                 "type": "ref",
                 "ref": "#step"
               }
-            },
-            "dilution": {
-              "type": "string",
-              "maxLength": 64,
-              "description": "Primary developer dilution (when not using steps)."
-            },
-            "temperature": {
-              "type": "ref",
-              "ref": "app.graycard.defs#measure",
-              "description": "Legacy/summary temperature; prefer temperatureSetpoint and actualTemperature."
-            },
-            "temperatureSetpoint": {
-              "type": "ref",
-              "ref": "app.graycard.defs#measure",
-              "description": "Target processing temperature selected from the recipe."
-            },
-            "actualTemperature": {
-              "type": "ref",
-              "ref": "app.graycard.defs#measure",
-              "description": "Observed processing temperature."
-            },
-            "timeSeconds": {
-              "type": "integer",
-              "minimum": 0,
-              "description": "Legacy/summary duration; prefer publishedTimeSeconds and actualTimeSeconds."
-            },
-            "publishedTimeSeconds": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 604800,
-              "description": "Nominal duration selected from or interpolated within the published recipe."
-            },
-            "actualTimeSeconds": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 604800,
-              "description": "Duration actually used."
-            },
-            "agitation": {
-              "type": "string",
-              "maxLength": 256
-            },
-            "agitationScheme": {
-              "type": "ref",
-              "ref": "app.graycard.catalog.devRecipe#agitation",
-              "description": "Structured agitation used during the primary development step."
             },
             "tankType": {
               "type": "ref",
@@ -8355,26 +8416,6 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "updatedAt": {
               "type": "string",
               "format": "datetime"
-            },
-            "stopBath": {
-              "type": "string",
-              "maxLength": 128
-            },
-            "stopBathChemistry": {
-              "type": "string",
-              "format": "at-uri"
-            },
-            "fixer": {
-              "type": "string",
-              "maxLength": 128
-            },
-            "fixerChemistry": {
-              "type": "string",
-              "format": "at-uri"
-            },
-            "bleachFix": {
-              "type": "string",
-              "maxLength": 128
             }
           }
         }

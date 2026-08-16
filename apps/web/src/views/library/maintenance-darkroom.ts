@@ -1,35 +1,16 @@
 import { assertConsumableLifecycle } from "@hypo/domain";
 import { checkList, dateField, el, field, localInputToIso, openModal, toast } from "@hypo/ui";
-import { createChemistrySelect, createInstanceSelect } from "./maintenance-selectors.ts";
+import {
+  chemistryUrisForDevelopment,
+  createDevelopmentStepEditor,
+  primaryDeveloperForSteps,
+  validateDevelopmentChronology,
+} from "./development-step-editor.ts";
+import { createInstanceSelect } from "./maintenance-selectors.ts";
 import type { ActivityServices, LibraryRecord, LibraryValue } from "./maintenance-types.ts";
 
 const FILM_ROLL_COLLECTION = "app.graycard.instance.filmRoll";
 const DEVELOPED_OR_LATER = new Set(["developed", "scanned", "archived"]);
-
-export const AGITATION_METHODS = [
-  ["inversion", "Inversion"],
-  ["rotary", "Rotary"],
-  ["swizzle-stick", "Swizzle stick"],
-  ["tray-rocking", "Tray rocking"],
-  ["dip-and-dunk", "Dip and dunk"],
-  ["roller-transport", "Roller transport"],
-  ["other", "Other"],
-] as const;
-
-function numberValue(input: HTMLInputElement): number | undefined {
-  if (!input.value.trim()) return undefined;
-  const value = Number.parseInt(input.value, 10);
-  return Number.isFinite(value) && value >= 0 ? value : undefined;
-}
-
-function agitationTankType(method: string): string {
-  if (method === "rotary") return "rotary";
-  if (method === "tray-rocking") return "tray";
-  if (method === "dip-and-dunk") return "dip-and-dunk";
-  if (method === "roller-transport") return "roller-transport";
-  if (method === "other") return "other";
-  return "tank";
-}
 
 export function formatDevelopmentTime(totalSeconds: unknown): string | null {
   const seconds = Number(totalSeconds);
@@ -39,20 +20,123 @@ export function formatDevelopmentTime(totalSeconds: unknown): string | null {
   return minutes ? `${minutes}:${String(remainder).padStart(2, "0")}` : `${remainder}s`;
 }
 
+interface DevelopmentLabelServices {
+  getStore(): { readonly byUri?: ReadonlyMap<string, { readonly item: LibraryRecord }> };
+  instanceLabel(kind: string, value: LibraryValue | undefined): string;
+  enumLabel(value: string): string;
+}
+
+export function formatDevelopmentStages(
+  value: LibraryValue,
+  services: DevelopmentLabelServices,
+  limit = 4,
+): string | null {
+  const stages = Array.isArray(value.steps) ? value.steps : [];
+  if (!stages.length) return null;
+  const labels = stages.slice(0, limit).map((step: LibraryValue) => {
+    const chemistryUri = Array.isArray(step.chemistries) ? step.chemistries[0] : undefined;
+    const chemistry = chemistryUri
+      ? services.instanceLabel("chemistry", services.getStore().byUri?.get(chemistryUri)?.item.value)
+      : undefined;
+    return [
+      step.name || chemistry || services.enumLabel(String(step.kind || step.roles?.[0] || "Stage")),
+      formatDevelopmentTime(step.actualTimeSeconds ?? step.timeSeconds),
+    ]
+      .filter(Boolean)
+      .join(" ");
+  });
+  if (stages.length > limit) labels.push(`+${stages.length - limit} more`);
+  return labels.join(" → ");
+}
+
 export function formatAgitation(value: LibraryValue): string | null {
   const scheme = value.agitationScheme as LibraryValue | undefined;
-  if (!scheme) return value.agitation || null;
+  const method = value.agitationMethod
+    ? String(value.agitationMethod)
+        .replaceAll("-", " ")
+        .replace(/^./, (character) => character.toUpperCase())
+    : null;
+  if (!scheme) return method;
   const parts: string[] = [];
-  if (scheme.note || value.agitation) parts.push(String(scheme.note || value.agitation));
+  if (scheme.note || method) parts.push(String(scheme.note || method));
   if (scheme.continuous) parts.push("continuous");
   if (scheme.initialSec) parts.push(`first ${scheme.initialSec}s`);
   if (scheme.everySec) parts.push(`every ${scheme.everySec}s${scheme.forSec ? ` for ${scheme.forSec}s` : ""}`);
   if (scheme.inversions) parts.push(`${scheme.inversions} inversions`);
-  return parts.join(" · ") || value.agitation || null;
+  return parts.join(" · ") || method;
+}
+
+export function primaryDevelopmentStep(value: LibraryValue): LibraryValue | undefined {
+  const steps = Array.isArray(value.steps) ? value.steps : [];
+  return steps.find((step: LibraryValue) =>
+    (Array.isArray(step.roles) ? step.roles : []).some((role: string) =>
+      ["film-developer", "first-developer", "color-developer"].includes(role),
+    ),
+  );
 }
 
 export interface ManualDevelopmentOptions {
   readonly selectedRolls?: readonly string[];
+}
+
+export async function saveCompletedDevelopmentRecords(
+  services: ActivityServices,
+  session: LibraryValue,
+  developmentLocation = "home",
+): Promise<string> {
+  const store = services.getStore();
+  const rolls = store.instance.filmRoll || [];
+  const chemistry = store.instance.chemistry || [];
+  const rollUris = Array.isArray(session.filmRolls) ? session.filmRolls.map(String) : [];
+  const steps = Array.isArray(session.steps) ? session.steps : [];
+  const primaryDeveloper = primaryDeveloperForSteps(steps);
+  if (!primaryDeveloper && !session.lab) throw new Error("A completed home development needs a linked developer stage");
+  const finishedAt = String(session.finishedAt || session.createdAt || new Date().toISOString());
+  const startedAt = String(session.startedAt || finishedAt);
+  const now = new Date().toISOString();
+
+  const rollUpdates = rollUris.map((uri) => {
+    const roll = rolls.find((candidate) => candidate.uri === uri) as LibraryRecord | undefined;
+    if (!roll) throw new Error(`Could not find selected roll ${uri}`);
+    const next: LibraryValue = {
+      ...roll.value,
+      status: DEVELOPED_OR_LATER.has(String(roll.value.status)) ? roll.value.status : "developed",
+      developmentStartedAt: roll.value.developmentStartedAt || startedAt,
+      developedAt: roll.value.developedAt || finishedAt,
+      developmentLocation,
+      updatedAt: now,
+    };
+    if (primaryDeveloper) next.developedWith = primaryDeveloper;
+    assertConsumableLifecycle(FILM_ROLL_COLLECTION, next);
+    return { roll, next };
+  });
+  const chemistryUpdates = chemistryUrisForDevelopment(session).map((uri) => {
+    const record = chemistry.find((candidate) => candidate.uri === uri) as LibraryRecord | undefined;
+    if (!record) throw new Error(`Could not find linked chemistry ${uri}`);
+    const previousLastUsed = Date.parse(String(record.value.lastUsedAt || ""));
+    return {
+      record,
+      next: {
+        ...record.value,
+        rollsProcessed: Math.max(0, Number(record.value.rollsProcessed) || 0) + rollUris.length,
+        sessionsUsed: Math.max(0, Number(record.value.sessionsUsed) || 0) + 1,
+        lastUsedAt:
+          Number.isFinite(previousLastUsed) && previousLastUsed > Date.parse(finishedAt)
+            ? record.value.lastUsedAt
+            : finishedAt,
+        updatedAt: now,
+      },
+    };
+  });
+
+  const sessionUri = await services.saveRecord(services.collections.developSession, session, null);
+  for (const { roll, next } of rollUpdates) {
+    await services.saveRecord(services.collections.filmRoll, next, roll);
+  }
+  for (const { record, next } of chemistryUpdates) {
+    await services.saveRecord(services.collections.chemistry, next, record);
+  }
+  return sessionUri;
 }
 
 export function renderDarkroomActivity(body: HTMLElement, services: ActivityServices): void {
@@ -77,9 +161,12 @@ export function renderDarkroomActivity(body: HTMLElement, services: ActivityServ
     const labName = record.value.lab
       ? services.instanceLabel("labAccount", services.getStore().byUri.get(record.value.lab)?.item.value)
       : record.value.labService;
-    const chemistryName = record.value.chemistry
-      ? services.instanceLabel("chemistry", services.getStore().byUri.get(record.value.chemistry)?.item.value)
+    const primaryStep = kind === "develop" ? primaryDevelopmentStep(record.value) : undefined;
+    const primaryChemistry = Array.isArray(primaryStep?.chemistries) ? primaryStep.chemistries[0] : undefined;
+    const chemistryName = primaryChemistry
+      ? services.instanceLabel("chemistry", services.getStore().byUri.get(primaryChemistry)?.item.value)
       : undefined;
+    const stageSummary = kind === "develop" ? formatDevelopmentStages(record.value, services) : null;
     const scannerName = record.value.scanner
       ? services.instanceLabel("scanner", services.getStore().byUri.get(record.value.scanner)?.item.value)
       : undefined;
@@ -90,8 +177,9 @@ export function renderDarkroomActivity(body: HTMLElement, services: ActivityServ
           : [
               (record.value.process || "bw").toUpperCase(),
               chemistryName,
-              formatDevelopmentTime(record.value.actualTimeSeconds ?? record.value.timeSeconds),
-              formatAgitation(record.value),
+              formatDevelopmentTime(primaryStep?.actualTimeSeconds),
+              primaryStep ? formatAgitation(primaryStep) : null,
+              stageSummary,
             ]
               .filter(Boolean)
               .join(" · ") || `${(record.value.process || "bw").toUpperCase()} development`
@@ -99,12 +187,23 @@ export function renderDarkroomActivity(body: HTMLElement, services: ActivityServ
             .filter(Boolean)
             .join(" · ");
     list.append(
-      el("li", { class: "gear-row row between" }, [
-        el("div", {}, [
-          el("strong", {}, kind === "develop" ? (labName ? "Lab developed" : "Developed") : "Scanned"),
-          el("div", { class: "muted small" }, label),
-        ]),
-        el("span", { class: "muted small mono" }, when),
+      el("li", {}, [
+        el(
+          "button",
+          {
+            type: "button",
+            class: "gear-row row between development-activity-row",
+            onclick: () => services.inspect(record),
+            title: `Inspect ${kind === "develop" ? "development" : "scan"} session`,
+          },
+          [
+            el("div", {}, [
+              el("strong", {}, kind === "develop" ? (labName ? "Lab developed" : "Developed") : "Scanned"),
+              el("div", { class: "muted small" }, label),
+            ]),
+            el("span", { class: "muted small mono" }, when),
+          ],
+        ),
       ]),
     );
   }
@@ -157,7 +256,6 @@ export function openManualDevelopment(
 ) {
   const rolls = services.getStore().instance.filmRoll || [];
   const chemistry = services.getStore().instance.chemistry || [];
-  const chemistrySelect = createChemistrySelect("", ["film-developer", "first-developer", "color-developer"], services);
   const processSelect = el(
     "select",
     { "data-key": "process" },
@@ -165,78 +263,26 @@ export function openManualDevelopment(
       el("option", { value: process }, services.enumLabel(process)),
     ),
   );
-  const completed = dateField("Finished", new Date().toISOString());
+  const started = dateField("Session started (optional)", "");
+  const completed = dateField("Session finished", new Date().toISOString());
   const locationSelect = el("select", { "data-key": "developmentLocation" }, [
     el("option", { value: "home" }, "Home darkroom"),
     el("option", { value: "other" }, "Other"),
   ]);
-  const dilutionInput = el("input", { type: "text", placeholder: "e.g. 1+1", "data-key": "dilution" });
-  const temperatureInput = el("input", {
-    type: "number",
-    min: "0",
-    max: "60",
-    step: "0.1",
-    inputmode: "decimal",
-    placeholder: "e.g. 20",
-    "data-key": "actualTemperatureC",
-  });
-  const minutesInput = el("input", {
-    type: "number",
-    min: "0",
-    inputmode: "numeric",
-    placeholder: "min",
-    "aria-label": "Development time minutes",
-    "data-key": "timeMinutes",
-  });
-  const secondsInput = el("input", {
-    type: "number",
-    min: "0",
-    max: "59",
-    inputmode: "numeric",
-    placeholder: "sec",
-    "aria-label": "Development time seconds",
-    "data-key": "timeSecondsRemainder",
-  });
-  const methodSelect = el(
+  const tankTypeSelect = el(
     "select",
-    { "data-key": "agitationMethod" },
-    AGITATION_METHODS.map(([value, label]) => el("option", { value }, label)),
+    { "data-key": "tankType" },
+    ["tank", "tray", "rotary", "dip-and-dunk", "roller-transport", "other"].map((value) =>
+      el("option", { value }, services.enumLabel(value)),
+    ),
   );
-  const initialInput = el("input", {
-    type: "number",
-    min: "0",
-    inputmode: "numeric",
-    placeholder: "e.g. 30",
-    "data-key": "agitationInitialSec",
-  });
-  const everyInput = el("input", {
-    type: "number",
-    min: "0",
-    inputmode: "numeric",
-    placeholder: "e.g. 60",
-    "data-key": "agitationEverySec",
-  });
-  const forInput = el("input", {
-    type: "number",
-    min: "0",
-    inputmode: "numeric",
-    placeholder: "e.g. 10",
-    "data-key": "agitationForSec",
-  });
-  const inversionsInput = el("input", {
-    type: "number",
-    min: "0",
-    max: "100",
-    inputmode: "numeric",
-    placeholder: "e.g. 4",
-    "data-key": "agitationInversions",
-  });
-  const continuousInput = el("input", { type: "checkbox", "data-key": "agitationContinuous" });
-  const agitationNoteInput = el("input", {
-    type: "text",
-    placeholder: "Optional detail, e.g. gentle inversions",
-    "data-key": "agitationNote",
-  });
+  const pushPullSelect = el(
+    "select",
+    { "data-key": "pushPull" },
+    ["0", "+1", "+2", "+3", "-1", "-2", "-3"].map((value) =>
+      el("option", { value }, value === "0" ? "None" : `${value} stop${Math.abs(Number(value)) === 1 ? "" : "s"}`),
+    ),
+  );
   const notesInput = el("textarea", {
     rows: "3",
     placeholder: "Optional session notes",
@@ -249,6 +295,7 @@ export function openManualDevelopment(
       emptyMessage: el("p", { class: "muted small" }, "No rolls yet — add one in the Film tab first."),
     },
   );
+  const stageEditor = createDevelopmentStepEditor(services);
 
   return openModal(
     "Log completed development",
@@ -265,110 +312,56 @@ export function openManualDevelopment(
             { class: "muted small" },
             "Add your working chemistry under Setup → Darkroom before logging this session.",
           ),
-      el("h3", { class: "modal-sub" }, "Rolls and chemistry"),
+      el("h3", { class: "modal-sub" }, "Rolls and session"),
       rollList.node,
-      field("Primary developer *", chemistrySelect),
       field("Process", processSelect),
-      field("Dilution", dilutionInput),
+      field("Tank or processor", tankTypeSelect),
+      field("Push / pull", pushPullSelect),
       field("Development location", locationSelect),
+      started.wrap,
       completed.wrap,
-      el("h3", { class: "modal-sub" }, "Time and temperature"),
-      el("div", { class: "process-entry-grid process-time-grid" }, [
-        field("Minutes", minutesInput),
-        field("Seconds", secondsInput),
-        field("Temperature °C", temperatureInput),
-      ]),
-      el("h3", { class: "modal-sub" }, "Agitation"),
-      field("Method", methodSelect),
-      el("div", { class: "process-entry-grid agitation-schedule-grid" }, [
-        field("Initial seconds", initialInput),
-        field("Every seconds", everyInput),
-        field("For seconds", forInput),
-        field("Inversions per cycle", inversionsInput),
-      ]),
-      el("label", { class: "check-row" }, [continuousInput, el("span", {}, "Continuous agitation")]),
-      field("Agitation detail", agitationNoteInput),
+      el("h3", { class: "modal-sub" }, "Ordered process stages"),
+      stageEditor.node,
       field("Notes", notesInput),
     ],
     async () => {
       const rollUris = rollList.getSelected();
       if (!rollUris.length) throw new Error("Select at least one roll");
-      if (!chemistrySelect.value) throw new Error("Primary developer is required");
-
-      const minutes = numberValue(minutesInput) || 0;
-      const remainder = numberValue(secondsInput) || 0;
-      if (remainder > 59) throw new Error("Development seconds must be between 0 and 59");
-      const totalSeconds = minutes * 60 + remainder;
-      if (totalSeconds > 604_800) throw new Error("Development time cannot exceed 7 days");
-      const actualTimeSeconds = totalSeconds > 0 ? totalSeconds : undefined;
+      const steps = stageEditor.read();
+      const primaryDeveloper = primaryDeveloperForSteps(steps);
+      if (!primaryDeveloper) {
+        throw new Error("Link tracked chemistry to at least one developer stage");
+      }
       const finishedAt = localInputToIso(completed.input.value) || new Date().toISOString();
-      const startedAt = actualTimeSeconds
-        ? new Date(new Date(finishedAt).getTime() - actualTimeSeconds * 1000).toISOString()
-        : finishedAt;
-      const methodLabel = AGITATION_METHODS.find(([value]) => value === methodSelect.value)?.[1] || "Other";
-      const methodNote = [methodLabel, agitationNoteInput.value.trim()].filter(Boolean).join(" — ");
-      const initialSec = numberValue(initialInput);
-      const everySec = numberValue(everyInput);
-      const forSec = numberValue(forInput);
-      const inversions = numberValue(inversionsInput);
-      if ([initialSec, everySec, forSec].some((value) => value != null && value > 604_800)) {
-        throw new Error("Agitation intervals cannot exceed 7 days");
-      }
-      if (inversions != null && inversions > 100) throw new Error("Inversions per cycle cannot exceed 100");
-      if (everySec != null && forSec != null && forSec > everySec) {
-        throw new Error("Agitation duration cannot be longer than its cycle interval");
-      }
-      const agitationScheme: LibraryValue = {
-        initialSec,
-        everySec,
-        forSec,
-        inversions,
-        continuous: continuousInput.checked || undefined,
-        note: methodNote || undefined,
-      };
-      const hasAgitation = Object.values(agitationScheme).some((value) => value !== undefined);
-      const temperature = Number.parseFloat(temperatureInput.value);
+      const primaryStep = steps.find((step) => {
+        const roles = Array.isArray(step.roles) ? step.roles : [];
+        return roles.some((role) => ["film-developer", "first-developer", "color-developer"].includes(role));
+      })!;
+      const explicitStartedAt = localInputToIso(started.input.value) || undefined;
+      const earliestStepStart = steps.map((step) => step.startedAt).find(Boolean);
+      const primaryDuration = primaryStep.actualTimeSeconds;
+      const startedAt =
+        explicitStartedAt ||
+        earliestStepStart ||
+        (primaryDuration
+          ? new Date(new Date(finishedAt).getTime() - Number(primaryDuration) * 1000).toISOString()
+          : finishedAt);
+      validateDevelopmentChronology(steps, startedAt, finishedAt);
+      const pushPull = Number.parseInt(pushPullSelect.value, 10) || 0;
       const session: LibraryValue = {
-        chemistry: chemistrySelect.value,
         filmRolls: rollUris,
         process: processSelect.value,
-        dilution: dilutionInput.value.trim() || undefined,
-        tankType: agitationTankType(methodSelect.value),
-        timeSeconds: actualTimeSeconds,
-        actualTimeSeconds,
-        agitationScheme: hasAgitation ? agitationScheme : undefined,
+        steps,
+        tankType: tankTypeSelect.value,
         startedAt,
         finishedAt,
         notes: notesInput.value.trim() || undefined,
         createdAt: new Date().toISOString(),
         provenance: { source: "manual", assertedAt: new Date().toISOString() },
       };
-      if (Number.isFinite(temperature)) {
-        session.temperature = { unit: "celsius", value: Math.round(temperature * 1_000_000), scale: 1_000_000 };
-        session.actualTemperature = session.temperature;
-      }
-      session.agitation = hasAgitation ? formatAgitation(session) || undefined : undefined;
+      if (pushPull) session.pushPull = { unit: "stop", value: pushPull, scale: 1 };
 
-      const rollUpdates = rollUris.map((uri) => {
-        const roll = rolls.find((candidate) => candidate.uri === uri) as LibraryRecord | undefined;
-        if (!roll) throw new Error(`Could not find selected roll ${uri}`);
-        const next: LibraryValue = {
-          ...roll.value,
-          status: DEVELOPED_OR_LATER.has(String(roll.value.status)) ? roll.value.status : "developed",
-          developedWith: chemistrySelect.value,
-          developmentStartedAt: roll.value.developmentStartedAt || startedAt,
-          developedAt: roll.value.developedAt || finishedAt,
-          developmentLocation: locationSelect.value,
-          updatedAt: new Date().toISOString(),
-        };
-        assertConsumableLifecycle(FILM_ROLL_COLLECTION, next);
-        return { roll, next };
-      });
-
-      const sessionUri = await services.saveRecord(services.collections.developSession, session, null);
-      for (const { roll, next } of rollUpdates) {
-        await services.saveRecord(services.collections.filmRoll, next, roll);
-      }
+      const sessionUri = await saveCompletedDevelopmentRecords(services, session, locationSelect.value);
       await services.advanceWorkflowStage?.("develop", rollUris, sessionUri);
       await services.reloadStore();
       toast(`Logged development for ${rollUris.length} roll${rollUris.length === 1 ? "" : "s"}`, "ok");

@@ -78,6 +78,7 @@ import {
 import {
   openManualDevelopment,
   renderDarkroomHeader as renderDarkroomHeaderView,
+  saveCompletedDevelopmentRecords,
 } from "../../apps/web/src/views/library/maintenance-darkroom.ts";
 import { renderRulesView, renderWorkflowsView } from "../../apps/web/src/views/library/workflows-view.ts";
 import {
@@ -454,8 +455,11 @@ function activityServices() {
           ],
       async () => {
         const completedAt = new Date().toISOString();
+        const sessionValue = processKind ? form.read() : undefined;
         const sessionUri = processKind
-          ? await saveRecord(ctx.agent, ctx.did, NS.process[processKind], form.read(), null)
+          ? processKind === "developSession"
+            ? await saveCompletedDevelopmentRecords(activityServices(), sessionValue, "home")
+            : await saveRecord(ctx.agent, ctx.did, NS.process[processKind], sessionValue, null)
           : undefined;
         await completeWorkflowStageAndAdvance(ctx.agent, ctx.did, {
           store: ctx.store,
@@ -475,6 +479,7 @@ function activityServices() {
       workflowTemplate: NS.workflow.template,
       developSession: NS.process.developSession,
       filmRoll: NS.instance.filmRoll,
+      chemistry: NS.instance.chemistry,
       digitizeSession: NS.process.digitizeSession,
       exposure: NS.instance.exposure,
     },

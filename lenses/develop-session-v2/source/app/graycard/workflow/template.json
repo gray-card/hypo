@@ -1,0 +1,110 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.workflow.template",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "medium", "createdAt"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "medium": {
+            "type": "ref",
+            "ref": "app.graycard.workflow.defs#medium"
+          },
+          "steps": {
+            "type": "array",
+            "maxLength": 256,
+            "description": "Ordered, stable-ID template steps. Repeated kinds are distinguished by each step's id.",
+            "items": { "type": "ref", "ref": "app.graycard.workflow.defs#templateStep" }
+          },
+          "connections": {
+            "type": "array",
+            "maxLength": 512,
+            "description": "Directed artifact-flow graph over named step ports. The graph must be acyclic.",
+            "items": { "type": "ref", "ref": "app.graycard.workflow.defs#templateConnection" }
+          },
+          "defaultCamera": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "defaultLens": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "defaultFilmRoll": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "defaultChemistry": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Default app.graycard.instance.chemistry for the primary developer or multi-role bath."
+          },
+          "defaultScanner": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "defaultScanProfile": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "defaultLab": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "stageKinds": {
+            "type": "array",
+            "maxLength": 256,
+            "description": "Legacy ordered stage kinds. New writers also write steps; readers normalize either representation.",
+            "items": {
+              "type": "ref",
+              "ref": "app.graycard.workflow.defs#stageKind"
+            }
+          },
+          "stageDefaults": {
+            "type": "array",
+            "maxLength": 256,
+            "description": "Legacy per-kind process defaults. New writers use step.processDefaults and may mirror these for older readers.",
+            "items": {
+              "type": "object",
+              "required": ["kind"],
+              "properties": {
+                "kind": {
+                  "type": "ref",
+                  "ref": "app.graycard.workflow.defs#stageKind"
+                },
+                "fields": {
+                  "type": "object",
+                  "description": "Legacy open process-default object."
+                }
+              }
+            }
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "links": {
+            "type": "ref",
+            "ref": "app.graycard.defs#catalogLinks"
+          }
+        }
+      },
+      "description": "A reusable workflow template with stable ordered steps, typed defaults, and explicit artifact-flow topology."
+    }
+  }
+}

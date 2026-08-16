@@ -6,6 +6,7 @@ import { prepareSchemaWrite } from "./schemaRuntime.js";
 import { NS, CATALOG_KINDS, INSTANCE_KINDS } from "../packages/lexicon/src/namespaces.ts";
 import { assertConsumableLifecycle } from "@hypo/domain";
 import { migrateLegacyDeveloperRecords } from "./legacyDeveloperMigration.ts";
+import { migrateDevelopSessions } from "./developSessionMigration.ts";
 
 export { NS, CATALOG_KINDS, INSTANCE_KINDS };
 
@@ -99,7 +100,8 @@ export const compareShootsByDate = (a, b) => shootDateKey(b.value).localeCompare
 /** Assemble a store snapshot from the collection cache unless refresh is explicit. */
 export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
   const migration = await migrateLegacyDeveloperRecords(agent, did);
-  if (migration.migrated) refresh = true;
+  const developSessionMigration = await migrateDevelopSessions(agent, did);
+  if (migration.migrated || developSessionMigration.migrated) refresh = true;
   const catalog = {};
   const instance = {};
   const byUri = new Map();

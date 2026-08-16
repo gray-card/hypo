@@ -1,0 +1,50 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.process.developSession",
+  "defs": {
+    "step": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "kind": { "type": "string" },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "recipe": { "type": "unknown" },
+        "sourceDocument": { "type": "unknown" },
+        "sourceSpec": { "type": "unknown" },
+        "chemistries": { "type": "array", "items": { "type": "string" } },
+        "dilution": { "type": "unknown" },
+        "temperatureSetpoint": { "type": "unknown" },
+        "actualTemperature": { "type": "unknown" },
+        "publishedTimeSeconds": { "type": "unknown" },
+        "actualTimeSeconds": { "type": "unknown" },
+        "agitationScheme": { "type": "unknown" }
+      }
+    },
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["process", "createdAt"],
+        "properties": {
+          "process": { "type": "string" },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "steps": { "type": "array", "items": { "type": "ref", "ref": "#step" } },
+          "recipe": { "type": "unknown" },
+          "sourceDocument": { "type": "unknown" },
+          "sourceSpec": { "type": "unknown" },
+          "chemistry": { "type": "unknown" },
+          "dilution": { "type": "unknown" },
+          "temperature": { "type": "unknown" },
+          "temperatureSetpoint": { "type": "unknown" },
+          "actualTemperature": { "type": "unknown" },
+          "timeSeconds": { "type": "unknown" },
+          "publishedTimeSeconds": { "type": "unknown" },
+          "actualTimeSeconds": { "type": "unknown" },
+          "agitation": { "type": "unknown" },
+          "agitationScheme": { "type": "unknown" }
+        }
+      }
+    }
+  }
+}

@@ -58,6 +58,7 @@ Writes use `putRecord` with the **same record key**, so AT-URIs stay stable, and
 
 - **Library:** cameras, lenses, film stockpiles and rolls, multi-role photographic chemistry, scanners, meters, and other working equipment. Gear types carry manufacturer product images and datasheets, with an editable per-type override.
 - **Lifecycle records:** optional, chronology-checked dates for loading, unloading, lab handoff, development, mixing, discarding, and other film and chemistry milestones.
+- **Development logs:** ordered, editable process stages for simple and multi-bath development, with linked chemistry, dates, planned and actual time and temperature, agitation, volume, and bath disposition. Completed sessions update every linked chemistry's usage totals.
 - **Shoots and metering:** a mobile-friendly shot logger, capture sessions, meter readings, calibration records, exposure calculations, and film-reciprocity support.
 - **Galleries:** create from upload, edit metadata, reorder frames, batch rules, and per-gallery gear defaults.
 - **Workflows:** reusable branching templates, typed inputs and outputs, repeatable steps, per-subject runs, and stages tied to photos and process records.

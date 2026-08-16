@@ -5,7 +5,7 @@ description: Current stable and experimental app.graycard NSIDs supported by Hyp
 
 # State of the schemas
 
-**Repository snapshot:** 2026-08-13
+**Repository snapshot:** 2026-08-16
 
 The current suite contains 59 NSIDs: 55 record collections and four definition-only namespaces. This page separates two questions that were previously conflated: **schema maturity** and **client authoring support**.
 
@@ -59,10 +59,10 @@ The current release checks enforce four properties:
 3. Type checking, unit tests, end-to-end tests, lint, formatting, application builds, and documentation builds run in CI.
 4. `@hypo/pds` validates `app.graycard.*` creates and puts against the generated record validator by default. Callers explicitly disable that validator for external Grain collections whose schemas are not owned here.
 
-These checks establish freshness and current-program conformance. They do not compare a proposed schema with the previous release, prohibit a breaking change to a stable NSID, prove a migration round trip, or enforce the stable/experimental labels. Until a compatibility gate is operational, those judgments remain part of human review.
+These checks establish freshness and current-program conformance. The pull-request compatibility gate separately compares the proposed suite with the released Git baseline. A breaking change requires an acknowledgement marker, a transition manifest, an exact source suite, a reviewed Panproto lens, and fixtures that validate against the target suite. The stable and experimental labels remain review policy rather than schema syntax.
 
 ## Panproto checks
 
 The repository pins `@panproto/core` and `panproto-cli` at 0.70.1. CI runs `npm run check:panproto`, which loads the root manifest as an ATProto bundle, checks theory diagnostics, stages two record fixtures, exercises directory compatibility, and validates the parsed bundle with the TypeScript SDK.
 
-The checked-in sidecar records the 59-document suite under protocol `atproto`, tracks both files in `fixtures/records`, and tags this first stable snapshot as `lexicons-v1`. Pull-request compatibility checks become active after the corresponding `v1.0.0` Git release tag is present on `main`. [How schema versions work](../explanation/schema-versions.md) describes that boundary.
+The checked-in sidecar records the 59-document suite under protocol `atproto` and tracks both files in `fixtures/records`. The `lexicons-v1` tag identifies the 1.0 baseline; `lexicons-v2` identifies the ordered development-stage suite. Pull-request checks use the latest `v1+` Git release reachable from the target branch and verify every acknowledged breaking transition declared in `lenses/breaking-change.json`. [How schema versions work](../explanation/schema-versions.md) describes the repository migration boundary and the separate application/schema version policy.

@@ -1,0 +1,13 @@
+{
+  "transitions": [
+    {
+      "id": "develop-session-v2",
+      "source": "lenses/develop-session-v2/source",
+      "target": "lexicons",
+      "lens": "lenses/develop-session-v2/lens.json",
+      "projection": "lenses/develop-session-v2/projection-lexicon.json",
+      "data": "lenses/develop-session-v2/fixtures.json",
+      "verify": "scripts/verify-develop-session-transition.ts"
+    }
+  ]
+}

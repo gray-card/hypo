@@ -12,12 +12,16 @@ A **completed processing session** records work after it has occurred. Use this 
 1. Add the working chemistry under **Setup → Darkroom** if it is not already in your setup.
 2. Open **Setup → Film**, then open the roll.
 3. Under **Processing history**, select **Log development**.
-4. Select the roll or rolls and the primary developer. The roll you opened is selected by default.
-5. Record the process, dilution, development location, completion date, duration, and temperature as needed.
-6. Choose the agitation method. You may also record initial agitation, the interval between cycles, the duration of each cycle, inversions per cycle, continuous agitation, and a short description.
-7. Select **Log development**.
+4. Select the roll or rolls. The roll you opened is selected by default.
+5. Record the process, tank or processor, push or pull, development location, and optional session start and finish.
+6. Build the ordered process under **Ordered process stages**. **Use sequence** supplies a starting sequence for black-and-white, monobath, C-41, E-6, ECN-2, or black-and-white reversal processing. Add, remove, and reorder stages to match the process you used.
+7. For every chemical bath, select its role or roles and link the tracked chemistry. A monobath may have both `film-developer` and `fixer`; a blix may have both `bleach` and `fixer`. Select additional chemistry when one bath combines multiple tracked parts.
+8. Record the actual duration and temperature. Expand **Dates, targets, agitation, and bath details** to add planned values, optional stage start and finish, dilution, working volume, disposition, agitation method, initial agitation, interval, cycle duration, inversions, continuous agitation, and notes.
+9. Select **Log development**.
 
-Hypo creates an `app.graycard.process.developSession`, links the selected rolls and chemistry, and updates each roll's development status and lifecycle date. The session stores both a readable agitation summary and the structured schedule.
+Hypo creates an `app.graycard.process.developSession` and updates each selected roll's development status, lifecycle dates, and primary developer. Every linked chemistry instance receives one session use, the number of processed rolls, and its latest-use date. A chemistry linked more than once within the same session is counted once.
+
+Stage dates are optional. When supplied, they must follow the stage order, fall within the session interval, and place each finish after its start. Planned and observed values are separate: `temperatureSetpoint` and `publishedTimeSeconds` record the plan, while `actualTemperature` and `actualTimeSeconds` record what occurred.
 
 ## Record scanning
 
@@ -30,8 +34,8 @@ Hypo creates an `app.graycard.process.digitizeSession`, links it to the roll and
 
 ## Review processing history
 
-The roll's **Processing history** lists its development and scan sessions. Development entries show the chemistry, duration, and agitation schedule; scan entries show the scanner, method, and resolution. Select an entry to inspect the complete session record.
+The roll's **Processing history** lists its development and scan sessions. Development entries show the primary chemistry, duration, agitation schedule, and ordered stages; scan entries show the scanner, method, and resolution. Select an entry to inspect the complete session record.
 
 Hypo keeps these associations on session records because one roll may be developed once but scanned more than once. A session history preserves each scan rather than replacing one scanner field on the roll.
 
-Lifecycle chronology is checked before either form writes its session. For instance, a scan date cannot precede an existing development date. Agitation intervals and development duration are also checked before the record is saved.
+Lifecycle chronology is checked before either form writes its session. For instance, a scan date cannot precede an existing development date. Stage chronology, agitation intervals, temperatures, and durations are also checked before a development record is saved.
