@@ -1,0 +1,159 @@
+{
+  "source": {
+    "handle": "aaronstevenwhite.io",
+    "did": "did:plc:34mbm5v3umztwvvgnttvcz6e",
+    "copiedAt": "2026-08-16T16:25:00.000Z",
+    "note": "Public records copied for a deterministic, non-destructive development-session migration test. The fixture includes the referenced developer chemistry and an unrelated lab account that must be preserved byte-for-byte."
+  },
+  "records": [
+    {
+      "repo": "did:plc:34mbm5v3umztwvvgnttvcz6e",
+      "collection": "app.graycard.catalog.chemistryType",
+      "rkey": "3msxgu22aqw2v",
+      "sourceCid": "bafyreiau2tehtleg6wxhvvqk77qphopwtfjsg2daiiv77hfblhuyif573a",
+      "value": {
+        "$type": "app.graycard.catalog.chemistryType",
+        "brand": "Kodak",
+        "name": "D-76",
+        "roles": ["film-developer"],
+        "productKind": "single-chemical",
+        "process": "bw",
+        "form": "powder",
+        "defaultDilution": "1+1",
+        "createdAt": "2026-08-13T10:31:11.733Z",
+        "updatedAt": "2026-08-16T14:13:31.263Z"
+      }
+    },
+    {
+      "repo": "did:plc:34mbm5v3umztwvvgnttvcz6e",
+      "collection": "app.graycard.instance.chemistry",
+      "rkey": "3msxgu24uls2c",
+      "sourceCid": "bafyreicatslgzl3mio5xybw3ohbaotpromstv3ep3e57ogqghl5o37j4dm",
+      "value": {
+        "$type": "app.graycard.instance.chemistry",
+        "type": "at://did:plc:34mbm5v3umztwvvgnttvcz6e/app.graycard.catalog.chemistryType/3msxgu22aqw2v",
+        "status": "active",
+        "mixedAt": "2026-08-12T21:30:00.000Z",
+        "openedAt": "2026-08-12T21:30:00.000Z",
+        "createdAt": "2026-08-13T10:31:12.084Z",
+        "updatedAt": "2026-08-16T14:13:31.493Z",
+        "sessionsUsed": 2,
+        "rollsProcessed": 3
+      }
+    },
+    {
+      "repo": "did:plc:34mbm5v3umztwvvgnttvcz6e",
+      "collection": "app.graycard.catalog.lab",
+      "rkey": "3mt7f6hadry2c",
+      "sourceCid": "bafyreifam46nbub7k7a42xbwmxevxuqxzfhdiyue5525ir2qbit5eba4ze",
+      "value": {
+        "$type": "app.graycard.catalog.lab",
+        "name": "Scott's Rochester Photo Supply",
+        "website": "https://www.rocphotosupply.com/",
+        "image": {
+          "url": "https://www.rocphotosupply.com/wp-content/uploads/2024/12/SRPS_ColorOutline.png"
+        },
+        "geo": {
+          "latitude": 431455909,
+          "longitude": -775575816,
+          "placemark": {
+            "name": "Scott's Rochester Photo Supply",
+            "country": "United States",
+            "locality": "City of Rochester",
+            "postalCode": "14610",
+            "isoCountryCode": "US",
+            "administrativeArea": "New York"
+          }
+        },
+        "createdAt": "2026-08-16T14:22:44.003Z",
+        "updatedAt": "2026-08-16T14:22:44.003Z"
+      }
+    },
+    {
+      "repo": "did:plc:34mbm5v3umztwvvgnttvcz6e",
+      "collection": "app.graycard.instance.labAccount",
+      "rkey": "3mt7f6hdenb2c",
+      "sourceCid": "bafyreib6r56z4bq3wbt64hffqcsiifcxipq3u47kzcapzrwdcnf6e6jnqy",
+      "value": {
+        "$type": "app.graycard.instance.labAccount",
+        "lab": "at://did:plc:34mbm5v3umztwvvgnttvcz6e/app.graycard.catalog.lab/3mt7f6hadry2c",
+        "nickname": "Scott's Rochester Photo Supply",
+        "createdAt": "2026-08-16T14:22:32.744Z",
+        "updatedAt": "2026-08-16T14:22:44.162Z"
+      }
+    },
+    {
+      "repo": "did:plc:34mbm5v3umztwvvgnttvcz6e",
+      "collection": "app.graycard.catalog.lab",
+      "rkey": "3mq6gh56w7t2f",
+      "sourceCid": "bafyreifi43gb26eh4jqalq3j57wopwkmxpixtyatrlqpmioc2z6jpy3eba",
+      "value": {
+        "$type": "app.graycard.catalog.lab",
+        "name": "Praus Productions",
+        "website": "https://www.4photolab.com/",
+        "geo": {
+          "latitude": 431576335,
+          "longitude": -775811730
+        },
+        "createdAt": "2026-07-13T14:26:33.072Z",
+        "updatedAt": "2026-07-13T14:26:33.072Z"
+      }
+    },
+    {
+      "repo": "did:plc:34mbm5v3umztwvvgnttvcz6e",
+      "collection": "app.graycard.instance.labAccount",
+      "rkey": "3mq6gh6zo6y22",
+      "sourceCid": "bafyreievjrelzvjcrtn5tcmksuafsfd23ydrcvzj3sfkp2rgqf3tlksrqm",
+      "value": {
+        "$type": "app.graycard.instance.labAccount",
+        "lab": "at://did:plc:34mbm5v3umztwvvgnttvcz6e/app.graycard.catalog.lab/3mq6gh56w7t2f",
+        "nickname": "Praus Productions",
+        "createdAt": "2026-07-09T00:57:05.277Z",
+        "updatedAt": "2026-07-13T14:26:33.373Z"
+      }
+    },
+    {
+      "repo": "did:plc:34mbm5v3umztwvvgnttvcz6e",
+      "collection": "app.graycard.process.developSession",
+      "rkey": "3mt7eva34gy27",
+      "sourceCid": "bafyreic4lnjmmfry52e6af4ukjvrfh4p5z3hkycsejio4ymisp3rzd7aja",
+      "value": {
+        "$type": "app.graycard.process.developSession",
+        "process": "bw",
+        "dilution": "1+0",
+        "tankType": "tank",
+        "agitation": "Inversion · first 60s · every 60s for 10s",
+        "chemistry": "at://did:plc:34mbm5v3umztwvvgnttvcz6e/app.graycard.instance.chemistry/3msxgu24uls2c",
+        "createdAt": "2026-08-16T14:17:23.006Z",
+        "filmRolls": [
+          "at://did:plc:34mbm5v3umztwvvgnttvcz6e/app.graycard.instance.filmRoll/3mrvsnd45jt2m",
+          "at://did:plc:34mbm5v3umztwvvgnttvcz6e/app.graycard.instance.filmRoll/3ms4psuz4kr23"
+        ],
+        "startedAt": "2026-08-15T01:54:10.000Z",
+        "finishedAt": "2026-08-15T02:00:00.000Z",
+        "provenance": {
+          "source": "manual",
+          "assertedAt": "2026-08-16T14:17:23.006Z"
+        },
+        "temperature": {
+          "unit": "celsius",
+          "scale": 1000000,
+          "value": 22500000
+        },
+        "timeSeconds": 350,
+        "agitationScheme": {
+          "note": "Inversion",
+          "forSec": 10,
+          "everySec": 60,
+          "initialSec": 60
+        },
+        "actualTemperature": {
+          "unit": "celsius",
+          "scale": 1000000,
+          "value": 22500000
+        },
+        "actualTimeSeconds": 350
+      }
+    }
+  ]
+}

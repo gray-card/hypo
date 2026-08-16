@@ -1,13 +1,80 @@
-import { describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
+
+import { validateRecord } from "@hypo/lexicon";
+import { AtprotoAgentAdapter, PublicRepoClient, RepoClient } from "@hypo/pds";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   DEVELOP_SESSION,
   LEGACY_DEVELOPMENT_SUMMARY_FIELDS,
+  migrateDevelopSessions,
   migrateDevelopSessionsWithClient,
   migrateDevelopSessionValue,
 } from "../src/developSessionMigration.ts";
+import { createFixturePds } from "./fixture-pds/index.js";
+
+const fixtureDocument = JSON.parse(readFileSync("fixtures/migrations/aaronstevenwhite-development.json", "utf8"));
+const REPO = fixtureDocument.source.did as string;
+
+function fixtureAgent(origin: string) {
+  async function responseData(response: Response) {
+    const body = await response.json();
+    if (response.ok) return { data: body };
+    throw Object.assign(new Error(body.message), { status: response.status, error: body.error });
+  }
+
+  async function query(method: string, input: Record<string, unknown>) {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(input)) {
+      if (value !== undefined) params.set(key, String(value));
+    }
+    return responseData(await fetch(`${origin}/xrpc/${method}?${params}`));
+  }
+
+  async function procedure(method: string, input: Record<string, unknown>) {
+    return responseData(
+      await fetch(`${origin}/xrpc/${method}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      }),
+    );
+  }
+
+  return {
+    com: {
+      atproto: {
+        repo: {
+          describeRepo: (input: Record<string, unknown>) => query("com.atproto.repo.describeRepo", input),
+          listRecords: (input: Record<string, unknown>) => query("com.atproto.repo.listRecords", input),
+          applyWrites: (input: Record<string, unknown>) => procedure("com.atproto.repo.applyWrites", input),
+        },
+        sync: {
+          getLatestCommit: (input: Record<string, unknown>) => query("com.atproto.sync.getLatestCommit", input),
+        },
+      },
+    },
+  };
+}
 
 describe("development-session schema migration", () => {
+  const fixtures: Array<Awaited<ReturnType<typeof createFixturePds>>> = [];
+
+  afterEach(async () => {
+    await Promise.all(fixtures.splice(0).map((fixture) => fixture.close()));
+  });
+
+  async function aaronFixture() {
+    const fixture = await createFixturePds({
+      seed: { records: fixtureDocument.records },
+      versionedRecordsPath: false,
+    });
+    fixtures.push(fixture);
+    const agent = fixtureAgent(fixture.origin);
+    const client = new RepoClient(new AtprotoAgentAdapter(agent as never));
+    return { fixture, agent, client, reader: new PublicRepoClient(fixture.origin) };
+  }
+
   it("normalizes summary fields and shortcut baths into ordered stages", () => {
     const source = {
       $type: DEVELOP_SESSION,
@@ -141,5 +208,54 @@ describe("development-session schema migration", () => {
       actualTimeSeconds: 195,
       agitationScheme: { note: "continuous rotary" },
     });
+  });
+
+  it("automatically migrates Aaron's development session while preserving chemistry and lab records", async () => {
+    const { fixture, agent, reader } = await aaronFixture();
+    const labBefore = await reader.listAll({ repo: REPO, collection: "app.graycard.catalog.lab" });
+    const accountBefore = await reader.listAll({ repo: REPO, collection: "app.graycard.instance.labAccount" });
+    const chemistryBefore = await reader.listAll({ repo: REPO, collection: "app.graycard.instance.chemistry" });
+
+    await expect(migrateDevelopSessions(agent, REPO)).resolves.toEqual({ migrated: true, sessions: 1 });
+
+    const migrated = await reader.get({ repo: REPO, collection: DEVELOP_SESSION, rkey: "3mt7eva34gy27" });
+    expect(migrated.value).not.toHaveProperty("chemistry");
+    expect(migrated.value).not.toHaveProperty("dilution");
+    expect(migrated.value).not.toHaveProperty("agitation");
+    expect(migrated.value).not.toHaveProperty("timeSeconds");
+    expect(migrated.value).not.toHaveProperty("actualTimeSeconds");
+    expect(migrated.value.steps).toEqual([
+      expect.objectContaining({
+        name: "Developer",
+        kind: "chemical-bath",
+        roles: ["film-developer"],
+        chemistries: ["at://did:plc:34mbm5v3umztwvvgnttvcz6e/app.graycard.instance.chemistry/3msxgu24uls2c"],
+        actualTimeSeconds: 350,
+      }),
+    ]);
+    expect(validateRecord(DEVELOP_SESSION, migrated.value)).toMatchObject({ success: true });
+    expect(await reader.listAll({ repo: REPO, collection: "app.graycard.catalog.lab" })).toEqual(labBefore);
+    expect(await reader.listAll({ repo: REPO, collection: "app.graycard.instance.labAccount" })).toEqual(accountBefore);
+    expect(await reader.listAll({ repo: REPO, collection: "app.graycard.instance.chemistry" })).toEqual(
+      chemistryBefore,
+    );
+
+    const freshAgent = fixtureAgent(fixture.origin);
+    await expect(migrateDevelopSessions(freshAgent, REPO)).resolves.toEqual({ migrated: false, sessions: 0 });
+  });
+
+  it("leaves Aaron's source session and related records intact when the repository write fails", async () => {
+    const { client, reader } = await aaronFixture();
+    const before = await reader.get({ repo: REPO, collection: DEVELOP_SESSION, rkey: "3mt7eva34gy27" });
+    vi.spyOn(client, "applyWrites").mockRejectedValueOnce(new Error("simulated PDS failure"));
+
+    await expect(migrateDevelopSessionsWithClient(client, REPO)).rejects.toThrow("simulated PDS failure");
+
+    const after = await reader.get({ repo: REPO, collection: DEVELOP_SESSION, rkey: "3mt7eva34gy27" });
+    expect(after).toEqual(before);
+    await expect(reader.listAll({ repo: REPO, collection: "app.graycard.catalog.lab" })).resolves.toHaveLength(2);
+    await expect(reader.listAll({ repo: REPO, collection: "app.graycard.instance.chemistry" })).resolves.toHaveLength(
+      1,
+    );
   });
 });
