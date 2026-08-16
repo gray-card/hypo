@@ -294,6 +294,102 @@
   overflow: auto;
 }
 
+/* completed process entry + the per-roll processing ledger */
+.process-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.agitation-schedule-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.roll-processing-head {
+  gap: 10px;
+  margin-top: 18px;
+}
+.roll-processing-head .modal-sub {
+  margin: 0;
+}
+.roll-processing-actions {
+  gap: 7px;
+}
+.roll-processing {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 9px;
+}
+.roll-processing-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  color: var(--text);
+  text-align: left;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.roll-processing-row:hover {
+  border-color: color-mix(in oklab, var(--accent) 55%, var(--border));
+}
+.roll-processing-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.roll-processing-mark {
+  min-width: 42px;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  font: 600 10px/1 var(--font-mono);
+  letter-spacing: 0.09em;
+  text-align: center;
+}
+.roll-processing-mark.develop {
+  border-color: color-mix(in oklab, var(--accent) 50%, var(--border));
+  color: var(--accent);
+}
+.roll-processing-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.roll-processing-copy .small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.roll-processing-date {
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .process-entry-grid,
+  .agitation-schedule-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .process-time-grid .field:last-child {
+    grid-column: 1 / -1;
+  }
+  .roll-processing-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .roll-processing-date {
+    grid-column: 2;
+  }
+  .roll-processing-actions {
+    width: 100%;
+  }
+  .roll-processing-actions .small-btn {
+    flex: 1 1 0;
+  }
+}
+
 /* stat blocks */
 .stat-block {
   margin-top: 16px;

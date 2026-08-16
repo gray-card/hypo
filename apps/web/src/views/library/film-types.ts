@@ -9,8 +9,11 @@ export interface FilmRecord<Value extends FilmValue = FilmValue> {
 export interface FilmStore {
   readonly catalog: Readonly<Record<string, readonly FilmRecord[] | undefined>>;
   readonly instance: Readonly<Record<string, readonly FilmRecord[] | undefined>>;
+  readonly byUri?: ReadonlyMap<string, { layer?: string; kind?: string; item: FilmRecord }>;
   readonly photoCaptureByPhoto?: ReadonlyMap<string, FilmRecord>;
   readonly workflowTemplates?: readonly FilmRecord[];
+  readonly developSessions?: readonly FilmRecord[];
+  readonly digitizeSessions?: readonly FilmRecord[];
 }
 
 export interface FilmCollections {
@@ -38,6 +41,8 @@ export interface FilmViewServices {
   addGear(kind: "filmStockpile" | "filmRoll", onDone: () => void, prefill?: FilmValue): void;
   editGear(kind: "filmStockpile" | "filmRoll", item: FilmRecord, onDone: () => void): void;
   openRoll(roll: FilmRecord): void;
+  openCompletedDevelopment?(roll: FilmRecord, onDone: () => void): void;
+  openScanSession?(roll: FilmRecord, onDone: () => void): void;
   instanceSelect(kind: string, value?: string): HTMLSelectElement;
   instanceThumb(kind: "filmStockpile" | "filmRoll", value: FilmValue): Node;
   instanceLabel(kind: string, value: FilmValue): string;

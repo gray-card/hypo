@@ -75,9 +75,15 @@ import {
   createInstanceSelect,
   createShootSelect,
 } from "../../apps/web/src/views/library/maintenance-selectors.ts";
-import { renderDarkroomHeader as renderDarkroomHeaderView } from "../../apps/web/src/views/library/maintenance-darkroom.ts";
+import {
+  openManualDevelopment,
+  renderDarkroomHeader as renderDarkroomHeaderView,
+} from "../../apps/web/src/views/library/maintenance-darkroom.ts";
 import { renderRulesView, renderWorkflowsView } from "../../apps/web/src/views/library/workflows-view.ts";
-import { renderScanningHeader as renderScanningHeaderView } from "../../apps/web/src/views/library/scanning-view.ts";
+import {
+  openScanSession,
+  renderScanningHeader as renderScanningHeaderView,
+} from "../../apps/web/src/views/library/scanning-view.ts";
 import { renderInsightsView } from "../../apps/web/src/views/library/insights-view.ts";
 import { renderLibraryShell } from "../../apps/web/src/views/library/maintenance-shell.ts";
 import { computeLintFindings } from "../lint.js";
@@ -306,6 +312,9 @@ function filmViewServices(body) {
     addGear: (kind, onDone, prefill) => openAddGear(kind, onDone, prefill),
     editGear: openEditGearRoute,
     openRoll: openRollRoute,
+    openCompletedDevelopment: (roll, onDone) =>
+      openManualDevelopment(onDone, activityServices(), { selectedRolls: [roll.uri] }),
+    openScanSession: (roll, onDone) => openScanSession(onDone, activityServices(), { selectedRoll: roll.uri }),
     instanceSelect,
     instanceThumb,
     instanceLabel: (kind, value) => instanceLabel(kind, value, ctx.store),

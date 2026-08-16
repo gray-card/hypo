@@ -2,6 +2,7 @@ import { confirmModal, dateField, el, field, localInputToIso, openModal } from "
 import { openAddFrame, syncRollExposureCount } from "./film-frame.ts";
 import { filmStockLabel, framesForRoll, reserveQuantity } from "./film-helpers.ts";
 import type { FilmRecord, FilmValue, FilmViewServices } from "./film-types.ts";
+import { formatAgitation, formatDevelopmentTime } from "./maintenance-darkroom.ts";
 import { createWorkflowOccurrenceEditor } from "./workflow-occurrences.ts";
 
 const stockLabel = (services: FilmViewServices, stockUri: string | undefined) =>
@@ -233,6 +234,89 @@ function rollPhotoList(
   return { node, render };
 }
 
+function measureDisplay(measure: FilmValue | undefined): string | null {
+  if (!measure || !Number.isFinite(Number(measure.value))) return null;
+  const scale = Number(measure.scale) || 1;
+  const value = Number(measure.value) / scale;
+  return `${Number.isInteger(value) ? value : value.toFixed(1)}${measure.unit ? ` ${measure.unit}` : ""}`;
+}
+
+function relatedLabel(services: FilmViewServices, kind: string, uri: unknown): string | null {
+  if (typeof uri !== "string" || !uri) return null;
+  const record = services.getStore().byUri?.get(uri)?.item;
+  return record ? record.value.nickname || services.instanceLabel(kind, record.value) : uri.split("/").at(-1) || null;
+}
+
+function processingHistory(roll: FilmRecord, services: FilmViewServices): { node: HTMLDivElement; render(): void } {
+  const node = el("div", { class: "roll-processing" });
+  const render = () => {
+    const developments = (services.getStore().developSessions || [])
+      .filter((session) => session.value.filmRolls?.includes(roll.uri))
+      .map((session) => ({ kind: "develop" as const, session }));
+    const scans = (services.getStore().digitizeSessions || [])
+      .filter((session) => session.value.filmRolls?.includes(roll.uri))
+      .map((session) => ({ kind: "scan" as const, session }));
+    const entries = [...developments, ...scans].sort((left, right) => {
+      const leftAt = left.session.value.finishedAt || left.session.value.createdAt || "";
+      const rightAt = right.session.value.finishedAt || right.session.value.createdAt || "";
+      return rightAt.localeCompare(leftAt);
+    });
+    if (!entries.length) {
+      node.replaceChildren(
+        el(
+          "p",
+          { class: "muted small" },
+          "No processing sessions linked yet. Log a completed development or scan to associate chemistry and scanners with this roll.",
+        ),
+      );
+      return;
+    }
+    node.replaceChildren();
+    for (const { kind, session } of entries) {
+      const value = session.value;
+      const at = value.finishedAt || value.createdAt;
+      const when = at ? new Date(at).toLocaleDateString() : "Date not recorded";
+      const detail =
+        kind === "develop"
+          ? [
+              relatedLabel(services, "chemistry", value.chemistry),
+              formatDevelopmentTime(value.actualTimeSeconds ?? value.timeSeconds),
+              formatAgitation(value),
+            ]
+              .filter(Boolean)
+              .join(" · ")
+          : [
+              relatedLabel(services, "scanner", value.scanner),
+              services.enumLabel(String(value.method || "")),
+              measureDisplay(value.resolution),
+            ]
+              .filter(Boolean)
+              .join(" · ");
+      node.append(
+        el(
+          "button",
+          {
+            class: "roll-processing-row",
+            type: "button",
+            onclick: () => services.inspect(session),
+            title: `Inspect ${kind === "develop" ? "development" : "scan"} session`,
+          },
+          [
+            el("span", { class: `roll-processing-mark ${kind}` }, kind === "develop" ? "DEV" : "SCAN"),
+            el("span", { class: "roll-processing-copy" }, [
+              el("strong", {}, kind === "develop" ? "Development" : "Scan"),
+              el("span", { class: "muted small" }, detail || "Session details not recorded"),
+            ]),
+            el("span", { class: "muted small mono roll-processing-date" }, when),
+          ],
+        ),
+      );
+    }
+  };
+  render();
+  return { node, render };
+}
+
 export function openRollDetail(
   roll: FilmRecord,
   services: FilmViewServices,
@@ -270,6 +354,37 @@ export function openRollDetail(
   developmentLocation.value = value.developmentLocation || "";
   const frames = frameList(roll, services);
   const rollPhotos = rollPhotoList(roll, services);
+  const processing = processingHistory(roll, services);
+  const refreshProcessing = async () => {
+    processing.render();
+    const refreshed = (services.getStore().instance.filmRoll || []).find((candidate) => candidate.uri === roll.uri);
+    if (refreshed?.value.developedWith) developerSelect.value = refreshed.value.developedWith;
+    if (refreshed?.value.status) statusSelect.value = refreshed.value.status;
+  };
+  const processingActions = el("div", { class: "row wrap roll-processing-actions" }, [
+    services.openCompletedDevelopment
+      ? el(
+          "button",
+          {
+            class: "ghost small-btn",
+            type: "button",
+            onclick: () => services.openCompletedDevelopment?.(roll, () => void refreshProcessing()),
+          },
+          [services.icon("check", 14), el("span", {}, "Log development")],
+        )
+      : null,
+    services.openScanSession
+      ? el(
+          "button",
+          {
+            class: "ghost small-btn",
+            type: "button",
+            onclick: () => services.openScanSession?.(roll, () => void refreshProcessing()),
+          },
+          [services.icon("image", 14), el("span", {}, "Log scan")],
+        )
+      : null,
+  ]);
   const addFrameButton = el(
     "button",
     {
@@ -301,6 +416,11 @@ export function openRollDetail(
         ? field("Start another workflow (optional)", templateSelect)
         : null,
       occurrences.node,
+      el("div", { class: "row between wrap roll-processing-head" }, [
+        el("h3", { class: "modal-sub" }, "Processing history"),
+        processingActions,
+      ]),
+      processing.node,
       el("h3", { class: "modal-sub" }, "Lifecycle dates (optional)"),
       ...ROLL_LIFECYCLE_DATES.map(([key]) => lifecycleDates[key].wrap),
       el("h3", { class: "modal-sub" }, "Frames"),

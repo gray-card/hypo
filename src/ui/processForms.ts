@@ -15,6 +15,15 @@ type JsonObject = Record<string, unknown>;
 type FormControl = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 type InputMap = Record<string, FormControl>;
 
+interface AgitationScheme extends JsonObject {
+  initialSec?: number;
+  everySec?: number;
+  forSec?: number;
+  inversions?: number;
+  continuous?: boolean;
+  note?: string;
+}
+
 interface Measure {
   value: number;
   scale?: number;
@@ -97,7 +106,7 @@ interface ProcessFormInitial {
   actualTemperature?: Measure | null;
   publishedTimeSeconds?: string | number;
   actualTimeSeconds?: string | number;
-  agitationScheme?: JsonObject;
+  agitationScheme?: AgitationScheme;
   sourceDocument?: JsonObject;
   sourceSpec?: JsonObject;
   stopBathChemistry?: string;
@@ -328,10 +337,15 @@ export function buildProcessSessionForm(
     const temp = inputField("Temperature °C", "temperatureC", measureToDisplay(initial.temperature));
     inputs.temperatureC = temp.input;
     nodes.push(temp.wrap);
-    const time = inputField("Time (seconds)", "timeSeconds", initial.timeSeconds ?? "");
+    const time = inputField("Development time (seconds)", "timeSeconds", initial.timeSeconds ?? "");
     inputs.timeSeconds = time.input;
     nodes.push(time.wrap);
-    const agit = inputField("Agitation", "agitation", initial.agitation || "");
+    const agit = inputField(
+      "Agitation method and schedule",
+      "agitation",
+      initial.agitation || "",
+      "e.g. inversion, 4 inversions every minute",
+    );
     inputs.agitation = agit.input;
     nodes.push(agit.wrap);
     inputs.tankType = el("select", {}, [
@@ -382,12 +396,35 @@ export function buildProcessSessionForm(
       initial.actualTimeSeconds ?? initial.timeSeconds ?? "",
     );
     inputs.actualTimeSeconds = actualTime.input;
-    const agitationScheme = textareaField(
-      "Structured agitation (JSON)",
-      "agitationScheme",
-      initial.agitationScheme ? JSON.stringify(initial.agitationScheme, null, 2) : "",
+    const agitationInitial = inputField(
+      "Initial agitation (seconds)",
+      "agitationInitialSec",
+      initial.agitationScheme?.initialSec ?? "",
     );
-    inputs.agitationScheme = agitationScheme.input;
+    inputs.agitationInitialSec = agitationInitial.input;
+    const agitationEvery = inputField(
+      "Agitate every (seconds)",
+      "agitationEverySec",
+      initial.agitationScheme?.everySec ?? "",
+    );
+    inputs.agitationEverySec = agitationEvery.input;
+    const agitationFor = inputField("Agitate for (seconds)", "agitationForSec", initial.agitationScheme?.forSec ?? "");
+    inputs.agitationForSec = agitationFor.input;
+    const agitationInversions = inputField(
+      "Inversions per cycle",
+      "agitationInversions",
+      initial.agitationScheme?.inversions ?? "",
+    );
+    inputs.agitationInversions = agitationInversions.input;
+    inputs.agitationContinuous = el("input", { type: "checkbox" });
+    inputs.agitationContinuous.checked = initial.agitationScheme?.continuous === true;
+    const agitationNote = inputField(
+      "Agitation detail",
+      "agitationNote",
+      String(initial.agitationScheme?.note || ""),
+      "e.g. gentle inversions or rotary at 30 rpm",
+    );
+    inputs.agitationNote = agitationNote.input;
     const sourceDocument = textareaField(
       "Source document (JSON)",
       "sourceDocument",
@@ -410,7 +447,12 @@ export function buildProcessSessionForm(
         field("Observed actual temperature °C", inputs.actualTemperatureC),
         field("Selected recipe time (seconds)", inputs.publishedTimeSeconds),
         field("Observed actual time (seconds)", inputs.actualTimeSeconds),
-        agitationScheme.wrap,
+        agitationInitial.wrap,
+        agitationEvery.wrap,
+        agitationFor.wrap,
+        agitationInversions.wrap,
+        field("Continuous agitation", inputs.agitationContinuous),
+        agitationNote.wrap,
         sourceDocument.wrap,
         sourceSpec.wrap,
       ]),
@@ -581,6 +623,18 @@ export function buildProcessSessionForm(
         const summaryTime = parseInt(inputs.timeSeconds.value, 10);
         const publishedTimeSeconds = parseInt(inputs.publishedTimeSeconds.value, 10);
         const actualTimeSeconds = parseInt(inputs.actualTimeSeconds.value, 10);
+        const agitationScheme: JsonObject = {};
+        const agitationNumber = (input: FormControl): number | undefined => {
+          const value = parseInt(input.value, 10);
+          return Number.isFinite(value) && value >= 0 ? value : undefined;
+        };
+        agitationScheme.initialSec = agitationNumber(inputs.agitationInitialSec);
+        agitationScheme.everySec = agitationNumber(inputs.agitationEverySec);
+        agitationScheme.forSec = agitationNumber(inputs.agitationForSec);
+        agitationScheme.inversions = agitationNumber(inputs.agitationInversions);
+        agitationScheme.continuous = (inputs.agitationContinuous as HTMLInputElement).checked || undefined;
+        agitationScheme.note = inputs.agitationNote.value.trim() || undefined;
+        const hasAgitationScheme = Object.values(agitationScheme).some((value) => value !== undefined);
         const recipe = selectedRecipe();
         const resolved = selectedRecommendation(recipe);
         const selectedMatchesRecipe =
@@ -638,7 +692,7 @@ export function buildProcessSessionForm(
               ? summaryTime
               : undefined,
           agitation: inputs.agitation.value.trim() || undefined,
-          agitationScheme: readJson(inputs.agitationScheme, "Structured agitation"),
+          agitationScheme: hasAgitationScheme ? agitationScheme : undefined,
           sourceDocument: readJson(inputs.sourceDocument, "Source document"),
           sourceSpec: selectedSourceSpec,
           tankType: inputs.tankType.value || undefined,
