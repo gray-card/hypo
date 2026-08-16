@@ -2,6 +2,22 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.1.1] - 2026-08-16
+
+### Changed
+
+- Cache Following activity on the device, show the saved feed immediately, and
+  merge updates without rebuilding unchanged feed entries.
+- Refresh known publishers before accounts that have not published Hypo or Grain
+  records, ranked by record count and recency.
+
+### Fixed
+
+- Load scene records and image blobs through their public PDS when authenticated
+  reads fail, with a final fallback to records already hydrated on the device.
+- Allow tagged release gates to call the reusable CI workflow while keeping
+  Pages assembly and deployment restricted to direct `main` CI runs.
+
 ## [1.1.0] - 2026-08-16
 
 ### Added
@@ -121,3 +137,4 @@ Notable changes to Hypo are recorded here.
 [1.0.0]: https://github.com/gray-card/hypo/compare/v0.2.0...v1.0.0
 [1.0.1]: https://github.com/gray-card/hypo/compare/v1.0.0...v1.0.1
 [1.1.0]: https://github.com/gray-card/hypo/compare/v1.0.1...v1.1.0
+[1.1.1]: https://github.com/gray-card/hypo/compare/v1.1.0...v1.1.1

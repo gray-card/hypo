@@ -136,4 +136,33 @@ describe("following activity presentation", () => {
     links[1].click();
     expect(navigateProfile).toHaveBeenCalledWith("alice.test");
   });
+
+  it("reuses unchanged feed and roster nodes while inserting new activity", () => {
+    const host = document.querySelector("#following-body") as HTMLElement;
+    const navigateProfile = vi.fn();
+    const oldEvent = event("app.graycard.instance.camera", "f2", "2026-08-13T10:00:00.000Z", {
+      nickname: "F2",
+    });
+    renderFollowing(host, { profiles: [actor], events: [oldEvent] }, navigateProfile, {
+      status: "Showing saved activity.",
+    });
+    const oldArticle = host.querySelector<HTMLElement>(".following-event");
+    const oldPerson = host.querySelector<HTMLElement>(".following-person");
+
+    renderFollowing(
+      host,
+      {
+        profiles: [actor],
+        events: [event("social.grain.gallery", "summer", "2026-08-14T10:00:00.000Z", { title: "Summer" }), oldEvent],
+      },
+      navigateProfile,
+      { status: "Checking updates…", refreshing: true },
+    );
+
+    expect(host.querySelectorAll(".following-event")).toHaveLength(2);
+    expect([...host.querySelectorAll(".following-event")]).toContain(oldArticle);
+    expect(host.querySelector(".following-person")).toBe(oldPerson);
+    expect(host.querySelector(".following-cache-status")?.textContent).toBe("Checking updates…");
+    expect(host.querySelector(".following-cache-status")?.classList).toContain("refreshing");
+  });
 });

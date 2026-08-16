@@ -17,6 +17,7 @@ description: Browser route names, paths, parameters, and static-hosting requirem
 | `gear`           | `/gear/:kind/:rkey`         | `kind`, `rkey`      | Gear editor            |
 | `timer`          | `/timer`                    | none                | Development timer      |
 | `meter`          | `/meter`                    | none                | Light meter            |
+| `following`      | `/following`                | none                | Local activity feed    |
 | `discover`       | `/discover`                 | none                | Published setups       |
 | `profile`        | `/profile/:handle`          | `handle`            | Public profile         |
 | `profileSection` | `/profile/:handle/:section` | `handle`, `section` | Public profile section |

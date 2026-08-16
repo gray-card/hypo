@@ -25,6 +25,8 @@ These dependencies perform their own bounded roles. None is a Hypo-controlled st
 
 Discover is the case most likely to look like a hidden backend. A published `app.graycard.setup` record links to a fixed registry URL. Constellation answers “which records link to this anchor?”, and Hypo then hydrates each result from its author's PDS. Thus cross-network enumeration requires an index, but Hypo does not operate a second canonical setup database.
 
+Following uses a **device feed index** rather than a shared activity service. The browser stores followed profiles, recent public activity, each account's known PDS, and refresh statistics in IndexedDB. It shows that snapshot when the tab opens, then merges records by AT-URI as it checks accounts. Accounts with more or newer known records are checked first; accounts not yet checked come next, followed by accounts whose earlier checks found no records. The PDS remains authoritative, and the device index can be rebuilt from the Grain and Bluesky follow graphs.
+
 ## Consequences
 
 First, self-hosting is primarily a static-hosting and OAuth-metadata problem. Second, availability follows several services: the app shell may load while a PDS, identity resolver, or backlink index is unavailable. Third, local-first queues must eventually reconcile with the PDS because local storage is not a new authority.
