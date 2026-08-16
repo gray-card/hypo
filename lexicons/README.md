@@ -19,8 +19,8 @@ resolution).
   HC-110 bottle, one loaded roll).
 - **process.\***: one-off **sessions** (develop, digitize, edit, render/export, print,
   maintenance). Capture is represented by `session.capture`, not a duplicate process
-  record. `process.developSession` has an ordered `steps[]` bath sequence for
-  multi-step chemistry (C-41, E-6) and reusable measures.
+  record. `process.developSession` keeps batch facts on the session and records
+  each bath or physical operation in ordered `steps[]`.
 - **artifact** (`app.graycard.artifact`): a first-class node in a workflow (RAW, negative
   strip, glass plate, print, video clip), with `parents` lineage and `producedBy`.
 - **session.capture**: a shoot that links many photos.
@@ -76,9 +76,11 @@ Gray Card's internal panproto scene tier.
 
 Film/developer processing recommendations belong in `catalog.devRecipe`, where
 the exact film, developer, EI, dilution, method, temperature/time points, and
-source location can vary together. `process.developSession` records what was
-actually done and distinguishes the selected published time and temperature
-setpoint from the observed duration and temperature.
+source location can vary together. Each `process.developSession` stage carries
+its roles and linked chemistry instances, recipe or source, optional dates,
+agitation, volume, disposition, and planned and observed time and temperature.
+Combined baths use multiple roles; multi-part baths may link multiple chemistry
+instances.
 
 ## rule.batch
 

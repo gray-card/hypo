@@ -102,7 +102,7 @@ describe("reading-aware development suggestion", () => {
 
       await vi.waitFor(() => expect(pending(did, NS.process.developSession)).toHaveLength(1));
       const record = pending(did, NS.process.developSession)[0].record;
-      expect(record.recipe).toBe(recipe400);
+      expect(record.steps[0].recipe).toBe(recipe400);
       expect(record.pushPull).toEqual({ value: 0, unit: "stop" });
       expect(record.filmRolls).toEqual([roll]);
       expect(record.notes).toMatch(/Observed EI 800.*Selected recipe: EI 400/i);

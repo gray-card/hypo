@@ -146,9 +146,16 @@ describe("extracted Film view", () => {
       uri: "at://development",
       value: {
         filmRolls: [roll.uri],
-        chemistry: chemistry.uri,
-        actualTimeSeconds: 570,
-        agitationScheme: { everySec: 60, forSec: 10, inversions: 4, note: "Inversion" },
+        steps: [
+          {
+            name: "Developer",
+            kind: "chemical-bath",
+            roles: ["film-developer"],
+            chemistries: [chemistry.uri],
+            actualTimeSeconds: 570,
+            agitationScheme: { everySec: 60, forSec: 10, inversions: 4, note: "Inversion" },
+          },
+        ],
         finishedAt: "2026-01-02T10:00:00Z",
       },
     };
@@ -184,7 +191,9 @@ describe("extracted Film view", () => {
     openRollDetail(roll, api);
     const modal = document.querySelector(".modal");
     expect(modal.textContent).toContain("Processing history");
-    expect(modal.textContent).toContain("D-76 1+1 · 9:30 · Inversion · every 60s for 10s · 4 inversions");
+    expect(modal.textContent).toContain(
+      "D-76 1+1 · 9:30 · Inversion · every 60s for 10s · 4 inversions · Developer 9:30",
+    );
     expect(modal.textContent).toContain("V850 · flatbed-negative · 3200 dpi");
     [...modal.querySelectorAll("button")].find((button) => button.textContent.includes("Log development")).click();
     [...modal.querySelectorAll("button")].find((button) => button.textContent.includes("Log scan")).click();

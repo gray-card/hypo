@@ -49,23 +49,25 @@ Use an enrichment or an explicit lens for every breaking step. Run compatibility
 schema compat path/to/released-suite . --protocol atproto
 ```
 
-Add `[breaking-change-acknowledged]` to a commit message and describe every transition in `lenses/breaking-change.json`:
+Add `[breaking-change-acknowledged]` to a commit message and describe every transition in `lenses/breaking-change.json`. A transition keeps an exact source suite, the target suite, a reviewed Panproto lens, the narrow projection schema against which the lens is instantiated, migration fixtures, and a verifier that exercises the application rewrite:
 
 ```json
 {
   "transitions": [
     {
-      "source": "lenses/schemas/lexicons-v1.json",
-      "target": "lenses/schemas/lexicons-v2.json",
-      "mapping": "lenses/mappings/v1-to-v2.json",
-      "chain": "lenses/chains/v1-to-v2.json",
-      "data": "fixtures/records/setup.json"
+      "id": "develop-session-v2",
+      "source": "lenses/develop-session-v2/source",
+      "target": "lexicons",
+      "lens": "lenses/develop-session-v2/lens.json",
+      "projection": "lenses/develop-session-v2/projection-lexicon.json",
+      "data": "lenses/develop-session-v2/fixtures.json",
+      "verify": "scripts/verify-develop-session-transition.ts"
     }
   ]
 }
 ```
 
-The pull-request gate evaluates compatibility against the Git merge base. For an acknowledged break, it runs `schema check --typecheck`, `schema lens check`, `schema lens verify`, and `schema data migrate --coverage --dry-run` before accepting the manifest.
+The pull-request gate evaluates compatibility against the Git merge base. For an acknowledged break, it classifies each declared source-to-target transition, compiles and instantiates the Panproto lens, runs the transition fixtures through the application rewrite, and validates the results against the target suite before accepting the manifest.
 
 The browser then consumes the verified chain at the sync boundary. It retains the opaque complement until the migrated write is acknowledged, because a backward `put` may need information that the forward view omitted.
 

@@ -455,7 +455,7 @@
     },
     "chemistryRole": {
       "type": "string",
-      "description": "One atomic function performed by a photographic chemical or bath. Combined baths carry more than one role.",
+      "description": "One atomic function performed by a photographic chemical, bath, or water step. Combined baths carry more than one role. The wash value represents a water-washing operation; wash-aid identifies a chemical treatment that shortens or improves washing.",
       "knownValues": [
         "pre-soak",
         "film-developer",
@@ -469,6 +469,7 @@
         "conditioner",
         "pre-bleach",
         "stabilizer",
+        "wash",
         "wash-aid",
         "clearing-agent",
         "hardener",

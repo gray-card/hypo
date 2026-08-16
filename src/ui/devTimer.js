@@ -161,28 +161,28 @@ export function recipeTechnicalDetails(r, recommendation = null) {
 // default following steps (after the datasheet develop step) per process. Times
 // are editable defaults, not datasheet claims.
 function defaultChain(process, developStep) {
-  const wash = { name: "Wash", roles: [], seconds: 300 };
-  if (process === "monobath") return [developStep, { name: "Wash", roles: [], seconds: 300 }];
+  const wash = { name: "Wash", kind: "wash", roles: ["wash"], seconds: 300 };
+  if (process === "monobath") return [developStep, wash];
   if (process === "c41")
     return [
       developStep,
-      { name: "Blix", roles: ["bleach", "fixer"], seconds: 390 },
+      { name: "Blix", kind: "chemical-bath", roles: ["bleach", "fixer"], seconds: 390 },
       wash,
-      { name: "Stabilizer", roles: ["stabilizer"], seconds: 60 },
+      { name: "Stabilizer", kind: "chemical-bath", roles: ["stabilizer"], seconds: 60 },
     ];
   if (process === "e6")
     return [
       developStep,
-      { name: "Wash", roles: [], seconds: 120 },
-      { name: "Colour developer", roles: ["color-developer"], seconds: 360 },
-      { name: "Blix", roles: ["bleach", "fixer"], seconds: 360 },
+      { name: "Wash", kind: "wash", roles: ["wash"], seconds: 120 },
+      { name: "Colour developer", kind: "chemical-bath", roles: ["color-developer"], seconds: 360 },
+      { name: "Blix", kind: "chemical-bath", roles: ["bleach", "fixer"], seconds: 360 },
       wash,
     ];
   // b&w (and reversal-bw first pass)
   return [
     developStep,
-    { name: "Stop bath", roles: ["stop"], seconds: 30 },
-    { name: "Fixer", roles: ["fixer"], seconds: 300 },
+    { name: "Stop bath", kind: "chemical-bath", roles: ["stop"], seconds: 30 },
+    { name: "Fixer", kind: "chemical-bath", roles: ["fixer"], seconds: 300 },
     wash,
   ];
 }
@@ -564,6 +564,7 @@ export function openDevTimer(ctx, opts = {}) {
         cues.unlock();
         const developStep = {
           name: "Develop",
+          kind: "chemical-bath",
           roles: ["film-developer"],
           seconds: sel.manualDevSec,
           agitation: r.agitation || null,
@@ -779,7 +780,6 @@ export function openDevTimer(ctx, opts = {}) {
       // mark current step actual if mid-run
       const s = curStep();
       if (s && s.actualSec == null) s.actualSec = Math.round(s.seconds - state.remaining);
-      const dev = state.steps[0];
       const selectionNote =
         state.selectedTimeKind === "interpolated"
           ? "Selected time recommendation was derived by interpolation; actual time and temperature were observed during this timer run."
@@ -787,32 +787,35 @@ export function openDevTimer(ctx, opts = {}) {
             ? `Selected time used an exact published recipe row (${state.recommendationStatus || "unknown"}); actual time and temperature were observed during this timer run.`
             : "Selected time was entered manually; actual time and temperature were observed during this timer run.";
       const finishedAt = new Date().toISOString();
+      const sessionSteps = state.steps.map((step, index) => ({
+        name: step.name,
+        kind: step.kind || (step.roles?.includes("wash") ? "wash" : "chemical-bath"),
+        roles: step.roles || [],
+        chemistries:
+          step.chemistries ||
+          (step.chemistry || (index === 0 ? state.chemistry : undefined)
+            ? [step.chemistry || state.chemistry]
+            : undefined),
+        recipe: index === 0 ? state.recipe || undefined : undefined,
+        sourceDocument: index === 0 ? state.sourceDocument || undefined : undefined,
+        sourceSpec: index === 0 ? state.sourceSpec || undefined : undefined,
+        dilution: index === 0 ? state.dilution || undefined : step.dilution,
+        temperatureSetpoint:
+          index === 0 ? { unit: "celsius", value: state.tempC10, scale: 10 } : step.temperatureSetpoint,
+        actualTemperature:
+          index === 0
+            ? { unit: "celsius", value: state.actualTempC10 ?? state.tempC10, scale: 10 }
+            : step.actualTemperature,
+        publishedTimeSeconds: index === 0 ? (state.publishedTimeSeconds ?? undefined) : step.publishedTimeSeconds,
+        actualTimeSeconds: step.actualSec ?? step.seconds,
+        agitationScheme: step.agitation || undefined,
+      }));
       const rec = {
         process: state.process, // faithful (bw / monobath / c41 / …)
-        recipe: state.recipe || undefined,
-        sourceDocument: state.sourceDocument || undefined,
-        sourceSpec: state.sourceSpec || undefined,
-        temperature: { unit: "celsius", value: state.actualTempC10 ?? state.tempC10, scale: 10 },
-        temperatureSetpoint: { unit: "celsius", value: state.tempC10, scale: 10 },
-        actualTemperature: { unit: "celsius", value: state.actualTempC10 ?? state.tempC10, scale: 10 },
-        timeSeconds: dev.actualSec ?? dev.seconds,
-        publishedTimeSeconds: state.publishedTimeSeconds ?? undefined,
-        actualTimeSeconds: dev.actualSec ?? dev.seconds,
-        dilution: state.dilution || undefined,
-        chemistry: state.chemistry || undefined,
         tankType: state.tankType || "tank",
-        agitation: dev.agitation?.note || undefined,
-        agitationScheme: dev.agitation || undefined,
         pushPull: state.pushPull || undefined,
         filmRolls: state.rolls?.length ? state.rolls : undefined,
-        steps: state.steps
-          .filter((step) => step.roles?.length)
-          .map((step) => ({
-            roles: step.roles,
-            chemistry: step.roles.some((role) => role.endsWith("developer")) ? state.chemistry || undefined : undefined,
-            timeSeconds: step.actualSec ?? step.seconds,
-            agitation: step.agitation?.note || undefined,
-          })),
+        steps: sessionSteps,
         startedAt: state.startedAt,
         finishedAt,
         notes: `${state.film} in ${state.developer}${state.dilution && state.dilution !== "stock" ? ` ${state.dilution}` : ""} at ${c10ToC(state.tempC10)}°C. Steps: ${state.steps.map((x) => `${x.name} ${fmtMMSS(x.actualSec ?? x.seconds)}`).join(", ")}. Logged via timer (source: ${state.source}).${state.exposureEvidence ? ` ${state.exposureEvidence}` : ""}`,
@@ -834,6 +837,8 @@ export function openDevTimer(ctx, opts = {}) {
           {
             ...roll.value,
             status: "developed",
+            developedWith: state.chemistry || roll.value.developedWith,
+            developmentStartedAt: roll.value.developmentStartedAt || state.startedAt,
             developedAt: roll.value.developedAt || finishedAt,
             developmentLocation: "home",
             updatedAt: finishedAt,
@@ -841,13 +846,14 @@ export function openDevTimer(ctx, opts = {}) {
           roll,
         );
       }
-      // bump the linked chemistry's usage so its capacity/age card reflects reality
-      // (best-effort, online — a putRecord isn't offline-queued).
-      if (state.chemistry) {
-        const c = (ctx.store?.instance?.chemistry || []).find((x) => x.uri === state.chemistry);
+      // Every linked bath receives one durable usage update. Duplicate references
+      // within the same session count once.
+      const chemistryUris = new Set(sessionSteps.flatMap((step) => step.chemistries || []).filter(Boolean));
+      for (const chemistryUri of chemistryUris) {
+        const c = (ctx.store?.instance?.chemistry || []).find((x) => x.uri === chemistryUri);
         if (c) {
-          const n = Math.max(1, state.rolls?.length || 1);
-          saveRecord(
+          const n = state.rolls?.length || 0;
+          await saveRecord(
             ctx.agent,
             ctx.did,
             NS.instance.chemistry,
@@ -855,10 +861,11 @@ export function openDevTimer(ctx, opts = {}) {
               ...c.value,
               rollsProcessed: (c.value.rollsProcessed || 0) + n,
               sessionsUsed: (c.value.sessionsUsed || 0) + 1,
+              lastUsedAt: finishedAt,
               updatedAt: new Date().toISOString(),
             },
             c,
-          ).catch(() => {});
+          );
         }
       }
       if (opts.onSessionLogged) {

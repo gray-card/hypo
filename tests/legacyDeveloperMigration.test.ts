@@ -8,6 +8,7 @@ import {
   CHEMISTRY_TYPE,
   LEGACY_DEVELOPER_INSTANCE,
   LEGACY_DEVELOPER_TYPE,
+  migrateLegacyDeveloperRecords,
   migrateLegacyDeveloperRecordsWithClient,
 } from "../src/legacyDeveloperMigration.ts";
 import { createFixturePds } from "./fixture-pds/index.js";
@@ -234,5 +235,19 @@ describe("legacy developer migration", () => {
     await expect(migrateLegacyDeveloperRecordsWithClient(client, REPO)).rejects.toThrow("same key");
     expect(apply).not.toHaveBeenCalled();
     expect(await reader.listAll({ repo: REPO, collection: LEGACY_DEVELOPER_TYPE })).toHaveLength(2);
+  });
+
+  it("runs through the automatic agent entrypoint and is a no-op for a fresh agent after success", async () => {
+    const { fixture, agent, reader } = await bradFixture();
+
+    await expect(migrateLegacyDeveloperRecords(agent, REPO)).resolves.toMatchObject({
+      migrated: true,
+      deletedLegacyRecords: 4,
+    });
+    await expect(reader.listAll({ repo: REPO, collection: LEGACY_DEVELOPER_TYPE })).resolves.toEqual([]);
+    await expect(reader.listAll({ repo: REPO, collection: LEGACY_DEVELOPER_INSTANCE })).resolves.toEqual([]);
+
+    const freshAgent = fixtureAgent(fixture.origin);
+    await expect(migrateLegacyDeveloperRecords(freshAgent, REPO)).resolves.toMatchObject({ migrated: false });
   });
 });

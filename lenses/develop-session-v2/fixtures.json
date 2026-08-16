@@ -1,0 +1,42 @@
+{
+  "records": [
+    {
+      "$type": "app.graycard.process.developSession",
+      "process": "bw",
+      "filmRolls": ["at://did:plc:test/app.graycard.instance.filmRoll/roll-1"],
+      "chemistry": "at://did:plc:test/app.graycard.instance.chemistry/d76",
+      "dilution": "1+1",
+      "actualTimeSeconds": 570,
+      "actualTemperature": { "unit": "celsius", "value": 20000000, "scale": 1000000 },
+      "agitationScheme": { "initialSec": 30, "everySec": 60, "forSec": 10, "inversions": 4 },
+      "stopBathChemistry": "at://did:plc:test/app.graycard.instance.chemistry/stop",
+      "fixerChemistry": "at://did:plc:test/app.graycard.instance.chemistry/fixer",
+      "startedAt": "2026-08-01T12:00:00.000Z",
+      "finishedAt": "2026-08-01T12:20:00.000Z",
+      "createdAt": "2026-08-01T12:20:00.000Z",
+      "expectedRoles": ["film-developer", "stop", "fixer"]
+    },
+    {
+      "$type": "app.graycard.process.developSession",
+      "process": "c41",
+      "chemistry": "at://did:plc:test/app.graycard.instance.chemistry/c41-developer",
+      "recipe": "at://did:plc:test/app.graycard.catalog.devRecipe/c41",
+      "publishedTimeSeconds": 195,
+      "actualTimeSeconds": 200,
+      "steps": [
+        {
+          "roles": ["color-developer"],
+          "chemistry": "at://did:plc:test/app.graycard.instance.chemistry/c41-developer",
+          "actualTimeSeconds": 200
+        },
+        {
+          "roles": ["bleach", "fixer"],
+          "chemistry": "at://did:plc:test/app.graycard.instance.chemistry/blix",
+          "timeSeconds": 390
+        }
+      ],
+      "createdAt": "2026-08-02T12:00:00.000Z",
+      "expectedRoles": ["color-developer", "bleach+fixer"]
+    }
+  ]
+}

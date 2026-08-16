@@ -64,6 +64,11 @@
             "type": "integer",
             "minimum": 0
           },
+          "lastUsedAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "Most recent recorded use of this chemistry in a process session."
+          },
           "maxRollsRecommended": {
             "type": "integer",
             "minimum": 0,

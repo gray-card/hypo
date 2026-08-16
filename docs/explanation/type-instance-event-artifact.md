@@ -21,7 +21,7 @@ Film makes the separation especially visible. A film stock is a type; a stockpil
 
 ## Event
 
-Process, session, exposure, and meter records describe occurrences. A development session records what happened to specified rolls at a time. An exposure records one shutter event and may link to a capture session, roll, frame, camera, lens, and meter reading.
+Process, session, exposure, and meter records describe occurrences. A development session records batch-level facts and an ordered list of baths and physical operations applied to specified rolls. Each stage can link the chemistry instances used and record its own timing, temperature, agitation, and provenance. An exposure records one shutter event and may link to a capture session, roll, frame, camera, lens, and meter reading.
 
 Events may refer to both types and instances, but they should not mutate a timeless type into a diary. The event carries its selected settings, observations, provenance, and timestamps.
 

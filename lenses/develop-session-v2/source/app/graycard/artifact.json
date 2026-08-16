@@ -1,0 +1,44 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.artifact",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A concrete workflow input or output, such as a RAW file, negative strip, print, or video clip. Artifact records form the nodes of a provenance graph; process stages connect those nodes and may accept multiple inputs, such as a negative and a mask used to make a print.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["kind", "createdAt"],
+        "properties": {
+          "kind": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactKind" },
+          "label": { "type": "string", "maxLength": 256 },
+          "photo": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "The published photo AT-URI, when this artifact is a published photo (e.g. social.grain.photo)."
+          },
+          "intermediate": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.intermediate, when the artifact is a persistent physical object."
+          },
+          "sourceFile": { "type": "ref", "ref": "app.graycard.defs#sourceFile" },
+          "parents": {
+            "type": "array",
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Artifacts this one was derived from (lineage edges)."
+          },
+          "producedBy": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "The app.graycard.process.* session that produced this artifact."
+          },
+          "temporal": { "type": "ref", "ref": "app.graycard.defs#temporalRef" },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

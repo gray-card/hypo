@@ -427,6 +427,7 @@ export const GEAR_INSTANCE_FORM_META = {
       { key: "sentToLabAt", label: "Sent to lab", control: "datetime" },
       { key: "developmentStartedAt", label: "Development started", control: "datetime" },
       { key: "developedAt", label: "Developed", control: "datetime" },
+      { key: "lab", label: "Developed at (lab)", control: "at-uri", targetKind: "labAccount" },
       {
         key: "developmentLocation",
         label: "Development location",

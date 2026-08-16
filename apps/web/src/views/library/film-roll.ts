@@ -2,7 +2,12 @@ import { confirmModal, dateField, el, field, localInputToIso, openModal } from "
 import { openAddFrame, syncRollExposureCount } from "./film-frame.ts";
 import { filmStockLabel, framesForRoll, reserveQuantity } from "./film-helpers.ts";
 import type { FilmRecord, FilmValue, FilmViewServices } from "./film-types.ts";
-import { formatAgitation, formatDevelopmentTime } from "./maintenance-darkroom.ts";
+import {
+  formatAgitation,
+  formatDevelopmentStages,
+  formatDevelopmentTime,
+  primaryDevelopmentStep,
+} from "./maintenance-darkroom.ts";
 import { createWorkflowOccurrenceEditor } from "./workflow-occurrences.ts";
 
 const stockLabel = (services: FilmViewServices, stockUri: string | undefined) =>
@@ -276,12 +281,18 @@ function processingHistory(roll: FilmRecord, services: FilmViewServices): { node
       const value = session.value;
       const at = value.finishedAt || value.createdAt;
       const when = at ? new Date(at).toLocaleDateString() : "Date not recorded";
+      const primaryStep = kind === "develop" ? primaryDevelopmentStep(value) : undefined;
       const detail =
         kind === "develop"
           ? [
-              relatedLabel(services, "chemistry", value.chemistry),
-              formatDevelopmentTime(value.actualTimeSeconds ?? value.timeSeconds),
-              formatAgitation(value),
+              relatedLabel(
+                services,
+                "chemistry",
+                Array.isArray(primaryStep?.chemistries) ? primaryStep.chemistries[0] : undefined,
+              ),
+              formatDevelopmentTime(primaryStep?.actualTimeSeconds),
+              formatAgitation(primaryStep || value),
+              formatDevelopmentStages(value, services),
             ]
               .filter(Boolean)
               .join(" · ")

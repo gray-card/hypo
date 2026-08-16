@@ -2,6 +2,61 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.2.0] - 2026-08-16
+
+### Added
+
+- Add an ordered development-stage editor for completed sessions, with process
+  presets for black-and-white, monobath, C-41, E-6, ECN-2, and
+  black-and-white reversal processing.
+- Record every bath or physical operation with multiple chemical roles,
+  multiple tracked chemistry instances, planned and observed time and
+  temperature, optional timestamps, agitation method and schedule, working
+  volume, post-use disposition, source, recipe, and notes.
+- Track the last use of chemistry and update roll and session usage counts for
+  every chemistry instance linked to a completed or timed development.
+
+### Changed
+
+- Model a development session as batch-level facts plus ordered stages instead
+  of duplicating developer summaries and stop, fixer, or blix shortcuts on the
+  session.
+- Show stage sequences in roll processing history and recent darkroom activity.
+
+### Fixed
+
+- Update the selected rolls and all linked chemistry after completed
+  development is logged, including development lifecycle dates and the roll's
+  primary developer.
+- Reject session or stage timestamps that reverse the recorded process order.
+- Present photo labs as service providers with an optional account, without
+  equipment-only copy, photo, datasheet, or technical-specification fields.
+- Let a film roll reference the lab account that developed it directly from
+  the roll form, in addition to completed lab-development logging.
+
+### Migration
+
+- Rewrite existing `app.graycard.process.developSession` records in place with
+  Panproto 0.70.1. The migration moves legacy summary fields and shortcut baths
+  into ordered stages and removes the superseded fields after a successful,
+  swap-protected repository write.
+
+## [1.1.1] - 2026-08-16
+
+### Changed
+
+- Cache Following activity on the device, show the saved feed immediately, and
+  merge updates without rebuilding unchanged feed entries.
+- Refresh known publishers before accounts that have not published Hypo or Grain
+  records, ranked by record count and recency.
+
+### Fixed
+
+- Load scene records and image blobs through their public PDS when authenticated
+  reads fail, with a final fallback to records already hydrated on the device.
+- Allow tagged release gates to call the reusable CI workflow while keeping
+  Pages assembly and deployment restricted to direct `main` CI runs.
+
 ## [1.1.0] - 2026-08-16
 
 ### Added
@@ -121,3 +176,5 @@ Notable changes to Hypo are recorded here.
 [1.0.0]: https://github.com/gray-card/hypo/compare/v0.2.0...v1.0.0
 [1.0.1]: https://github.com/gray-card/hypo/compare/v1.0.0...v1.0.1
 [1.1.0]: https://github.com/gray-card/hypo/compare/v1.0.1...v1.1.0
+[1.1.1]: https://github.com/gray-card/hypo/compare/v1.1.0...v1.1.1
+[1.2.0]: https://github.com/gray-card/hypo/compare/v1.1.1...v1.2.0

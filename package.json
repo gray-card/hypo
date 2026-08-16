@@ -1,7 +1,7 @@
 {
   "name": "hypo",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "description": "Hypo: a photographic metadata tool that writes portable app.graycard.* records to your atproto PDS and integrates with grain.social.",
   "license": "MIT",

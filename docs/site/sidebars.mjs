@@ -46,6 +46,7 @@ const sidebars = {
         "explanation/no-backend",
         "explanation/type-instance-event-artifact",
         "explanation/workflow-records",
+        "explanation/development-session-model",
         "explanation/swap-concurrency",
         "explanation/provenance-tiers",
         "explanation/timer-wall-clock",

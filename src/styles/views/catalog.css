@@ -116,6 +116,26 @@
   gap: 7px;
   margin: 0 0 12px;
 }
+.following-cache-status {
+  min-height: 1.35em;
+  margin: -4px 0 12px;
+}
+.following-cache-status.refreshing::before {
+  display: inline-block;
+  width: 0.55em;
+  height: 0.55em;
+  margin-right: 7px;
+  border: 1px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  content: "";
+  animation: following-spin 0.8s linear infinite;
+}
+@keyframes following-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 .follow-source {
   display: inline-flex;
   align-items: center;

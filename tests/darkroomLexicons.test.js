@@ -110,12 +110,21 @@ describe("structured darkroom catalog lexicons", () => {
 
   it("distinguishes published targets from observed session values", () => {
     const p = props("process/developSession.json");
-    expect(p.recipe.format).toBe("at-uri");
-    expect(p.publishedTimeSeconds.minimum).toBe(0);
-    expect(p.actualTimeSeconds.minimum).toBe(0);
-    expect(p.temperatureSetpoint.ref).toBe("app.graycard.defs#measure");
-    expect(p.actualTemperature.ref).toBe("app.graycard.defs#measure");
-    expect(p.sourceSpec.ref).toBe("app.graycard.defs#specSource");
-    expect(p.agitationScheme.ref).toBe("app.graycard.catalog.devRecipe#agitation");
+    const step = load("process/developSession.json").defs.step.properties;
+    expect(p.steps.maxLength).toBe(64);
+    expect(step.recipe.format).toBe("at-uri");
+    expect(step.publishedTimeSeconds.minimum).toBe(0);
+    expect(step.actualTimeSeconds.minimum).toBe(0);
+    expect(step.temperatureSetpoint.ref).toBe("app.graycard.defs#measure");
+    expect(step.actualTemperature.ref).toBe("app.graycard.defs#measure");
+    expect(step.sourceSpec.ref).toBe("app.graycard.defs#specSource");
+    expect(step.agitationScheme.ref).toBe("app.graycard.catalog.devRecipe#agitation");
+    expect(step.chemistries.items.format).toBe("at-uri");
+    expect(step.disposition.ref).toBe("#bathDisposition");
+    expect(step).not.toHaveProperty("chemistry");
+    expect(step).not.toHaveProperty("temperature");
+    expect(step).not.toHaveProperty("timeSeconds");
+    expect(step).not.toHaveProperty("agitation");
+    expect(props("instance/chemistry.json").lastUsedAt.format).toBe("datetime");
   });
 });

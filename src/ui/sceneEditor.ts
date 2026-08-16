@@ -5,10 +5,12 @@
 
 import { NS, saveRecord, deleteRecord } from "../graycard.js";
 import { listRecords, blobUrl, recordStore } from "../grain.js";
+import { PublicRepoClient } from "@hypo/pds";
 import { renderOn, type RecordStore } from "@hypo/store";
 import { el } from "./dom.js";
 import { searchConcepts, refineConceptRanking } from "../data/wikidata.js";
 import { SPATIAL_SEED } from "../ontology.js";
+import { publicBlobUrl, resolvePds } from "../profile.js";
 
 // How many Wikidata senses to offer when grounding a scene term. wbsearchentities
 // caps at 50; 25 is deep enough to reach the ordinary-noun sense of an ambiguous
@@ -374,14 +376,55 @@ function createTermInput({ placeholder, recent = [], seed = [], initial = null }
   };
 }
 
-async function loadScene(agent: Agent, did: string, photoUri: string): Promise<SceneState> {
-  const graphRecords = (await listRecords(agent, did, NS.scene.graph)) as Array<RecordEnvelope<GraphValue>>;
+async function loadSceneCollection<Value extends JsonObject>(
+  agent: Agent,
+  did: string,
+  collection: string,
+  signals: Pick<RecordStore, "collection">,
+  publicClient: () => Promise<PublicRepoClient>,
+): Promise<Array<RecordEnvelope<Value>>> {
+  try {
+    return (await listRecords(agent, did, collection)) as Array<RecordEnvelope<Value>>;
+  } catch (primaryError) {
+    const cached = [...signals.collection(collection).value.values()] as unknown as Array<RecordEnvelope<Value>>;
+    try {
+      return (await (await publicClient()).listAll({ repo: did, collection, limit: 100 })) as Array<
+        RecordEnvelope<Value>
+      >;
+    } catch {
+      if (cached.length) return cached;
+      throw primaryError;
+    }
+  }
+}
+
+async function loadScene(
+  agent: Agent,
+  did: string,
+  photoUri: string,
+  signals: Pick<RecordStore, "collection">,
+): Promise<SceneState> {
+  let publicClientPromise: Promise<PublicRepoClient> | undefined;
+  const publicClient = () => (publicClientPromise ??= resolvePds(did).then((pds) => new PublicRepoClient(pds)));
+  const graphRecords = await loadSceneCollection<GraphValue>(agent, did, NS.scene.graph, signals, publicClient);
   const graph = graphRecords.find((record) => record.value.subject === photoUri);
   if (!graph) return sceneStateFromRecords(photoUri, graphRecords, [], [], []);
-  const regionRecords = (await listRecords(agent, did, NS.scene.region)) as Array<RecordEnvelope<RegionValue>>;
-  const nodeRecords = (await listRecords(agent, did, NS.scene.node)) as Array<RecordEnvelope<NodeValue>>;
-  const edgeRecords = (await listRecords(agent, did, NS.scene.edge)) as Array<RecordEnvelope<EdgeValue>>;
+  const [regionRecords, nodeRecords, edgeRecords] = await Promise.all([
+    loadSceneCollection<RegionValue>(agent, did, NS.scene.region, signals, publicClient),
+    loadSceneCollection<NodeValue>(agent, did, NS.scene.node, signals, publicClient),
+    loadSceneCollection<EdgeValue>(agent, did, NS.scene.edge, signals, publicClient),
+  ]);
   return sceneStateFromRecords(photoUri, graphRecords, regionRecords, nodeRecords, edgeRecords);
+}
+
+async function sceneImageUrl(agent: Agent, did: string, blob: unknown): Promise<string | null> {
+  try {
+    const url = publicBlobUrl(await resolvePds(did), did, blob);
+    if (url) return url;
+  } catch {
+    // Fall through to the authenticated blob reader for non-public/local PDSs.
+  }
+  return blobUrl(agent, did, blob);
 }
 
 function sceneStateFromRecords(
@@ -1226,7 +1269,7 @@ export async function openSceneEditor(
             try {
               const res = await onAnalyze(onProgress);
               if (res) {
-                state = await loadScene(ctx.agent, ctx.did, photoUri);
+                state = await loadScene(ctx.agent, ctx.did, photoUri, signals);
                 selId = null;
                 renderRegions();
                 renderTags();
@@ -1286,7 +1329,7 @@ export async function openSceneEditor(
             await withSave(e.target as HTMLButtonElement, status, async () => {
               await persist(ctx.agent, ctx.did, photoUri, state);
               recentCache = null;
-              state = await loadScene(ctx.agent, ctx.did, photoUri);
+              state = await loadScene(ctx.agent, ctx.did, photoUri, signals);
               selId = null;
               renderRegions();
               renderTags();
@@ -1306,7 +1349,7 @@ export async function openSceneEditor(
   document.body.append(overlay);
 
   try {
-    const url = photo.value?.photo ? await blobUrl(ctx.agent, ctx.did, photo.value.photo) : null;
+    const url = photo.value?.photo ? await sceneImageUrl(ctx.agent, ctx.did, photo.value.photo) : null;
     imgWrap = el("div", { class: "scene-img-wrap" }, [
       url ? el("img", { src: url, alt: "", draggable: "false" }) : el("div", { class: "muted small" }, "(no image)"),
       drawLayer,
@@ -1320,7 +1363,7 @@ export async function openSceneEditor(
 
   [recent, state] = await Promise.all([
     loadRecentTerms(ctx.agent, ctx.did),
-    loadScene(ctx.agent, ctx.did, photoUri).catch((err: unknown) => {
+    loadScene(ctx.agent, ctx.did, photoUri, signals).catch((err: unknown) => {
       status.className = "status err";
       status.textContent = `Load failed: ${errorMessage(err)}`;
       return { graph: null, graphUri: null, tags: [], edges: [] };

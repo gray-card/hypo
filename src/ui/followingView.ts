@@ -2,12 +2,21 @@ import { el } from "./dom.js";
 import { icon } from "./icons.js";
 import { collectionLabel, kindLabel } from "./labels.js";
 import { publicBlobUrl } from "../profile.js";
-import { loadFollowingFeed, type FollowProfile, type FollowingActivity, type FollowingFeed } from "../following.js";
+import {
+  loadFollowingFeed,
+  type FollowProfile,
+  type FollowingActivity,
+  type FollowingFeed,
+  type FollowingFeedSnapshot,
+  type FollowingProgress,
+} from "../following.js";
+import { openFollowingFeedCache, type FollowingFeedCacheStore } from "../followingCache.js";
 import { routePath } from "../router.js";
 
 interface FollowingViewOptions {
   did: string;
   navigateProfile(handle: string): unknown;
+  forceRefresh?: boolean;
 }
 
 interface ActivityCluster {
@@ -17,6 +26,15 @@ interface ActivityCluster {
 }
 
 let followingRevision = 0;
+let runningRefresh:
+  | {
+      did: string;
+      promise: ReturnType<typeof loadFollowingFeed>;
+      listeners: Set<(progress: FollowingProgress) => void>;
+    }
+  | undefined;
+
+const FEED_FRESH_MS = 5 * 60 * 1000;
 
 const sourceLabel = (sources: readonly string[]): string =>
   sources.length > 1 ? "Grain + Bluesky" : sources[0] === "grain" ? "Grain" : "Bluesky";
@@ -233,7 +251,16 @@ function activityCard(cluster: ActivityCluster, navigateProfile: (handle: string
       text,
     );
   };
-  return el("article", { class: "following-event" }, [
+  const oldest = [...cluster.events].sort((left, right) => Date.parse(left.createdAt) - Date.parse(right.createdAt))[0];
+  const key = `${cluster.actor.did}|${oldest?.uri || cluster.createdAt}`;
+  const signature = cluster.events
+    .map((event) => `${event.uri}:${event.cid || ""}:${String(event.value.updatedAt || event.createdAt)}`)
+    .sort()
+    .concat(
+      JSON.stringify([cluster.actor.handle, cluster.actor.displayName, cluster.actor.avatar, cluster.actor.sources]),
+    )
+    .join("|");
+  return el("article", { class: "following-event", "data-following-key": key, "data-following-signature": signature }, [
     el("div", { class: "activity-stamp", "aria-hidden": "true" }, activityStamp(shownEvents[0]?.collection || "")),
     cluster.actor.avatar
       ? el("img", { class: "following-avatar", src: cluster.actor.avatar, alt: "", loading: "lazy" })
@@ -274,22 +301,68 @@ function activityCard(cluster: ActivityCluster, navigateProfile: (handle: string
 }
 
 function rosterCard(profile: FollowProfile, navigateProfile: (handle: string) => unknown): HTMLElement {
-  return el("div", { class: "following-person" }, [
-    profile.avatar
-      ? el("img", { class: "following-avatar", src: profile.avatar, alt: "", loading: "lazy" })
-      : el("div", { class: "following-avatar fallback", "aria-hidden": "true" }),
-    el("div", { class: "following-person-name" }, [
-      profileLink(profile, navigateProfile),
-      el("span", { class: "mono muted" }, `@${profile.handle}`),
-    ]),
-    sourceBadge(profile),
-  ]);
+  return el(
+    "div",
+    {
+      class: "following-person",
+      "data-following-key": profile.did,
+      "data-following-signature": JSON.stringify([
+        profile.handle,
+        profile.displayName,
+        profile.avatar,
+        profile.sources,
+      ]),
+    },
+    [
+      profile.avatar
+        ? el("img", { class: "following-avatar", src: profile.avatar, alt: "", loading: "lazy" })
+        : el("div", { class: "following-avatar fallback", "aria-hidden": "true" }),
+      el("div", { class: "following-person-name" }, [
+        profileLink(profile, navigateProfile),
+        el("span", { class: "mono muted" }, `@${profile.handle}`),
+      ]),
+      sourceBadge(profile),
+    ],
+  );
+}
+
+function patchKeyedChildren(host: HTMLElement, next: HTMLElement[]): void {
+  const current = new Map(
+    [...host.children]
+      .filter((child): child is HTMLElement => child instanceof HTMLElement && Boolean(child.dataset.followingKey))
+      .map((child) => [child.dataset.followingKey as string, child]),
+  );
+  for (const candidate of next) {
+    const key = candidate.dataset.followingKey as string;
+    const existing = current.get(key);
+    if (existing?.dataset.followingSignature === candidate.dataset.followingSignature) {
+      const existingTime = existing.querySelector("time");
+      const nextTime = candidate.querySelector("time");
+      if (existingTime && nextTime) {
+        existingTime.textContent = nextTime.textContent;
+        existingTime.setAttribute("title", nextTime.getAttribute("title") || "");
+      }
+      host.append(existing);
+      current.delete(key);
+    } else {
+      existing?.remove();
+      host.append(candidate);
+      current.delete(key);
+    }
+  }
+  current.forEach((element) => element.remove());
+}
+
+interface FollowingRenderOptions {
+  status?: string;
+  refreshing?: boolean;
 }
 
 export function renderFollowing(
   host: HTMLElement,
   feed: FollowingFeed,
   navigateProfile: (handle: string) => unknown,
+  options: FollowingRenderOptions = {},
 ): void {
   if (!feed.profiles.length) {
     host.replaceChildren(
@@ -310,6 +383,15 @@ export function renderFollowing(
     el("span", { class: "follow-source source-grain" }, `${grainCount} on Grain`),
     el("span", { class: "follow-source source-bluesky" }, `${blueskyCount} on Bluesky`),
   ]);
+  const syncStatus = el(
+    "p",
+    {
+      class: `following-cache-status muted small${options.refreshing ? " refreshing" : ""}`,
+      role: "status",
+      hidden: options.status ? undefined : "",
+    },
+    options.status || "",
+  );
   const clusters = clusterFollowingActivity(feed.events);
   const activity = el("section", { class: "card following-feed" }, [
     el("div", { class: "following-section-head" }, [
@@ -322,13 +404,11 @@ export function renderFollowing(
           : "No Grain photos or public graycard records were found for these photographers.",
       ),
     ]),
-    clusters.length
-      ? el(
-          "div",
-          { class: "following-events" },
-          clusters.map((cluster) => activityCard(cluster, navigateProfile)),
-        )
-      : null,
+    el(
+      "div",
+      { class: "following-events", hidden: clusters.length ? undefined : "" },
+      clusters.map((cluster) => activityCard(cluster, navigateProfile)),
+    ),
   ]);
   const roster = el("details", { class: "card following-roster" }, [
     el("summary", {}, [
@@ -342,44 +422,135 @@ export function renderFollowing(
       feed.profiles.map((profile) => rosterCard(profile, navigateProfile)),
     ),
   ]);
-  host.replaceChildren(summary, activity, roster);
+  const existingActivity = host.querySelector<HTMLElement>(".following-feed");
+  const existingRoster = host.querySelector<HTMLElement>(".following-roster");
+  const existingSummary = host.querySelector<HTMLElement>(".following-source-summary");
+  const existingStatus = host.querySelector<HTMLElement>(".following-cache-status");
+  if (!existingActivity || !existingRoster || !existingSummary || !existingStatus) {
+    host.replaceChildren(summary, syncStatus, activity, roster);
+    return;
+  }
+  existingSummary.replaceChildren(...summary.childNodes);
+  existingStatus.textContent = options.status || "";
+  existingStatus.toggleAttribute("hidden", !options.status);
+  existingStatus.classList.toggle("refreshing", Boolean(options.refreshing));
+  const existingHint = existingActivity.querySelector<HTMLElement>(".following-section-head p");
+  const nextHint = activity.querySelector<HTMLElement>(".following-section-head p");
+  if (existingHint && nextHint) existingHint.textContent = nextHint.textContent;
+  const existingEvents = existingActivity.querySelector<HTMLElement>(".following-events");
+  if (existingEvents) {
+    patchKeyedChildren(
+      existingEvents,
+      clusters.map((cluster) => activityCard(cluster, navigateProfile)),
+    );
+    existingEvents.toggleAttribute("hidden", !clusters.length);
+  }
+  const existingCount = existingRoster.querySelector<HTMLElement>("summary .mono");
+  if (existingCount) existingCount.textContent = String(feed.profiles.length);
+  const existingPeople = existingRoster.querySelector<HTMLElement>(".following-people");
+  if (existingPeople)
+    patchKeyedChildren(
+      existingPeople,
+      feed.profiles.map((profile) => rosterCard(profile, navigateProfile)),
+    );
 }
 
 export function destroyFollowing(): void {
   followingRevision += 1;
 }
 
-export async function openFollowing({ did, navigateProfile }: FollowingViewOptions): Promise<void> {
+function refreshFollowing(
+  did: string,
+  cached: FollowingFeedSnapshot | null,
+  cache: FollowingFeedCacheStore,
+  listener: (progress: FollowingProgress) => void,
+): Promise<FollowingFeedSnapshot> {
+  if (!runningRefresh || runningRefresh.did !== did) {
+    const listeners = new Set<(progress: FollowingProgress) => void>();
+    const promise = loadFollowingFeed(did, {
+      cache,
+      cached,
+      onProgress: (progress) => listeners.forEach((notify) => notify(progress)),
+    });
+    const current = { did, promise, listeners };
+    runningRefresh = current;
+    const clear = () => {
+      if (runningRefresh === current) runningRefresh = undefined;
+    };
+    void promise.then(clear, clear);
+  }
+  const current = runningRefresh;
+  current.listeners.add(listener);
+  return current.promise.finally(() => current.listeners.delete(listener));
+}
+
+function isFresh(feed: FollowingFeedSnapshot | null): boolean {
+  const completed = feed?.refreshCompletedAt ? Date.parse(feed.refreshCompletedAt) : Number.NaN;
+  return Number.isFinite(completed) && Date.now() - completed < FEED_FRESH_MS;
+}
+
+export async function openFollowing({
+  did,
+  navigateProfile,
+  forceRefresh = false,
+}: FollowingViewOptions): Promise<void> {
   const revision = ++followingRevision;
   const host = document.querySelector<HTMLElement>("#following-body");
   const refresh = document.querySelector<HTMLButtonElement>("#following-refresh");
   if (!host || !refresh) return;
   refresh.replaceChildren(icon("refresh", 14), el("span", {}, "Refresh"));
-  refresh.onclick = () => void openFollowing({ did, navigateProfile });
+  refresh.onclick = () => void openFollowing({ did, navigateProfile, forceRefresh: true });
   refresh.disabled = true;
-  const status = el("p", { class: "muted small", role: "status" }, "Combining your Grain and Bluesky follows…");
-  host.replaceChildren(el("div", { class: "card following-loading" }, status));
+  const cache = await openFollowingFeedCache();
+  const cached = await cache.read(did).catch(() => null);
+  if (revision !== followingRevision) return;
+  const sameViewer = host.dataset.followingViewer === did;
+  host.dataset.followingViewer = did;
+  if (cached) {
+    renderFollowing(host, cached, navigateProfile, {
+      status: isFresh(cached)
+        ? "Showing the copy saved on this device. It was checked recently."
+        : "Showing the copy saved on this device while Hypo checks likely updates first.",
+      refreshing: !isFresh(cached) || forceRefresh,
+    });
+  } else if (!sameViewer || !host.querySelector(".following-feed")) {
+    const status = el("p", { class: "muted small", role: "status" }, "Combining your Grain and Bluesky follows…");
+    host.replaceChildren(el("div", { class: "card following-loading" }, status));
+  }
+  if (!forceRefresh && isFresh(cached)) {
+    refresh.disabled = false;
+    return;
+  }
   try {
-    const feed = await loadFollowingFeed(did, {
-      onProgress: ({ done, total, profile }) => {
-        if (revision === followingRevision)
-          status.textContent = `Reading public activity… ${done} / ${total} · @${profile.handle}`;
-      },
+    const feed = await refreshFollowing(did, cached, cache, ({ done, total, profile, feed: progressFeed }) => {
+      if (revision !== followingRevision) return;
+      renderFollowing(host, progressFeed, navigateProfile, {
+        status: `Checking updates… ${done} / ${total} · @${profile.handle}`,
+        refreshing: true,
+      });
     });
     if (revision !== followingRevision) return;
-    renderFollowing(host, feed, navigateProfile);
+    renderFollowing(host, feed, navigateProfile, {
+      status: `Saved on this device · checked ${feed.profiles.length} account${feed.profiles.length === 1 ? "" : "s"}.`,
+    });
   } catch (error) {
     if (revision !== followingRevision) return;
-    host.replaceChildren(
-      el("div", { class: "empty-state" }, [
-        el("div", { class: "empty-title" }, "Following couldn't load"),
-        el(
-          "div",
-          { class: "empty-hint muted small" },
-          error instanceof Error ? error.message : "The follow graphs were unavailable.",
-        ),
-      ]),
-    );
+    if (cached?.profiles.length) {
+      renderFollowing(host, cached, navigateProfile, {
+        status: "Showing the saved copy. Hypo could not check for updates just now.",
+      });
+    } else {
+      host.replaceChildren(
+        el("div", { class: "empty-state" }, [
+          el("div", { class: "empty-title" }, "Following couldn't load"),
+          el(
+            "div",
+            { class: "empty-hint muted small" },
+            error instanceof Error ? error.message : "The follow graphs were unavailable.",
+          ),
+        ]),
+      );
+    }
   } finally {
     if (revision === followingRevision) refresh.disabled = false;
   }

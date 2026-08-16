@@ -39,6 +39,7 @@ function createServices(store, overrides = {}) {
       workflowTemplate: "workflow-template",
       developSession: "develop-session",
       filmRoll: "film-roll",
+      chemistry: "chemistry",
       digitizeSession: "digitize-session",
       exposure: "exposure",
     },
@@ -291,45 +292,73 @@ describe("extracted library activity views", () => {
   });
 
   it("logs completed development with roll, chemistry, time, and structured agitation", async () => {
-    const chemistry = item("at://chemistry", { nickname: "D-76 1+1", roles: ["film-developer"] });
+    const chemistry = item("at://chemistry", {
+      nickname: "D-76 1+1",
+      roles: ["film-developer"],
+      rollsProcessed: 2,
+      sessionsUsed: 1,
+    });
+    const fixer = item("at://fixer", { nickname: "Rapid Fixer", roles: ["fixer"], rollsProcessed: 4 });
     const roll = item("at://roll", { label: "Roll 1", status: "exposed", createdAt: "2026-01-01T00:00:00Z" });
     const store = emptyStore({
-      instance: { chemistry: [chemistry], filmRoll: [roll] },
-      byUri: new Map([[chemistry.uri, { layer: "instance", kind: "chemistry", item: chemistry }]]),
+      instance: { chemistry: [chemistry, fixer], filmRoll: [roll] },
+      byUri: new Map([
+        [chemistry.uri, { layer: "instance", kind: "chemistry", item: chemistry }],
+        [fixer.uri, { layer: "instance", kind: "chemistry", item: fixer }],
+      ]),
     });
     const advanceWorkflowStage = vi.fn(async () => 1);
     const services = createServices(store, { advanceWorkflowStage });
     openManualDevelopment(undefined, services, { selectedRolls: [roll.uri] });
     const modal = document.querySelector(".modal");
-    [...modal.querySelectorAll("label.field")]
-      .find((label) => label.querySelector("span")?.textContent === "Primary developer *")
-      .querySelector("select").value = chemistry.uri;
-    modal.querySelector('[data-key="timeMinutes"]').value = "9";
-    modal.querySelector('[data-key="timeSecondsRemainder"]').value = "30";
-    modal.querySelector('[data-key="agitationMethod"]').value = "inversion";
-    modal.querySelector('[data-key="agitationInitialSec"]').value = "30";
-    modal.querySelector('[data-key="agitationEverySec"]').value = "60";
-    modal.querySelector('[data-key="agitationForSec"]').value = "10";
-    modal.querySelector('[data-key="agitationInversions"]').value = "4";
+    const fieldControl = (root, label) =>
+      [...root.querySelectorAll("label.field")]
+        .find((candidate) => candidate.querySelector(":scope > span")?.textContent === label)
+        .querySelector("input,select,textarea");
+    const developerStage = modal.querySelector(".development-stage-card");
+    developerStage.querySelector('[aria-label="Primary chemistry for stage"]').value = chemistry.uri;
+    fieldControl(developerStage, "Actual minutes").value = "9";
+    fieldControl(developerStage, "Actual seconds").value = "30";
+    fieldControl(developerStage, "Agitation method").value = "inversion";
+    fieldControl(developerStage, "Initial agitation (seconds)").value = "30";
+    fieldControl(developerStage, "Agitate every (seconds)").value = "60";
+    fieldControl(developerStage, "Agitate for (seconds)").value = "10";
+    fieldControl(developerStage, "Inversions per cycle").value = "4";
+
+    modal.querySelector('[aria-label="Development stage to add"]').value = "fixer";
+    [...modal.querySelectorAll("button")].find((button) => button.textContent === "+ Add stage").click();
+    const fixerStage = modal.querySelectorAll(".development-stage-card")[1];
+    fixerStage.querySelector('[aria-label="Primary chemistry for stage"]').value = fixer.uri;
+    fieldControl(fixerStage, "Actual minutes").value = "5";
     modal.querySelector(".modal-actions button:not(.ghost)").click();
 
-    await vi.waitFor(() => expect(services.saveRecord).toHaveBeenCalledTimes(2));
+    await vi.waitFor(() => expect(services.saveRecord).toHaveBeenCalledTimes(4));
     expect(services.saveRecord.mock.calls[0]).toEqual([
       "develop-session",
       expect.objectContaining({
-        chemistry: chemistry.uri,
         filmRolls: [roll.uri],
-        actualTimeSeconds: 570,
-        timeSeconds: 570,
         tankType: "tank",
-        agitationScheme: {
-          initialSec: 30,
-          everySec: 60,
-          forSec: 10,
-          inversions: 4,
-          continuous: undefined,
-          note: "Inversion",
-        },
+        steps: [
+          expect.objectContaining({
+            roles: ["film-developer"],
+            chemistries: [chemistry.uri],
+            actualTimeSeconds: 570,
+            agitationMethod: "inversion",
+            agitationScheme: {
+              initialSec: 30,
+              everySec: 60,
+              forSec: 10,
+              inversions: 4,
+              continuous: undefined,
+              note: undefined,
+            },
+          }),
+          expect.objectContaining({
+            roles: ["fixer"],
+            chemistries: [fixer.uri],
+            actualTimeSeconds: 300,
+          }),
+        ],
       }),
       null,
     ]);
@@ -342,6 +371,16 @@ describe("extracted library activity views", () => {
         developedAt: expect.any(String),
       }),
       roll,
+    ]);
+    expect(services.saveRecord.mock.calls[2]).toEqual([
+      "chemistry",
+      expect.objectContaining({ rollsProcessed: 3, sessionsUsed: 2, lastUsedAt: expect.any(String) }),
+      chemistry,
+    ]);
+    expect(services.saveRecord.mock.calls[3]).toEqual([
+      "chemistry",
+      expect.objectContaining({ rollsProcessed: 5, sessionsUsed: 1, lastUsedAt: expect.any(String) }),
+      fixer,
     ]);
     expect(advanceWorkflowStage).toHaveBeenCalledWith("develop", [roll.uri], "at://saved");
   });

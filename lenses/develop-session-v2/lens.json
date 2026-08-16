@@ -1,0 +1,14 @@
+{
+  "id": "graycard.develop-session-summary-to-stage.v1",
+  "source": "app.graycard.process.developSession",
+  "target": "app.graycard.process.developSession",
+  "steps": [
+    {
+      "compute_field": {
+        "target": "steps",
+        "kind": "array",
+        "expr": "[{ name = \"Developer\", kind = \"chemical-bath\", roles = [\"film-developer\"], recipe = recipe, sourceDocument = sourceDocument, sourceSpec = sourceSpec, chemistries = if is_null chemistry then [] else [chemistry], dilution = dilution, temperatureSetpoint = temperatureSetpoint, actualTemperature = if is_null actualTemperature then temperature else actualTemperature, publishedTimeSeconds = publishedTimeSeconds, actualTimeSeconds = if is_null actualTimeSeconds then timeSeconds else actualTimeSeconds, agitationScheme = agitationScheme }]"
+      }
+    }
+  ]
+}

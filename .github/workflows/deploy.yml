@@ -55,6 +55,10 @@ jobs:
     needs: validate-tag
     permissions:
       contents: read
+      # The reusable workflow defines a Pages job. GitHub validates its maximum
+      # permissions even though the job is restricted to direct main CI runs.
+      pages: write
+      id-token: write
     uses: ./.github/workflows/ci.yml
 
   github-release:

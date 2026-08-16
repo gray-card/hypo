@@ -25,6 +25,7 @@ export interface ActivityCollections {
   readonly workflowTemplate: string;
   readonly developSession: string;
   readonly filmRoll: string;
+  readonly chemistry: string;
   readonly digitizeSession: string;
   readonly exposure: string;
 }

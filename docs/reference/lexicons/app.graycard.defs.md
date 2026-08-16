@@ -600,10 +600,10 @@ How a photographic-chemistry product is packaged. This is independent of the che
 
 ## `chemistryRole`
 
-One atomic function performed by a photographic chemical or bath. Combined baths carry more than one role.
+One atomic function performed by a photographic chemical, bath, or water step. Combined baths carry more than one role. The wash value represents a water-washing operation; wash-aid identifies a chemical treatment that shortens or improves washing.
 
 **Kind:** `string`
 
 **Resolved type:** `string`
 
-**Known values:** `pre-soak`, `film-developer`, `paper-developer`, `first-developer`, `color-developer`, `reversal-bath`, `stop`, `bleach`, `fixer`, `conditioner`, `pre-bleach`, `stabilizer`, `wash-aid`, `clearing-agent`, `hardener`, `toner`, `wetting-agent`, `final-rinse`, `sensitizer`, `intensifier`, `reducer`, `other`
+**Known values:** `pre-soak`, `film-developer`, `paper-developer`, `first-developer`, `color-developer`, `reversal-bath`, `stop`, `bleach`, `fixer`, `conditioner`, `pre-bleach`, `stabilizer`, `wash`, `wash-aid`, `clearing-agent`, `hardener`, `toner`, `wetting-agent`, `final-rinse`, `sensitizer`, `intensifier`, `reducer`, `other`

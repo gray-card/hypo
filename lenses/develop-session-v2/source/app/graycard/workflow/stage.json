@@ -1,0 +1,398 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.workflow.stage",
+  "defs": {
+    "captureStage": {
+      "type": "object",
+      "required": ["$type", "input", "output"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#captureStage"] },
+        "templateStepId": { "type": "string", "maxLength": 64 },
+        "occurrence": { "type": "integer", "minimum": 1 },
+        "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
+        "status": { "type": "ref", "ref": "app.graycard.workflow.defs#stageStatus" },
+        "processDefaults": { "type": "ref", "ref": "app.graycard.workflow.defs#processDefaults" },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": {
+          "type": "array",
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+          "description": "Additional inputs for multi-input stages."
+        },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "outputs": {
+          "type": "array",
+          "maxLength": 32,
+          "description": "All outputs, including the primary compatibility output when present.",
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }
+        },
+        "inputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "outputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "session": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "Deprecated alias of shoot. When present, references app.graycard.session.capture."
+        },
+        "shoot": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "app.graycard.session.capture for the shoot represented by this stage."
+        },
+        "camera": { "type": "string", "format": "at-uri" },
+        "lens": { "type": "string", "format": "at-uri" },
+        "filmRoll": { "type": "string", "format": "at-uri" },
+        "frameIndex": { "type": "integer", "minimum": 1 },
+        "temporal": { "type": "ref", "ref": "app.graycard.defs#temporalRef" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "plannedAt": { "type": "string", "format": "datetime" },
+        "startedAt": { "type": "string", "format": "datetime" },
+        "completedAt": { "type": "string", "format": "datetime" },
+        "failedAt": { "type": "string", "format": "datetime" },
+        "skippedAt": { "type": "string", "format": "datetime" },
+        "cancelledAt": { "type": "string", "format": "datetime" },
+        "createdAt": { "type": "string", "format": "datetime" },
+        "updatedAt": { "type": "string", "format": "datetime" }
+      }
+    },
+    "developStage": {
+      "type": "object",
+      "required": ["$type", "input", "output"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#developStage"] },
+        "templateStepId": { "type": "string", "maxLength": 64 },
+        "occurrence": { "type": "integer", "minimum": 1 },
+        "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
+        "status": { "type": "ref", "ref": "app.graycard.workflow.defs#stageStatus" },
+        "processDefaults": { "type": "ref", "ref": "app.graycard.workflow.defs#processDefaults" },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" } },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "outputs": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }
+        },
+        "inputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "outputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "session": { "type": "string", "format": "at-uri" },
+        "intermediate": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.intermediate" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "plannedAt": { "type": "string", "format": "datetime" },
+        "startedAt": { "type": "string", "format": "datetime" },
+        "completedAt": { "type": "string", "format": "datetime" },
+        "failedAt": { "type": "string", "format": "datetime" },
+        "skippedAt": { "type": "string", "format": "datetime" },
+        "cancelledAt": { "type": "string", "format": "datetime" },
+        "createdAt": { "type": "string", "format": "datetime" },
+        "updatedAt": { "type": "string", "format": "datetime" }
+      }
+    },
+    "digitizeStage": {
+      "type": "object",
+      "required": ["$type", "input", "output"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#digitizeStage"] },
+        "templateStepId": { "type": "string", "maxLength": 64 },
+        "occurrence": { "type": "integer", "minimum": 1 },
+        "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
+        "status": { "type": "ref", "ref": "app.graycard.workflow.defs#stageStatus" },
+        "processDefaults": { "type": "ref", "ref": "app.graycard.workflow.defs#processDefaults" },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" } },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "outputs": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }
+        },
+        "inputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "outputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "session": { "type": "string", "format": "at-uri" },
+        "scanProfile": { "type": "string", "format": "at-uri" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "plannedAt": { "type": "string", "format": "datetime" },
+        "startedAt": { "type": "string", "format": "datetime" },
+        "completedAt": { "type": "string", "format": "datetime" },
+        "failedAt": { "type": "string", "format": "datetime" },
+        "skippedAt": { "type": "string", "format": "datetime" },
+        "cancelledAt": { "type": "string", "format": "datetime" },
+        "createdAt": { "type": "string", "format": "datetime" },
+        "updatedAt": { "type": "string", "format": "datetime" }
+      }
+    },
+    "digitalStage": {
+      "type": "object",
+      "description": "A render or export stage that materializes a digital output artifact. Editing decisions belong in editStage; the digitalStage name is retained for compatibility with existing workflow records.",
+      "required": ["$type", "input", "output"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#digitalStage"] },
+        "templateStepId": { "type": "string", "maxLength": 64 },
+        "occurrence": { "type": "integer", "minimum": 1 },
+        "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
+        "status": { "type": "ref", "ref": "app.graycard.workflow.defs#stageStatus" },
+        "processDefaults": { "type": "ref", "ref": "app.graycard.workflow.defs#processDefaults" },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" } },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "outputs": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }
+        },
+        "inputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "outputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "session": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "app.graycard.process.renderSession for this render or export event."
+        },
+        "sourceFile": { "type": "ref", "ref": "app.graycard.defs#sourceFile" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "plannedAt": { "type": "string", "format": "datetime" },
+        "startedAt": { "type": "string", "format": "datetime" },
+        "completedAt": { "type": "string", "format": "datetime" },
+        "failedAt": { "type": "string", "format": "datetime" },
+        "skippedAt": { "type": "string", "format": "datetime" },
+        "cancelledAt": { "type": "string", "format": "datetime" },
+        "createdAt": { "type": "string", "format": "datetime" },
+        "updatedAt": { "type": "string", "format": "datetime" }
+      }
+    },
+    "printStage": {
+      "type": "object",
+      "required": ["$type", "input", "output"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#printStage"] },
+        "templateStepId": { "type": "string", "maxLength": 64 },
+        "occurrence": { "type": "integer", "minimum": 1 },
+        "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
+        "status": { "type": "ref", "ref": "app.graycard.workflow.defs#stageStatus" },
+        "processDefaults": { "type": "ref", "ref": "app.graycard.workflow.defs#processDefaults" },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": {
+          "type": "array",
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+          "description": "Extra inputs, e.g. a mask or a second negative for a composite."
+        },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "outputs": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }
+        },
+        "inputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "outputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "session": { "type": "string", "format": "at-uri" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "plannedAt": { "type": "string", "format": "datetime" },
+        "startedAt": { "type": "string", "format": "datetime" },
+        "completedAt": { "type": "string", "format": "datetime" },
+        "failedAt": { "type": "string", "format": "datetime" },
+        "skippedAt": { "type": "string", "format": "datetime" },
+        "cancelledAt": { "type": "string", "format": "datetime" },
+        "createdAt": { "type": "string", "format": "datetime" },
+        "updatedAt": { "type": "string", "format": "datetime" }
+      }
+    },
+    "editStage": {
+      "type": "object",
+      "required": ["$type", "input", "output"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#editStage"] },
+        "templateStepId": { "type": "string", "maxLength": 64 },
+        "occurrence": { "type": "integer", "minimum": 1 },
+        "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
+        "status": { "type": "ref", "ref": "app.graycard.workflow.defs#stageStatus" },
+        "processDefaults": { "type": "ref", "ref": "app.graycard.workflow.defs#processDefaults" },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" } },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "outputs": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }
+        },
+        "inputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "outputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "session": { "type": "string", "format": "at-uri" },
+        "recipe": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "app.graycard.edit.recipe applied at this stage."
+        },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "plannedAt": { "type": "string", "format": "datetime" },
+        "startedAt": { "type": "string", "format": "datetime" },
+        "completedAt": { "type": "string", "format": "datetime" },
+        "failedAt": { "type": "string", "format": "datetime" },
+        "skippedAt": { "type": "string", "format": "datetime" },
+        "cancelledAt": { "type": "string", "format": "datetime" },
+        "createdAt": { "type": "string", "format": "datetime" },
+        "updatedAt": { "type": "string", "format": "datetime" }
+      }
+    },
+    "outputStage": {
+      "type": "object",
+      "required": ["$type", "input"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#outputStage"] },
+        "templateStepId": { "type": "string", "maxLength": 64 },
+        "occurrence": { "type": "integer", "minimum": 1 },
+        "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
+        "status": { "type": "ref", "ref": "app.graycard.workflow.defs#stageStatus" },
+        "processDefaults": { "type": "ref", "ref": "app.graycard.workflow.defs#processDefaults" },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "outputs": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }
+        },
+        "inputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "outputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "target": {
+          "type": "ref",
+          "ref": "app.graycard.workflow.defs#publishTarget",
+          "description": "Preferred: abstract publish target."
+        },
+        "photo": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "Deprecated convenience: published photo AT-URI (e.g. social.grain.photo). Prefer target."
+        },
+        "temporal": { "type": "ref", "ref": "app.graycard.defs#temporalRef" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "plannedAt": { "type": "string", "format": "datetime" },
+        "startedAt": { "type": "string", "format": "datetime" },
+        "completedAt": { "type": "string", "format": "datetime" },
+        "failedAt": { "type": "string", "format": "datetime" },
+        "skippedAt": { "type": "string", "format": "datetime" },
+        "cancelledAt": { "type": "string", "format": "datetime" },
+        "createdAt": { "type": "string", "format": "datetime" },
+        "updatedAt": { "type": "string", "format": "datetime" }
+      }
+    },
+    "otherStage": {
+      "type": "object",
+      "description": "A stage whose operation is not represented by a built-in stage type, such as wet-plate collodion coating, toning, or mounting. kind names the operation and params stores operation-specific fields.",
+      "required": ["$type", "kind", "input", "output"],
+      "properties": {
+        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#otherStage"] },
+        "templateStepId": { "type": "string", "maxLength": 64 },
+        "occurrence": { "type": "integer", "minimum": 1 },
+        "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
+        "status": { "type": "ref", "ref": "app.graycard.workflow.defs#stageStatus" },
+        "processDefaults": { "type": "ref", "ref": "app.graycard.workflow.defs#processDefaults" },
+        "kind": { "type": "string", "maxLength": 64 },
+        "input": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "inputs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" } },
+        "output": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" },
+        "outputs": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactRef" }
+        },
+        "inputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "outputBindings": {
+          "type": "array",
+          "maxLength": 32,
+          "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
+        },
+        "session": { "type": "string", "format": "at-uri" },
+        "params": { "type": "unknown" },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "plannedAt": { "type": "string", "format": "datetime" },
+        "startedAt": { "type": "string", "format": "datetime" },
+        "completedAt": { "type": "string", "format": "datetime" },
+        "failedAt": { "type": "string", "format": "datetime" },
+        "skippedAt": { "type": "string", "format": "datetime" },
+        "cancelledAt": { "type": "string", "format": "datetime" },
+        "createdAt": { "type": "string", "format": "datetime" },
+        "updatedAt": { "type": "string", "format": "datetime" }
+      }
+    },
+    "main": {
+      "type": "record",
+      "description": "One workflow step (discriminated union).",
+      "key": "tid",
+      "record": {
+        "type": "union",
+        "refs": [
+          "#captureStage",
+          "#developStage",
+          "#digitizeStage",
+          "#digitalStage",
+          "#printStage",
+          "#editStage",
+          "#outputStage",
+          "#otherStage"
+        ]
+      }
+    }
+  }
+}

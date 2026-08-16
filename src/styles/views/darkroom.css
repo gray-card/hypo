@@ -303,6 +303,132 @@
 .agitation-schedule-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+.development-stage-editor,
+.development-stage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.development-sequence-tools,
+.development-add-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+.development-sequence-tools .field {
+  margin: 0;
+}
+.development-stage-card {
+  min-width: 0;
+  max-width: 100%;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.development-stage-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.development-stage-header,
+.development-stage-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.development-stage-heading {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.development-stage-actions {
+  flex: 0 0 auto;
+  gap: 4px;
+}
+.development-stage-actions .icon-btn {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+}
+.development-stage-core,
+.development-stage-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.development-stage-core .field,
+.development-stage-detail-grid .field {
+  min-width: 0;
+  margin: 0;
+}
+.development-stage-card details,
+.development-stage-card .field,
+.development-stage-card .enum-control {
+  min-width: 0;
+  max-width: 100%;
+}
+.development-stage-card .field > input:not([type="checkbox"]),
+.development-stage-card .field > select,
+.development-stage-card .field > textarea,
+.development-stage-card .enum-control > input,
+.development-stage-card .enum-control > select {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+}
+.development-stage-core .field:nth-child(1),
+.development-stage-core .field:nth-child(2) {
+  grid-column: span 2;
+}
+.development-stage-details {
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+.development-stage-details > summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.development-stage-subsection {
+  margin-top: 14px;
+}
+.field-label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font: 600 11px/1.25 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.development-role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.development-role-option {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.84rem;
+}
+.development-role-option input {
+  flex: 0 0 auto;
+  margin: 0;
+}
+.development-activity-row {
+  width: 100%;
+  color: var(--text);
+  text-align: left;
+}
 .roll-processing-head {
   gap: 10px;
   margin-top: 18px;
@@ -387,6 +513,26 @@
   }
   .roll-processing-actions .small-btn {
     flex: 1 1 0;
+  }
+  .development-sequence-tools,
+  .development-add-stage,
+  .development-stage-core,
+  .development-stage-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .development-sequence-tools .small-btn,
+  .development-add-stage .small-btn {
+    width: 100%;
+  }
+  .development-stage-core .field:nth-child(1),
+  .development-stage-core .field:nth-child(2) {
+    grid-column: auto;
+  }
+  .development-role-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .development-stage-card {
+    padding: 12px;
   }
 }
 
