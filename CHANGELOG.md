@@ -29,6 +29,10 @@ Notable changes to Hypo are recorded here.
   development is logged, including development lifecycle dates and the roll's
   primary developer.
 - Reject session or stage timestamps that reverse the recorded process order.
+- Present photo labs as service providers with an optional account, without
+  equipment-only copy, photo, datasheet, or technical-specification fields.
+- Let a film roll reference the lab account that developed it directly from
+  the roll form, in addition to completed lab-development logging.
 
 ### Migration
 

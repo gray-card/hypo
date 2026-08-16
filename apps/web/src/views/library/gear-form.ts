@@ -215,7 +215,10 @@ export function openGearForm(
     nodes.push(el("p", { class: "muted small suggest-lens" }, suggest));
   }
 
-  const typeAssets = typeKind && !guided ? createTypeAssetFields(typeKind, currentType, services) : null;
+  // A lab is a service provider, not a piece of equipment. Its catalog record
+  // intentionally has no model picture, datasheet, or technical-spec block.
+  const typeAssets =
+    typeKind && typeKind !== "lab" && !guided ? createTypeAssetFields(typeKind, currentType, services) : null;
   if (typeAssets) {
     nodes.push(...typeAssets.nodes);
     technical = createTechnicalFields(typeKind, currentType || prefill, services);
@@ -229,7 +232,13 @@ export function openGearForm(
       : allInstanceFields;
   if (typeKind) {
     const title =
-      kind === "filmRoll" ? "This roll (optional)" : kind === "filmStockpile" ? "In reserve" : "Your copy (optional)";
+      kind === "filmRoll"
+        ? "This roll (optional)"
+        : kind === "filmStockpile"
+          ? "In reserve"
+          : kind === "labAccount"
+            ? "My account (optional)"
+            : "Your copy (optional)";
     nodes.push(el("h3", { class: "modal-sub" }, title));
   }
   for (const [key, label, required] of instanceFields) {
@@ -257,7 +266,7 @@ export function openGearForm(
     input.value = text;
   }
 
-  const photoInput = guided ? null : el("input", { type: "file", accept: "image/*" });
+  const photoInput = guided || kind === "labAccount" ? null : el("input", { type: "file", accept: "image/*" });
   if (photoInput) nodes.push(field("Photo (optional, a stock image is used otherwise)", photoInput));
 
   return openModal(

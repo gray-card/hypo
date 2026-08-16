@@ -63,7 +63,23 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
     modal = document.querySelector(".modal");
     expect(labelInput(modal, "Status")).toBeTruthy();
     expect(labelInput(modal, "Shot at ISO (push/pull)")).toBeTruthy();
+    expect(labelInput(modal, "Lab")).toBeTruthy();
     expect(labelInput(modal, "How many rolls in reserve")).toBeFalsy(); // reserve lives on the stockpile now
+  });
+
+  it("treats a lab as a service provider with an optional account, not an owned copy", () => {
+    openAddGear("labAccount", () => {});
+    const modal = document.querySelector(".modal");
+    const subs = [...modal.querySelectorAll(".modal-sub")].map((section) => section.textContent);
+
+    expect(subs).toContain("Which lab?");
+    expect(subs).toContain("My account (optional)");
+    expect(subs).not.toContain("Picture and datasheet");
+    expect(subs.some((section) => /your copy/i.test(section))).toBe(false);
+    expect(labelInput(modal, "Account ID")).toBeTruthy();
+    expect(labelInput(modal, "Datasheet")).toBeFalsy();
+    expect(labelInput(modal, "Photo")).toBeFalsy();
+    expect(modal.textContent).not.toContain("Technical specifications");
   });
 
   it("autofills mount + format from the picked model (make-conditioned)", () => {
@@ -517,6 +533,41 @@ describe("filmRoll camera assignment in the gear form", () => {
     expect(agent.put[0].rkey).toBe("rkR"); // same record
     expect(agent.put[0].record.camera).toBe(camUri); // camera preserved
     expect(agent.created.length).toBe(0); // reused the existing stock
+  });
+
+  it("stores the selected developing lab on the film-roll instance", async () => {
+    const stockUri = "at://did:plc:test/app.graycard.catalog.filmStock/rkF";
+    const labUri = "at://did:plc:test/app.graycard.instance.labAccount/rkL";
+    initLibrary({
+      agent,
+      did: "did:plc:test",
+      store: {
+        catalog: {
+          filmStock: [{ uri: stockUri, cid: "cidF", rkey: "rkF", value: { brand: "Kodak", name: "Tri-X" } }],
+        },
+        instance: {
+          labAccount: [{ uri: labUri, cid: "cidL", rkey: "rkL", value: { nickname: "Praus" } }],
+        },
+      },
+    });
+    const roll = {
+      uri: "at://did:plc:test/app.graycard.instance.filmRoll/rkR",
+      cid: "cidR",
+      rkey: "rkR",
+      value: { stock: stockUri, status: "exposed", createdAt: "2026-01-01T00:00:00.000Z" },
+    };
+
+    openEditGear("filmRoll", roll, () => {});
+    const modal = document.querySelector(".modal");
+    const labSelect = [...modal.querySelectorAll("label.field")]
+      .find((label) => label.querySelector("span")?.textContent === "Lab")
+      ?.querySelector("select");
+    expect(labSelect).toBeTruthy();
+    labSelect.value = labUri;
+    [...modal.querySelectorAll("button")].find((button) => button.textContent === "Save").click();
+
+    await vi.waitFor(() => expect(agent.put.length).toBe(1));
+    expect(agent.put[0].record.lab).toBe(labUri);
   });
 });
 
