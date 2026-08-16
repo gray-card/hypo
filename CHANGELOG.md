@@ -2,6 +2,30 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.1.0] - 2026-08-16
+
+### Added
+
+- Added completed development and scan forms that associate rolls with chemistry
+  and scanners without starting a live timer or logging run.
+- Added a processing history to each roll, with inspectable development and scan
+  sessions.
+- Added structured controls for development duration, temperature, agitation
+  method, initial agitation, recurring cycles, inversions, and continuous
+  agitation.
+
+### Changed
+
+- Preselect the current roll when development or scanning is logged from its
+  detail view.
+- Show chemistry, duration, and agitation for development sessions, and scanner,
+  method, and resolution for scan sessions.
+
+### Fixed
+
+- Validate roll lifecycle chronology and agitation intervals before completed
+  processing records are written.
+
 ## [1.0.1] - 2026-08-13
 
 ### Fixed
@@ -96,3 +120,4 @@ Notable changes to Hypo are recorded here.
 [0.2.0]: https://github.com/gray-card/hypo/compare/v0.1.0...v0.2.0
 [1.0.0]: https://github.com/gray-card/hypo/compare/v0.2.0...v1.0.0
 [1.0.1]: https://github.com/gray-card/hypo/compare/v1.0.0...v1.0.1
+[1.1.0]: https://github.com/gray-card/hypo/compare/v1.0.1...v1.1.0

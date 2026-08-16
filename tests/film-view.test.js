@@ -136,4 +136,61 @@ describe("extracted Film view", () => {
     expect(api.saveRecord.mock.calls[0][1]).toMatchObject({ status: "exposed", loadedAt: "2026-01-01T10:00:00.000Z" });
     expect(api.saveRecord.mock.calls[0][1].exposedAt).toBeUndefined();
   });
+
+  it("shows linked development and scan sessions on the roll with quick logging actions", () => {
+    const stock = "at://stock";
+    const chemistry = { uri: "at://chemistry", value: { nickname: "D-76 1+1" } };
+    const scanner = { uri: "at://scanner", value: { nickname: "V850" } };
+    const roll = { uri: "at://roll", value: { stock, status: "scanned", developedWith: chemistry.uri } };
+    const development = {
+      uri: "at://development",
+      value: {
+        filmRolls: [roll.uri],
+        chemistry: chemistry.uri,
+        actualTimeSeconds: 570,
+        agitationScheme: { everySec: 60, forSec: 10, inversions: 4, note: "Inversion" },
+        finishedAt: "2026-01-02T10:00:00Z",
+      },
+    };
+    const scan = {
+      uri: "at://scan",
+      value: {
+        filmRolls: [roll.uri],
+        scanner: scanner.uri,
+        method: "flatbed-negative",
+        resolution: { unit: "dpi", value: 3200, scale: 1 },
+        finishedAt: "2026-01-03T10:00:00Z",
+      },
+    };
+    const store = {
+      catalog: { filmStock: [{ uri: stock, value: { brand: "Kodak", name: "Tri-X" } }] },
+      instance: { filmRoll: [roll], chemistry: [chemistry], scanner: [scanner], exposure: [] },
+      byUri: new Map([
+        [chemistry.uri, { item: chemistry }],
+        [scanner.uri, { item: scanner }],
+      ]),
+      photoCaptureByPhoto: new Map(),
+      developSessions: [development],
+      digitizeSessions: [scan],
+    };
+    const openCompletedDevelopment = vi.fn();
+    const openScanSession = vi.fn();
+    const api = services(store, {
+      openCompletedDevelopment,
+      openScanSession,
+      rollStatuses: ["loaded", "exposed", "developed", "scanned", "archived"],
+    });
+
+    openRollDetail(roll, api);
+    const modal = document.querySelector(".modal");
+    expect(modal.textContent).toContain("Processing history");
+    expect(modal.textContent).toContain("D-76 1+1 · 9:30 · Inversion · every 60s for 10s · 4 inversions");
+    expect(modal.textContent).toContain("V850 · flatbed-negative · 3200 dpi");
+    [...modal.querySelectorAll("button")].find((button) => button.textContent.includes("Log development")).click();
+    [...modal.querySelectorAll("button")].find((button) => button.textContent.includes("Log scan")).click();
+    expect(openCompletedDevelopment).toHaveBeenCalledWith(roll, expect.any(Function));
+    expect(openScanSession).toHaveBeenCalledWith(roll, expect.any(Function));
+    modal.querySelector('[title="Inspect development session"]').click();
+    expect(api.inspect).toHaveBeenCalledWith(development);
+  });
 });

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderInsightsView } from "../apps/web/src/views/library/insights-view.ts";
-import { openLabDevelopment } from "../apps/web/src/views/library/maintenance-darkroom.ts";
+import { openLabDevelopment, openManualDevelopment } from "../apps/web/src/views/library/maintenance-darkroom.ts";
 import {
   createCatalogSelect,
   createChemistrySelect,
@@ -288,6 +288,62 @@ describe("extracted library activity views", () => {
       }),
       roll,
     ]);
+  });
+
+  it("logs completed development with roll, chemistry, time, and structured agitation", async () => {
+    const chemistry = item("at://chemistry", { nickname: "D-76 1+1", roles: ["film-developer"] });
+    const roll = item("at://roll", { label: "Roll 1", status: "exposed", createdAt: "2026-01-01T00:00:00Z" });
+    const store = emptyStore({
+      instance: { chemistry: [chemistry], filmRoll: [roll] },
+      byUri: new Map([[chemistry.uri, { layer: "instance", kind: "chemistry", item: chemistry }]]),
+    });
+    const advanceWorkflowStage = vi.fn(async () => 1);
+    const services = createServices(store, { advanceWorkflowStage });
+    openManualDevelopment(undefined, services, { selectedRolls: [roll.uri] });
+    const modal = document.querySelector(".modal");
+    [...modal.querySelectorAll("label.field")]
+      .find((label) => label.querySelector("span")?.textContent === "Primary developer *")
+      .querySelector("select").value = chemistry.uri;
+    modal.querySelector('[data-key="timeMinutes"]').value = "9";
+    modal.querySelector('[data-key="timeSecondsRemainder"]').value = "30";
+    modal.querySelector('[data-key="agitationMethod"]').value = "inversion";
+    modal.querySelector('[data-key="agitationInitialSec"]').value = "30";
+    modal.querySelector('[data-key="agitationEverySec"]').value = "60";
+    modal.querySelector('[data-key="agitationForSec"]').value = "10";
+    modal.querySelector('[data-key="agitationInversions"]').value = "4";
+    modal.querySelector(".modal-actions button:not(.ghost)").click();
+
+    await vi.waitFor(() => expect(services.saveRecord).toHaveBeenCalledTimes(2));
+    expect(services.saveRecord.mock.calls[0]).toEqual([
+      "develop-session",
+      expect.objectContaining({
+        chemistry: chemistry.uri,
+        filmRolls: [roll.uri],
+        actualTimeSeconds: 570,
+        timeSeconds: 570,
+        tankType: "tank",
+        agitationScheme: {
+          initialSec: 30,
+          everySec: 60,
+          forSec: 10,
+          inversions: 4,
+          continuous: undefined,
+          note: "Inversion",
+        },
+      }),
+      null,
+    ]);
+    expect(services.saveRecord.mock.calls[1]).toEqual([
+      "film-roll",
+      expect.objectContaining({
+        status: "developed",
+        developedWith: chemistry.uri,
+        developmentLocation: "home",
+        developedAt: expect.any(String),
+      }),
+      roll,
+    ]);
+    expect(advanceWorkflowStage).toHaveBeenCalledWith("develop", [roll.uri], "at://saved");
   });
 
   it("writes schema-shaped scan sessions", async () => {
