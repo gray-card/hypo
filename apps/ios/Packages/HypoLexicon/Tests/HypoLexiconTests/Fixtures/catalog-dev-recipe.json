@@ -1,0 +1,17 @@
+{
+  "$type": "app.graycard.catalog.devRecipe",
+  "developerMake": "Kodak",
+  "developerName": "D-76",
+  "dilution": "1+1",
+  "filmMake": "Kodak",
+  "filmName": "Tri-X 400",
+  "ei": 400,
+  "process": "bw",
+  "temps": [
+    {
+      "tempC10": 200,
+      "timeSec": 590
+    }
+  ],
+  "source": "https://example.invalid/kodak-d76-data"
+}

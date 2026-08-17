@@ -1,0 +1,29 @@
+@Tutorials(name: "Hypo for iOS development") {
+    @Intro(title: "Connect metadata, metering, and calibration") {
+        Follow a film roll across features, use deterministic meter traces, and build hardware-specific calibration profiles.
+    }
+
+    @Chapter(name: "A complete roll") {
+        @Image(source: "roll-workflow", alt: "A film canister followed by exposure and development record symbols.")
+
+        Track optional milestone dates, log frames, and hand the same roll to a development session.
+
+        @TutorialReference(tutorial: "doc:End-to-end-roll")
+    }
+
+    @Chapter(name: "Deterministic meter features") {
+        @Image(source: "meter-trace", alt: "A meter needle above a deterministic stepped trace.")
+
+        Exercise the production protocol boundary without opening a camera session.
+
+        @TutorialReference(tutorial: "doc:Build-with-SimulatedMeterDevice")
+    }
+
+    @Chapter(name: "Calibration") {
+        @Image(source: "meter-calibration", alt: "Measured and reference meter values converging after correction.")
+
+        Build a correction for one exact device, camera module, and sensor path.
+
+        @TutorialReference(tutorial: "doc:Calibrate-a-meter")
+    }
+}

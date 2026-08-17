@@ -1,0 +1,26 @@
+{
+  "name": "Federated entryway",
+  "identifier": "photos.example",
+  "did": "did:plc:federatedfixture",
+  "handle": "photos.example",
+  "pds_url": "https://pds.photos.example",
+  "challenge_par_nonce": false,
+  "challenge_token_nonce": true,
+  "authorization_server_metadata": {
+    "issuer": "https://entryway.example",
+    "authorization_endpoint": "https://entryway.example/authorize",
+    "token_endpoint": "https://entryway.example/token",
+    "pushed_authorization_request_endpoint": "https://entryway.example/par",
+    "response_types_supported": ["code", "code id_token"],
+    "grant_types_supported": ["refresh_token", "authorization_code"],
+    "token_endpoint_auth_methods_supported": ["private_key_jwt", "none"],
+    "token_endpoint_auth_signing_alg_values_supported": ["ES256", "ES384"],
+    "code_challenge_methods_supported": ["S256"],
+    "scopes_supported": ["transition:generic", "atproto", "repo:app.graycard.roll"],
+    "dpop_signing_alg_values_supported": ["ES384", "ES256"],
+    "authorization_response_iss_parameter_supported": true,
+    "require_pushed_authorization_requests": true,
+    "client_id_metadata_document_supported": true,
+    "authorization_details_types_supported": ["atproto_account"]
+  }
+}

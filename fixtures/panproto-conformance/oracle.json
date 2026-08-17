@@ -1,0 +1,230 @@
+{
+  "cases": [
+    {
+      "get": {
+        "$type": "app.graycard.instance.camera",
+        "createdAt": "2026-08-12T00:00:00.000Z",
+        "nickname": "Panproto conformance camera",
+        "type": "at://did:plc:example/app.graycard.catalog.cameraType/panproto-fixture"
+      },
+      "id": "instance-camera",
+      "identityInputSha256": "d3df4c44fc57f85c0b1305c374a0354abb7dffde3e8f18524c8df505321e8e5f",
+      "inputSha256": "d3df4c44fc57f85c0b1305c374a0354abb7dffde3e8f18524c8df505321e8e5f",
+      "lexiconSha256": "70144f97cfca2990b5d0cd88160462ca568f5043e717e21f2ab5b59cf56e797c",
+      "lift": {
+        "$type": "app.graycard.instance.camera",
+        "createdAt": "2026-08-12T00:00:00.000Z",
+        "nickname": "Panproto conformance camera",
+        "type": "at://did:plc:example/app.graycard.catalog.cameraType/panproto-fixture"
+      },
+      "put": {
+        "$type": "app.graycard.instance.camera",
+        "createdAt": "2026-08-12T00:00:00.000Z",
+        "nickname": "Panproto conformance camera",
+        "type": "at://did:plc:example/app.graycard.catalog.cameraType/panproto-fixture"
+      },
+      "validated": {
+        "$type": "app.graycard.instance.camera",
+        "createdAt": "2026-08-12T00:00:00.000Z",
+        "nickname": "Panproto conformance camera",
+        "type": "at://did:plc:example/app.graycard.catalog.cameraType/panproto-fixture"
+      }
+    },
+    {
+      "get": {
+        "$type": "app.graycard.instance.filmRoll",
+        "createdAt": "2026-08-01T08:45:00.000Z",
+        "developedAt": "2026-08-02T14:15:00.000Z",
+        "developmentStartedAt": "2026-08-02T14:00:00.000Z",
+        "loadedAt": "2026-08-01T09:00:00.000Z",
+        "status": "developed",
+        "stock": "at://did:plc:example/app.graycard.catalog.filmStock/tri-x-400",
+        "unloadedAt": "2026-08-01T18:00:00.000Z"
+      },
+      "id": "instance-film-roll",
+      "identityInputSha256": "9ef9e750ce35e4bf06985e90bb7053eca2041ebffa74a12a2398fe7cb6d1d2fe",
+      "inputSha256": "9ef9e750ce35e4bf06985e90bb7053eca2041ebffa74a12a2398fe7cb6d1d2fe",
+      "lexiconSha256": "66aa6073fc5644fa375f6172b3b7740863f8cd548c40282b2b25eda77f522e42",
+      "lift": {
+        "$type": "app.graycard.instance.filmRoll",
+        "createdAt": "2026-08-01T08:45:00.000Z",
+        "developedAt": "2026-08-02T14:15:00.000Z",
+        "developmentStartedAt": "2026-08-02T14:00:00.000Z",
+        "loadedAt": "2026-08-01T09:00:00.000Z",
+        "status": "developed",
+        "stock": "at://did:plc:example/app.graycard.catalog.filmStock/tri-x-400",
+        "unloadedAt": "2026-08-01T18:00:00.000Z"
+      },
+      "put": {
+        "$type": "app.graycard.instance.filmRoll",
+        "createdAt": "2026-08-01T08:45:00.000Z",
+        "developedAt": "2026-08-02T14:15:00.000Z",
+        "developmentStartedAt": "2026-08-02T14:00:00.000Z",
+        "loadedAt": "2026-08-01T09:00:00.000Z",
+        "status": "developed",
+        "stock": "at://did:plc:example/app.graycard.catalog.filmStock/tri-x-400",
+        "unloadedAt": "2026-08-01T18:00:00.000Z"
+      },
+      "validated": {
+        "$type": "app.graycard.instance.filmRoll",
+        "createdAt": "2026-08-01T08:45:00.000Z",
+        "developedAt": "2026-08-02T14:15:00.000Z",
+        "developmentStartedAt": "2026-08-02T14:00:00.000Z",
+        "loadedAt": "2026-08-01T09:00:00.000Z",
+        "status": "developed",
+        "stock": "at://did:plc:example/app.graycard.catalog.filmStock/tri-x-400",
+        "unloadedAt": "2026-08-01T18:00:00.000Z"
+      }
+    },
+    {
+      "id": "catalog-dev-recipe",
+      "identityLimitation": "Panproto 0.70.1 identity lenses cannot restrict through the required temps items reference.",
+      "inputSha256": "5ebba75671e856cd5b88afcf24d2c786bf3b6044d6007153d6b0b6fec693135d",
+      "lexiconSha256": "c53b36d4163061a9e056487bddb5ecbc7bcfb4b4d1bf28462a26e4c84b4bee06",
+      "validated": {
+        "$type": "app.graycard.catalog.devRecipe",
+        "developerMake": "Kodak",
+        "developerName": "D-76",
+        "dilution": "1+1",
+        "ei": 400,
+        "filmMake": "Kodak",
+        "filmName": "Tri-X 400",
+        "process": "bw",
+        "source": "https://example.invalid/kodak-d76-data",
+        "temps": [{ "tempC10": 200, "timeSec": 590 }]
+      }
+    },
+    {
+      "get": {
+        "$type": "app.graycard.process.developSession",
+        "createdAt": "2026-08-12T14:00:00.000Z",
+        "process": "bw"
+      },
+      "id": "process-develop-session",
+      "identityInputSha256": "0929ce5736c280416105ab92e29855c4f057327fda610fcf9b0de610a2333d9e",
+      "inputSha256": "159238899e52b44d1ff60d21cfc4c29d844adb21b5e6f48630b28125edafce6c",
+      "lexiconSha256": "ae974f351f294d795a542dc5aa2404b206b657bfe850ca918f21d2e1b17ff420",
+      "lift": {
+        "$type": "app.graycard.process.developSession",
+        "createdAt": "2026-08-12T14:00:00.000Z",
+        "process": "bw"
+      },
+      "put": {
+        "$type": "app.graycard.process.developSession",
+        "createdAt": "2026-08-12T14:00:00.000Z",
+        "process": "bw"
+      },
+      "validated": {
+        "$type": "app.graycard.process.developSession",
+        "createdAt": "2026-08-12T14:00:00.000Z",
+        "filmRolls": ["at://did:plc:example/app.graycard.instance.filmRoll/roll-1"],
+        "process": "bw",
+        "steps": [
+          {
+            "actualTimeSeconds": 594,
+            "dilution": "1+1",
+            "name": "Develop",
+            "publishedTimeSeconds": 590,
+            "roles": ["film-developer"],
+            "temperatureSetpoint": { "unit": "celsius", "value": 20 }
+          },
+          { "actualTimeSeconds": 30, "name": "Stop or rinse", "roles": ["stop"] },
+          { "actualTimeSeconds": 300, "name": "Fix", "roles": ["fixer"] },
+          { "actualTimeSeconds": 600, "name": "Wash", "roles": ["wash"] }
+        ]
+      }
+    },
+    {
+      "get": {
+        "$type": "app.graycard.meter.reading",
+        "aperture": "5.6",
+        "createdAt": "2026-08-12T13:00:00.000Z",
+        "geometry": "reflected-spot",
+        "iso": 400,
+        "lightKind": "ambient",
+        "priorityMode": "aperture-priority",
+        "sensorPath": "ae-metadata"
+      },
+      "id": "meter-reading",
+      "identityInputSha256": "678c8082050e3bce007b4b1f6189cb68b752f130561bd16361d6cc100f882aa1",
+      "inputSha256": "7fe2dfd2f150f087a19301f551e5678f74e6c3f9682e56e1d8a45f09bc86f48c",
+      "lexiconSha256": "217efc25e4cec677bf30e4d9150f8c634d07b2b1f15a35ba893b0608d2bf2c18",
+      "lift": {
+        "$type": "app.graycard.meter.reading",
+        "aperture": "5.6",
+        "createdAt": "2026-08-12T13:00:00.000Z",
+        "geometry": "reflected-spot",
+        "iso": 400,
+        "lightKind": "ambient",
+        "priorityMode": "aperture-priority",
+        "sensorPath": "ae-metadata"
+      },
+      "put": {
+        "$type": "app.graycard.meter.reading",
+        "aperture": "5.6",
+        "createdAt": "2026-08-12T13:00:00.000Z",
+        "geometry": "reflected-spot",
+        "iso": 400,
+        "lightKind": "ambient",
+        "priorityMode": "aperture-priority",
+        "sensorPath": "ae-metadata"
+      },
+      "validated": {
+        "$type": "app.graycard.meter.reading",
+        "aperture": "5.6",
+        "createdAt": "2026-08-12T13:00:00.000Z",
+        "ev100": { "scale": 1000000, "unit": "EV", "value": 11750000 },
+        "geometry": "reflected-spot",
+        "iso": 400,
+        "lightKind": "ambient",
+        "priorityMode": "aperture-priority",
+        "sensorPath": "ae-metadata"
+      }
+    },
+    {
+      "get": {
+        "$type": "app.graycard.meter.calibration",
+        "cameraModule": "wide",
+        "createdAt": "2026-08-12T12:00:00.000Z",
+        "deviceModel": "iPhone17,2",
+        "meter": "at://did:plc:example/app.graycard.instance.meter/iphone-meter",
+        "reference": "reference-meter",
+        "sensorPath": "ae-metadata"
+      },
+      "id": "meter-calibration",
+      "identityInputSha256": "0f1f5c945abfa50bfe2e3793e2571d4952a8466f240e9077c3df92b0a76e7b69",
+      "inputSha256": "299b2cd0e2ecb0587fc79d566ef3551f3ad9666561c4d836a7ba2c2ab78d3ab0",
+      "lexiconSha256": "7b4d56ce2d8202262a7ba364b6c8153c386513a675067b61a993fbb9d3bbf7d4",
+      "lift": {
+        "$type": "app.graycard.meter.calibration",
+        "cameraModule": "wide",
+        "createdAt": "2026-08-12T12:00:00.000Z",
+        "deviceModel": "iPhone17,2",
+        "meter": "at://did:plc:example/app.graycard.instance.meter/iphone-meter",
+        "reference": "reference-meter",
+        "sensorPath": "ae-metadata"
+      },
+      "put": {
+        "$type": "app.graycard.meter.calibration",
+        "cameraModule": "wide",
+        "createdAt": "2026-08-12T12:00:00.000Z",
+        "deviceModel": "iPhone17,2",
+        "meter": "at://did:plc:example/app.graycard.instance.meter/iphone-meter",
+        "reference": "reference-meter",
+        "sensorPath": "ae-metadata"
+      },
+      "validated": {
+        "$type": "app.graycard.meter.calibration",
+        "cameraModule": "wide",
+        "createdAt": "2026-08-12T12:00:00.000Z",
+        "deviceModel": "iPhone17,2",
+        "meter": "at://did:plc:example/app.graycard.instance.meter/iphone-meter",
+        "offsetStops": { "scale": 1000000, "unit": "stop", "value": -125000 },
+        "reference": "reference-meter",
+        "sensorPath": "ae-metadata"
+      }
+    }
+  ],
+  "formatVersion": 1,
+  "panprotoVersion": "0.70.1"
+}

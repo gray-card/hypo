@@ -1,0 +1,34 @@
+{
+  "$type": "app.graycard.process.developSession",
+  "filmRolls": ["at://did:plc:example/app.graycard.instance.filmRoll/roll-1"],
+  "process": "bw",
+  "steps": [
+    {
+      "name": "Develop",
+      "roles": ["film-developer"],
+      "dilution": "1+1",
+      "temperatureSetpoint": {
+        "value": 20,
+        "unit": "celsius"
+      },
+      "publishedTimeSeconds": 590,
+      "actualTimeSeconds": 594
+    },
+    {
+      "name": "Stop or rinse",
+      "roles": ["stop"],
+      "actualTimeSeconds": 30
+    },
+    {
+      "name": "Fix",
+      "roles": ["fixer"],
+      "actualTimeSeconds": 300
+    },
+    {
+      "name": "Wash",
+      "roles": ["wash"],
+      "actualTimeSeconds": 600
+    }
+  ],
+  "createdAt": "2026-08-12T14:00:00.000Z"
+}

@@ -1,0 +1,24 @@
+included:
+  - App
+  - Extensions
+  - Packages
+
+excluded:
+  - Packages/*/.build
+  - Packages/*/.swiftpm
+
+analyzer_rules:
+  - unused_declaration
+  - unused_import
+
+line_length:
+  warning: 110
+  error: 130
+  ignores_comments: true
+  ignores_urls: true
+
+identifier_name:
+  excluded:
+    - id
+
+reporter: xcode

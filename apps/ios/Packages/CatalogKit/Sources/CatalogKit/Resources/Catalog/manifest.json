@@ -1,0 +1,37 @@
+{
+  "catalogHash": "bd4f7d7c02902ed3dea965f530558b6fe9b0ab0422eee087c28e707ce3c99e9d",
+  "hashAlgorithm": "sha256",
+  "schemaVersion": 1,
+  "shards": {
+    "cameras": {
+      "bytes": 530095,
+      "itemCount": 1654,
+      "path": "bd4f7d7c02902ed3dea965f530558b6fe9b0ab0422eee087c28e707ce3c99e9d/cameras.json",
+      "sha256": "6cb583a88fa4feb4e40f177e30fac9a614695a2eae13e990ebaafc3a91246c32"
+    },
+    "darkroom-products": {
+      "bytes": 55219,
+      "itemCount": 37,
+      "path": "bd4f7d7c02902ed3dea965f530558b6fe9b0ab0422eee087c28e707ce3c99e9d/darkroom-products.json",
+      "sha256": "cd620fe3945d4dad89ec0d0730b9cda3eb93e152da8b86a3e33ec20c37982041"
+    },
+    "dev-times": {
+      "bytes": 2132106,
+      "itemCount": 993,
+      "path": "bd4f7d7c02902ed3dea965f530558b6fe9b0ab0422eee087c28e707ce3c99e9d/dev-times.json",
+      "sha256": "dd817f2f50e3d77744cf9fe798915e7caed9d43054d13c913729705abd82b2f6"
+    },
+    "film-stocks": {
+      "bytes": 221863,
+      "itemCount": 103,
+      "path": "bd4f7d7c02902ed3dea965f530558b6fe9b0ab0422eee087c28e707ce3c99e9d/film-stocks.json",
+      "sha256": "2102ede96ebcbbc3a73657bd096ab1a402f29807a5f3901f1a1b7ab0baa3fb09"
+    },
+    "lenses": {
+      "bytes": 1568847,
+      "itemCount": 3842,
+      "path": "bd4f7d7c02902ed3dea965f530558b6fe9b0ab0422eee087c28e707ce3c99e9d/lenses.json",
+      "sha256": "7a7cd754643e7542df00c47af69df0e9ba52f480716370d2463f771d278f621b"
+    }
+  }
+}

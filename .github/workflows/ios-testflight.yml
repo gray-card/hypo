@@ -1,0 +1,432 @@
+name: iOS TestFlight
+
+on:
+  push:
+    tags:
+      - "ios-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    name: Validate, sign, and upload
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: macos-15
+    timeout-minutes: 120
+    environment: testflight
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node for generated-artifact checks
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install JavaScript dependencies for shared generators and corpus checks
+        run: npm ci
+      - name: Select Xcode
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+      - name: Install SwiftLint
+        run: brew install swiftlint
+      - name: Cache SwiftPM downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ~/.cache/org.swift.swiftpm
+          key: ios-testflight-swiftpm-${{ runner.os }}-${{ hashFiles('apps/ios/**/Package.resolved', 'apps/ios/**/Package.swift') }}
+          restore-keys: |
+            ios-testflight-swiftpm-${{ runner.os }}-
+      - name: Derive immutable release metadata
+        id: release_metadata
+        env:
+          RELEASE_SHA: ${{ github.sha }}
+          RUN_NUMBER: ${{ github.run_number }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          [[ "$RUN_NUMBER" =~ ^[1-9][0-9]*$ ]] || {
+            echo "github.run_number must be a positive integer." >&2
+            exit 1
+          }
+          [[ "$RUN_ATTEMPT" =~ ^[1-9][0-9]*$ ]] || {
+            echo "github.run_attempt must be a positive integer." >&2
+            exit 1
+          }
+          (( RUN_ATTEMPT < 1000 )) || {
+            echo "github.run_attempt must remain below 1000 for collision-free build numbers." >&2
+            exit 1
+          }
+          release_build_number=$((10#$RUN_NUMBER * 1000 + 10#$RUN_ATTEMPT))
+          (( release_build_number > 0 )) || {
+            echo "The derived TestFlight build number must be positive." >&2
+            exit 1
+          }
+          {
+            echo "RELEASE_BUILD_NUMBER=$release_build_number"
+            echo "RELEASE_SHA=$RELEASE_SHA"
+          } >> "$GITHUB_ENV"
+          {
+            echo "build_number=$release_build_number"
+            echo "sha=$RELEASE_SHA"
+          } >> "$GITHUB_OUTPUT"
+      - name: Verify that the release comes from main
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          git fetch --no-tags origin main
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            git merge-base --is-ancestor "$RELEASE_SHA" refs/remotes/origin/main || {
+              echo "The TestFlight tag must point to a commit in origin/main." >&2
+              exit 1
+            }
+          elif [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "Manual TestFlight uploads must be dispatched from main." >&2
+            exit 1
+          fi
+      - name: Verify tag and project versions agree
+        if: github.event_name == 'push'
+        run: >-
+          apps/ios/Scripts/release-preflight.sh
+          --release-ref "$GITHUB_REF_NAME"
+          --build-version "$RELEASE_BUILD_NUMBER"
+      - name: Verify release source metadata
+        if: github.event_name == 'workflow_dispatch'
+        run: >-
+          apps/ios/Scripts/release-preflight.sh
+          --build-version "$RELEASE_BUILD_NUMBER"
+      - name: Run the complete unsigned release gate
+        run: apps/ios/Scripts/check.sh
+      - name: Run composed acceptance tests against the upload commit
+        run: |
+          [[ "$(git rev-parse HEAD)" == "$RELEASE_SHA" ]] || {
+            echo "The checked-out commit differs from the upload commit." >&2
+            exit 1
+          }
+          git diff --exit-code
+          xcodebuild \
+            -workspace apps/ios/Hypo.xcworkspace \
+            -scheme Hypo \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=latest" \
+            -derivedDataPath .derived-data/hypo-ios-testflight-ui-tests \
+            -disableAutomaticPackageResolution \
+            -onlyUsePackageVersionsFromResolvedFile \
+            -only-testing:HypoUITests \
+            -parallel-testing-enabled NO \
+            -maximum-parallel-testing-workers 1 \
+            CURRENT_PROJECT_VERSION="$RELEASE_BUILD_NUMBER" \
+            GCC_TREAT_WARNINGS_AS_ERRORS=YES \
+            LD_WARNINGS_AS_ERRORS=YES \
+            SWIFT_SUPPRESS_WARNINGS=NO \
+            SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
+            test
+      - name: Require protected TestFlight credentials
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64 }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          IOS_DISTRIBUTION_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_P12_BASE64 }}
+          IOS_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          IOS_TIMER_ACTIVITY_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_TIMER_ACTIVITY_PROVISIONING_PROFILE_BASE64 }}
+          IOS_SYSTEM_INTEGRATION_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_SYSTEM_INTEGRATION_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          required=(
+            APP_STORE_CONNECT_API_KEY_ID
+            APP_STORE_CONNECT_ISSUER_ID
+            APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64
+            APPLE_TEAM_ID
+            IOS_DISTRIBUTION_CERTIFICATE_P12_BASE64
+            IOS_DISTRIBUTION_CERTIFICATE_PASSWORD
+            IOS_PROVISIONING_PROFILE_BASE64
+            IOS_TIMER_ACTIVITY_PROVISIONING_PROFILE_BASE64
+            IOS_SYSTEM_INTEGRATION_PROVISIONING_PROFILE_BASE64
+          )
+          for variable in "${required[@]}"; do
+            if [[ -z "${!variable}" ]]; then
+              echo "The protected testflight environment is missing $variable." >&2
+              exit 1
+            fi
+          done
+      - name: Install signing identity, profile, and API key
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64 }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          IOS_DISTRIBUTION_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_P12_BASE64 }}
+          IOS_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          IOS_TIMER_ACTIVITY_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_TIMER_ACTIVITY_PROVISIONING_PROFILE_BASE64 }}
+          IOS_SYSTEM_INTEGRATION_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_SYSTEM_INTEGRATION_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          certificate_path="$RUNNER_TEMP/hypo-distribution.p12"
+          keychain_path="$RUNNER_TEMP/hypo-signing.keychain-db"
+          keychain_password="$(openssl rand -hex 24)"
+          api_key_directory="$HOME/.private_keys"
+          api_key_path="$api_key_directory/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
+
+          printf '%s' "$IOS_DISTRIBUTION_CERTIFICATE_P12_BASE64" | base64 --decode > "$certificate_path"
+          mkdir -p "$api_key_directory"
+          printf '%s' "$APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64" | base64 --decode > "$api_key_path"
+          chmod 600 "$certificate_path" "$api_key_path"
+
+          security create-keychain -p "$keychain_password" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$keychain_password" "$keychain_path"
+          security import "$certificate_path" \
+            -P "$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12 \
+            -k "$keychain_path"
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s \
+            -k "$keychain_password" \
+            "$keychain_path"
+          security list-keychains -d user -s "$keychain_path"
+
+          profile_install_directory="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$profile_install_directory"
+
+          install_profile() {
+            local encoded="$1"
+            local slug="$2"
+            local expected_bundle_id="$3"
+            local expected_app_group="${4:-}"
+            local expected_icloud_container="${5:-}"
+            local profile_path="$RUNNER_TEMP/$slug.mobileprovision"
+            local profile_plist="$RUNNER_TEMP/$slug.plist"
+            printf '%s' "$encoded" | base64 --decode > "$profile_path"
+            chmod 600 "$profile_path"
+            security cms -D -i "$profile_path" > "$profile_plist"
+
+            local profile_uuid profile_name profile_team application_identifier
+            profile_uuid="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$profile_plist")"
+            profile_name="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$profile_plist")"
+            profile_team="$(/usr/libexec/PlistBuddy -c 'Print :TeamIdentifier:0' "$profile_plist")"
+            application_identifier="$(
+              /usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$profile_plist"
+            )"
+            [[ "$profile_team" == "$APPLE_TEAM_ID" ]] || {
+              echo "$slug belongs to a different Apple team." >&2
+              exit 1
+            }
+            [[ "$application_identifier" == "$APPLE_TEAM_ID.$expected_bundle_id" ]] || {
+              echo "$slug is not for $expected_bundle_id." >&2
+              exit 1
+            }
+            if [[ -n "$expected_app_group" ]]; then
+              local application_groups
+              application_groups="$(
+                /usr/libexec/PlistBuddy \
+                  -c 'Print :Entitlements:com.apple.security.application-groups' \
+                  "$profile_plist"
+              )"
+              [[ "$application_groups" == *"$expected_app_group"* ]] || {
+                echo "$slug does not authorize $expected_app_group." >&2
+                exit 1
+              }
+            fi
+            if [[ -n "$expected_icloud_container" ]]; then
+              local icloud_containers icloud_services
+              icloud_containers="$(
+                /usr/libexec/PlistBuddy \
+                  -c 'Print :Entitlements:com.apple.developer.icloud-container-identifiers' \
+                  "$profile_plist"
+              )"
+              icloud_services="$(
+                /usr/libexec/PlistBuddy \
+                  -c 'Print :Entitlements:com.apple.developer.icloud-services' \
+                  "$profile_plist"
+              )"
+              [[ "$icloud_containers" == *"$expected_icloud_container"* ]] || {
+                echo "$slug does not authorize $expected_icloud_container." >&2
+                exit 1
+              }
+              [[ "$icloud_services" == *"CloudKit"* ]] || {
+                echo "$slug does not authorize CloudKit." >&2
+                exit 1
+              }
+            fi
+
+            cp "$profile_path" "$profile_install_directory/$profile_uuid.mobileprovision"
+            printf '%s\t%s\n' "$profile_name" "$profile_uuid"
+          }
+
+          IFS=$'\t' read -r app_profile_name app_profile_uuid < <(
+            install_profile "$IOS_PROVISIONING_PROFILE_BASE64" \
+              hypo-app-store app.graycard.hypo group.app.graycard.hypo \
+              iCloud.app.graycard.hypo
+          )
+          IFS=$'\t' read -r timer_profile_name timer_profile_uuid < <(
+            install_profile "$IOS_TIMER_ACTIVITY_PROVISIONING_PROFILE_BASE64" \
+              hypo-timer-activity-app-store app.graycard.hypo.TimerActivity
+          )
+          IFS=$'\t' read -r system_profile_name system_profile_uuid < <(
+            install_profile "$IOS_SYSTEM_INTEGRATION_PROVISIONING_PROFILE_BASE64" \
+              hypo-system-integration-app-store app.graycard.hypo.SystemIntegration \
+              group.app.graycard.hypo
+          )
+
+          {
+            echo "API_KEY_PATH=$api_key_path"
+            echo "KEYCHAIN_PATH=$keychain_path"
+            echo "APP_PROFILE_NAME=$app_profile_name"
+            echo "TIMER_ACTIVITY_PROFILE_NAME=$timer_profile_name"
+            echo "SYSTEM_INTEGRATION_PROFILE_NAME=$system_profile_name"
+            echo "APP_PROFILE_INSTALL_PATH=$profile_install_directory/$app_profile_uuid.mobileprovision"
+            echo "TIMER_PROFILE_INSTALL_PATH=$profile_install_directory/$timer_profile_uuid.mobileprovision"
+            echo "SYSTEM_PROFILE_INSTALL_PATH=$profile_install_directory/$system_profile_uuid.mobileprovision"
+          } >> "$GITHUB_ENV"
+      - name: Archive the signed application
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          xcodebuild \
+            -workspace apps/ios/Hypo.xcworkspace \
+            -scheme Hypo \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Hypo.xcarchive" \
+            -disableAutomaticPackageResolution \
+            -onlyUsePackageVersionsFromResolvedFile \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            CODE_SIGN_STYLE=Manual \
+            CURRENT_PROJECT_VERSION="$RELEASE_BUILD_NUMBER" \
+            HYPO_APP_PROFILE_NAME="$APP_PROFILE_NAME" \
+            HYPO_TIMER_ACTIVITY_PROFILE_NAME="$TIMER_ACTIVITY_PROFILE_NAME" \
+            HYPO_SYSTEM_INTEGRATION_PROFILE_NAME="$SYSTEM_INTEGRATION_PROFILE_NAME" \
+            clean archive
+      - name: Validate the archived application
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            apps/ios/Scripts/release-preflight.sh \
+              --release-ref "$GITHUB_REF_NAME" \
+              --build-version "$RELEASE_BUILD_NUMBER" \
+              --app "$RUNNER_TEMP/Hypo.xcarchive/Products/Applications/Hypo.app" \
+              --require-signature
+          else
+            apps/ios/Scripts/release-preflight.sh \
+              --build-version "$RELEASE_BUILD_NUMBER" \
+              --app "$RUNNER_TEMP/Hypo.xcarchive/Products/Applications/Hypo.app" \
+              --require-signature
+          fi
+      - name: Export the signed IPA locally
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          export_options="$RUNNER_TEMP/ExportOptions.plist"
+          plutil -create xml1 "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :method string app-store-connect' "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :destination string export' "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :signingStyle string manual' "$export_options"
+          /usr/libexec/PlistBuddy -c "Add :teamID string $APPLE_TEAM_ID" "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :uploadSymbols bool true' "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :provisioningProfiles dict' "$export_options"
+          /usr/libexec/PlistBuddy \
+            -c "Add :provisioningProfiles:app.graycard.hypo string $APP_PROFILE_NAME" \
+            "$export_options"
+          /usr/libexec/PlistBuddy \
+            -c "Add :provisioningProfiles:app.graycard.hypo.TimerActivity string $TIMER_ACTIVITY_PROFILE_NAME" \
+            "$export_options"
+          /usr/libexec/PlistBuddy \
+            -c "Add :provisioningProfiles:app.graycard.hypo.SystemIntegration string $SYSTEM_INTEGRATION_PROFILE_NAME" \
+            "$export_options"
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$RUNNER_TEMP/Hypo.xcarchive" \
+            -exportPath "$RUNNER_TEMP/Hypo-export" \
+            -exportOptionsPlist "$export_options"
+      - name: Validate the exact signed IPA to be uploaded
+        run: |
+          shopt -s nullglob
+          ipa_files=("$RUNNER_TEMP/Hypo-export"/*.ipa)
+          (( ${#ipa_files[@]} == 1 )) || {
+            echo "Expected exactly one exported IPA, found ${#ipa_files[@]}." >&2
+            exit 1
+          }
+          ipa_path="${ipa_files[0]}"
+          expanded_ipa="$RUNNER_TEMP/Hypo-expanded-ipa"
+          ditto -x -k "$ipa_path" "$expanded_ipa"
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            apps/ios/Scripts/release-preflight.sh \
+              --release-ref "$GITHUB_REF_NAME" \
+              --build-version "$RELEASE_BUILD_NUMBER" \
+              --app "$expanded_ipa/Payload/Hypo.app" \
+              --require-signature
+          else
+            apps/ios/Scripts/release-preflight.sh \
+              --build-version "$RELEASE_BUILD_NUMBER" \
+              --app "$expanded_ipa/Payload/Hypo.app" \
+              --require-signature
+          fi
+          echo "IPA_PATH=$ipa_path" >> "$GITHUB_ENV"
+      - name: Package signed release evidence
+        run: |
+          evidence_directory="$RUNNER_TEMP/Hypo-signed-evidence"
+          mkdir -p "$evidence_directory"
+          cp "$IPA_PATH" "$evidence_directory/Hypo.ipa"
+          echo "UPLOAD_IPA_PATH=$evidence_directory/Hypo.ipa" >> "$GITHUB_ENV"
+          cp "$RUNNER_TEMP/ExportOptions.plist" "$evidence_directory/ExportOptions.plist"
+          ditto -c -k --keepParent \
+            "$RUNNER_TEMP/Hypo.xcarchive" \
+            "$evidence_directory/Hypo.xcarchive.zip"
+          {
+            echo "commit=$RELEASE_SHA"
+            echo "build=$RELEASE_BUILD_NUMBER"
+            echo "ref=$GITHUB_REF"
+            xcodebuild -version
+            swift --version
+          } > "$evidence_directory/release-metadata.txt"
+          (
+            cd "$evidence_directory"
+            shasum -a 256 Hypo.ipa Hypo.xcarchive.zip > SHA256SUMS
+          )
+      - name: Retain signed IPA and archive evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: Hypo-${{ steps.release_metadata.outputs.sha }}-${{ steps.release_metadata.outputs.build_number }}
+          path: ${{ runner.temp }}/Hypo-signed-evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload the retained IPA to App Store Connect
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          xcrun altool \
+            --upload-app \
+            --type ios \
+            --file "$UPLOAD_IPA_PATH" \
+            --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+      - name: Remove temporary signing material
+        if: always()
+        run: |
+          if [[ -n "${KEYCHAIN_PATH:-}" ]]; then
+            security delete-keychain "$KEYCHAIN_PATH" || true
+          fi
+          rm -f \
+            "${APP_PROFILE_INSTALL_PATH:-}" \
+            "${TIMER_PROFILE_INSTALL_PATH:-}" \
+            "${SYSTEM_PROFILE_INSTALL_PATH:-}"
+          rm -f \
+            "$RUNNER_TEMP/hypo-distribution.p12" \
+            "$RUNNER_TEMP"/hypo-*-app-store.mobileprovision \
+            "$RUNNER_TEMP"/hypo-*-app-store.plist
+          if [[ -n "${API_KEY_PATH:-}" ]]; then
+            rm -f "$API_KEY_PATH"
+          fi

@@ -1,0 +1,55 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Build with SimulatedMeterDevice") {
+        Replay a deterministic EV trace through the same service boundary used by the camera-backed meter.
+    }
+
+    @Section(title: "Describe the camera and trace") {
+        @ContentAndMedia {
+            A simulated device still reports a `CameraDescriptor`. Give it the identity and capabilities required by the feature under test; do not copy a production device identifier into a general fixture.
+        }
+
+        @Steps {
+            @Step {
+                Create a camera descriptor and a reflected EV100 trace.
+
+                @Code(name: "SimulatedMeterExample.swift", file: SimulatedMeterExample.swift)
+            }
+
+            @Step {
+                Choose `.once` when exhaustion is part of the test. Choose `.loop` only for a preview or a feature that explicitly expects an unbounded stream.
+            }
+        }
+    }
+
+    @Section(title: "Use the production service boundary") {
+        @ContentAndMedia {
+            Wrap the simulated sensor in `DefaultMeterEngine`. This keeps averaging, calibration, range flags, and exposure projection on the production code path.
+        }
+
+        @Steps {
+            @Step {
+                Pass the engine where the feature expects `MeterService`; avoid a feature-only fake that returns an already-projected label.
+            }
+
+            @Step {
+                Use `capture(configuration:)` for a single deliberate result or `readings(configuration:)` for stream behavior.
+            }
+
+            @Step {
+                Assert the reading's value and provenance, including `.simulated` as the sensor path.
+            }
+        }
+    }
+
+    @Section(title: "Add spot and frame traces") {
+        @ContentAndMedia {
+            Initialize `SimulatedMeterDevice` directly when a feature needs `SpotMeasurement` or `CapturedFrame` fixtures. The device consumes each trace in order and throws `MeterError.traceExhausted` under one-shot playback.
+        }
+
+        @Steps {
+            @Step {
+                Supply ordered spot or frame fixtures at initialization and assert both the returned value and its capture provenance.
+            }
+        }
+    }
+}

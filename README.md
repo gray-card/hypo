@@ -32,10 +32,10 @@ photos on [grain.social](https://grain.social), all written straight to your PDS
 is standard atproto OAuth with your atmosphere account, and there is **no backend**: Hypo
 is a static single-page app you can host for free.
 
-This repository contains Hypo for web. Hypo is the metadata product; Gray Card is a
-separate, full-featured photo editor with a scope comparable to Lightroom. Both use the
-same `app.graycard.*` metadata model, but Gray Card's editing features have separate
-documentation.
+This repository contains Hypo for web and iOS. Hypo is the metadata product; Gray Card
+is a separate, full-featured photo editor with a scope comparable to Lightroom. Both use
+the same `app.graycard.*` metadata model, but Gray Card's editing features and
+documentation live separately.
 
 ## What it manages
 
@@ -79,6 +79,8 @@ Hypo is a pure client. There is no server holding your data or your session:
 
 ## Run locally
 
+### Web
+
 Hypo requires Node.js 22 or newer and npm 10.
 
 ```bash
@@ -96,21 +98,38 @@ npm run build     # static site into dist/
 npm run preview   # serve dist/ on http://127.0.0.1:5173
 ```
 
+### iOS
+
+Hypo for iOS requires Xcode 16 or newer and targets iOS 17 or newer. Open
+`apps/ios/Hypo.xcworkspace`, then build the shared `Hypo` scheme. The complete local
+gate is:
+
+```bash
+apps/ios/Scripts/check.sh
+```
+
+The iOS app uses the same committed `app.graycard.*` Lexicons and migration fixtures as
+the web client. See [the iOS README](apps/ios/README.md) for package boundaries,
+hardware-test requirements, and Panproto integration details.
+
 ## Deploy
 
 Hypo is a GitHub Pages project site published at `https://hypo.graycard.app/`.
 
-| Piece                          | Role                                                                                           |
-| ------------------------------ | ---------------------------------------------------------------------------------------------- |
-| `vite.config.js`               | `base: '/'` (custom domain is the site root)                                                   |
-| `public/CNAME`                 | `hypo.graycard.app`                                                                            |
-| `public/client-metadata.json`  | public atproto OAuth client (`client_id`, redirect URI, scope)                                 |
-| `.github/workflows/ci.yml`     | validate and deploy the app and `/docs/` after every fully green `main` push                   |
-| `.github/workflows/deploy.yml` | validate a `v*` tag at the current `main` commit, rerun release gates, and publish the release |
+| Piece                             | Role                                                                                           |
+| --------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `vite.config.js`                  | `base: '/'` (custom domain is the site root)                                                   |
+| `public/CNAME`                    | `hypo.graycard.app`                                                                            |
+| `public/client-metadata.json`     | public web atproto OAuth client (`client_id`, redirect URI, scope)                             |
+| `public/ios-client-metadata.json` | public native atproto OAuth client and app-bound callback                                      |
+| `.github/workflows/ci.yml`        | validate and deploy the app and `/docs/` after every fully green `main` push                   |
+| `.github/workflows/deploy.yml`    | validate a `v*` tag at the current `main` commit, rerun release gates, and publish the release |
 
-Production OAuth uses `https://hypo.graycard.app/client-metadata.json` as `client_id`.
-Changing that URL invalidates existing sessions; users must sign in again. Keep the OAuth
-scope in sync with `src/oauthScope.js` (`node scripts/gen-client-metadata.mjs`).
+Web OAuth uses `https://hypo.graycard.app/client-metadata.json` as `client_id`; the
+iPhone app uses `https://hypo.graycard.app/ios-client-metadata.json`. Changing either
+URL invalidates that client's existing sessions. Keep both metadata documents and the
+generated Swift constants in sync with `src/oauthScope.js`
+(`node scripts/gen-client-metadata.mjs`).
 
 ## Catalog data
 
@@ -131,6 +150,7 @@ npm run build:catalog
 | Path         | Contents                                                                      |
 | ------------ | ----------------------------------------------------------------------------- |
 | `apps/web/`  | typed web shell, actions, routes, and library views                           |
+| `apps/ios/`  | native iOS app, feature packages, engines, tests, and architecture decisions  |
 | `packages/`  | domain, lexicon, PDS, schema runtime, store, sync, catalog, and UI boundaries |
 | `src/`       | production application modules retained while the package boundaries settle   |
 | `lexicons/`  | `app.graycard.*` schemas and Panproto-managed evolution                       |

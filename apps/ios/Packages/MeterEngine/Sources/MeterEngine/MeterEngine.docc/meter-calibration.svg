@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" role="img" aria-labelledby="title desc">
+  <title id="title">Meter calibration</title>
+  <desc id="desc">Measured dots align with a diagonal reference after an orange correction arrow.</desc>
+  <rect width="960" height="480" rx="36" fill="#171513"/>
+  <path d="M150 366L790 96" stroke="#f2eee9" stroke-width="10" stroke-linecap="round"/>
+  <g fill="#6e6862">
+    <circle cx="260" cy="360" r="18"/><circle cx="420" cy="290" r="18"/><circle cx="580" cy="228" r="18"/><circle cx="740" cy="160" r="18"/>
+  </g>
+  <g fill="#ff922e">
+    <circle cx="260" cy="320" r="18"/><circle cx="420" cy="252" r="18"/><circle cx="580" cy="185" r="18"/><circle cx="740" cy="117" r="18"/>
+  </g>
+  <path d="M826 170v128M800 272l26 26 26-26" fill="none" stroke="#ff922e" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -67,6 +67,11 @@ const config = {
         { to: "/reference/schema-status", label: "Schema status", position: "left" },
         { to: "/reference/lexicons/", label: "Lexicons", position: "left" },
         {
+          href: "https://hypo.graycard.app/docs/ios-api/",
+          label: "iOS API",
+          position: "left",
+        },
+        {
           href: "https://github.com/gray-card/hypo",
           label: "GitHub",
           position: "right",
@@ -91,6 +96,10 @@ const config = {
             { label: "Schema status", to: "/reference/schema-status" },
             { label: "Lexicon NSIDs", to: "/reference/lexicons/" },
             { label: "Generated package", to: "/reference/generated-package" },
+            {
+              label: "iOS API",
+              href: "https://hypo.graycard.app/docs/ios-api/",
+            },
             { label: "Application contracts", to: "/reference/" },
           ],
         },

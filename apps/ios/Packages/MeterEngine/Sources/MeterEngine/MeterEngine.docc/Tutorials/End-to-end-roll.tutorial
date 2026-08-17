@@ -1,0 +1,61 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Follow a roll end to end") {
+        Create one active roll, log an exposure, preserve optional lifecycle dates, and pass its URI to the development timer.
+    }
+
+    @Section(title: "Keep one roll identity") {
+        @ContentAndMedia {
+            Every exposure and process record refers to the same `instance.filmRoll` AT URI. A feature may update fields on that record, but it must preserve fields and Panproto complements it does not own.
+        }
+
+        @Steps {
+            @Step {
+                Construct the active-roll projection from a local record or hydrated PDS record. The `loadedAt` date is optional, so omit it if the date is not known.
+
+                @Code(name: "RollWalkthrough.swift", file: RollWalkthrough.swift)
+            }
+
+            @Step {
+                Supply production implementations of `ExposureWriting` and `FilmRollLifecycleWriting`. The app uses queue-backed writers so both operations remain durable while offline.
+            }
+        }
+    }
+
+    @Section(title: "Log and advance") {
+        @ContentAndMedia {
+            `LoggerFeatureModel` validates the draft before handing bytes to the writer. After a successful write, a normal exposure advances the next frame; a multiple exposure stays on the physical frame and advances its exposure index.
+        }
+
+        @Steps {
+            @Step {
+                Set the aperture, shutter speed, camera, lens, and optional meter-reading references on the draft, then call `logFrame()`.
+            }
+
+            @Step {
+                Record lifecycle actions only when their dates are known. Validation compares the dated milestones and permits undated gaps.
+            }
+        }
+    }
+
+    @Section(title: "Attach development") {
+        @ContentAndMedia {
+            Pass the roll URI to `TimerFeatureModel` as a linked film roll. When the timer completes, its pipeline writes `process.developSession` and advances the roll's development milestone through separate durable operations.
+
+            If one write reaches the PDS before the other, SyncKit retries the remaining operation. Do not model the two records as an unavailable cross-record transaction.
+        }
+
+        @Steps {
+            @Step {
+                Expose the roll as a `DevelopmentFilmRollOption` and call `toggleFilmRollLink(_:)` while the timer is ready.
+            }
+
+            @Step {
+                Complete timed and manual stages. The recorded session retains stage observations and recipe provenance.
+            }
+
+            @Step {
+                Inspect the sync status rather than treating a local completion screen as proof that both public records have reached the PDS.
+            }
+        }
+    }
+}
