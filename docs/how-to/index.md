@@ -12,6 +12,7 @@ Use these guides when the desired outcome is already known:
 - [Create and run a workflow](./create-and-run-a-workflow.md)
 - [Time a C-41 development session](./time-c41.md)
 - [Log completed development and scanning](./log-completed-processing.md)
+- [Import `.frames` files](./import-frames-files.md)
 - [Record push and pull processing](./record-push-pull-processing.md)
 - [Write and apply batch rules](./write-batch-rules.md)
 - [Ground objects and relations in a scene](./ground-a-scene.md)

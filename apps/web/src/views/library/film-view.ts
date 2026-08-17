@@ -1,9 +1,10 @@
-import { confirmModal, el } from "@hypo/ui";
+import { confirmModal, el, field } from "@hypo/ui";
 import { compareRollsByStatus, filmDating, filmStockLabel, framesForRoll, reserveQuantity } from "./film-helpers.ts";
+import { openFramesFilePicker } from "./film-frames-import.ts";
 import { maybeRemoveDepletedStockpile, openDuplicateReserve, openLoadRoll } from "./film-roll.ts";
 import type { FilmRecord, FilmViewServices } from "./film-types.ts";
 
-const ROLLS_PREVIEW = 5;
+const ROLLS_PAGE_SIZE = 24;
 
 const stockLabel = (services: FilmViewServices, stockUri: string | undefined) =>
   filmStockLabel(services.getStore(), stockUri, services.catalogLabel);
@@ -162,9 +163,9 @@ function rollRow(roll: FilmRecord, services: FilmViewServices): HTMLLIElement {
       ]),
     ]),
     el("span", { class: "row" }, [
-      el("button", { class: "ghost small-btn", onclick: () => services.openRoll(roll) }, [
+      el("button", { class: "ghost small-btn primary-btn", onclick: () => services.openRoll(roll) }, [
         services.icon("film", 14),
-        el("span", {}, "Open"),
+        el("span", {}, "Manage"),
       ]),
       services.isAdvanced()
         ? el(
@@ -178,16 +179,6 @@ function rollRow(roll: FilmRecord, services: FilmViewServices): HTMLLIElement {
             "{ }",
           )
         : null,
-      el(
-        "button",
-        {
-          class: "ghost small-btn",
-          title: "Edit",
-          "aria-label": "Edit",
-          onclick: () => services.editGear("filmRoll", roll, services.renderLibrary),
-        },
-        [services.icon("edit", 15)],
-      ),
       el(
         "button",
         {
@@ -210,13 +201,28 @@ function rollsCard(services: FilmViewServices): HTMLDivElement {
   const rolls = services.getStore().instance.filmRoll || [];
   const card = el("div", { class: "card gear-section" });
   card.append(
-    el("div", { class: "row between" }, [
-      el("h2", {}, "Rolls"),
-      el(
-        "button",
-        { class: "ghost small-btn add-gear", onclick: () => services.addGear("filmRoll", services.renderLibrary) },
-        [services.icon("plus", 15), el("span", {}, "New roll")],
-      ),
+    el("div", { class: "row between wrap" }, [
+      el("div", {}, [
+        el("h2", {}, "Roll library"),
+        rolls.length
+          ? el(
+              "p",
+              { class: "muted small library-section-intro" },
+              "Find a roll, then manage its frames and processing in one place.",
+            )
+          : null,
+      ]),
+      el("div", { class: "row wrap" }, [
+        el("button", { class: "ghost small-btn", onclick: () => openFramesFilePicker(services) }, [
+          services.icon("upload", 15),
+          el("span", {}, "Import .frames"),
+        ]),
+        el(
+          "button",
+          { class: "ghost small-btn add-gear", onclick: () => services.addGear("filmRoll", services.renderLibrary) },
+          [services.icon("plus", 15), el("span", {}, "New roll")],
+        ),
+      ]),
     ]),
   );
   if (!rolls.length) {
@@ -229,25 +235,152 @@ function rollsCard(services: FilmViewServices): HTMLDivElement {
     );
     return card;
   }
-  const sorted = [...rolls].sort((left, right) => compareRollsByStatus(left, right, services.rollStatuses));
-  const list = el("ul", { class: "gear-list" });
-  for (const roll of sorted.slice(0, ROLLS_PREVIEW)) list.append(rollRow(roll, services));
-  if (sorted.length <= ROLLS_PREVIEW) {
-    card.append(list);
-    return card;
-  }
-  const hidden = el("ul", { class: "gear-list hidden" });
-  for (const roll of sorted.slice(ROLLS_PREVIEW)) hidden.append(rollRow(roll, services));
-  const remaining = sorted.length - ROLLS_PREVIEW;
-  const more = el("button", { class: "ghost small-btn reveal-summary", type: "button", style: "margin-top:8px" }, [
-    `Show ${remaining} more roll${remaining === 1 ? "" : "s"}`,
-    el("span", { class: "reveal-caret", "aria-hidden": "true" }, "⌄"),
-  ]);
-  more.addEventListener("click", () => {
-    hidden.classList.remove("hidden");
-    more.remove();
+
+  const activeStatuses = new Set(["loaded", "partial"]);
+  const waitingStatuses = new Set(["exposed", "at-lab", "developing"]);
+  const processedStatuses = new Set(["developed", "scanned"]);
+  const matchesScope = (roll: FilmRecord, scope: string) => {
+    const status = String(roll.value.status || "loaded");
+    if (scope === "active") return activeStatuses.has(status);
+    if (scope === "waiting") return waitingStatuses.has(status);
+    if (scope === "processed") return processedStatuses.has(status);
+    if (scope === "archived") return status === "archived";
+    return true;
+  };
+  const scopeCounts = {
+    all: rolls.length,
+    active: rolls.filter((roll) => matchesScope(roll, "active")).length,
+    waiting: rolls.filter((roll) => matchesScope(roll, "waiting")).length,
+    processed: rolls.filter((roll) => matchesScope(roll, "processed")).length,
+    archived: rolls.filter((roll) => matchesScope(roll, "archived")).length,
+  };
+  const search = el("input", {
+    type: "search",
+    class: "search-input library-filter-input",
+    placeholder: "Search labels, film stocks, cameras, batches…",
+    "aria-label": "Search film rolls",
   });
-  card.append(list, more, hidden);
+  const sort = el(
+    "select",
+    { "aria-label": "Sort film rolls" },
+    [
+      ["recent", "Recently active"],
+      ["status", "Workflow status"],
+      ["oldest", "Oldest first"],
+      ["stock", "Film stock"],
+      ["frames", "Most frames"],
+    ].map(([value, label]) => el("option", { value }, label)),
+  );
+  const list = el("ul", { class: "gear-list roll-library-list", "aria-live": "polite" });
+  const resultSummary = el("p", { class: "muted small library-result-summary", role: "status" });
+  const more = el("button", { class: "ghost small-btn reveal-summary hidden", type: "button" });
+  const empty = el("p", { class: "muted small gear-empty hidden" }, "No rolls match these filters.");
+  let scope = "all";
+  let visibleCount = ROLLS_PAGE_SIZE;
+
+  const activityDate = (roll: FilmRecord) =>
+    [
+      roll.value.updatedAt,
+      roll.value.archivedAt,
+      roll.value.scannedAt,
+      roll.value.developedAt,
+      roll.value.exposedAt,
+      roll.value.partialAt,
+      roll.value.loadedAt,
+      roll.value.createdAt,
+    ].find((value) => typeof value === "string" && value) || "";
+  const searchText = (roll: FilmRecord) => {
+    const value = roll.value;
+    const camera = value.camera
+      ? (services.getStore().instance.camera || []).find((record) => record.uri === value.camera)
+      : undefined;
+    return [
+      value.label,
+      value.rollNumber,
+      value.serialNumber,
+      value.emulsionBatch,
+      value.status,
+      stockLabel(services, value.stock),
+      camera ? services.instanceLabel("camera", camera.value) : "",
+      services.enumLabel(String(value.status || "")),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+  };
+  const scopeButtons = new Map<string, HTMLButtonElement>();
+  const scopes = [
+    ["all", "All", scopeCounts.all],
+    ["active", "In cameras", scopeCounts.active],
+    ["waiting", "Needs processing", scopeCounts.waiting],
+    ["processed", "Processed", scopeCounts.processed],
+    ["archived", "Archived", scopeCounts.archived],
+  ] as const;
+  const render = () => {
+    const query = search.value.trim().toLowerCase();
+    let filtered = rolls.filter((roll) => matchesScope(roll, scope) && (!query || searchText(roll).includes(query)));
+    filtered = [...filtered].sort((left, right) => {
+      if (sort.value === "status") return compareRollsByStatus(left, right, services.rollStatuses);
+      if (sort.value === "oldest") return activityDate(left).localeCompare(activityDate(right));
+      if (sort.value === "stock")
+        return stockLabel(services, left.value.stock).localeCompare(stockLabel(services, right.value.stock));
+      if (sort.value === "frames")
+        return (
+          framesForRoll(services.getStore(), right.uri).length - framesForRoll(services.getStore(), left.uri).length ||
+          activityDate(right).localeCompare(activityDate(left))
+        );
+      return activityDate(right).localeCompare(activityDate(left));
+    });
+    list.replaceChildren(...filtered.slice(0, visibleCount).map((roll) => rollRow(roll, services)));
+    empty.classList.toggle("hidden", filtered.length > 0);
+    const shown = Math.min(visibleCount, filtered.length);
+    resultSummary.textContent = `${filtered.length} roll${filtered.length === 1 ? "" : "s"}${shown < filtered.length ? ` · showing ${shown}` : ""}`;
+    const remaining = filtered.length - shown;
+    more.classList.toggle("hidden", remaining <= 0);
+    more.textContent = remaining > 0 ? `Show ${Math.min(ROLLS_PAGE_SIZE, remaining)} more` : "";
+    scopeButtons.forEach((button, key) => {
+      button.classList.toggle("active", key === scope);
+      button.setAttribute("aria-pressed", String(key === scope));
+    });
+  };
+  const scopeBar = el("div", { class: "library-scope-bar", role: "group", "aria-label": "Filter rolls by state" });
+  for (const [key, label, count] of scopes) {
+    if (key !== "all" && count === 0) continue;
+    const button = el(
+      "button",
+      {
+        type: "button",
+        class: `library-scope${key === "all" ? " active" : ""}`,
+        "aria-pressed": String(key === "all"),
+        onclick: () => {
+          scope = key;
+          visibleCount = ROLLS_PAGE_SIZE;
+          render();
+        },
+      },
+      [el("span", {}, label), el("span", { class: "mono library-scope-count" }, String(count))],
+    );
+    scopeButtons.set(key, button);
+    scopeBar.append(button);
+  }
+  search.addEventListener("input", () => {
+    visibleCount = ROLLS_PAGE_SIZE;
+    render();
+  });
+  sort.addEventListener("change", render);
+  more.addEventListener("click", () => {
+    visibleCount += ROLLS_PAGE_SIZE;
+    render();
+  });
+  card.append(
+    scopeBar,
+    el("div", { class: "library-filter-bar" }, [search, field("Sort", sort)]),
+    resultSummary,
+    list,
+    empty,
+    more,
+  );
+  render();
   return card;
 }
 

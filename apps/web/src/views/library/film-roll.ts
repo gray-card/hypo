@@ -309,8 +309,11 @@ function processingHistory(roll: FilmRecord, services: FilmViewServices): { node
           {
             class: "roll-processing-row",
             type: "button",
-            onclick: () => services.inspect(session),
-            title: `Inspect ${kind === "develop" ? "development" : "scan"} session`,
+            onclick: () =>
+              kind === "develop" && services.editDevelopment
+                ? services.editDevelopment(session, () => void refreshFilm(services))
+                : services.inspect(session),
+            title: kind === "develop" ? "Edit development session" : "Inspect scan session",
           },
           [
             el("span", { class: `roll-processing-mark ${kind}` }, kind === "develop" ? "DEV" : "SCAN"),
@@ -334,6 +337,28 @@ export function openRollDetail(
   options: { onClose?: () => void } = {},
 ): ReturnType<typeof openModal> {
   const value = roll.value;
+  const labelInput = el("input", { type: "text", value: value.label || "", maxlength: "128" });
+  const stockSelect = el(
+    "select",
+    {},
+    (services.getStore().catalog.filmStock || []).map((stock) =>
+      el("option", { value: stock.uri }, services.catalogLabel("filmStock", stock.value)),
+    ),
+  );
+  stockSelect.value = value.stock || "";
+  const rollNumberInput = el("input", { type: "text", value: value.rollNumber || "", maxlength: "64" });
+  const serialInput = el("input", { type: "text", value: value.serialNumber || "", maxlength: "128" });
+  const emulsionInput = el("input", { type: "text", value: value.emulsionBatch || "", maxlength: "64" });
+  const exposuresTotalInput = el("input", { type: "number", min: "1", value: value.exposuresTotal || "" });
+  const formatSelect = el("select", {}, [
+    el("option", { value: "" }, "(not recorded)"),
+    ...services.captureFormats.map((format) => el("option", { value: format }, services.enumLabel(format))),
+  ]);
+  formatSelect.value = value.format || "";
+  const manufactured = dateField("Manufactured (optional)", value.manufacturedAt || "");
+  const expires = dateField("Expires (optional)", value.expiresAt || "");
+  const notesInput = el("textarea", { rows: "3", maxlength: "2000" }, String(value.notes || ""));
+  const photoInput = el("input", { type: "file", accept: "image/png,image/jpeg,image/webp" });
   const templateSelect = workflowSelect(services);
   const occurrences = createWorkflowOccurrenceEditor(
     templateSelect,
@@ -416,6 +441,17 @@ export function openRollDetail(
   return openModal(
     `Roll · ${stockLabel(services, value.stock)}`,
     [
+      el("h3", { class: "modal-sub" }, "Roll details"),
+      field("Label", labelInput),
+      field("Film stock", stockSelect),
+      field("Roll number", rollNumberInput),
+      field("Serial", serialInput),
+      field("Format", formatSelect),
+      field("Total frames", exposuresTotalInput),
+      field("Emulsion batch", emulsionInput),
+      manufactured.wrap,
+      expires.wrap,
+      field("Photo (optional)", photoInput),
       field("Status", statusSelect),
       field("Loaded in camera", cameraSelect),
       field("Shot at ISO (push/pull)", isoInput),
@@ -439,9 +475,23 @@ export function openRollDetail(
       el("div", { class: "row" }, [addFrameButton]),
       el("h3", { class: "modal-sub" }, "Photos on this roll"),
       rollPhotos.node,
+      field("Notes", notesInput),
     ],
     async () => {
       const record: FilmValue = { ...value, status: statusSelect.value, updatedAt: new Date().toISOString() };
+      record.label = labelInput.value.trim() || undefined;
+      record.stock = stockSelect.value || value.stock;
+      record.rollNumber = rollNumberInput.value.trim() || undefined;
+      record.serialNumber = serialInput.value.trim() || undefined;
+      record.emulsionBatch = emulsionInput.value.trim() || undefined;
+      record.format = formatSelect.value || undefined;
+      const exposuresTotal = Number.parseInt(exposuresTotalInput.value, 10);
+      record.exposuresTotal = Number.isFinite(exposuresTotal) && exposuresTotal > 0 ? exposuresTotal : undefined;
+      record.manufacturedAt = localInputToIso(manufactured.input.value) || undefined;
+      record.expiresAt = localInputToIso(expires.input.value) || undefined;
+      record.notes = notesInput.value.trim() || undefined;
+      const photo = photoInput.files?.[0];
+      if (photo) record.image = await services.uploadBlob(photo, "image/jpeg");
       if (cameraSelect.value) {
         record.camera = cameraSelect.value;
       } else delete record.camera;

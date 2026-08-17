@@ -808,6 +808,8 @@ export type AppGraycardInstanceExposureMain = {
   "location"?: AppGraycardDefsGeoLocation;
   "photo"?: string;
   "takenAt"?: string;
+  "timeZone"?: string;
+  "sourceIdentifier"?: string;
   "provenance"?: AppGraycardDefsProvenance;
   "note"?: string;
   "createdAt": string;
@@ -1139,6 +1141,7 @@ export type AppGraycardProcessDevelopSessionMain = {
   "finishedAt"?: string;
   "labService"?: string;
   "lab"?: string;
+  "developmentLocation"?: KnownValue<"home" | "lab" | "other">;
   "notes"?: string;
   "createdAt": string;
   "updatedAt"?: string;
@@ -2512,6 +2515,11 @@ export const KNOWN_VALUES = {
     "exhausted",
     "not-applicable",
     "unknown"
+  ],
+  "app.graycard.process.developSession/defs/main/record/properties/developmentLocation": [
+    "home",
+    "lab",
+    "other"
   ],
   "app.graycard.process.maintenanceSession/defs/main/record/properties/kind": [
     "cla",
@@ -6780,6 +6788,16 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "format": "datetime",
               "description": "When the exposure was made."
             },
+            "timeZone": {
+              "type": "string",
+              "maxLength": 64,
+              "description": "IANA time-zone identifier recorded at capture, such as America/New_York. This preserves the local-time context of takenAt without publishing a second timestamp."
+            },
+            "sourceIdentifier": {
+              "type": "string",
+              "maxLength": 256,
+              "description": "Stable identifier supplied by an import source. Clients use this to detect a repeated import without duplicating an exposure."
+            },
             "provenance": {
               "type": "ref",
               "ref": "app.graycard.defs#provenance",
@@ -8404,6 +8422,15 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "string",
               "format": "at-uri",
               "description": "app.graycard.instance.labAccount that developed the roll (structured alternative to labService)."
+            },
+            "developmentLocation": {
+              "type": "string",
+              "knownValues": [
+                "home",
+                "lab",
+                "other"
+              ],
+              "description": "Where this development session was performed. This keeps the session self-describing when its linked rolls change."
             },
             "notes": {
               "type": "string",

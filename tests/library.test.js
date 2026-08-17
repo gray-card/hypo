@@ -609,7 +609,7 @@ describe("renderLibrary — Setup with per-category gear tabs", () => {
     body.dataset.tab = "film";
     await renderLibrary(body);
     const headings = [...body.querySelectorAll(".gear-section h2")].map((h) => h.textContent);
-    expect(headings).toEqual(["Film in reserve", "Rolls"]);
+    expect(headings).toEqual(["Film in reserve", "Roll library"]);
   });
 });
 
@@ -655,7 +655,7 @@ describe("photo picker accessibility", () => {
     document.body.append(body);
     await renderLibrary(body);
 
-    [...body.querySelectorAll("button")].find((button) => button.textContent.includes("Open")).click();
+    [...body.querySelectorAll("button")].find((button) => button.textContent.includes("Manage")).click();
     [...document.querySelectorAll(".modal button")].find((button) => button.textContent.includes("Add frame")).click();
     await vi.waitFor(() => expect(document.querySelectorAll(".photo-pick")).toHaveLength(2));
 

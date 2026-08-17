@@ -87,6 +87,16 @@
             "description": "Optional photo (AT-URI) this exposure was scanned/published as, e.g. a social.grain.photo."
           },
           "takenAt": { "type": "string", "format": "datetime", "description": "When the exposure was made." },
+          "timeZone": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "IANA time-zone identifier recorded at capture, such as America/New_York. This preserves the local-time context of takenAt without publishing a second timestamp."
+          },
+          "sourceIdentifier": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Stable identifier supplied by an import source. Clients use this to detect a repeated import without duplicating an exposure."
+          },
           "provenance": {
             "type": "ref",
             "ref": "app.graycard.defs#provenance",

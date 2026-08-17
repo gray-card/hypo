@@ -56,7 +56,7 @@ test("an offline shot stays queued and flushes after reconnect", async ({ page, 
   await expect(shoot).toBeVisible();
 
   await context.setOffline(true);
-  await shoot.getByRole("button", { name: "Log", exact: true }).click();
+  await shoot.getByRole("button", { name: "Add frames", exact: true }).click();
   await page.getByRole("button", { name: "Log frame", exact: true }).click();
   await expect(page.getByRole("status").filter({ hasText: "Logged offline — will sync" })).toBeVisible();
   await expect.poll(async () => (await listRecords(request, EXPOSURE_COLLECTION)).length).toBe(0);

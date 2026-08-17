@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderInsightsView } from "../apps/web/src/views/library/insights-view.ts";
-import { openLabDevelopment, openManualDevelopment } from "../apps/web/src/views/library/maintenance-darkroom.ts";
+import {
+  openDevelopmentSession,
+  openLabDevelopment,
+  openManualDevelopment,
+  saveCompletedDevelopmentRecords,
+} from "../apps/web/src/views/library/maintenance-darkroom.ts";
 import {
   createCatalogSelect,
   createChemistrySelect,
@@ -283,7 +288,6 @@ describe("extracted library activity views", () => {
       expect.objectContaining({
         status: "developed",
         lab: lab.uri,
-        finishedAt: expect.any(String),
         developedAt: expect.any(String),
         developmentLocation: "lab",
       }),
@@ -383,6 +387,115 @@ describe("extracted library activity views", () => {
       fixer,
     ]);
     expect(advanceWorkflowStage).toHaveBeenCalledWith("develop", [roll.uri], "at://saved");
+  });
+
+  it("edits a legacy step-less home development in the full process editor", () => {
+    const chemistry = item("at://chemistry", { nickname: "D-76", roles: ["film-developer"] });
+    const roll = item("at://roll", { label: "Roll 1", status: "developed" });
+    const development = item("at://development", {
+      process: "bw",
+      filmRolls: [roll.uri],
+      createdAt: "2026-01-01T10:00:00Z",
+      finishedAt: "2026-01-01T10:10:00Z",
+    });
+    const store = emptyStore({
+      instance: { chemistry: [chemistry], filmRoll: [roll] },
+      developSessions: [development],
+      byUri: new Map([
+        [chemistry.uri, { layer: "instance", kind: "chemistry", item: chemistry }],
+        [roll.uri, { layer: "instance", kind: "filmRoll", item: roll }],
+      ]),
+    });
+
+    openDevelopmentSession(development, undefined, createServices(store));
+
+    const modal = document.querySelector(".modal");
+    expect(modal.querySelector("h2").textContent).toBe("Edit development");
+    expect(modal.textContent).toContain("Ordered process stages");
+    expect(modal.querySelector(`input[value="${roll.uri}"]`).checked).toBe(true);
+  });
+
+  it("reconciles linked rolls and chemistry when a development is edited in place", async () => {
+    const oldDeveloper = item("at://chemistry/old", {
+      nickname: "D-76",
+      roles: ["film-developer"],
+      rollsProcessed: 3,
+      sessionsUsed: 2,
+      lastUsedAt: "2026-01-02T10:10:00Z",
+    });
+    const newDeveloper = item("at://chemistry/new", {
+      nickname: "HC-110",
+      roles: ["film-developer"],
+      rollsProcessed: 4,
+      sessionsUsed: 4,
+    });
+    const oldRoll = item("at://roll/old", {
+      label: "Old roll",
+      status: "developed",
+      developedWith: oldDeveloper.uri,
+      developmentLocation: "home",
+      developmentStartedAt: "2026-01-02T10:00:00Z",
+      developedAt: "2026-01-02T10:10:00Z",
+    });
+    const newRoll = item("at://roll/new", { label: "New roll", status: "exposed" });
+    const existing = item("at://development", {
+      process: "bw",
+      filmRolls: [oldRoll.uri],
+      steps: [{ name: "Developer", kind: "chemical-bath", roles: ["film-developer"], chemistries: [oldDeveloper.uri] }],
+      startedAt: "2026-01-02T10:00:00Z",
+      finishedAt: "2026-01-02T10:10:00Z",
+      createdAt: "2026-01-02T10:00:00Z",
+    });
+    const replacement = {
+      process: "bw",
+      filmRolls: [newRoll.uri],
+      steps: [{ name: "Developer", kind: "chemical-bath", roles: ["film-developer"], chemistries: [newDeveloper.uri] }],
+      startedAt: "2026-02-03T14:00:00Z",
+      finishedAt: "2026-02-03T14:09:00Z",
+      createdAt: existing.value.createdAt,
+    };
+    const store = emptyStore({
+      instance: { chemistry: [oldDeveloper, newDeveloper], filmRoll: [oldRoll, newRoll] },
+      developSessions: [existing],
+    });
+    const services = createServices(store);
+
+    await saveCompletedDevelopmentRecords(services, replacement, "home", existing);
+
+    expect(services.saveRecord.mock.calls[0]).toEqual([
+      "develop-session",
+      expect.objectContaining({ filmRolls: [newRoll.uri], developmentLocation: "home" }),
+      existing,
+    ]);
+    expect(services.saveRecord).toHaveBeenCalledWith(
+      "film-roll",
+      expect.objectContaining({ status: "exposed" }),
+      oldRoll,
+    );
+    const oldRollUpdate = services.saveRecord.mock.calls.find(
+      ([kind, , record]) => kind === "film-roll" && record === oldRoll,
+    )[1];
+    expect(oldRollUpdate).not.toHaveProperty("developedAt");
+    expect(oldRollUpdate).not.toHaveProperty("developedWith");
+    expect(services.saveRecord).toHaveBeenCalledWith(
+      "film-roll",
+      expect.objectContaining({
+        status: "developed",
+        developedWith: newDeveloper.uri,
+        developedAt: replacement.finishedAt,
+      }),
+      newRoll,
+    );
+    expect(services.saveRecord).toHaveBeenCalledWith(
+      "chemistry",
+      expect.objectContaining({ rollsProcessed: 2, sessionsUsed: 1 }),
+      oldDeveloper,
+    );
+    expect(services.saveRecord).toHaveBeenCalledWith(
+      "chemistry",
+      expect.objectContaining({ rollsProcessed: 5, sessionsUsed: 5, lastUsedAt: replacement.finishedAt }),
+      newDeveloper,
+    );
   });
 
   it("writes schema-shaped scan sessions", async () => {

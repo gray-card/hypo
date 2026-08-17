@@ -762,7 +762,7 @@ export function renderWorkflowsView(body: HTMLElement, services: ActivityService
     );
   }
   renderRollBoard(body, services);
-  renderDarkroomActivity(body, services);
+  renderDarkroomActivity(body, services, render);
 }
 
 export function renderRulesView(body: HTMLElement, services: ActivityServices): void {

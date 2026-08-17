@@ -20,6 +20,7 @@ export interface FilmCollections {
   filmStockpile: string;
   filmRoll: string;
   exposure: string;
+  capture: string;
 }
 
 export interface FilmViewServices {
@@ -29,6 +30,7 @@ export interface FilmViewServices {
   reloadStore(): Promise<void>;
   renderLibrary(): void;
   saveRecord(collection: string, value: FilmValue, existing: FilmRecord | null): Promise<string>;
+  uploadBlob(file: File, fallbackMime: string): Promise<unknown>;
   deleteRecord(uri: string): Promise<void>;
   splitRoll(stockpile: FilmRecord, options: { camera: string | null; label: string | null }): Promise<string>;
   instantiateWorkflow?(
@@ -42,6 +44,7 @@ export interface FilmViewServices {
   editGear(kind: "filmStockpile" | "filmRoll", item: FilmRecord, onDone: () => void): void;
   openRoll(roll: FilmRecord): void;
   openCompletedDevelopment?(roll: FilmRecord, onDone: () => void): void;
+  editDevelopment?(session: FilmRecord, onDone: () => void): void;
   openScanSession?(roll: FilmRecord, onDone: () => void): void;
   instanceSelect(kind: string, value?: string): HTMLSelectElement;
   instanceThumb(kind: "filmStockpile" | "filmRoll", value: FilmValue): Node;
@@ -51,8 +54,10 @@ export interface FilmViewServices {
   icon(name: string, size?: number): Node;
   isAdvanced(): boolean;
   inspect(record: FilmRecord): void;
+  matchGear(exif: FilmValue): FilmValue;
   getPhotos(): Promise<readonly FilmRecord[]>;
   blobUrl(blob: unknown): Promise<string | null | undefined>;
   readonly rollStatuses: readonly string[];
   readonly cassetteTypes: readonly string[];
+  readonly captureFormats: readonly string[];
 }

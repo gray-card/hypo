@@ -25,7 +25,7 @@ If you are documenting a roll that was loaded elsewhere, use the option to add a
 
 Open the **Shoots** section and add a shoot. Select the camera, lens, and loaded roll, then save it. This produces an `app.graycard.session.capture` record that can group many exposures and, later, photos.
 
-Open the shoot and select **Log**. The shot logger keeps the selected gear and advances the frame number between entries, which makes repeated logging quick.
+Open the shoot and select **Add frames**. The shot logger keeps the selected gear and advances the frame number between entries, which makes repeated logging quick.
 
 ## 4. Log the first frame
 
@@ -39,4 +39,4 @@ Disconnect the network before logging another frame. Hypo should report that the
 
 The offline entry is a queued create operation in IndexedDB. Hypo assigns it a temporary `outbox://` URI, then records the committed AT-URI after the PDS accepts it. This queue currently covers shot logging; do not assume that every application write has the same offline guarantee.
 
-You now have the minimum connected chain for a roll: film-stock type → stockpile → physical roll → shoot → exposure. Continue with [Import + EXIF](./import-and-exif.md) when scans or digital files are ready.
+You now have the minimum connected chain for a roll: film-stock type → stockpile → physical roll → shoot → exposure. If you recorded the roll in another app, continue with [Import `.frames` files](../how-to/import-frames-files.md). Continue with [Import + EXIF](./import-and-exif.md) when scans or digital files are ready.

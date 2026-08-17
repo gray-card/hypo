@@ -78,7 +78,7 @@ export async function renderLibraryShell(
     for (const row of body.querySelectorAll(".gear-row"))
       row.classList.toggle("hidden", Boolean(query) && !services.matches(query, row.textContent));
   });
-  body.append(search);
+  if (tab !== "film" && tab !== "shoots") body.append(search);
 
   if (tab === "film") services.renderFilm(body);
   else if (tab === "darkroom") {

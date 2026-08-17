@@ -197,6 +197,11 @@
             "format": "at-uri",
             "description": "app.graycard.instance.labAccount that developed the roll (structured alternative to labService)."
           },
+          "developmentLocation": {
+            "type": "string",
+            "knownValues": ["home", "lab", "other"],
+            "description": "Where this development session was performed. This keeps the session self-describing when its linked rolls change."
+          },
           "notes": {
             "type": "string",
             "maxLength": 2000

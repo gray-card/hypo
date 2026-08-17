@@ -127,7 +127,7 @@ test("shot logger visual and accessibility", async ({ page }) => {
   const body = page.locator("#library-body");
   await body.getByRole("button", { name: "Shoots", exact: true }).click();
   const shoot = body.getByRole("listitem").filter({ hasText: "Fixture photo walk" });
-  await shoot.getByRole("button", { name: "Log", exact: true }).click();
+  await shoot.getByRole("button", { name: "Add frames", exact: true }).click();
   await expect(page.locator(".logger-overlay")).toBeVisible();
   await stabilize(page);
 

@@ -279,7 +279,7 @@ test("setup view supports keyboard nav, modal focus restoration, and seeded gear
   await shoots.focus();
   await page.keyboard.press("Enter");
   const shoot = page.locator("#library-body .gear-row").filter({ hasText: "Fixture photo walk" });
-  const log = shoot.getByRole("button", { name: "Log", exact: true });
+  const log = shoot.getByRole("button", { name: "Add frames", exact: true });
   await log.focus();
   await page.keyboard.press("Enter");
   const logger = page.locator(".logger-overlay");

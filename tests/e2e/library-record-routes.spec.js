@@ -16,6 +16,14 @@ async function createRecord(request, collection, rkey, record) {
   return (await response.json()).uri;
 }
 
+async function listRecords(request, collection) {
+  const response = await request.get(`${PDS_ORIGIN}/xrpc/com.atproto.repo.listRecords`, {
+    params: { repo: REPO, collection },
+  });
+  expect(response.ok()).toBe(true);
+  return (await response.json()).records;
+}
+
 async function login(page) {
   await page.route("https://public.api.bsky.app/**", (route) =>
     route.fulfill({
@@ -90,7 +98,7 @@ test("roll deep links target the requested roll and replay through browser histo
   await expect(page).toHaveURL(/\/library\/film$/);
 
   const rollRow = page.locator("#library-body .gear-row").filter({ hasText: "Deep-link roll" });
-  await rollRow.getByRole("button", { name: "Open", exact: true }).click();
+  await rollRow.getByRole("button", { name: "Manage", exact: true }).click();
   await expect(page).toHaveURL(/\/roll\/roll-a$/);
   await page.goBack();
   await expect(dialog).toBeHidden();
@@ -181,6 +189,21 @@ test("rolls show processing history and open preselected completed-session forms
   await expect(rollDialog).toContainText("every 60s for 10s · 4 inversions");
   await expect(rollDialog).toContainText("My Scan 9000 · Dedicated film scanner · 4000 dpi");
 
+  await rollDialog.getByTitle("Edit development session").click();
+  const editDevelopmentDialog = page.getByRole("dialog", { name: "Edit development" });
+  await expect(editDevelopmentDialog.getByRole("checkbox", { name: /Processed fixture roll/ })).toBeChecked();
+  await expect(editDevelopmentDialog.getByLabel("Actual minutes").first()).toHaveValue("9");
+  await editDevelopmentDialog.getByLabel("Actual minutes").first().fill("10");
+  await editDevelopmentDialog.getByRole("button", { name: "Save changes" }).click();
+  await expect(editDevelopmentDialog).toBeHidden();
+  await expect
+    .poll(async () => {
+      const records = await listRecords(request, "app.graycard.process.developSession");
+      return records.find((record) => record.uri.endsWith("/development-processing"))?.value.steps?.[0]
+        ?.actualTimeSeconds;
+    })
+    .toBe(630);
+
   await rollDialog.getByRole("button", { name: "Log development" }).click();
   const developmentDialog = page.getByRole("dialog", { name: "Log completed development" });
   await expect(developmentDialog.getByText(/same session record as the timer/)).toBeVisible();
@@ -209,4 +232,124 @@ test("rolls show processing history and open preselected completed-session forms
   await expect(scanDialog.getByText(/Only the roll, scanner, method, and date are needed/)).toBeVisible();
   expect(await scanDialog.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
   await scanDialog.getByRole("button", { name: "Cancel", exact: true }).click();
+});
+
+test("batch .frames import links rolls, proposes shoots, and keeps coordinates private by default", async ({
+  page,
+  request,
+}) => {
+  const stock = await createRecord(request, "app.graycard.catalog.filmStock", "stock-frames", {
+    $type: "app.graycard.catalog.filmStock",
+    brand: "Fixture",
+    name: "Import 100",
+    iso: 100,
+    format: "135",
+    createdAt: "2026-08-16T00:00:00.000Z",
+  });
+  const firstRoll = await createRecord(request, "app.graycard.instance.filmRoll", "roll-frames-a", {
+    $type: "app.graycard.instance.filmRoll",
+    stock,
+    label: "Roll A",
+    status: "exposed",
+    createdAt: "2026-08-16T00:00:00.000Z",
+  });
+  const secondRoll = await createRecord(request, "app.graycard.instance.filmRoll", "roll-frames-b", {
+    $type: "app.graycard.instance.filmRoll",
+    stock,
+    label: "Roll B",
+    status: "exposed",
+    createdAt: "2026-08-16T00:00:00.000Z",
+  });
+  const archive = (name, prefix, hour) => ({
+    name,
+    iso: 100,
+    frames: [
+      {
+        id: `${prefix}-1`,
+        number: 1,
+        createdAt: `2026-08-16T${hour}:00:00.000Z`,
+        latitude: 43.15,
+        longitude: -77.61,
+        aperture: 5.6,
+        shutterSpeed: 0.008,
+      },
+      {
+        id: `${prefix}-2`,
+        number: 2,
+        createdAt: `2026-08-16T${hour}:02:00.000Z`,
+        latitude: 43.151,
+        longitude: -77.611,
+        aperture: 8,
+        shutterSpeed: 0.004,
+      },
+    ],
+  });
+
+  await login(page);
+  await page.goto("/library/film");
+  const chooseFiles = page.waitForEvent("filechooser");
+  await page.getByRole("button", { name: "Import .frames" }).click();
+  await (
+    await chooseFiles
+  ).setFiles([
+    {
+      name: "Roll-A.frames",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(archive("Roll A", "a", "10"))),
+    },
+    {
+      name: "Roll-B.frames",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(archive("Roll B", "b", "14"))),
+    },
+  ]);
+
+  const dialog = page.getByRole("dialog", { name: "Import 2 .frames files" });
+  await expect(dialog.getByLabel("Roll for Roll A")).toHaveValue(firstRoll);
+  await expect(dialog.getByLabel("Roll for Roll B")).toHaveValue(secondRoll);
+  await expect(dialog.getByText("Use location to refine shoot boundaries").first()).toBeVisible();
+  await expect(dialog.getByRole("checkbox", { name: /Publish frame locations/ })).not.toBeChecked();
+  await dialog.getByRole("button", { name: "Import 4 frames" }).click();
+  await expect(dialog).toBeHidden();
+
+  await expect
+    .poll(
+      async () =>
+        (await listRecords(request, "app.graycard.instance.exposure")).filter((record) =>
+          record.value.sourceIdentifier?.startsWith("frames:"),
+        ).length,
+    )
+    .toBe(4);
+  const exposures = (await listRecords(request, "app.graycard.instance.exposure")).filter((record) =>
+    record.value.sourceIdentifier?.startsWith("frames:"),
+  );
+  expect(exposures.map((record) => record.value.roll).sort()).toEqual([firstRoll, firstRoll, secondRoll, secondRoll]);
+  expect(exposures.every((record) => record.value.location === undefined)).toBe(true);
+  expect(await listRecords(request, "app.graycard.session.capture")).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ value: expect.objectContaining({ label: "Roll A", rolls: [firstRoll] }) }),
+      expect.objectContaining({ value: expect.objectContaining({ label: "Roll B", rolls: [secondRoll] }) }),
+    ]),
+  );
+
+  const chooseDuplicate = page.waitForEvent("filechooser");
+  await page.getByRole("button", { name: "Import .frames" }).click();
+  await (
+    await chooseDuplicate
+  ).setFiles({
+    name: "Roll-A.frames",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(archive("Roll A", "a", "10"))),
+  });
+  const duplicateDialog = page.getByRole("dialog", { name: "Import Roll A" });
+  await expect(duplicateDialog).toContainText("2 frames already imported will be skipped");
+  await duplicateDialog.getByRole("button", { name: "Import 0 frames" }).click();
+  await expect(duplicateDialog).toBeHidden();
+  await expect
+    .poll(
+      async () =>
+        (await listRecords(request, "app.graycard.session.capture")).filter((record) => record.value.label === "Roll A")
+          .length,
+    )
+    .toBe(1);
 });

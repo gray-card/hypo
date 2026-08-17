@@ -77,12 +77,92 @@ export function primaryDevelopmentStep(value: LibraryValue): LibraryValue | unde
 
 export interface ManualDevelopmentOptions {
   readonly selectedRolls?: readonly string[];
+  readonly existing?: LibraryRecord | null;
+}
+
+const sessionFinishedAt = (value: LibraryValue) => String(value.finishedAt || value.createdAt || "");
+
+function developmentSessionsAfterSave(
+  services: ActivityServices,
+  session: LibraryValue,
+  existing: LibraryRecord | null,
+): LibraryRecord[] {
+  const current = [...(services.getStore().developSessions || [])];
+  const virtual: LibraryRecord = { uri: existing?.uri || "pending:development", value: session };
+  if (!existing) return [...current, virtual];
+  const index = current.findIndex((candidate) => candidate.uri === existing.uri);
+  if (index < 0) return [...current, virtual];
+  current.splice(index, 1, virtual);
+  return current;
+}
+
+function applyDerivedRollDevelopment(
+  roll: LibraryRecord,
+  sessions: readonly LibraryRecord[],
+  previousSessions: readonly LibraryRecord[],
+  now: string,
+): LibraryValue {
+  const next: LibraryValue = { ...roll.value, updatedAt: now };
+  const ordered = [...sessions].sort((left, right) =>
+    sessionFinishedAt(left.value).localeCompare(sessionFinishedAt(right.value)),
+  );
+  const previous = [...previousSessions].sort((left, right) =>
+    sessionFinishedAt(left.value).localeCompare(sessionFinishedAt(right.value)),
+  );
+  if (!ordered.length) {
+    const previousStart = previous
+      .map((record) => record.value.startedAt)
+      .filter(Boolean)
+      .sort()[0];
+    const previousFinish = previous
+      .map((record) => sessionFinishedAt(record.value))
+      .filter(Boolean)
+      .sort()[0];
+    const previousLatest = previous.at(-1)?.value;
+    const previousDeveloper = previous
+      .map((record) => primaryDeveloperForSteps(Array.isArray(record.value.steps) ? record.value.steps : []))
+      .filter(Boolean)
+      .at(-1);
+    if (!previousStart || next.developmentStartedAt === previousStart) delete next.developmentStartedAt;
+    if (!previousFinish || next.developedAt === previousFinish) delete next.developedAt;
+    if (!previousDeveloper || next.developedWith === previousDeveloper) delete next.developedWith;
+    if (!previousLatest?.lab || next.lab === previousLatest.lab) delete next.lab;
+    const previousLocation =
+      previousLatest?.developmentLocation || (previousLatest?.lab || previousLatest?.labService ? "lab" : "home");
+    if (!previousLatest || next.developmentLocation === previousLocation) delete next.developmentLocation;
+    if (["at-lab", "developing", "developed"].includes(String(next.status))) next.status = "exposed";
+    return next;
+  }
+
+  const firstStart = ordered
+    .map((record) => record.value.startedAt)
+    .filter(Boolean)
+    .sort()[0];
+  const firstFinish = ordered
+    .map((record) => sessionFinishedAt(record.value))
+    .filter(Boolean)
+    .sort()[0];
+  const latest = ordered.at(-1)!.value;
+  const latestDeveloper = [...ordered]
+    .reverse()
+    .map((record) => primaryDeveloperForSteps(Array.isArray(record.value.steps) ? record.value.steps : []))
+    .find(Boolean);
+  if (firstStart) next.developmentStartedAt = firstStart;
+  if (firstFinish) next.developedAt = firstFinish;
+  if (latestDeveloper) next.developedWith = latestDeveloper;
+  else delete next.developedWith;
+  if (latest.lab) next.lab = latest.lab;
+  else delete next.lab;
+  next.developmentLocation = latest.developmentLocation || (latest.lab || latest.labService ? "lab" : "home");
+  if (!DEVELOPED_OR_LATER.has(String(next.status))) next.status = "developed";
+  return next;
 }
 
 export async function saveCompletedDevelopmentRecords(
   services: ActivityServices,
   session: LibraryValue,
   developmentLocation = "home",
+  existing: LibraryRecord | null = null,
 ): Promise<string> {
   const store = services.getStore();
   const rolls = store.instance.filmRoll || [];
@@ -90,46 +170,68 @@ export async function saveCompletedDevelopmentRecords(
   const rollUris = Array.isArray(session.filmRolls) ? session.filmRolls.map(String) : [];
   const steps = Array.isArray(session.steps) ? session.steps : [];
   const primaryDeveloper = primaryDeveloperForSteps(steps);
-  if (!primaryDeveloper && !session.lab) throw new Error("A completed home development needs a linked developer stage");
+  if (!primaryDeveloper && !session.lab && developmentLocation !== "lab")
+    throw new Error("A completed home development needs a linked developer stage");
   const finishedAt = String(session.finishedAt || session.createdAt || new Date().toISOString());
-  const startedAt = String(session.startedAt || finishedAt);
   const now = new Date().toISOString();
+  session.developmentLocation = developmentLocation;
 
-  const rollUpdates = rollUris.map((uri) => {
+  const previousRollUris = new Set(
+    existing && Array.isArray(existing.value.filmRolls) ? existing.value.filmRolls.map(String) : [],
+  );
+  const impactedRollUris = new Set([...rollUris, ...previousRollUris]);
+  const sessionsAfter = developmentSessionsAfterSave(services, session, existing);
+  const sessionsBefore = services.getStore().developSessions || [];
+  const rollUpdates = [...impactedRollUris].map((uri) => {
     const roll = rolls.find((candidate) => candidate.uri === uri) as LibraryRecord | undefined;
     if (!roll) throw new Error(`Could not find selected roll ${uri}`);
-    const next: LibraryValue = {
-      ...roll.value,
-      status: DEVELOPED_OR_LATER.has(String(roll.value.status)) ? roll.value.status : "developed",
-      developmentStartedAt: roll.value.developmentStartedAt || startedAt,
-      developedAt: roll.value.developedAt || finishedAt,
-      developmentLocation,
-      updatedAt: now,
-    };
-    if (primaryDeveloper) next.developedWith = primaryDeveloper;
+    const relatedAfter = sessionsAfter.filter((candidate) => candidate.value.filmRolls?.includes(uri));
+    const relatedBefore = sessionsBefore.filter((candidate) => candidate.value.filmRolls?.includes(uri));
+    const next = applyDerivedRollDevelopment(roll, relatedAfter, relatedBefore, now);
     assertConsumableLifecycle(FILM_ROLL_COLLECTION, next);
     return { roll, next };
   });
-  const chemistryUpdates = chemistryUrisForDevelopment(session).map((uri) => {
+  const oldChemistryUris = new Set(existing ? chemistryUrisForDevelopment(existing.value) : []);
+  const newChemistryUris = new Set(chemistryUrisForDevelopment(session));
+  const impactedChemistryUris = new Set([...oldChemistryUris, ...newChemistryUris]);
+  const oldRollCount = existing && Array.isArray(existing.value.filmRolls) ? existing.value.filmRolls.length : 0;
+  const chemistryUpdates = [...impactedChemistryUris].map((uri) => {
     const record = chemistry.find((candidate) => candidate.uri === uri) as LibraryRecord | undefined;
     if (!record) throw new Error(`Could not find linked chemistry ${uri}`);
-    const previousLastUsed = Date.parse(String(record.value.lastUsedAt || ""));
-    return {
-      record,
-      next: {
-        ...record.value,
-        rollsProcessed: Math.max(0, Number(record.value.rollsProcessed) || 0) + rollUris.length,
-        sessionsUsed: Math.max(0, Number(record.value.sessionsUsed) || 0) + 1,
-        lastUsedAt:
-          Number.isFinite(previousLastUsed) && previousLastUsed > Date.parse(finishedAt)
-            ? record.value.lastUsedAt
-            : finishedAt,
-        updatedAt: now,
-      },
+    const oldIncluded = oldChemistryUris.has(uri);
+    const newIncluded = newChemistryUris.has(uri);
+    const rollDelta = (newIncluded ? rollUris.length : 0) - (oldIncluded ? oldRollCount : 0);
+    const sessionDelta = Number(newIncluded) - Number(oldIncluded);
+    const next: LibraryValue = {
+      ...record.value,
+      rollsProcessed: Math.max(0, (Number(record.value.rollsProcessed) || 0) + rollDelta),
+      sessionsUsed: Math.max(0, (Number(record.value.sessionsUsed) || 0) + sessionDelta),
+      updatedAt: now,
     };
+    const latestKnownUse = sessionsAfter
+      .filter((candidate) => chemistryUrisForDevelopment(candidate.value).includes(uri))
+      .map((candidate) => sessionFinishedAt(candidate.value))
+      .filter(Boolean)
+      .sort()
+      .at(-1);
+    const previousLastUsed = Date.parse(String(record.value.lastUsedAt || ""));
+    const oldFinished = Date.parse(existing ? sessionFinishedAt(existing.value) : "");
+    const existingLastBelongsToEditedSession =
+      Boolean(existing) &&
+      Number.isFinite(previousLastUsed) &&
+      Number.isFinite(oldFinished) &&
+      previousLastUsed === oldFinished;
+    if (latestKnownUse && (!Number.isFinite(previousLastUsed) || existingLastBelongsToEditedSession)) {
+      next.lastUsedAt = latestKnownUse;
+    } else if (newIncluded && (!Number.isFinite(previousLastUsed) || Date.parse(finishedAt) > previousLastUsed)) {
+      next.lastUsedAt = finishedAt;
+    } else if (!latestKnownUse && existingLastBelongsToEditedSession) {
+      delete next.lastUsedAt;
+    }
+    return { record, next };
   });
 
-  const sessionUri = await services.saveRecord(services.collections.developSession, session, null);
+  const sessionUri = await services.saveRecord(services.collections.developSession, session, existing);
   for (const { roll, next } of rollUpdates) {
     await services.saveRecord(services.collections.filmRoll, next, roll);
   }
@@ -139,7 +241,7 @@ export async function saveCompletedDevelopmentRecords(
   return sessionUri;
 }
 
-export function renderDarkroomActivity(body: HTMLElement, services: ActivityServices): void {
+export function renderDarkroomActivity(body: HTMLElement, services: ActivityServices, render?: () => void): void {
   const developments = (services.getStore().developSessions || []).map((record) => ({
     record,
     kind: "develop",
@@ -193,8 +295,18 @@ export function renderDarkroomActivity(body: HTMLElement, services: ActivityServ
           {
             type: "button",
             class: "gear-row row between development-activity-row",
-            onclick: () => services.inspect(record),
-            title: `Inspect ${kind === "develop" ? "development" : "scan"} session`,
+            onclick: () =>
+              kind === "develop"
+                ? openDevelopmentSession(
+                    record,
+                    async () => {
+                      await services.reloadStore();
+                      render?.();
+                    },
+                    services,
+                  )
+                : services.inspect(record),
+            title: kind === "develop" ? "Edit development session" : "Inspect scan session",
           },
           [
             el("div", {}, [
@@ -254,6 +366,8 @@ export function openManualDevelopment(
   services: ActivityServices,
   options: ManualDevelopmentOptions = {},
 ) {
+  const existing = options.existing || null;
+  const value = existing?.value || {};
   const rolls = services.getStore().instance.filmRoll || [];
   const chemistry = services.getStore().instance.chemistry || [];
   const processSelect = el(
@@ -263,12 +377,14 @@ export function openManualDevelopment(
       el("option", { value: process }, services.enumLabel(process)),
     ),
   );
-  const started = dateField("Session started (optional)", "");
-  const completed = dateField("Session finished", new Date().toISOString());
+  processSelect.value = String(value.process || "bw");
+  const started = dateField("Session started (optional)", value.startedAt || "");
+  const completed = dateField("Session finished", value.finishedAt || new Date().toISOString());
   const locationSelect = el("select", { "data-key": "developmentLocation" }, [
     el("option", { value: "home" }, "Home darkroom"),
     el("option", { value: "other" }, "Other"),
   ]);
+  locationSelect.value = String(value.developmentLocation || "home");
   const tankTypeSelect = el(
     "select",
     { "data-key": "tankType" },
@@ -276,6 +392,7 @@ export function openManualDevelopment(
       el("option", { value }, services.enumLabel(value)),
     ),
   );
+  tankTypeSelect.value = String(value.tankType || "tank");
   const pushPullSelect = el(
     "select",
     { "data-key": "pushPull" },
@@ -283,27 +400,35 @@ export function openManualDevelopment(
       el("option", { value }, value === "0" ? "None" : `${value} stop${Math.abs(Number(value)) === 1 ? "" : "s"}`),
     ),
   );
-  const notesInput = el("textarea", {
-    rows: "3",
-    placeholder: "Optional session notes",
-    "data-key": "notes",
-  });
+  const pushPullValue = Number(value.pushPull?.value) / Number(value.pushPull?.scale || 1);
+  pushPullSelect.value = Number.isFinite(pushPullValue) ? String(pushPullValue) : "0";
+  const notesInput = el(
+    "textarea",
+    {
+      rows: "3",
+      placeholder: "Optional session notes",
+      "data-key": "notes",
+    },
+    String(value.notes || ""),
+  );
   const rollList = checkList(
     rolls.map((roll) => ({ value: roll.uri, label: services.instanceLabel("filmRoll", roll.value) })),
     {
-      selected: options.selectedRolls,
+      selected: options.selectedRolls || (Array.isArray(value.filmRolls) ? value.filmRolls : []),
       emptyMessage: el("p", { class: "muted small" }, "No rolls yet — add one in the Film tab first."),
     },
   );
-  const stageEditor = createDevelopmentStepEditor(services);
+  const stageEditor = createDevelopmentStepEditor(services, Array.isArray(value.steps) ? value.steps : []);
 
   return openModal(
-    "Log completed development",
+    existing ? "Edit development" : "Log completed development",
     [
       el(
         "p",
         { class: "muted small" },
-        "Record a development you already completed. This creates the same session record as the timer without starting a live timer.",
+        existing
+          ? "Update the rolls, timing, chemistry, and ordered stages for this development. The existing record is replaced in place."
+          : "Record a development you already completed. This creates the same session record as the timer without starting a live timer.",
       ),
       chemistry.length
         ? null
@@ -356,25 +481,40 @@ export function openManualDevelopment(
         startedAt,
         finishedAt,
         notes: notesInput.value.trim() || undefined,
-        createdAt: new Date().toISOString(),
-        provenance: { source: "manual", assertedAt: new Date().toISOString() },
+        createdAt: value.createdAt || new Date().toISOString(),
+        provenance: value.provenance || { source: "manual", assertedAt: new Date().toISOString() },
       };
+      if (existing) session.updatedAt = new Date().toISOString();
       if (pushPull) session.pushPull = { unit: "stop", value: pushPull, scale: 1 };
 
-      const sessionUri = await saveCompletedDevelopmentRecords(services, session, locationSelect.value);
+      const sessionUri = await saveCompletedDevelopmentRecords(services, session, locationSelect.value, existing);
       await services.advanceWorkflowStage?.("develop", rollUris, sessionUri);
       await services.reloadStore();
-      toast(`Logged development for ${rollUris.length} roll${rollUris.length === 1 ? "" : "s"}`, "ok");
+      toast(
+        `${existing ? "Updated" : "Logged"} development for ${rollUris.length} roll${rollUris.length === 1 ? "" : "s"}`,
+        "ok",
+      );
       onDone?.();
     },
-    { saveLabel: "Log development" },
+    { saveLabel: existing ? "Save changes" : "Log development" },
   );
 }
 
-export function openLabDevelopment(onDone: (() => void) | undefined, services: ActivityServices) {
+export function openLabDevelopment(
+  onDone: (() => void) | undefined,
+  services: ActivityServices,
+  existing: LibraryRecord | null = null,
+) {
+  const value = existing?.value || {};
   const labs = services.getStore().instance.labAccount || [];
-  const rolls = (services.getStore().instance.filmRoll || []).filter((record) => record.value.status !== "archived");
-  const labSelect = createInstanceSelect("labAccount", "", services);
+  const rolls = services.getStore().instance.filmRoll || [];
+  const labSelect = createInstanceSelect("labAccount", String(value.lab || ""), services);
+  const labNameInput = el("input", {
+    type: "text",
+    value: value.labService || "",
+    placeholder: "Only needed when the lab is not in your setup",
+    maxlength: "128",
+  });
   const processSelect = el(
     "select",
     {},
@@ -382,6 +522,7 @@ export function openLabDevelopment(onDone: (() => void) | undefined, services: A
       el("option", { value: process }, services.enumLabel(process)),
     ),
   );
+  processSelect.value = String(value.process || "c41");
   const pushSelect = el(
     "select",
     {},
@@ -389,31 +530,37 @@ export function openLabDevelopment(onDone: (() => void) | undefined, services: A
       el("option", { value: stops }, stops === "0" ? "None" : `${stops} stop${Math.abs(+stops) === 1 ? "" : "s"}`),
     ),
   );
+  const pushValue = Number(value.pushPull?.value) / Number(value.pushPull?.scale || 1);
+  pushSelect.value = Number.isFinite(pushValue) ? String(pushValue) : "0";
   const dateInput = el("input", {
     type: "date",
     class: "date-input",
-    value: new Date().toISOString().slice(0, 10),
+    value: String(value.finishedAt || new Date().toISOString()).slice(0, 10),
   });
-  const notesInput = el("input", { type: "text", placeholder: "e.g. dev + scan, pushed for the concert" });
+  const notesInput = el("input", {
+    type: "text",
+    value: value.notes || "",
+    placeholder: "e.g. dev + scan, pushed for the concert",
+  });
   const rollList = checkList(
     rolls.map((roll) => ({
       value: roll.uri,
       label: services.instanceLabel("filmRoll", roll.value),
     })),
-    { emptyMessage: el("p", { class: "muted small" }, "No rolls yet — add one in the Film tab first.") },
+    {
+      selected: Array.isArray(value.filmRolls) ? value.filmRolls : [],
+      emptyMessage: el("p", { class: "muted small" }, "No rolls yet — add one in the Film tab first."),
+    },
   );
 
   return openModal(
-    "Log lab development",
+    existing ? "Edit lab development" : "Log lab development",
     [
       labs.length
         ? null
-        : el(
-            "p",
-            { class: "muted small" },
-            "Tip: add the lab (e.g. Praus) under Setup → Scanning first, then pick it here.",
-          ),
+        : el("p", { class: "muted small" }, "Tip: add the lab under Setup → Scanning first, or enter its name below."),
       field("Lab", labSelect),
+      field("Lab name (if not listed)", labNameInput),
       field("Process", processSelect),
       field("Push / pull", pushSelect),
       field("Date developed", dateInput),
@@ -426,41 +573,40 @@ export function openLabDevelopment(onDone: (() => void) | undefined, services: A
       const labUri = labSelect.value || undefined;
       const labName = labUri
         ? services.instanceLabel("labAccount", services.getStore().byUri.get(labUri)?.item.value)
-        : undefined;
+        : labNameInput.value.trim() || undefined;
       const push = Number.parseInt(pushSelect.value, 10) || 0;
       const rollUris = rollList.getSelected();
       const record: LibraryValue = {
         process: processSelect.value,
         lab: labUri,
         labService: labName,
+        developmentLocation: "lab",
         filmRolls: rollUris.length ? rollUris : undefined,
         startedAt: when,
         finishedAt: when,
         notes: notesInput.value.trim() || undefined,
-        createdAt: new Date().toISOString(),
-        provenance: { source: "manual", assertedAt: new Date().toISOString() },
+        createdAt: value.createdAt || new Date().toISOString(),
+        provenance: value.provenance || { source: "manual", assertedAt: new Date().toISOString() },
       };
+      if (existing) record.updatedAt = new Date().toISOString();
       if (push) record.pushPull = { unit: "stop", value: push, scale: 1 };
-      const sessionUri = await services.saveRecord(services.collections.developSession, record, null);
+      const sessionUri = await saveCompletedDevelopmentRecords(services, record, "lab", existing);
       await services.advanceWorkflowStage?.("develop", rollUris, sessionUri);
-      for (const uri of rollUris) {
-        const roll = (services.getStore().instance.filmRoll || []).find((item) => item.uri === uri) as
-          LibraryRecord | undefined;
-        if (!roll) continue;
-        const next: LibraryValue = {
-          ...roll.value,
-          status: "developed",
-          developedAt: roll.value.developedAt || when,
-          developmentLocation: "lab",
-          updatedAt: new Date().toISOString(),
-        };
-        if (labUri) next.lab = labUri;
-        if (!next.finishedAt) next.finishedAt = when;
-        await services.saveRecord(services.collections.filmRoll, next, roll);
-      }
       await services.reloadStore();
-      toast(`Logged lab development${labName ? ` at ${labName}` : ""}`, "ok");
+      toast(`${existing ? "Updated" : "Logged"} lab development${labName ? ` at ${labName}` : ""}`, "ok");
       onDone?.();
     },
+    { saveLabel: existing ? "Save changes" : "Log development" },
   );
+}
+
+export function openDevelopmentSession(
+  record: LibraryRecord,
+  onDone: (() => void) | undefined,
+  services: ActivityServices,
+) {
+  if (record.value.lab || record.value.labService) {
+    return openLabDevelopment(onDone, services, record);
+  }
+  return openManualDevelopment(onDone, services, { existing: record });
 }

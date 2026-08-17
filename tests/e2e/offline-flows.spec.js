@@ -149,7 +149,7 @@ test("a seeded roll and shoot keep one of three shots queued until reconnection"
   await body.getByRole("button", { name: "Shoots", exact: true }).click();
   const shoot = body.locator(".gear-row").filter({ hasText: "Fixture photo walk" });
   await expect(shoot).toBeVisible();
-  await shoot.getByRole("button", { name: "Log", exact: true }).click();
+  await shoot.getByRole("button", { name: "Add frames", exact: true }).click();
 
   const logger = page.locator(".logger-overlay");
   await expect(logger.locator(".logger-sticky-summary")).toContainText("Offline acceptance roll");
