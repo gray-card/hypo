@@ -28,6 +28,9 @@ rm -rf \
     "$repo_root/.derived-data/hypo-ios-ui-tests" \
     "$repo_root/.derived-data/hypo-ios-testflight-ui-tests" \
     "$repo_root/.derived-data/design-system-gallery" \
+    "$repo_root/public/catalog" \
+    "$repo_root/dist" \
+    "$repo_root/.lighthouseci" \
     "$repo_root/docs/site/build" \
     "$repo_root/docs/site/static/ios-api" \
     "$repo_root/docs/site/.docusaurus" \

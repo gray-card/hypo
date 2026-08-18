@@ -11,6 +11,19 @@ workspace="$ios_root/Hypo.xcworkspace"
 export CLANG_MODULE_CACHE_PATH="$clang_cache"
 export SWIFTPM_MODULECACHE_OVERRIDE="$module_cache"
 
+cleanup_build_artifacts() {
+    rm -rf \
+        "$repo_root/public/catalog" \
+        "$module_cache" \
+        "$clang_cache"
+    if [[ "${CI:-}" != "true" ]]; then
+        rm -rf \
+            "$repo_root/.derived-data/hypo-ios" \
+            "$repo_root/.derived-data/hypo-ios-device"
+    fi
+}
+trap cleanup_build_artifacts EXIT
+
 echo "Checking generated HypoLexicon artifacts"
 node "$ios_root/Scripts/generate-hypo-lexicon-swift.mjs" --check
 
@@ -18,6 +31,7 @@ echo "Checking generated OAuth client artifacts"
 node "$repo_root/scripts/gen-client-metadata.mjs" --check
 
 echo "Checking bundled catalog snapshot"
+node "$repo_root/scripts/build-catalog-shards.mjs"
 node "$ios_root/Scripts/stage-catalog-snapshot.mjs" --check
 
 echo "Checking the shared Panproto TypeScript/Swift corpus"
