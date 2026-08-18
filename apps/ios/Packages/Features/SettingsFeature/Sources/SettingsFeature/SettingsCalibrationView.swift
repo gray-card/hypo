@@ -40,7 +40,7 @@ struct SettingsCalibrationPanel: View {
                 pendingDeletion = nil
                 Task { await model.deleteCalibration(id: profile.id) }
             }
-        } message: { profile in
+        } message: { _ in
             Text(
                 "Readings that already cite this profile keep that reference. New readings will use another selected profile or no calibration."
             )

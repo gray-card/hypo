@@ -62,7 +62,7 @@ swift format lint \
 
 if command -v swiftlint >/dev/null 2>&1; then
     echo "Checking SwiftLint"
-    (cd "$ios_root" && swiftlint lint --strict --config .swiftlint.yml)
+    (cd "$ios_root" && swiftlint lint --strict --no-cache --config .swiftlint.yml)
 elif [[ "${CI:-}" == "true" ]]; then
     echo "SwiftLint is required in CI." >&2
     exit 1
