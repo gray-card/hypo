@@ -44,10 +44,18 @@ describe("direct gallery upload helpers", () => {
 
   it("addGalleryItem links a photo into a gallery at a position", async () => {
     const agent = mockAgent();
-    await addGalleryItem(agent, "did:plc:test", { gallery: "at://g", item: "at://p", position: 4 });
+    await addGalleryItem(agent, "did:plc:test", {
+      gallery: "at://did:plc:test/social.grain.gallery/gallery",
+      item: "at://did:plc:test/social.grain.photo/photo",
+      position: 4,
+    });
     const rec = agent.created[0];
     expect(rec.collection).toBe(COLLECTIONS.galleryItem);
-    expect(rec.record).toMatchObject({ gallery: "at://g", item: "at://p", position: 4 });
+    expect(rec.record).toMatchObject({
+      gallery: "at://did:plc:test/social.grain.gallery/gallery",
+      item: "at://did:plc:test/social.grain.photo/photo",
+      position: 4,
+    });
   });
 
   it("uploadImage uploads bytes and returns a blob ref", async () => {
@@ -63,14 +71,19 @@ describe("direct gallery upload helpers", () => {
     const item = {
       uri: "at://did:plc:test/social.grain.gallery.item/rk9",
       cid: "cid9",
-      value: { gallery: "at://g", item: "at://p", position: 0, createdAt: "2026-01-01T00:00:00Z" },
+      value: {
+        gallery: "at://did:plc:test/social.grain.gallery/gallery",
+        item: "at://did:plc:test/social.grain.photo/photo",
+        position: 0,
+        createdAt: "2026-01-01T00:00:00Z",
+      },
     };
     await setGalleryItemPosition(agent, "did:plc:test", item, 3);
     const rec = agent.put[0];
     expect(rec.collection).toBe(COLLECTIONS.galleryItem);
     expect(rec.rkey).toBe("rk9");
     expect(rec.record.position).toBe(3);
-    expect(rec.record.gallery).toBe("at://g"); // preserved
+    expect(rec.record.gallery).toBe("at://did:plc:test/social.grain.gallery/gallery"); // preserved
     expect(rec.record.createdAt).toBe("2026-01-01T00:00:00Z");
   });
 
@@ -132,6 +145,7 @@ describe("direct gallery upload helpers", () => {
           size: 2,
           original: { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 2 },
         },
+        aspectRatio: { width: 3, height: 2 },
         createdAt: "2026-01-01T00:00:00Z",
       },
     };
@@ -145,6 +159,53 @@ describe("direct gallery upload helpers", () => {
       size: 2,
     });
     expect(agent.put[0].record.photo).not.toHaveProperty("original");
+  });
+
+  it("rejects an oversized photo before creating a record", async () => {
+    const agent = mockAgent();
+    const blob = { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 1_000_001 };
+
+    await expect(createPhoto(agent, "did:plc:test", { blob, aspectRatio: { width: 3, height: 2 } })).rejects.toThrow(
+      "photo.size",
+    );
+    expect(agent.created).toHaveLength(0);
+  });
+
+  it("rejects an existing oversized photo before editing its alt text", async () => {
+    const agent = mockAgent();
+    const photo = {
+      uri: "at://did:plc:test/social.grain.photo/oversized",
+      cid: "cid-old",
+      value: {
+        photo: { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 1_000_001 },
+        aspectRatio: { width: 3, height: 2 },
+        createdAt: "2026-01-01T00:00:00Z",
+      },
+    };
+
+    await expect(savePhotoAlt(agent, "did:plc:test", photo, "must not write")).rejects.toThrow("photo.size");
+    expect(agent.put).toHaveLength(0);
+  });
+
+  it("rejects replacement photos without a valid aspect ratio", async () => {
+    const agent = mockAgent();
+    const photo = {
+      uri: "at://did:plc:test/social.grain.photo/photo",
+      cid: "cid-old",
+      value: {
+        photo: { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 1 },
+        aspectRatio: { width: 3, height: 2 },
+        createdAt: "2026-01-01T00:00:00Z",
+      },
+    };
+
+    await expect(
+      replacePhoto(agent, "did:plc:test", photo, {
+        blob: { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 1 },
+        aspectRatio: { width: 0, height: 2 },
+      }),
+    ).rejects.toThrow("aspectRatio.width");
+    expect(agent.put).toHaveLength(0);
   });
 
   it("rejects a corrupt blob instead of rewriting the Grain photo", async () => {

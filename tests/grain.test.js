@@ -1,22 +1,57 @@
 import { describe, it, expect } from "vitest";
-import { blobCid, parseAtUri, exifToForm, formToExifValue, formatExposure } from "../src/grain.js";
+import { BlobRef as AtprotoBlobRef } from "@atproto/lexicon";
+import { CID } from "multiformats/cid";
+import { blobCid, normalizeRecordView, parseAtUri, exifToForm, formToExifValue, formatExposure } from "../src/grain.js";
+
+const BLOB_CID = "bafkreifqn5r4ki5vm4w55xd6qhot5gz6b3tvw7athjuwk4vkz6ppf5zo24";
+
+function hydratedBlob() {
+  const raw = { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 892396 };
+  return new AtprotoBlobRef(CID.parse(BLOB_CID), "image/jpeg", 892396, raw);
+}
 
 describe("blobCid", () => {
   it("reads a raw JSON blob ref ($link)", () => {
-    expect(blobCid({ ref: { $link: "bafabc" }, mimeType: "image/jpeg" })).toBe("bafabc");
+    expect(blobCid({ ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 1 })).toBe(BLOB_CID);
   });
-  it("reads a hydrated BlobRef whose ref is a CID object (toString)", () => {
-    const cidObj = { toString: () => "bafcid", constructor: { name: "CID" } };
-    expect(blobCid({ ref: cidObj, mimeType: "image/jpeg" })).toBe("bafcid");
+  it("reads a hydrated BlobRef whose ref is a CID object", () => {
+    expect(blobCid(hydratedBlob())).toBe(BLOB_CID);
   });
   it("reads a bare string ref", () => {
-    expect(blobCid({ ref: "bafstr" })).toBe("bafstr");
+    expect(blobCid({ ref: BLOB_CID, mimeType: "image/jpeg", size: 1 })).toBe(BLOB_CID);
   });
   it("returns null for junk / missing", () => {
     expect(blobCid(null)).toBe(null);
     expect(blobCid({})).toBe(null);
     expect(blobCid({ ref: {} })).toBe(null);
     expect(blobCid({ ref: { $link: "[object Object]" } })).toBe(null);
+  });
+});
+
+describe("normalizeRecordView", () => {
+  it("repairs a BlobRef after IndexedDB structured cloning removes its prototypes", () => {
+    const cached = structuredClone({
+      uri: "at://did:plc:test/social.grain.photo/photo",
+      cid: "bafrecord",
+      value: {
+        $type: "social.grain.photo",
+        photo: hydratedBlob(),
+        aspectRatio: { width: 3, height: 2 },
+        createdAt: "2026-08-18T12:00:00.000Z",
+      },
+    });
+
+    const normalized = normalizeRecordView(cached);
+
+    expect(normalized.value.photo).toEqual({
+      $type: "blob",
+      ref: { $link: BLOB_CID },
+      mimeType: "image/jpeg",
+      size: 892396,
+    });
+    expect(blobCid(normalized.value.photo)).toBe(BLOB_CID);
+    expect(JSON.stringify(normalized)).not.toContain("[object Object]");
+    expect(normalized.value.photo).not.toHaveProperty("original");
   });
 });
 

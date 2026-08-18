@@ -1,11 +1,49 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { BlobRef as AtprotoBlobRef } from "@atproto/lexicon";
+import { CID } from "multiformats/cid";
 import { listRecords, recordStore } from "../src/grain.js";
 import { NS, deleteRecord, loadStore, readStoreSnapshot, saveRecord } from "../src/graycard.js";
+import { openRepositoryRecordCache } from "@hypo/store";
 import { mockAgent } from "./setup.js";
+
+const BLOB_CID = "bafkreifqn5r4ki5vm4w55xd6qhot5gz6b3tvw7athjuwk4vkz6ppf5zo24";
 
 afterEach(() => setOnline(true));
 
 describe("record-cache read policy", () => {
+  it("restores a Grain BlobRef after the cache structured-clones it", async () => {
+    const did = "did:plc:structured-clone-cache";
+    const collection = "social.grain.photo";
+    const rawBlob = {
+      $type: "blob",
+      ref: { $link: BLOB_CID },
+      mimeType: "image/jpeg",
+      size: 892396,
+    };
+    const hydratedBlob = new AtprotoBlobRef(CID.parse(BLOB_CID), "image/jpeg", 892396, rawBlob);
+    const cache = await openRepositoryRecordCache();
+    await cache.replace(did, collection, [
+      {
+        uri: `at://${did}/${collection}/photo`,
+        cid: "bafrecord",
+        value: {
+          $type: collection,
+          photo: hydratedBlob,
+          aspectRatio: { width: 3, height: 2 },
+          createdAt: "2026-08-18T12:00:00.000Z",
+        },
+      },
+    ]);
+    const agent = mockAgent();
+    agent.com.atproto.repo.listRecords = vi.fn(agent.com.atproto.repo.listRecords);
+
+    const [record] = await listRecords(agent, did, collection);
+
+    expect(record.value.photo).toEqual(rawBlob);
+    expect(record.value.photo).not.toHaveProperty("original");
+    expect(agent.com.atproto.repo.listRecords).not.toHaveBeenCalled();
+  });
+
   it("uses the cached snapshot until an explicit refresh", async () => {
     const agent = mockAgent();
     const original = agent.com.atproto.repo.listRecords;

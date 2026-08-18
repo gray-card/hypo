@@ -13,6 +13,7 @@ import {
   parseAtUri,
 } from "@hypo/sync";
 import { repoClient } from "./pds.js";
+import { canonicalizeAndValidateGrainRecord } from "./grainValidation.js";
 
 const runtimes = new Map();
 const acknowledgementListeners = new Map();
@@ -138,8 +139,20 @@ function clientDelegate(runtime) {
   }
 
   return {
-    create: (input) => client().create({ ...input, validate: false }),
-    put: (input) => withConflictRecord(input, () => client().put({ ...input, validate: false })),
+    create: (input) =>
+      client().create({
+        ...input,
+        record: canonicalizeAndValidateGrainRecord(input.collection, input.record),
+        validate: false,
+      }),
+    put: (input) =>
+      withConflictRecord(input, () =>
+        client().put({
+          ...input,
+          record: canonicalizeAndValidateGrainRecord(input.collection, input.record),
+          validate: false,
+        }),
+      ),
     delete: (input) => withConflictRecord(input, () => client().delete(input)),
   };
 }

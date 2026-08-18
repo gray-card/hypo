@@ -25,7 +25,11 @@ Select **Create gallery**. For each file, Hypo:
 4. reads EXIF from the original file, because canvas rendering strips it; and
 5. creates `social.grain.photo.exif` when at least one supported tag was found.
 
-If the browser cannot decode an image for resizing, Hypo uploads the original file. EXIF extraction is best effort and never blocks the upload.
+Hypo validates the resulting Grain record before writing it. The uploaded blob
+must be an image no larger than Grain's 1 MB limit, and the record must include
+its aspect ratio. If the browser cannot decode or reduce a file safely, Hypo
+reports the problem and does not upload the original. EXIF extraction is best
+effort and never blocks the upload.
 
 ## 3. Inspect one photo
 

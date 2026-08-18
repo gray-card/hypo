@@ -473,14 +473,19 @@ describe("clearSceneGraph", () => {
 describe("preparePhotoImage (fallback path: browser cannot decode/resize)", () => {
   // jsdom has no createImageBitmap, so preparePhotoImage always takes the
   // fallback branch that guards format and payload size before sending as-is.
-  const blobRef = (mimeType) => ({ $type: "blob", ref: { $link: "bafkreitest" }, mimeType });
+  const blobRef = (mimeType, size) => ({
+    $type: "blob",
+    ref: { $link: "bafkreifqn5r4ki5vm4w55xd6qhot5gz6b3tvw7athjuwk4vkz6ppf5zo24" },
+    mimeType,
+    size,
+  });
   const imgAgent = (bytes, type) => ({
     com: { atproto: { sync: { getBlob: async () => ({ data: new Blob([bytes], { type }) }) } } },
   });
 
   it("returns base64 + mediaType for a small, supported image", async () => {
     const agent = imgAgent(new Uint8Array([1, 2, 3, 4]), "image/png");
-    const out = await preparePhotoImage(agent, "did:plc:test", blobRef("image/png"));
+    const out = await preparePhotoImage(agent, "did:plc:test", blobRef("image/png", 4));
     expect(out.mediaType).toBe("image/png");
     expect(typeof out.base64).toBe("string");
     expect(out.base64.length).toBeGreaterThan(0);
@@ -488,7 +493,7 @@ describe("preparePhotoImage (fallback path: browser cannot decode/resize)", () =
 
   it("throws an actionable error for an unsupported format", async () => {
     const agent = imgAgent(new Uint8Array([1, 2, 3]), "image/tiff");
-    await expect(preparePhotoImage(agent, "did:plc:test", blobRef("image/tiff"))).rejects.toThrow(
+    await expect(preparePhotoImage(agent, "did:plc:test", blobRef("image/tiff", 3))).rejects.toThrow(
       /Unsupported image format/,
     );
   });
@@ -496,7 +501,9 @@ describe("preparePhotoImage (fallback path: browser cannot decode/resize)", () =
   it("throws when a supported image is too large to send un-resized", async () => {
     const big = new Uint8Array(3_600_000); // over the ~3.5MB fallback ceiling
     const agent = imgAgent(big, "image/jpeg");
-    await expect(preparePhotoImage(agent, "did:plc:test", blobRef("image/jpeg"))).rejects.toThrow(/too large/);
+    await expect(preparePhotoImage(agent, "did:plc:test", blobRef("image/jpeg", big.length))).rejects.toThrow(
+      /too large/,
+    );
   });
 });
 
