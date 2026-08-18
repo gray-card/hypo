@@ -25,23 +25,23 @@ so font-rasterization changes do not produce false failures.
 
 ### Appearance and structure
 
-- `HypoTheme`
-- `HypoAppearance`
-- `InstrumentPanel`
-- `HypoPrimaryButtonStyle`
-- `HypoSecondaryButtonStyle`
-- `HypoComponentGallery`
+- ``HypoTheme``
+- ``HypoAppearance``
+- ``InstrumentPanel``
+- ``HypoPrimaryButtonStyle``
+- ``HypoSecondaryButtonStyle``
+- ``HypoComponentGallery``
 
 ### Exposure controls
 
-- `ApertureDial`
-- `ShutterSpeedDial`
-- `ISODial`
-- `EVCompensationDial`
-- `ExposureNeedle`
+- ``ApertureDial``
+- ``ShutterSpeedDial``
+- ``ISODial``
+- ``EVCompensationDial``
+- ``ExposureNeedle``
 
 ### Feedback
 
-- `HypoError`
-- `HypoErrorPresenter`
-- `HypoHapticCue`
+- ``HypoError``
+- ``HypoErrorPresenter``
+- ``HypoHapticCue``

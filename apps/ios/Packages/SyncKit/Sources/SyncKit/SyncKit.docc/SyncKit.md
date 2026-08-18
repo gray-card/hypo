@@ -12,19 +12,19 @@ The package preserves records through migration and transport; it does not redef
 
 ### Queue and flush
 
-- `SyncEngine`
-- `OutboxStateMachine`
-- `SyncTransport`
-- `FlushReport`
+- ``SyncEngine``
+- ``OutboxStateMachine``
+- ``SyncTransport``
+- ``FlushReport``
 
 ### Network and migration boundaries
 
-- `ATProtoSyncTransport`
-- `PanprotoProductionComposition`
-- `PanprotoHydrationCoordinator`
+- ``ATProtoSyncTransport``
+- ``PanprotoProductionComposition``
+- ``PanprotoHydrationCoordinator``
 
 ### Conflicts and scheduling
 
-- `SyncConflictResolving`
-- `SyncFlushScheduling`
-- `SyncBackgroundRefreshAdapter`
+- ``SyncConflictResolving``
+- ``SyncFlushScheduling``
+- ``SyncBackgroundRefreshAdapter``

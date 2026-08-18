@@ -14,17 +14,15 @@ The feature records automatic timed stages and manual baths, preserves the run a
 
 ### Recipes and stages
 
-- `DevelopmentRecipeSelection`
-- `DevelopmentRecipeStage`
-- `DevelopmentRecipeProviding`
-- `DevelopmentRecipeProvenance`
-- `TemperatureCompensator`
-- `GeneralBlackAndWhiteTemperatureEstimator`
+- ``DevelopmentRecipeSelection``
+- ``DevelopmentRecipeStage``
+- ``DevelopmentRecipeProviding``
+- ``DevelopmentRecipeProvenance``
 
 ### Run and persist
 
-- `TimerFeatureModel`
-- `TimerFeatureSessionState`
-- `TimerFeatureSessionStoring`
-- `DevelopmentSessionWriting`
-- `DevelopmentSessionRecordBuilder`
+- ``TimerFeatureModel``
+- ``TimerFeatureSessionState``
+- ``TimerFeatureSessionStoring``
+- ``DevelopmentSessionWriting``
+- ``DevelopmentSessionRecordBuilder``

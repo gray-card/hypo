@@ -12,14 +12,14 @@ The package transports JSON records. Their field contracts remain canonical in t
 
 ### Authentication
 
-- `OAuthFlowCoordinator`
-- `OAuthSession`
-- `KeychainOAuthSessionStore`
-- `DPoPProofGenerator`
+- ``OAuthFlowCoordinator``
+- ``OAuthSession``
+- ``KeychainOAuthSessionStore``
+- ``DPoPProofGenerator``
 
 ### Repository records
 
-- `RepositoryClient`
-- `RepositoryRecord`
-- `RecordCAS`
-- `InvalidSwapConflict`
+- ``RepositoryClient``
+- ``RepositoryRecord``
+- ``RecordCAS``
+- ``InvalidSwapConflict``

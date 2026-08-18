@@ -12,15 +12,15 @@ The roll lifecycle writer merges optional milestone dates into [`instance.filmRo
 
 ### Log a frame
 
-- `LoggerFeatureModel`
-- `ActiveRoll`
-- `ExposureDraft`
-- `ExposureWriting`
-- `DiscardingExposureWriter`
+- ``LoggerFeatureModel``
+- ``ActiveRoll``
+- ``ExposureDraft``
+- ``ExposureWriting``
+- ``DiscardingExposureWriter``
 
 ### Track a roll
 
-- `FilmRollLifecycleAction`
-- `FilmRollLifecycleWriting`
-- `QueuedFilmRollLifecycleWriter`
-- `FrameDetailStoring`
+- ``FilmRollLifecycleAction``
+- ``FilmRollLifecycleWriting``
+- ``QueuedFilmRollLifecycleWriter``
+- ``FrameDetailStoring``

@@ -10,13 +10,13 @@ SettingsFeature presents authentication and device-level controls without owning
 
 ### Account and support
 
-- `SettingsFeatureModel`
-- `SettingsAuthenticationClient`
-- `SettingsDiagnosticsOperation`
+- ``SettingsFeatureModel``
+- ``SettingsAuthenticationClient``
+- ``SettingsDiagnosticsOperation``
 
 ### Calibration
 
-- `SettingsCalibrationSample`
-- `SettingsCalibrationState`
-- `SettingsCalibrationManaging`
-- `DefaultSettingsCalibrationManager`
+- ``SettingsCalibrationSample``
+- ``SettingsCalibrationState``
+- ``SettingsCalibrationManaging``
+- ``DefaultSettingsCalibrationManager``

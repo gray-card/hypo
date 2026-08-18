@@ -14,23 +14,23 @@ Published readings use the canonical [`app.graycard.meter.reading`](https://hypo
 
 ### Measure
 
-- `MeterService`
-- `DefaultMeterEngine`
-- `Reading`
-- `MeterCapture`
-- `MeterConfiguration`
+- ``MeterService``
+- ``DefaultMeterEngine``
+- ``Reading``
+- ``MeterCapture``
+- ``MeterConfiguration``
 
 ### Camera boundary
 
-- `MeterSensor`
-- `MeterFrameCapturing`
-- `SimulatedMeterDevice`
-- `FrameCaptureNegotiator`
-- `CapturedFrameProvenance`
+- ``MeterSensor``
+- ``MeterFrameCapturing``
+- ``SimulatedMeterDevice``
+- ``FrameCaptureNegotiator``
+- ``CapturedFrameProvenance``
 
 ### Calibrate
 
-- `CalibrationIdentity`
-- `CalibrationObservation`
-- `CalibrationProfile`
-- `CalibrationBuilder`
+- ``CalibrationIdentity``
+- ``CalibrationObservation``
+- ``CalibrationProfile``
+- ``CalibrationBuilder``

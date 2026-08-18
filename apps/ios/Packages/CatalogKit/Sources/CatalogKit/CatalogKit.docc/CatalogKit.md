@@ -12,14 +12,14 @@ Catalog items become records only at a feature write boundary. See the canonical
 
 ### Load and query
 
-- `BundledCatalog`
-- `CatalogSnapshot`
-- `CatalogSearch`
-- `CatalogSearchResult`
+- ``BundledCatalog``
+- ``CatalogSnapshot``
+- ``CatalogSearch``
+- ``CatalogSearchResult``
 
 ### Content and provenance
 
-- `CatalogItem`
-- `CatalogManifest`
-- `CatalogSource`
-- `ProvenanceBadge`
+- ``CatalogItem``
+- ``CatalogManifest``
+- ``CatalogSource``
+- ``ProvenanceBadge``

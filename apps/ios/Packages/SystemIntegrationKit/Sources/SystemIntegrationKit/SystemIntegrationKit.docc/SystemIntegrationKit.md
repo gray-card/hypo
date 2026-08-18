@@ -10,13 +10,13 @@ SystemIntegrationKit parses app routes and defines the small, sendable snapshot 
 
 ### Routes
 
-- `HypoDeepLink`
-- `HypoDeepLink`
+- ``HypoDeepLink``
+- ``HypoMeterMode``
 
 ### Shared state and actions
 
-- `HypoSystemSnapshot`
-- `HypoSharedSnapshotStore`
-- `LogFrameIntent`
-- `StartTimerIntent`
-- `StartMeterIntent`
+- ``HypoSystemSnapshot``
+- ``HypoSharedSnapshotStore``
+- ``LogFrameIntent``
+- ``StartTimerIntent``
+- ``StartMeterIntent``

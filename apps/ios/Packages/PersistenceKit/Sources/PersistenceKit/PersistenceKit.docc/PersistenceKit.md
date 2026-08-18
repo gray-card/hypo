@@ -10,16 +10,16 @@ PersistenceKit defines one actor-safe store boundary with SwiftData, file-backed
 
 ### Store boundary
 
-- `PersistenceStore`
-- `SwiftDataPersistenceStore`
-- `FilePersistenceStore`
-- `InMemoryPersistenceStore`
-- `PersistenceChange`
+- ``PersistenceStore``
+- ``SwiftDataPersistenceStore``
+- ``FilePersistenceStore``
+- ``InMemoryPersistenceStore``
+- ``PersistenceChange``
 
 ### Durable sync state
 
-- `CachedRecord`
-- `OutboxOperation`
-- `ParkedConflict`
-- `PanprotoComplement`
-- `PersistenceSnapshot`
+- ``CachedRecord``
+- ``OutboxOperation``
+- ``ParkedConflict``
+- ``PanprotoComplement``
+- ``PersistenceSnapshot``

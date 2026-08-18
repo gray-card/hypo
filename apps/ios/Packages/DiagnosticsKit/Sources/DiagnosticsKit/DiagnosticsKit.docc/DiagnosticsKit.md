@@ -10,14 +10,14 @@ DiagnosticsKit stores reviewed category, operation, outcome, code, and duration 
 
 ### Record and export
 
-- `LocalDiagnosticsRecorder`
-- `DiagnosticsRecording`
-- `DiagnosticEvent`
-- `DiagnosticsExport`
+- ``LocalDiagnosticsRecorder``
+- ``DiagnosticsRecording``
+- ``DiagnosticEvent``
+- ``DiagnosticsExport``
 
 ### Reviewed vocabulary
 
-- `DiagnosticCategory`
-- `DiagnosticOperation`
-- `DiagnosticOutcome`
-- `DiagnosticCode`
+- ``DiagnosticCategory``
+- ``DiagnosticOperation``
+- ``DiagnosticOutcome``
+- ``DiagnosticCode``

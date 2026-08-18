@@ -12,19 +12,19 @@ The generated types are a client binding, not a second schema source. Field mean
 
 ### Identify and validate records
 
-- `NSID`
-- `ATURI`
-- `ATProtoDate`
-- `GeneratedRecordNSID`
-- `GeneratedLexiconValidator`
+- ``NSID``
+- ``ATURI``
+- ``ATProtoDate``
+- ``GeneratedRecordNSID``
+- ``GeneratedLexiconValidator``
 
 ### Release evidence
 
-- `LexiconRelease`
-- `GeneratedLexiconMetadata`
+- ``LexiconRelease``
+- ``GeneratedLexiconMetadata``
 
 ### Consumable chronology
 
-- `FilmRollMilestones`
-- `ChemistryMilestones`
-- `ConsumableLifecycleValidator`
+- ``FilmRollMilestones``
+- ``ChemistryMilestones``
+- ``ConsumableLifecycleValidator``

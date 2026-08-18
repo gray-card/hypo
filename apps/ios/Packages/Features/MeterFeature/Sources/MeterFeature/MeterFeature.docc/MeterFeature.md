@@ -17,16 +17,16 @@ and the rest of its bank can then be passed to Logger.
 
 ### Meter interface
 
-- `MeterFeatureModel`
-- `MeterFeatureView`
-- `MeterSpotAnalysis`
-- `MeterReadingLogStoring`
-- `MeterReadingSemanticWriting`
+- ``MeterFeatureModel``
+- ``MeterFeatureView``
+- ``MeterSpotAnalysis``
+- ``MeterReadingLogStoring``
+- ``MeterReadingSemanticWriting``
 
 ### Private capture context
 
-- `PrivateMeterCaptureContext`
-- `PrivateMeterCaptureSettings`
-- `PrivateMeterCaptureContextCollecting`
-- `PrivateMeterCaptureContextStoring`
-- `EncryptedPrivateMeterCaptureContextStore`
+- ``PrivateMeterCaptureContext``
+- ``PrivateMeterCaptureSettings``
+- ``PrivateMeterCaptureContextCollecting``
+- ``PrivateMeterCaptureContextStoring``
+- ``EncryptedPrivateMeterCaptureContextStore``

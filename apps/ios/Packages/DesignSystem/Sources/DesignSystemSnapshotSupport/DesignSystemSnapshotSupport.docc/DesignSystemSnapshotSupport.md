@@ -13,4 +13,4 @@ platform-dependent font rasterization.
 
 ### Reference rendering
 
-- `ComponentGalleryReferenceRenderer`
+- ``ComponentGalleryReferenceRenderer``

@@ -10,14 +10,14 @@ SyncStatusFeature turns durable persistence and transport state into an account-
 
 ### Status projection
 
-- `SyncStatusSnapshot`
-- `SyncStatusProjection`
-- `PendingSyncItem`
-- `SyncConflictItem`
+- ``SyncStatusSnapshot``
+- ``SyncStatusProjection``
+- ``PendingSyncItem``
+- ``SyncConflictItem``
 
 ### Service and presentation
 
-- `SyncStatusServicing`
-- `SyncKitStatusService`
-- `SyncStatusFeatureModel`
-- `SyncStatusFeatureView`
+- ``SyncStatusServicing``
+- ``SyncKitStatusService``
+- ``SyncStatusFeatureModel``
+- ``SyncStatusFeatureView``

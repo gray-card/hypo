@@ -24,25 +24,25 @@ clients write.
 
 ### Schema inspection
 
-- `PanprotoSchemaChecking`
-- `PanprotoSchemaInspector`
-- `PanprotoSchemaRelease`
-- `PanprotoSchemaReport`
+- ``PanprotoSchemaChecking``
+- ``PanprotoSchemaInspector``
+- ``PanprotoSchemaRelease``
+- ``PanprotoSchemaReport``
 
 ### Record migration
 
-- `PanprotoRecordMigrating`
-- `PanprotoRecordMigrator`
-- `PanprotoMigrationArtifact`
-- `PanprotoRecordProjection`
-- `PanprotoOpaqueComplement`
+- ``PanprotoRecordMigrating``
+- ``PanprotoRecordMigrator``
+- ``PanprotoMigrationArtifact``
+- ``PanprotoRecordProjection``
+- ``PanprotoOpaqueComplement``
 
 ### Release interpretation
 
-- `PanprotoReleaseInterpretation`
-- `PanprotoReleaseEvidence`
+- ``PanprotoReleaseInterpretation``
+- ``PanprotoReleaseEvidence``
 
 ### Failures
 
-- `PanprotoFault`
-- `PanprotoFaultDomain`
+- ``PanprotoFault``
+- ``PanprotoFaultDomain``

@@ -19,7 +19,25 @@ command -v xcrun >/dev/null 2>&1 || {
 }
 
 work_directory="$(mktemp -d "${TMPDIR:-/tmp}/hypo-ios-docc.XXXXXX")"
-trap 'rm -rf "$work_directory"' EXIT
+current_package_directory=""
+
+clean_current_package() {
+    if [[ -z "$current_package_directory" ]]; then
+        return
+    fi
+
+    swift package --package-path "$current_package_directory" clean >/dev/null 2>&1 || true
+    swift package --package-path "$current_package_directory" reset >/dev/null 2>&1 || true
+    rm -rf "$current_package_directory/.build" "$current_package_directory/build"
+    current_package_directory=""
+}
+
+cleanup() {
+    clean_current_package
+    rm -rf "$work_directory"
+}
+
+trap cleanup EXIT
 
 export CLANG_MODULE_CACHE_PATH="$work_directory/clang-module-cache"
 export SWIFTPM_MODULECACHE_OVERRIDE="$work_directory/swift-module-cache"
@@ -49,6 +67,7 @@ archives=()
 for package_specification in "${packages[@]}"; do
     module="${package_specification%%|*}"
     package_directory="${package_specification#*|}"
+    current_package_directory="$package_directory"
     catalog="$package_directory/Sources/$module/$module.docc"
     symbol_output="$package_directory/.build/hypo-docc-symbols/$module"
     module_symbols="$work_directory/module-symbols/$module"
@@ -90,6 +109,7 @@ for package_specification in "${packages[@]}"; do
         --disable-parameters-and-returns-validation \
         --warnings-as-errors
     archives+=("$archive")
+    clean_current_package
 done
 
 combined_archive="$work_directory/Hypo-iOS.doccarchive"

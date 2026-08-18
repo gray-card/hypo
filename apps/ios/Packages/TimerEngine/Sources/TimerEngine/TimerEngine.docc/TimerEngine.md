@@ -10,16 +10,16 @@ TimerEngine represents ordered development stages, agitation schedules, temperat
 
 ### Plans and runs
 
-- `TimerPlan`
-- `TimerStage`
-- `DevelopmentTimerRun`
-- `DevelopmentTimerEngine`
-- `TimerSnapshot`
+- ``TimerPlan``
+- ``TimerStage``
+- ``DevelopmentTimerRun``
+- ``DevelopmentTimerEngine``
+- ``TimerSnapshot``
 
 ### Darkroom calculations
 
-- `AgitationSchedule`
-- `AgitationScheduler`
-- `TemperatureCompensator`
-- `GeneralBlackAndWhiteTemperatureEstimator`
-- `GeneralBlackAndWhiteTemperatureEstimate`
+- ``AgitationSchedule``
+- ``AgitationScheduler``
+- ``TemperatureCompensator``
+- ``GeneralBlackAndWhiteTemperatureEstimator``
+- ``GeneralBlackAndWhiteTemperatureEstimate``
