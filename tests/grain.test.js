@@ -16,6 +16,7 @@ describe("blobCid", () => {
     expect(blobCid(null)).toBe(null);
     expect(blobCid({})).toBe(null);
     expect(blobCid({ ref: {} })).toBe(null);
+    expect(blobCid({ ref: { $link: "[object Object]" } })).toBe(null);
   });
 });
 

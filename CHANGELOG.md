@@ -2,6 +2,22 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.3.1] - 2026-08-18
+
+### Fixed
+
+- Preserve canonical Grain photo blob references when creating or replacing an
+  image and when editing photo metadata, preventing the source blob from
+  becoming unreferenced and eligible for PDS garbage collection.
+- Normalize queued blob references before every PDS write and reject malformed
+  CID links instead of publishing a corrupt photo record.
+
+### Recovery
+
+- No metadata migration is required. Images whose source blobs were already
+  garbage-collected cannot be restored automatically and must be re-uploaded
+  from the original files.
+
 ## [1.3.0] - 2026-08-16
 
 ### Added
@@ -219,3 +235,4 @@ Notable changes to Hypo are recorded here.
 [1.1.1]: https://github.com/gray-card/hypo/compare/v1.1.0...v1.1.1
 [1.2.0]: https://github.com/gray-card/hypo/compare/v1.1.1...v1.2.0
 [1.3.0]: https://github.com/gray-card/hypo/compare/v1.2.0...v1.3.0
+[1.3.1]: https://github.com/gray-card/hypo/compare/v1.3.0...v1.3.1

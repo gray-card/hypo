@@ -1,4 +1,5 @@
 export * from "./agent-adapter.js";
+export * from "./blob-ref.js";
 export * from "./client.js";
 export * from "./errors.js";
 export * from "./fetch-adapter.js";

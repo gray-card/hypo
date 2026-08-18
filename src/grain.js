@@ -15,6 +15,7 @@
 
 import { repoClient } from "./pds.js";
 import * as outbox from "./outbox.js";
+import { normalizeBlobRef } from "@hypo/pds";
 import { RecordStore, openRepositoryRecordCache } from "@hypo/store";
 import { decodeSchemaRecord } from "./schemaRuntime.js";
 
@@ -190,7 +191,7 @@ export function blobCid(blob) {
     return ref;
   }
 
-  if (ref.$link) {
+  if (typeof ref.$link === "string" && ref.$link !== "[object Object]") {
     return ref.$link;
   }
 
@@ -322,7 +323,7 @@ export function formToExifValue(form, photoUri, createdAt) {
 
 export async function uploadImage(agent, file) {
   const bytes = new Uint8Array(await file.arrayBuffer());
-  return repoClient(agent).uploadBlob({ bytes, mimeType: file.type || "image/jpeg" });
+  return normalizeBlobRef(await repoClient(agent).uploadBlob({ bytes, mimeType: file.type || "image/jpeg" }));
 }
 
 export async function createGallery(agent, did, { title, description }) {
@@ -334,7 +335,7 @@ export async function createGallery(agent, did, { title, description }) {
 }
 
 export async function createPhoto(agent, did, { blob, alt, aspectRatio }) {
-  const value = { photo: blob, createdAt: new Date().toISOString() };
+  const value = { photo: normalizeBlobRef(blob), createdAt: new Date().toISOString() };
   if (alt?.trim()) value.alt = alt.trim();
   if (aspectRatio) value.aspectRatio = aspectRatio;
   const operation = outbox.enqueue(did, COLLECTIONS.photo, value);
@@ -386,7 +387,7 @@ export async function savePhotoAlt(agent, did, photo, alt) {
     throw new Error("photo record is missing; cannot edit alt text");
   }
 
-  const value = { ...photo.value };
+  const value = { ...photo.value, photo: normalizeBlobRef(photo.value.photo) };
 
   if (alt?.trim()) {
     value.alt = alt;
@@ -413,7 +414,7 @@ export async function replacePhoto(agent, did, photo, { blob, aspectRatio }) {
     throw new Error("blob is required to replace a photo");
   }
 
-  const value = { ...photo.value, photo: blob };
+  const value = { ...photo.value, photo: normalizeBlobRef(blob) };
 
   if (aspectRatio) {
     value.aspectRatio = aspectRatio;

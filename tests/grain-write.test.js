@@ -3,12 +3,15 @@ import {
   createGallery,
   createPhoto,
   addGalleryItem,
+  savePhotoAlt,
   uploadImage,
   setGalleryItemPosition,
   replacePhoto,
   COLLECTIONS,
 } from "../src/grain.js";
 import { mockAgent } from "./setup.js";
+
+const BLOB_CID = "bafkreifqn5r4ki5vm4w55xd6qhot5gz6b3tvw7athjuwk4vkz6ppf5zo24";
 
 describe("direct gallery upload helpers", () => {
   it("createGallery writes a grain gallery with title + createdAt", async () => {
@@ -30,7 +33,7 @@ describe("direct gallery upload helpers", () => {
 
   it("createPhoto stores the blob and aspect ratio", async () => {
     const agent = mockAgent();
-    const blob = { $type: "blob", ref: { $link: "bafx" }, mimeType: "image/jpeg", size: 1 };
+    const blob = { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 1 };
     await createPhoto(agent, "did:plc:test", { blob, aspectRatio: { width: 3, height: 2 }, alt: "a cat" });
     const rec = agent.created[0];
     expect(rec.collection).toBe(COLLECTIONS.photo);
@@ -73,8 +76,18 @@ describe("direct gallery upload helpers", () => {
 
   it("replacePhoto updates the blob on the same photo rkey", async () => {
     const agent = mockAgent();
-    const oldBlob = { $type: "blob", ref: { $link: "bafold" }, mimeType: "image/jpeg", size: 1 };
-    const newBlob = { $type: "blob", ref: { $link: "bafnew" }, mimeType: "image/jpeg", size: 2 };
+    const oldBlob = { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 1 };
+    const newBlob = {
+      ref: { toString: () => BLOB_CID },
+      mimeType: "image/jpeg",
+      size: 2,
+      original: {
+        $type: "blob",
+        ref: { $link: BLOB_CID },
+        mimeType: "image/jpeg",
+        size: 2,
+      },
+    };
     const photo = {
       uri: "at://did:plc:test/social.grain.photo/rk1",
       cid: "cid-old",
@@ -93,11 +106,69 @@ describe("direct gallery upload helpers", () => {
     const rec = agent.put[0];
     expect(rec.collection).toBe(COLLECTIONS.photo);
     expect(rec.rkey).toBe("rk1");
-    expect(rec.record.photo).toEqual(newBlob);
+    expect(rec.record.photo).toEqual({
+      $type: "blob",
+      ref: { $link: BLOB_CID },
+      mimeType: "image/jpeg",
+      size: 2,
+    });
+    expect(rec.record.photo).not.toHaveProperty("original");
     expect(rec.record.alt).toBe("keep me");
     expect(rec.record.createdAt).toBe("2026-01-01T00:00:00Z");
     expect(rec.record.aspectRatio).toEqual({ width: 4, height: 3 });
     expect(result.cid).toBeTruthy();
-    expect(result.value.photo).toBe(newBlob);
+    expect(result.value.photo).toEqual(rec.record.photo);
+  });
+
+  it("canonicalizes a hydrated blob when editing alt text", async () => {
+    const agent = mockAgent();
+    const photo = {
+      uri: "at://did:plc:test/social.grain.photo/rk2",
+      cid: "cid-old",
+      value: {
+        photo: {
+          ref: { toString: () => BLOB_CID },
+          mimeType: "image/jpeg",
+          size: 2,
+          original: { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 2 },
+        },
+        createdAt: "2026-01-01T00:00:00Z",
+      },
+    };
+
+    await savePhotoAlt(agent, "did:plc:test", photo, "updated description");
+
+    expect(agent.put[0].record.photo).toEqual({
+      $type: "blob",
+      ref: { $link: BLOB_CID },
+      mimeType: "image/jpeg",
+      size: 2,
+    });
+    expect(agent.put[0].record.photo).not.toHaveProperty("original");
+  });
+
+  it("rejects a corrupt blob instead of rewriting the Grain photo", async () => {
+    const agent = mockAgent();
+    const photo = {
+      uri: "at://did:plc:test/social.grain.photo/rk3",
+      cid: "cid-old",
+      value: {
+        photo: {
+          ref: { $link: "[object Object]" },
+          mimeType: "image/jpeg",
+          size: 892396,
+          original: {
+            $type: "blob",
+            ref: { $link: "[object Object]" },
+            mimeType: "image/jpeg",
+            size: 892396,
+          },
+        },
+        createdAt: "2026-01-01T00:00:00Z",
+      },
+    };
+
+    await expect(savePhotoAlt(agent, "did:plc:test", photo, "must not write")).rejects.toThrow("valid CID link");
+    expect(agent.put).toHaveLength(0);
   });
 });
