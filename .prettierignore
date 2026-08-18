@@ -23,3 +23,6 @@ public/ios-client-metadata.json
 # Generated iOS resources and API-site output.
 apps/ios/Packages/CatalogKit/Sources/CatalogKit/Resources/Catalog
 apps/ios/Packages/HypoLexicon/Sources/HypoLexicon/Generated
+
+# DocC uses double-backtick symbol links that Prettier rewrites as plain code.
+apps/ios/Packages/**/*.docc/**/*.md
