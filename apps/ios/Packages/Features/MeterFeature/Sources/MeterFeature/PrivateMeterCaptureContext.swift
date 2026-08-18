@@ -439,9 +439,17 @@ public actor FilePrivateMeterCaptureSettingsStore: PrivateMeterCaptureSettingsSt
         )
         try JSONEncoder().encode(settings).write(
             to: fileURL,
-            options: [.atomic, .completeFileProtection]
+            options: privateMeterCaptureWriteOptions
         )
     }
+}
+
+var privateMeterCaptureWriteOptions: Data.WritingOptions {
+    #if os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
+        [.atomic, .completeFileProtection]
+    #else
+        [.atomic]
+    #endif
 }
 
 public enum PrivateMeterCaptureError: Error, Equatable, Sendable {

@@ -93,6 +93,46 @@
   background: color-mix(in oklab, #d98a2b 18%, transparent);
   color: var(--text);
 }
+.devtimer-devtime.estimate {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.devtimer-estimate:empty {
+  display: none;
+}
+.devtimer-estimate p {
+  margin: 5px 0 0;
+}
+.devtimer-estimate-warning {
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 650;
+}
+.devtimer-estimate-control {
+  display: grid;
+  gap: 5px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--surface-2) 70%, transparent);
+}
+.devtimer-estimate-control p {
+  margin: 0;
+}
+.devtimer-estimate-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.devtimer-estimate-toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
 .devtimer-run {
   display: flex;
   flex-direction: column;

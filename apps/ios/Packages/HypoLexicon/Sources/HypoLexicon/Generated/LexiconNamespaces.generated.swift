@@ -125,5 +125,5 @@ public enum GeneratedRecordNSID {
 public enum GeneratedLexiconMetadata {
     public static let schemaCount = 59
     public static let recordCount = 55
-    public static let sourceSHA256 = "49a1b1d5c5060757f425c556c254b04a46e9a7b58e06deae999b2c393a22fede"
+    public static let sourceSHA256 = "1d3ba0ea96d897b5fd5a310f00c95efe72595930380c66a800d894d56c0050ea"
 }

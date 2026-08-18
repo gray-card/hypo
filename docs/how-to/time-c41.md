@@ -17,6 +17,6 @@ Follow the instructions for your exact chemistry kit first. Hypo can time and re
 
 The built-in following-step defaults are 390 seconds for blix, 300 seconds for wash, and 60 seconds for stabilizer. They are editable run aids, not manufacturer claims. Nudge or skip them as the process requires.
 
-Each saved stage distinguishes four values: `temperatureSetpoint` and `publishedTimeSeconds` describe the selected plan; `actualTemperature` and `actualTimeSeconds` describe what occurred. Keep both when they differ.
+Each saved stage separates the published time, planned time and basis, temperature setpoint, actual temperature, and actual time. Keep the values that differ. The general black-and-white temperature estimator is not available for C-41; use the kit's instructions.
 
 The timer continues from an absolute step deadline when the page is backgrounded or refreshed. Audio, vibration, and wake lock are best effort, so keep an independent clock available for process-critical work.

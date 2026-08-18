@@ -36,6 +36,58 @@ export interface TimeRecommendation {
   points: DevelopmentTimePoint[];
 }
 
+export interface GeneralTemperatureEstimate {
+  timeSec: number;
+  unroundedTimeSec: number;
+  referenceTimeSec: number;
+  referenceTempC10: number;
+  targetTempC10: number;
+  roundingIncrementSec: number;
+  belowRecommendedMinimum: boolean;
+  largeTemperatureChange: boolean;
+}
+
+export const GENERAL_BW_TEMPERATURE_RANGE_C10 = { minimum: 180, maximum: 270 } as const;
+export const GENERAL_BW_MINIMUM_TIME_SEC = 5 * 60;
+export const GENERAL_BW_ROUNDING_INCREMENT_SEC = 15;
+
+/**
+ * Estimate a black-and-white development time using the 10%-per-degree relation
+ * represented by Ilford's general 18–27 °C compensation chart.
+ *
+ * This is deliberately separate from recipe recommendations: it is an approximate
+ * fallback, rounded to the chart's 15-second resolution, and never treated as a
+ * manufacturer-published value for a particular film/developer combination.
+ */
+export function estimateGeneralBWTemperatureTime(
+  referenceTimeSec: number,
+  referenceTempC10: number,
+  targetTempC10: number,
+): GeneralTemperatureEstimate | null {
+  const values = [referenceTimeSec, referenceTempC10, targetTempC10];
+  if (!values.every(Number.isFinite) || referenceTimeSec <= 0) return null;
+  const { minimum, maximum } = GENERAL_BW_TEMPERATURE_RANGE_C10;
+  if (referenceTempC10 < minimum || referenceTempC10 > maximum) return null;
+  if (targetTempC10 < minimum || targetTempC10 > maximum) return null;
+
+  const temperatureDifferenceCelsius = (referenceTempC10 - targetTempC10) / 10;
+  const unroundedTimeSec = referenceTimeSec * 1.1 ** temperatureDifferenceCelsius;
+  const timeSec = Math.max(
+    GENERAL_BW_ROUNDING_INCREMENT_SEC,
+    Math.round(unroundedTimeSec / GENERAL_BW_ROUNDING_INCREMENT_SEC) * GENERAL_BW_ROUNDING_INCREMENT_SEC,
+  );
+  return {
+    timeSec,
+    unroundedTimeSec,
+    referenceTimeSec,
+    referenceTempC10,
+    targetTempC10,
+    roundingIncrementSec: GENERAL_BW_ROUNDING_INCREMENT_SEC,
+    belowRecommendedMinimum: timeSec < GENERAL_BW_MINIMUM_TIME_SEC,
+    largeTemperatureChange: Math.abs(targetTempC10 - referenceTempC10) >= 40,
+  };
+}
+
 function normalize(value: string | null | undefined): string {
   return (value || "")
     .toLowerCase()

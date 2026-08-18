@@ -102,8 +102,8 @@
       },
       "id": "process-develop-session",
       "identityInputSha256": "0929ce5736c280416105ab92e29855c4f057327fda610fcf9b0de610a2333d9e",
-      "inputSha256": "159238899e52b44d1ff60d21cfc4c29d844adb21b5e6f48630b28125edafce6c",
-      "lexiconSha256": "ae974f351f294d795a542dc5aa2404b206b657bfe850ca918f21d2e1b17ff420",
+      "inputSha256": "5658ff08939025b85c5ca2bcf582c161bc1fe8793d6fa4100971cabdfd65594b",
+      "lexiconSha256": "e9725ae484829908633e5bdb2de47134ed0ad5010a349b563861826aa65f972d",
       "lift": {
         "$type": "app.graycard.process.developSession",
         "createdAt": "2026-08-12T14:00:00.000Z",
@@ -124,9 +124,11 @@
             "actualTimeSeconds": 594,
             "dilution": "1+1",
             "name": "Develop",
+            "plannedTimeSeconds": 590,
             "publishedTimeSeconds": 590,
             "roles": ["film-developer"],
-            "temperatureSetpoint": { "unit": "celsius", "value": 20 }
+            "temperatureSetpoint": { "unit": "celsius", "value": 20 },
+            "timeBasis": "published"
           },
           { "actualTimeSeconds": 30, "name": "Stop or rinse", "roles": ["stop"] },
           { "actualTimeSeconds": 300, "name": "Fix", "roles": ["fixer"] },
@@ -226,5 +228,40 @@
     }
   ],
   "formatVersion": 1,
-  "panprotoVersion": "0.70.1"
+  "panprotoVersion": "0.70.1",
+  "versionedCases": [
+    {
+      "get": {
+        "$type": "app.graycard.instance.exposure",
+        "aperture": "5.6",
+        "createdAt": "2026-08-02T17:42:12.000Z",
+        "frameNumber": 12,
+        "note": "Canal bridge",
+        "shutterSpeed": "1/250",
+        "takenAt": "2026-08-02T17:42:08.000Z"
+      },
+      "id": "exposure-v1.2.0-to-v1.3.0",
+      "inputSha256": "b94fb867522e908ad9affa7a48eed3aab1cf2f9b8180e4fbaddb61d4cbfcdde0",
+      "lift": {
+        "$type": "app.graycard.instance.exposure",
+        "aperture": "5.6",
+        "createdAt": "2026-08-02T17:42:12.000Z",
+        "frameNumber": 12,
+        "note": "Canal bridge",
+        "shutterSpeed": "1/250",
+        "takenAt": "2026-08-02T17:42:08.000Z"
+      },
+      "put": {
+        "$type": "app.graycard.instance.exposure",
+        "aperture": "5.6",
+        "createdAt": "2026-08-02T17:42:12.000Z",
+        "frameNumber": 12,
+        "note": "Canal bridge",
+        "shutterSpeed": "1/250",
+        "takenAt": "2026-08-02T17:42:08.000Z"
+      },
+      "sourceLexiconSha256": "6acaf24f939148cf6197398da9c42ccf85e4b24406af7501de39de2a0d874063",
+      "targetLexiconSha256": "54e1a28db45fe9defea67ed3850f75dd55afe1fbae6daf90c7f6ea31ca6b976c"
+    }
+  ]
 }

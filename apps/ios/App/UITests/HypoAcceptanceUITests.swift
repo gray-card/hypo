@@ -120,7 +120,10 @@ final class HypoAcceptanceUITests: XCTestCase {
     }
 
     private func element(_ identifier: String, in app: XCUIApplication) -> XCUIElement {
-        let element = app.descendants(matching: .any)[identifier]
+        // SwiftUI can expose both a semantic wrapper and its interactive child with the same
+        // identifier. Pin the query to one stable match so value predicates do not fail merely
+        // because a newer simulator runtime retains both accessibility nodes.
+        let element = app.descendants(matching: .any).matching(identifier: identifier).firstMatch
         XCTAssertTrue(element.waitForExistence(timeout: 10), "Missing accessibility identifier \(identifier)")
         return element
     }
@@ -129,7 +132,11 @@ final class HypoAcceptanceUITests: XCTestCase {
         let status = element("sync.status", in: app)
         let predicate = NSPredicate(format: "value == %@", expected)
         let expectation = XCTNSPredicateExpectation(predicate: predicate, object: status)
-        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed)
+        XCTAssertEqual(
+            XCTWaiter.wait(for: [expectation], timeout: 10),
+            .completed,
+            "Expected sync status \(expected), found \(String(describing: status.value))."
+        )
     }
 
     private func assertLabel(

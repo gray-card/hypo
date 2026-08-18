@@ -99,3 +99,75 @@ public enum TemperatureCompensator {
         }
     }
 }
+
+/// An approximate black-and-white development time derived from Ilford's general
+/// 18–27 °C time/temperature compensation chart.
+public struct GeneralBlackAndWhiteTemperatureEstimate: Codable, Hashable, Sendable {
+    public let duration: TimeInterval
+    public let unroundedDuration: TimeInterval
+    public let referenceDuration: TimeInterval
+    public let referenceTemperatureCelsius: Double
+    public let targetTemperatureCelsius: Double
+    public let roundingIncrement: TimeInterval
+
+    public var isBelowRecommendedMinimum: Bool { duration < 5 * 60 }
+    public var hasLargeTemperatureChange: Bool {
+        abs(targetTemperatureCelsius - referenceTemperatureCelsius) >= 4
+    }
+}
+
+public enum GeneralBlackAndWhiteTemperatureEstimateError: Error, Equatable, Sendable {
+    case invalidTemperature(Double)
+    case invalidDuration(TimeInterval)
+    case outsideChartRange(requested: Double, minimum: Double, maximum: Double)
+}
+
+/// Produces a general black-and-white estimate without presenting it as recipe data.
+///
+/// Ilford's chart follows an approximately 10-percent-per-degree relation and rounds to
+/// 15-second increments. The chart covers 18–27 °C; values outside that range fail rather
+/// than extending the estimate beyond its source.
+public enum GeneralBlackAndWhiteTemperatureEstimator {
+    public static let supportedRange: ClosedRange<Double> = 18...27
+    public static let roundingIncrement: TimeInterval = 15
+
+    public static func estimate(
+        referenceDuration: TimeInterval,
+        referenceTemperatureCelsius: Double,
+        targetTemperatureCelsius: Double
+    ) throws(GeneralBlackAndWhiteTemperatureEstimateError)
+        -> GeneralBlackAndWhiteTemperatureEstimate
+    {
+        guard referenceDuration.isFinite, referenceDuration > 0 else {
+            throw .invalidDuration(referenceDuration)
+        }
+        for temperature in [referenceTemperatureCelsius, targetTemperatureCelsius]
+        where !temperature.isFinite {
+            throw .invalidTemperature(temperature)
+        }
+        for temperature in [referenceTemperatureCelsius, targetTemperatureCelsius]
+        where !supportedRange.contains(temperature) {
+            throw .outsideChartRange(
+                requested: temperature,
+                minimum: supportedRange.lowerBound,
+                maximum: supportedRange.upperBound
+            )
+        }
+
+        let unroundedDuration =
+            referenceDuration
+            * pow(1.1, referenceTemperatureCelsius - targetTemperatureCelsius)
+        let duration = max(
+            roundingIncrement,
+            (unroundedDuration / roundingIncrement).rounded() * roundingIncrement
+        )
+        return GeneralBlackAndWhiteTemperatureEstimate(
+            duration: duration,
+            unroundedDuration: unroundedDuration,
+            referenceDuration: referenceDuration,
+            referenceTemperatureCelsius: referenceTemperatureCelsius,
+            targetTemperatureCelsius: targetTemperatureCelsius,
+            roundingIncrement: roundingIncrement
+        )
+    }
+}

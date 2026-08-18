@@ -158,7 +158,7 @@ instructions. The build validates ranges and removes duplicates.
 - A **"suggest a recipe"** GitHub-issue flow (mirroring "suggest a lens") lets users
   contribute datasheet-sourced entries.
 
-### 3.3 Temperature handling (datasheet-only; decided)
+### 3.3 Temperature handling
 
 **Decision: we do not extrapolate off-datasheet.** Times are published at reference
 temperatures; we store exactly the temperature points a manufacturer publishes and:
@@ -166,15 +166,19 @@ temperatures; we store exactly the temperature points a manufacturer publishes a
 1. **Interpolate only between published points** for the same recipe. If a datasheet
    gives 20 °C and 24 °C, the timer may derive 22 °C by straight interpolation bounded
    by those source rows.
-2. **Do not extrapolate outside the published range.** The timer shows only the
-   temperatures the datasheet supports; for anything else it says _"no datasheet time
-   for 26 °C; dial in and log your own."_
-3. **Always log the actual time/temp used.** Over time your own logged sessions become a
+2. **Do not extrapolate recipe data outside the published range.** The timer never labels
+   an unsupported temperature as a recipe recommendation.
+3. **Offer a separate general black-and-white estimate.** A user may explicitly apply
+   Ilford's 18–27 °C compensation chart to a published reference row. The interface
+   labels the result approximate, warns below five minutes, and records
+   `timeBasis: general-estimate` instead of `publishedTimeSeconds`.
+4. **Always log the actual time/temp used.** Over time your own logged sessions become a
    personal recipe source, and the app can report "you usually run this combination at
    24 °C for 5:30" from those recorded sessions.
 
-Every displayed time is thus traceable to a manufacturer source or a recorded personal
-session. This restriction is especially important for C-41 and E-6 processing.
+Every displayed time is traceable to a manufacturer source, the identified general
+chart, or a recorded personal session. General estimation is limited to standard
+black-and-white processing and is unavailable for C-41 and E-6.
 
 ---
 

@@ -21,7 +21,7 @@ A **completed processing session** records work after it has occurred. Use this 
 
 Hypo creates an `app.graycard.process.developSession` and updates each selected roll's development status, lifecycle dates, and primary developer. Every linked chemistry instance receives one session use, the number of processed rolls, and its latest-use date. A chemistry linked more than once within the same session is counted once.
 
-Stage dates are optional. When supplied, they must follow the stage order, fall within the session interval, and place each finish after its start. Planned and observed values are separate: `temperatureSetpoint` and `publishedTimeSeconds` record the plan, while `actualTemperature` and `actualTimeSeconds` record what occurred.
+Stage dates are optional. When supplied, they must follow the stage order, fall within the session interval, and place each finish after its start. Published, planned, and observed values are separate: `publishedTimeSeconds` retains a source value; `plannedTimeSeconds`, `timeBasis`, and `temperatureSetpoint` record the selected plan; and `actualTemperature` and `actualTimeSeconds` record what occurred.
 
 ## Record scanning
 

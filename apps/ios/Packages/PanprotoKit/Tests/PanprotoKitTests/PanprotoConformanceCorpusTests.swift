@@ -81,6 +81,59 @@ import Testing
         #expect(projectedObject == expectedGet)
         #expect(restoredObject == expectedPut)
     }
+
+    let versionedCases = try #require(manifest["versionedCases"] as? [NSDictionary])
+    let versionedOracleCases = try #require(oracle["versionedCases"] as? [NSDictionary])
+    let versionedOracleByID = try Dictionary(
+        uniqueKeysWithValues: versionedOracleCases.map { (try requiredString($0, "id"), $0) }
+    )
+    #expect(
+        Set(try versionedCases.map { try requiredString($0, "id") })
+            == Set(versionedOracleByID.keys)
+    )
+
+    for testCase in versionedCases {
+        let id = try requiredString(testCase, "id")
+        let expected = try #require(versionedOracleByID[id], "Missing versioned oracle case \(id)")
+        let record = try Data(
+            contentsOf: root.appending(path: try requiredString(testCase, "record"))
+        )
+        let sourceLexicon = try Data(
+            contentsOf: root.appending(path: try requiredString(testCase, "sourceLexicon"))
+        )
+        let targetLexicon = try Data(
+            contentsOf: root.appending(path: try requiredString(testCase, "targetLexicon"))
+        )
+        let source = PanprotoSchemaRelease(
+            label: "v1.2.0",
+            definition: try await inspector.serializedDefinition(fromLexicon: sourceLexicon)
+        )
+        let target = PanprotoSchemaRelease(
+            label: "v1.3.0",
+            definition: try await inspector.serializedDefinition(fromLexicon: targetLexicon)
+        )
+        let migration = PanprotoMigrationArtifact(
+            chainID: id,
+            source: source,
+            target: target,
+            fullChainJSON: identityChain
+        )
+
+        let lifted = try await migrator.forwardLift(record, using: migration)
+        let projection = try await migrator.get(record, using: migration)
+        let restored = try await migrator.put(
+            editedView: projection.record,
+            complement: projection.complement,
+            using: migration
+        )
+
+        #expect(try jsonObject(lifted) == requiredDictionary(expected, "lift"))
+        #expect(try jsonObject(projection.record) == requiredDictionary(expected, "get"))
+        #expect(try jsonObject(restored) == requiredDictionary(expected, "put"))
+        #expect(
+            try await inspector.validateRecord(lifted, againstDefinition: target.definition).isEmpty
+        )
+    }
 }
 
 private func repositoryRoot() throws -> URL {

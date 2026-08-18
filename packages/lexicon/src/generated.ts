@@ -1114,6 +1114,8 @@ export type AppGraycardProcessDevelopSessionStep = {
   "temperatureSetpoint"?: AppGraycardDefsMeasure;
   "actualTemperature"?: AppGraycardDefsMeasure;
   "publishedTimeSeconds"?: number;
+  "plannedTimeSeconds"?: number;
+  "timeBasis"?: AppGraycardProcessDevelopSessionTimeBasis;
   "actualTimeSeconds"?: number;
   "startedAt"?: string;
   "finishedAt"?: string;
@@ -1123,6 +1125,8 @@ export type AppGraycardProcessDevelopSessionStep = {
   "disposition"?: AppGraycardProcessDevelopSessionBathDisposition;
   "notes"?: string;
 };
+
+export type AppGraycardProcessDevelopSessionTimeBasis = KnownValue<"published" | "recipe-interpolation" | "general-estimate" | "manual">;
 
 export type AppGraycardProcessDevelopSessionStepKind = KnownValue<"chemical-bath" | "water-bath" | "rinse" | "wash" | "rem-jet-removal" | "re-exposure" | "drain" | "dry" | "other">;
 
@@ -2482,6 +2486,12 @@ export const KNOWN_VALUES = {
     "known-illuminant",
     "factory",
     "manufacturer-spec"
+  ],
+  "app.graycard.process.developSession/defs/timeBasis": [
+    "published",
+    "recipe-interpolation",
+    "general-estimate",
+    "manual"
   ],
   "app.graycard.process.developSession/defs/stepKind": [
     "chemical-bath",
@@ -8281,6 +8291,17 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "minimum": 0,
             "maximum": 604800
           },
+          "plannedTimeSeconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 604800,
+            "description": "Time selected before processing. Unlike publishedTimeSeconds, this may be a recipe interpolation, a general estimate, or a manually entered plan."
+          },
+          "timeBasis": {
+            "type": "ref",
+            "ref": "#timeBasis",
+            "description": "How plannedTimeSeconds was obtained."
+          },
           "actualTimeSeconds": {
             "type": "integer",
             "minimum": 0,
@@ -8317,6 +8338,15 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "maxLength": 1000
           }
         }
+      },
+      "timeBasis": {
+        "type": "string",
+        "knownValues": [
+          "published",
+          "recipe-interpolation",
+          "general-estimate",
+          "manual"
+        ]
       },
       "stepKind": {
         "type": "string",

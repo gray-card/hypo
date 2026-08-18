@@ -107,9 +107,15 @@ private struct Fixture {
     let now: Date
 
     init(now: Date = Date(timeIntervalSince1970: 10_000)) throws {
-        directory = FileManager.default.temporaryDirectory.appending(
-            path: "hypo-diagnostics-\(UUID().uuidString)",
+        let scratchRoot = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+            .appending(path: ".build/test-scratch", directoryHint: .isDirectory)
+        directory = scratchRoot.appending(
+            path: "diagnostics-\(UUID().uuidString)",
             directoryHint: .isDirectory
+        )
+        try FileManager.default.createDirectory(
+            at: directory,
+            withIntermediateDirectories: true
         )
         fileURL = directory.appending(path: "events.json")
         suiteName = "hypo-diagnostics-tests-\(UUID().uuidString)"

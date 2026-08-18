@@ -2,6 +2,15 @@
   "formatVersion": 1,
   "panprotoVersion": "0.70.1",
   "identityChain": "apps/ios/Packages/PanprotoKit/Tests/PanprotoKitTests/Fixtures/identity-chain.json",
+  "versionedCases": [
+    {
+      "id": "exposure-v1.2.0-to-v1.3.0",
+      "record": "fixtures/panproto-conformance/versioned/exposure-v1.2.0.json",
+      "sourceLexicon": "lenses/develop-session-v2/source/app/graycard/instance/exposure.json",
+      "targetLexicon": "lexicons/app/graycard/instance/exposure.json",
+      "rootVertex": "app.graycard.instance.exposure:body"
+    }
+  ],
   "cases": [
     {
       "id": "instance-camera",

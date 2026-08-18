@@ -35,27 +35,61 @@ public protocol SyncConnectivityMonitoring: Sendable {
 
 public struct SyncReconnectAdapter: Sendable {
     private let monitor: any SyncConnectivityMonitoring
-    private let scheduler: any SyncFlushScheduling
+    private let eventRelay: SyncReconnectEventRelay
 
     public init(
         monitor: any SyncConnectivityMonitoring,
         scheduler: any SyncFlushScheduling
     ) {
         self.monitor = monitor
-        self.scheduler = scheduler
+        eventRelay = SyncReconnectEventRelay(scheduler: scheduler)
     }
 
     public func start() async {
-        let scheduler = scheduler
+        let continuation = await eventRelay.start()
         await monitor.start { isOnline in
-            Task {
-                _ = await scheduler.connectivityDidChange(isOnline: isOnline, now: Date())
-            }
+            continuation.yield(isOnline)
         }
     }
 
     public func cancel() async {
         await monitor.cancel()
+        await eventRelay.cancel()
+    }
+}
+
+/// Serializes path callbacks before they enter the reentrant sync actor. Creating an unstructured
+/// task for each callback can reverse a rapid offline/online pair and leave the engine with stale
+/// connectivity state after a successful reconnect flush.
+private actor SyncReconnectEventRelay {
+    private let scheduler: any SyncFlushScheduling
+    private var continuation: AsyncStream<Bool>.Continuation?
+    private var consumer: Task<Void, Never>?
+
+    init(scheduler: any SyncFlushScheduling) {
+        self.scheduler = scheduler
+    }
+
+    func start() -> AsyncStream<Bool>.Continuation {
+        if let continuation { return continuation }
+        let (stream, continuation) = AsyncStream.makeStream(of: Bool.self)
+        self.continuation = continuation
+        let scheduler = scheduler
+        consumer = Task {
+            for await isOnline in stream {
+                guard !Task.isCancelled else { break }
+                _ = await scheduler.connectivityDidChange(isOnline: isOnline, now: Date())
+            }
+        }
+        return continuation
+    }
+
+    func cancel() async {
+        continuation?.finish()
+        continuation = nil
+        consumer?.cancel()
+        await consumer?.value
+        consumer = nil
     }
 }
 

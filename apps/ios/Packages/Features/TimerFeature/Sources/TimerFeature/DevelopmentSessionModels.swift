@@ -139,13 +139,19 @@ public struct DevelopmentRecipeSelection: Codable, Identifiable, Hashable, Senda
     public var stages: [DevelopmentRecipeStage]
     public var recipeURI: ATURI?
     public var provenance: DevelopmentRecipeProvenance
+    public var temperaturePoints: [TemperatureTimePoint]
+    public var interpolationAllowed: Bool
+    public var generalTemperatureEstimate: GeneralBlackAndWhiteTemperatureEstimate?
 
     public init(
         plan: TimerPlan,
         process: String,
         stages: [DevelopmentRecipeStage],
         recipeURI: ATURI? = nil,
-        provenance: DevelopmentRecipeProvenance
+        provenance: DevelopmentRecipeProvenance,
+        temperaturePoints: [TemperatureTimePoint] = [],
+        interpolationAllowed: Bool = false,
+        generalTemperatureEstimate: GeneralBlackAndWhiteTemperatureEstimate? = nil
     ) {
         precondition(
             stages.compactMap(\.timerStage) == plan.stages,
@@ -160,9 +166,304 @@ public struct DevelopmentRecipeSelection: Codable, Identifiable, Hashable, Senda
         self.stages = stages
         self.recipeURI = recipeURI
         self.provenance = provenance
+        self.temperaturePoints = temperaturePoints
+        self.interpolationAllowed = interpolationAllowed
+        self.generalTemperatureEstimate = generalTemperatureEstimate
     }
 
     public var id: String { plan.id }
+
+    public var selectedTemperatureCelsius: Double? {
+        primaryStage?.targetTemperatureCelsius
+    }
+
+    public var selectedDevelopmentDuration: TimeInterval? {
+        primaryStage?.publishedDuration
+    }
+
+    public var adjustableTemperatureRange: ClosedRange<Double>? {
+        guard interpolationAllowed else { return nil }
+        let temperatures = temperaturePoints.map(\.temperatureCelsius)
+        guard let minimum = temperatures.min(), let maximum = temperatures.max(), minimum < maximum
+        else { return nil }
+        return minimum...maximum
+    }
+
+    public var usesInterpolatedTemperature: Bool {
+        guard generalTemperatureEstimate == nil else { return false }
+        guard !temperaturePoints.isEmpty else { return false }
+        guard let selectedTemperatureCelsius else { return false }
+        return !temperaturePoints.contains {
+            abs($0.temperatureCelsius - selectedTemperatureCelsius) < 0.000_001
+        }
+    }
+
+    public var usesGeneralTemperatureEstimate: Bool {
+        generalTemperatureEstimate != nil
+    }
+
+    public var canUseGeneralTemperatureEstimate: Bool {
+        guard process == "bw" else { return false }
+        if generalTemperatureEstimate != nil { return true }
+        guard !usesInterpolatedTemperature,
+            let temperature = selectedTemperatureCelsius,
+            let duration = selectedDevelopmentDuration
+        else { return false }
+        return GeneralBlackAndWhiteTemperatureEstimator.supportedRange.contains(temperature)
+            && duration > 0
+    }
+
+    public var selectedTimeBasis: String {
+        if usesGeneralTemperatureEstimate { return "general-estimate" }
+        if usesInterpolatedTemperature { return "recipe-interpolation" }
+        return "published"
+    }
+
+    public func adjusted(to temperatureCelsius: Double) throws -> DevelopmentRecipeSelection {
+        let duration: TimeInterval
+        do {
+            duration = try TemperatureCompensator.duration(
+                at: temperatureCelsius,
+                points: temperaturePoints,
+                interpolationAllowed: interpolationAllowed
+            )
+        } catch {
+            throw TimerFeatureError.invalidRecipe(temperatureAdjustmentMessage(error))
+        }
+        guard let primaryStageIndex else {
+            throw TimerFeatureError.invalidRecipe("This recipe has no timed development stage.")
+        }
+        let primary = stages[primaryStageIndex]
+        guard var timerStage = primary.timerStage,
+            let planStageIndex = plan.stages.firstIndex(where: { $0.id == primary.id })
+        else {
+            throw TimerFeatureError.invalidRecipe("The primary development stage has no timer.")
+        }
+
+        timerStage.duration = duration
+        var adjustedPlan = plan
+        adjustedPlan.stages[planStageIndex] = timerStage
+        adjustedPlan.name = adjustedRecipeName(plan.name, temperatureCelsius: temperatureCelsius)
+        var adjustedStages = stages
+        adjustedStages[primaryStageIndex].timerStage = timerStage
+        adjustedStages[primaryStageIndex].targetTemperatureCelsius = temperatureCelsius
+        return DevelopmentRecipeSelection(
+            plan: adjustedPlan,
+            process: process,
+            stages: adjustedStages,
+            recipeURI: recipeURI,
+            provenance: provenance,
+            temperaturePoints: temperaturePoints,
+            interpolationAllowed: interpolationAllowed,
+            generalTemperatureEstimate: nil
+        )
+    }
+
+    public func estimatedUsingGeneralTemperature(
+        _ temperatureCelsius: Double
+    ) throws -> DevelopmentRecipeSelection {
+        guard process == "bw" else {
+            throw TimerFeatureError.invalidRecipe(
+                "The general estimate is only available for standard black-and-white development."
+            )
+        }
+        let referenceTemperature =
+            generalTemperatureEstimate?.referenceTemperatureCelsius
+            ?? selectedTemperatureCelsius
+        let referenceDuration =
+            generalTemperatureEstimate?.referenceDuration
+            ?? selectedDevelopmentDuration
+        guard let referenceTemperature, let referenceDuration else {
+            throw TimerFeatureError.invalidRecipe(
+                "This recipe has no published time and temperature to use as a reference."
+            )
+        }
+        let estimate: GeneralBlackAndWhiteTemperatureEstimate
+        do {
+            estimate = try GeneralBlackAndWhiteTemperatureEstimator.estimate(
+                referenceDuration: referenceDuration,
+                referenceTemperatureCelsius: referenceTemperature,
+                targetTemperatureCelsius: temperatureCelsius
+            )
+        } catch {
+            throw TimerFeatureError.invalidRecipe(generalTemperatureEstimateMessage(error))
+        }
+        guard let primaryStageIndex else {
+            throw TimerFeatureError.invalidRecipe("This recipe has no timed development stage.")
+        }
+        let primary = stages[primaryStageIndex]
+        guard var timerStage = primary.timerStage,
+            let planStageIndex = plan.stages.firstIndex(where: { $0.id == primary.id })
+        else {
+            throw TimerFeatureError.invalidRecipe("The primary development stage has no timer.")
+        }
+
+        timerStage.duration = estimate.duration
+        var adjustedPlan = plan
+        adjustedPlan.stages[planStageIndex] = timerStage
+        adjustedPlan.name = adjustedRecipeName(
+            plan.name,
+            temperatureCelsius: estimate.targetTemperatureCelsius
+        )
+        var adjustedStages = stages
+        adjustedStages[primaryStageIndex].timerStage = timerStage
+        adjustedStages[primaryStageIndex].targetTemperatureCelsius =
+            estimate.targetTemperatureCelsius
+        return DevelopmentRecipeSelection(
+            plan: adjustedPlan,
+            process: process,
+            stages: adjustedStages,
+            recipeURI: recipeURI,
+            provenance: provenance,
+            temperaturePoints: temperaturePoints,
+            interpolationAllowed: interpolationAllowed,
+            generalTemperatureEstimate: estimate
+        )
+    }
+
+    public func restoringGeneralTemperatureReference() throws -> DevelopmentRecipeSelection {
+        guard let estimate = generalTemperatureEstimate else { return self }
+        guard let primaryStageIndex else {
+            throw TimerFeatureError.invalidRecipe("This recipe has no timed development stage.")
+        }
+        let primary = stages[primaryStageIndex]
+        guard var timerStage = primary.timerStage,
+            let planStageIndex = plan.stages.firstIndex(where: { $0.id == primary.id })
+        else {
+            throw TimerFeatureError.invalidRecipe("The primary development stage has no timer.")
+        }
+
+        timerStage.duration = estimate.referenceDuration
+        var restoredPlan = plan
+        restoredPlan.stages[planStageIndex] = timerStage
+        restoredPlan.name = adjustedRecipeName(
+            plan.name,
+            temperatureCelsius: estimate.referenceTemperatureCelsius
+        )
+        var restoredStages = stages
+        restoredStages[primaryStageIndex].timerStage = timerStage
+        restoredStages[primaryStageIndex].targetTemperatureCelsius =
+            estimate.referenceTemperatureCelsius
+        return DevelopmentRecipeSelection(
+            plan: restoredPlan,
+            process: process,
+            stages: restoredStages,
+            recipeURI: recipeURI,
+            provenance: provenance,
+            temperaturePoints: temperaturePoints,
+            interpolationAllowed: interpolationAllowed
+        )
+    }
+
+    private var primaryStageIndex: Int? {
+        stages.firstIndex { stage in
+            stage.chemistryRoles.contains(AppGraycardDefsChemistryRole.filmDeveloper.rawValue)
+                || stage.chemistryRoles.contains(
+                    AppGraycardDefsChemistryRole.firstDeveloper.rawValue
+                )
+                || stage.chemistryRoles.contains(
+                    AppGraycardDefsChemistryRole.colorDeveloper.rawValue
+                )
+        } ?? stages.indices.first
+    }
+
+    private var primaryStage: DevelopmentRecipeStage? {
+        primaryStageIndex.map { stages[$0] }
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case plan
+        case process
+        case stages
+        case recipeURI
+        case provenance
+        case temperaturePoints
+        case interpolationAllowed
+        case generalTemperatureEstimate
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        plan = try container.decode(TimerPlan.self, forKey: .plan)
+        process = try container.decode(String.self, forKey: .process)
+        stages = try container.decode([DevelopmentRecipeStage].self, forKey: .stages)
+        recipeURI = try container.decodeIfPresent(ATURI.self, forKey: .recipeURI)
+        provenance = try container.decode(DevelopmentRecipeProvenance.self, forKey: .provenance)
+        interpolationAllowed =
+            try container.decodeIfPresent(Bool.self, forKey: .interpolationAllowed) ?? false
+        generalTemperatureEstimate = try container.decodeIfPresent(
+            GeneralBlackAndWhiteTemperatureEstimate.self,
+            forKey: .generalTemperatureEstimate
+        )
+        if let decoded = try container.decodeIfPresent(
+            [TemperatureTimePoint].self,
+            forKey: .temperaturePoints
+        ) {
+            temperaturePoints = decoded
+        } else if let stage = stages.first(where: { stage in
+            stage.chemistryRoles.contains(AppGraycardDefsChemistryRole.filmDeveloper.rawValue)
+                || stage.chemistryRoles.contains(
+                    AppGraycardDefsChemistryRole.firstDeveloper.rawValue
+                )
+                || stage.chemistryRoles.contains(
+                    AppGraycardDefsChemistryRole.colorDeveloper.rawValue
+                )
+        }) ?? stages.first,
+            let temperature = stage.targetTemperatureCelsius,
+            let duration = stage.publishedDuration
+        {
+            temperaturePoints = [
+                try TemperatureTimePoint(
+                    temperatureCelsius: temperature,
+                    duration: duration
+                )
+            ]
+        } else {
+            temperaturePoints = []
+        }
+    }
+}
+
+private func generalTemperatureEstimateMessage(
+    _ error: GeneralBlackAndWhiteTemperatureEstimateError
+) -> String {
+    switch error {
+    case .invalidTemperature:
+        "Enter a valid development temperature."
+    case .invalidDuration:
+        "The reference development time is invalid."
+    case let .outsideChartRange(_, minimum, maximum):
+        "Choose a temperature between \(minimum.formatted()) and \(maximum.formatted()) °C."
+    }
+}
+
+private func adjustedRecipeName(_ name: String, temperatureCelsius: Double) -> String {
+    var components = name.components(separatedBy: " · ")
+    let temperature =
+        "\(temperatureCelsius.formatted(.number.precision(.fractionLength(0...1)))) °C"
+    if components.last?.hasSuffix("°C") == true {
+        components[components.count - 1] = temperature
+    } else {
+        components.append(temperature)
+    }
+    return components.joined(separator: " · ")
+}
+
+private func temperatureAdjustmentMessage(_ error: TemperatureCompensationError) -> String {
+    switch error {
+    case .insufficientPoints:
+        "This recipe does not publish enough temperature points to calculate another time."
+    case .duplicateTemperature:
+        "This recipe publishes conflicting times for the same temperature."
+    case .invalidTemperature:
+        "Enter a valid development temperature."
+    case .invalidDuration:
+        "This recipe contains an invalid development time."
+    case .interpolationDisabled:
+        "The recipe source does not allow interpolated development times."
+    case let .outsidePublishedRange(_, minimum, maximum):
+        "Choose a temperature between \(minimum.formatted()) and \(maximum.formatted()) °C."
+    }
 }
 
 public protocol DevelopmentRecipeProviding: Sendable {
@@ -392,29 +693,6 @@ public enum DevelopmentSessionRecordBuilder {
             throw TimerFeatureError.incompleteRun
         }
 
-        let steps = session.recipe.stages.compactMap { stage -> AppGraycardProcessDevelopSessionStep? in
-            if stage.isManual,
-                session.manualStageStates[stage.id.rawValue, default: .pending] == .skipped
-            {
-                return nil
-            }
-            let observation = session.observations[stage.id.rawValue]
-            return AppGraycardProcessDevelopSessionStep(
-                roles: stage.chemistryRoles.map { AppGraycardDefsChemistryRole($0) },
-                name: stage.name,
-                chemistry: stage.chemistry,
-                dilution: stage.dilution,
-                temperatureSetpoint: measure(stage.targetTemperatureCelsius, unit: "degC"),
-                actualTemperature: measure(observation?.actualTemperatureCelsius, unit: "degC"),
-                publishedTimeSeconds: seconds(stage.publishedDuration),
-                actualTimeSeconds: seconds(observation?.actualDuration),
-                agitation: agitationComparison(
-                    selected: stage.selectedAgitation,
-                    selectedDescription: stage.selectedAgitationDescription,
-                    observed: observation?.observedAgitation
-                )
-            )
-        }
         let primary =
             session.recipe.stages.first { stage in
                 stage.chemistryRoles.contains(AppGraycardDefsChemistryRole.filmDeveloper.rawValue)
@@ -425,37 +703,52 @@ public enum DevelopmentSessionRecordBuilder {
                         AppGraycardDefsChemistryRole.colorDeveloper.rawValue
                     )
             } ?? session.recipe.stages.first
-        let primaryObservation = primary.flatMap {
-            session.observations[$0.id.rawValue]
+        let steps = session.recipe.stages.compactMap { stage -> AppGraycardProcessDevelopSessionStep? in
+            if stage.isManual,
+                session.manualStageStates[stage.id.rawValue, default: .pending] == .skipped
+            {
+                return nil
+            }
+            let observation = session.observations[stage.id.rawValue]
+            let isPrimary = stage.id == primary?.id
+            let timeBasis = timeBasis(for: stage, isPrimary: isPrimary, session: session)
+            return AppGraycardProcessDevelopSessionStep(
+                roles: stage.chemistryRoles.map { AppGraycardDefsChemistryRole($0) },
+                name: stage.name,
+                recipe: stage.id == primary?.id ? session.recipe.recipeURI : nil,
+                kind: stageKind(for: stage),
+                chemistries: stage.chemistry.map { [$0] },
+                dilution: stage.dilution,
+                temperatureSetpoint: measure(stage.targetTemperatureCelsius, unit: "degC"),
+                actualTemperature: measure(observation?.actualTemperatureCelsius, unit: "degC"),
+                publishedTimeSeconds: timeBasis == .published
+                    ? seconds(stage.publishedDuration) : nil,
+                plannedTimeSeconds: seconds(stage.publishedDuration),
+                timeBasis: timeBasis,
+                actualTimeSeconds: seconds(observation?.actualDuration),
+                agitationScheme: stage.selectedAgitation.map(agitationScheme),
+                notes: stageNotes(
+                    for: stage,
+                    primaryStageID: primary?.id,
+                    session: session,
+                    observation: observation
+                )
+            )
         }
         let record = AppGraycardProcessDevelopSessionMain(
             process: AppGraycardDefsFilmProcess(session.recipe.process),
             createdAt: ATProtoDate(finishedAt),
-            recipe: session.recipe.recipeURI,
-            chemistry: primary?.chemistry,
             filmRolls: session.linkedFilmRolls.isEmpty ? nil : session.linkedFilmRolls,
             steps: steps,
-            dilution: primary?.dilution,
-            temperatureSetpoint: measure(primary?.targetTemperatureCelsius, unit: "degC"),
-            actualTemperature: measure(primaryObservation?.actualTemperatureCelsius, unit: "degC"),
-            publishedTimeSeconds: seconds(primary?.publishedDuration),
-            actualTimeSeconds: seconds(primaryObservation?.actualDuration),
-            agitation: primary.flatMap {
-                agitationComparison(
-                    selected: $0.selectedAgitation,
-                    selectedDescription: $0.selectedAgitationDescription,
-                    observed: primaryObservation?.observedAgitation
-                )
-            },
-            agitationScheme: primary?.selectedAgitation.map(agitationScheme),
             provenance: AppGraycardDefsProvenance(
                 source: .manual,
                 confidence: .certain,
                 assertedAt: ATProtoDate(finishedAt),
-                note: provenanceNote(session.recipe.provenance)
+                note: provenanceNote(session.recipe)
             ),
             startedAt: ATProtoDate(startedAt),
-            finishedAt: ATProtoDate(finishedAt)
+            finishedAt: ATProtoDate(finishedAt),
+            developmentLocation: .home
         )
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
@@ -493,6 +786,57 @@ public enum DevelopmentSessionRecordBuilder {
         }
     }
 
+    private static func stageKind(
+        for stage: DevelopmentRecipeStage
+    ) -> AppGraycardProcessDevelopSessionStepKind {
+        if stage.chemistryRoles.contains(AppGraycardDefsChemistryRole.wash.rawValue) {
+            return .wash
+        }
+        return .chemicalBath
+    }
+
+    private static func timeBasis(
+        for stage: DevelopmentRecipeStage,
+        isPrimary: Bool,
+        session: TimerFeatureSessionState
+    ) -> AppGraycardProcessDevelopSessionTimeBasis? {
+        guard stage.publishedDuration != nil else { return nil }
+        guard isPrimary else { return .published }
+        return AppGraycardProcessDevelopSessionTimeBasis(session.recipe.selectedTimeBasis)
+    }
+
+    private static func stageNotes(
+        for stage: DevelopmentRecipeStage,
+        primaryStageID: TimerStageID?,
+        session: TimerFeatureSessionState,
+        observation: DevelopmentStageObservation?
+    ) -> String? {
+        var notes: [String] = []
+        if stage.id == primaryStageID, session.recipe.usesInterpolatedTemperature {
+            notes.append("Development time interpolated between published recipe points.")
+        }
+        if stage.id == primaryStageID,
+            let estimate = session.recipe.generalTemperatureEstimate
+        {
+            notes.append(
+                "Development time estimated from Ilford's general black-and-white "
+                    + "compensation chart: \(durationText(estimate.referenceDuration)) at "
+                    + "\(temperatureText(estimate.referenceTemperatureCelsius)) °C to "
+                    + "\(durationText(estimate.duration)) at "
+                    + "\(temperatureText(estimate.targetTemperatureCelsius)) °C; rounded "
+                    + "to 15 seconds. This is approximate, not a recipe-specific recommendation."
+            )
+        }
+        if let agitation = agitationComparison(
+            selected: stage.selectedAgitation,
+            selectedDescription: stage.selectedAgitationDescription,
+            observed: observation?.observedAgitation
+        ) {
+            notes.append(agitation)
+        }
+        return notes.isEmpty ? nil : notes.joined(separator: " ")
+    }
+
     private static func agitationComparison(
         selected: AgitationSchedule?,
         selectedDescription: String?,
@@ -519,12 +863,28 @@ public enum DevelopmentSessionRecordBuilder {
         return "Selected: \(selectedText); observed: \(observed ?? "not recorded")"
     }
 
-    private static func provenanceNote(_ provenance: DevelopmentRecipeProvenance) -> String {
+    private static func durationText(_ duration: TimeInterval) -> String {
+        let totalSeconds = max(0, Int(duration.rounded()))
+        return String(format: "%d:%02d", totalSeconds / 60, totalSeconds % 60)
+    }
+
+    private static func temperatureText(_ temperature: Double) -> String {
+        temperature.formatted(.number.precision(.fractionLength(0...1)))
+    }
+
+    private static func provenanceNote(_ recipe: DevelopmentRecipeSelection) -> String {
+        let provenance = recipe.provenance
         var parts = [
             "Recipe source: \(provenance.origin.rawValue)",
             provenance.sourceLabel,
         ]
         if let note = provenance.note { parts.append(note) }
+        if recipe.usesGeneralTemperatureEstimate {
+            parts.append(
+                "Time basis: general estimate from Ilford's black-and-white "
+                    + "time/temperature compensation chart"
+            )
+        }
         return parts.joined(separator: "; ")
     }
 }

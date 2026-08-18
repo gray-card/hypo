@@ -163,3 +163,43 @@ struct TemperatureCompensationTests {
         ]
     }
 }
+
+@Suite("General black-and-white temperature estimate")
+struct GeneralBlackAndWhiteTemperatureEstimateTests {
+    @Test("Matches the Ilford chart relationship and rounding")
+    func chartRelationship() throws {
+        let warmer = try GeneralBlackAndWhiteTemperatureEstimator.estimate(
+            referenceDuration: 8 * 60,
+            referenceTemperatureCelsius: 20,
+            targetTemperatureCelsius: 24
+        )
+        #expect(warmer.duration == 5 * 60 + 30)
+        #expect(warmer.roundingIncrement == 15)
+        #expect(!warmer.isBelowRecommendedMinimum)
+        #expect(warmer.hasLargeTemperatureChange)
+
+        let cooler = try GeneralBlackAndWhiteTemperatureEstimator.estimate(
+            referenceDuration: 5 * 60,
+            referenceTemperatureCelsius: 20,
+            targetTemperatureCelsius: 18
+        )
+        #expect(cooler.duration == 6 * 60)
+    }
+
+    @Test("Warns below five minutes and refuses to extend the chart")
+    func safetyLimits() throws {
+        let short = try GeneralBlackAndWhiteTemperatureEstimator.estimate(
+            referenceDuration: 5 * 60,
+            referenceTemperatureCelsius: 20,
+            targetTemperatureCelsius: 22
+        )
+        #expect(short.isBelowRecommendedMinimum)
+        #expect(throws: GeneralBlackAndWhiteTemperatureEstimateError.self) {
+            try GeneralBlackAndWhiteTemperatureEstimator.estimate(
+                referenceDuration: 8 * 60,
+                referenceTemperatureCelsius: 20,
+                targetTemperatureCelsius: 28
+            )
+        }
+    }
+}

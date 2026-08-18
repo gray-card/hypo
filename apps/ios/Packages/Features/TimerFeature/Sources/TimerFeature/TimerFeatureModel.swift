@@ -232,6 +232,23 @@ public final class TimerFeatureModel {
 
     public var canEditFilmRollLinks: Bool { run.status == .ready }
 
+    public var canAdjustDevelopmentTemperature: Bool {
+        run.status == .ready && !selectedRecipe.usesGeneralTemperatureEstimate
+            && selectedRecipe.adjustableTemperatureRange != nil
+    }
+
+    public var canUseGeneralTemperatureEstimate: Bool {
+        run.status == .ready && selectedRecipe.canUseGeneralTemperatureEstimate
+    }
+
+    public var isUsingGeneralTemperatureEstimate: Bool {
+        selectedRecipe.usesGeneralTemperatureEstimate
+    }
+
+    public var generalTemperatureEstimateRange: ClosedRange<Double> {
+        GeneralBlackAndWhiteTemperatureEstimator.supportedRange
+    }
+
     public var filmRollSelectionSummary: String {
         switch linkedFilmRolls.count {
         case 0: "No film rolls"
@@ -311,6 +328,106 @@ public final class TimerFeatureModel {
         run = DevelopmentTimerRun(plan: recipe.plan)
         observations = [:]
         manualStageStates = Self.initialManualStageStates(for: recipe)
+        finishedAt = nil
+        snapshot = nil
+        completionState = .pending
+        developmentSessionURI = nil
+        errorMessage = nil
+        refreshWithoutPersistence()
+        platformPresenter.invalidate(runID: replacedRunID)
+        reconcilePlatformPresentation()
+        haptics.play(.selectionChanged)
+        queuePersistence()
+    }
+
+    /// Recalculates the primary development stage from this recipe's published temperature points.
+    /// The recipe controls whether interpolation is permitted; extrapolation is always refused.
+    public func setDevelopmentTemperature(_ temperatureCelsius: Double) {
+        guard run.status == .ready else {
+            errorMessage = "The development temperature cannot be changed after the timer starts."
+            haptics.play(.warning)
+            return
+        }
+        let normalized = (temperatureCelsius * 10).rounded() / 10
+        do {
+            let adjusted = try selectedRecipe.adjusted(to: normalized)
+            guard adjusted != selectedRecipe else { return }
+            applyReadyRecipeAdjustment(adjusted)
+        } catch let error as TimerFeatureError {
+            errorMessage = error.message
+            haptics.play(.warning)
+        } catch {
+            errorMessage = TimerFeatureError.invalidRecipe(String(describing: error)).message
+            haptics.play(.failure)
+        }
+    }
+
+    /// Enables or removes the explicitly approximate Ilford-chart estimate.
+    public func setUsesGeneralTemperatureEstimate(_ enabled: Bool) {
+        guard run.status == .ready else {
+            errorMessage = "The development estimate cannot be changed after the timer starts."
+            haptics.play(.warning)
+            return
+        }
+        do {
+            if enabled {
+                guard !selectedRecipe.usesGeneralTemperatureEstimate else { return }
+                guard selectedRecipe.canUseGeneralTemperatureEstimate,
+                    let temperature = selectedRecipe.selectedTemperatureCelsius
+                else {
+                    throw TimerFeatureError.invalidRecipe(
+                        "Choose a standard black-and-white recipe with a published reference time."
+                    )
+                }
+                applyReadyRecipeAdjustment(
+                    try selectedRecipe.estimatedUsingGeneralTemperature(temperature)
+                )
+            } else {
+                guard selectedRecipe.usesGeneralTemperatureEstimate else { return }
+                let publishedRecipe =
+                    try availableRecipes.first(where: {
+                        $0.id == selectedRecipe.id && !$0.usesGeneralTemperatureEstimate
+                    }) ?? selectedRecipe.restoringGeneralTemperatureReference()
+                applyReadyRecipeAdjustment(publishedRecipe)
+            }
+        } catch let error as TimerFeatureError {
+            errorMessage = error.message
+            haptics.play(.warning)
+        } catch {
+            errorMessage = TimerFeatureError.invalidRecipe(String(describing: error)).message
+            haptics.play(.failure)
+        }
+    }
+
+    public func setEstimatedDevelopmentTemperature(_ temperatureCelsius: Double) {
+        guard run.status == .ready else {
+            errorMessage = "The development estimate cannot be changed after the timer starts."
+            haptics.play(.warning)
+            return
+        }
+        guard selectedRecipe.usesGeneralTemperatureEstimate else {
+            errorMessage = "Turn on the general black-and-white estimate first."
+            haptics.play(.warning)
+            return
+        }
+        let normalized = (temperatureCelsius * 10).rounded() / 10
+        do {
+            let adjusted = try selectedRecipe.estimatedUsingGeneralTemperature(normalized)
+            guard adjusted != selectedRecipe else { return }
+            applyReadyRecipeAdjustment(adjusted)
+        } catch let error as TimerFeatureError {
+            errorMessage = error.message
+            haptics.play(.warning)
+        } catch {
+            errorMessage = TimerFeatureError.invalidRecipe(String(describing: error)).message
+            haptics.play(.failure)
+        }
+    }
+
+    private func applyReadyRecipeAdjustment(_ adjusted: DevelopmentRecipeSelection) {
+        let replacedRunID = run.id
+        selectedRecipe = adjusted
+        run = DevelopmentTimerRun(plan: adjusted.plan)
         finishedAt = nil
         snapshot = nil
         completionState = .pending

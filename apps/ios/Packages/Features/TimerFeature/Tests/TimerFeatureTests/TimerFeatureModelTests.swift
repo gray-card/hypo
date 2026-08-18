@@ -86,20 +86,29 @@ import TimerEngine
         JSONSerialization.jsonObject(with: writes[0].record) as? [String: Any]
     )
     #expect(object["$type"] as? String == "app.graycard.process.developSession")
-    #expect(object["recipe"] as? String == recipe.recipeURI?.rawValue)
     #expect(object["process"] as? String == "bw")
-    #expect(object["publishedTimeSeconds"] as? Int == 60)
-    #expect(object["actualTimeSeconds"] as? Int == 60)
+    #expect(object["developmentLocation"] as? String == "home")
+    #expect(object["recipe"] == nil)
+    #expect(object["publishedTimeSeconds"] == nil)
+    #expect(object["actualTimeSeconds"] == nil)
     #expect((object["filmRolls"] as? [String]) == [roll.rawValue])
-    let temperature = try #require(object["actualTemperature"] as? [String: Any])
-    #expect(temperature["value"] as? Int == 2_040)
-    #expect(temperature["scale"] as? Int == 2)
+    #expect(object["actualTemperature"] == nil)
     let steps = try #require(object["steps"] as? [[String: Any]])
     #expect(steps.count == 2)
+    #expect(steps[0]["recipe"] as? String == recipe.recipeURI?.rawValue)
+    #expect(steps[0]["kind"] as? String == "chemical-bath")
+    let temperature = try #require(steps[0]["actualTemperature"] as? [String: Any])
+    #expect(temperature["value"] as? Int == 2_040)
+    #expect(temperature["scale"] as? Int == 2)
     #expect(steps[0]["publishedTimeSeconds"] as? Int == 60)
+    #expect(steps[0]["plannedTimeSeconds"] as? Int == 60)
+    #expect(steps[0]["timeBasis"] as? String == "published")
     #expect(steps[0]["actualTimeSeconds"] as? Int == 60)
     #expect(steps[1]["publishedTimeSeconds"] as? Int == 60)
+    #expect(steps[1]["plannedTimeSeconds"] as? Int == 60)
+    #expect(steps[1]["timeBasis"] as? String == "published")
     #expect(steps[1]["actualTimeSeconds"] as? Int == 60)
+    #expect(steps[1]["recipe"] == nil)
 
     let advances = await advancer.requests
     #expect(advances.count == 1)
@@ -178,6 +187,125 @@ import TimerEngine
 }
 
 @MainActor
+@Test func temperatureAdjustmentReplansPersistsAndLocksWhenTimingStarts() async throws {
+    let clock = TestClock(Date(timeIntervalSince1970: 6_000))
+    let store = InMemoryTimerFeatureSessionStore()
+    let writer = RecordingDevelopmentSessionWriter()
+    let haptics = RecordingHaptics()
+    let recipe = try temperatureAdjustableRecipe()
+    let model = TimerFeatureModel(
+        recipe: recipe,
+        store: store,
+        completionWriter: writer,
+        rollAdvancer: RecordingRollAdvancer(),
+        haptics: haptics,
+        now: { clock.date }
+    )
+
+    model.setDevelopmentTemperature(21)
+    await model.flushPersistence()
+
+    let expectedDuration = sqrt(60 * 48)
+    #expect(model.selectedRecipe.selectedTemperatureCelsius == 21)
+    #expect(abs(model.run.currentStage.duration - expectedDuration) < 0.001)
+    #expect((await store.load())?.recipe.usesInterpolatedTemperature == true)
+
+    model.performPrimaryAction()
+    model.setDevelopmentTemperature(21.5)
+    #expect(model.selectedRecipe.selectedTemperatureCelsius == 21)
+    #expect(
+        model.errorMessage
+            == "The development temperature cannot be changed after the timer starts."
+    )
+    #expect(haptics.cues.last == .warning)
+
+    clock.date = clock.date.addingTimeInterval(120)
+    model.refresh()
+    await model.flushPersistence()
+    let write = try #require(await writer.writes.first)
+    let object = try #require(
+        JSONSerialization.jsonObject(with: write.record) as? [String: Any]
+    )
+    let steps = try #require(object["steps"] as? [[String: Any]])
+    #expect(steps.first?["publishedTimeSeconds"] == nil)
+    #expect(steps.first?["plannedTimeSeconds"] as? Int == 54)
+    #expect(steps.first?["timeBasis"] as? String == "recipe-interpolation")
+    #expect(
+        steps.first?["notes"] as? String
+            == "Development time interpolated between published recipe points. "
+            + "Selected: initial 10s; every 30s for 5s; observed: not recorded"
+    )
+}
+
+@MainActor
+@Test func generalTemperatureEstimateIsExplicitPersistentReversibleAndRecorded() async throws {
+    let clock = TestClock(Date(timeIntervalSince1970: 6_500))
+    let store = InMemoryTimerFeatureSessionStore()
+    let writer = RecordingDevelopmentSessionWriter()
+    let haptics = RecordingHaptics()
+    let recipe = try developmentRecipe(planID: "general-estimate")
+    let model = TimerFeatureModel(
+        recipe: recipe,
+        store: store,
+        completionWriter: writer,
+        rollAdvancer: RecordingRollAdvancer(),
+        haptics: haptics,
+        now: { clock.date }
+    )
+
+    #expect(model.canUseGeneralTemperatureEstimate)
+    #expect(!model.isUsingGeneralTemperatureEstimate)
+    model.setUsesGeneralTemperatureEstimate(true)
+    model.setEstimatedDevelopmentTemperature(24)
+    await model.flushPersistence()
+
+    let estimate = try #require(model.selectedRecipe.generalTemperatureEstimate)
+    #expect(estimate.referenceDuration == 60)
+    #expect(estimate.referenceTemperatureCelsius == 20)
+    #expect(estimate.targetTemperatureCelsius == 24)
+    #expect(estimate.duration == 45)
+    #expect(estimate.isBelowRecommendedMinimum)
+    #expect(estimate.hasLargeTemperatureChange)
+    #expect((await store.load())?.recipe.generalTemperatureEstimate == estimate)
+
+    model.setUsesGeneralTemperatureEstimate(false)
+    #expect(model.selectedRecipe.generalTemperatureEstimate == nil)
+    #expect(model.selectedRecipe.selectedTemperatureCelsius == 20)
+    #expect(model.run.currentStage.duration == 60)
+
+    model.setUsesGeneralTemperatureEstimate(true)
+    model.setEstimatedDevelopmentTemperature(24)
+    model.performPrimaryAction()
+    model.setUsesGeneralTemperatureEstimate(false)
+    #expect(model.isUsingGeneralTemperatureEstimate)
+    #expect(
+        model.errorMessage
+            == "The development estimate cannot be changed after the timer starts."
+    )
+
+    clock.date = clock.date.addingTimeInterval(106)
+    model.refresh()
+    await model.flushPersistence()
+    let write = try #require(await writer.writes.first)
+    let object = try #require(
+        JSONSerialization.jsonObject(with: write.record) as? [String: Any]
+    )
+    let steps = try #require(object["steps"] as? [[String: Any]])
+    #expect(steps.first?["publishedTimeSeconds"] == nil)
+    #expect(steps.first?["plannedTimeSeconds"] as? Int == 45)
+    #expect(steps.first?["timeBasis"] as? String == "general-estimate")
+    #expect(
+        (steps.first?["notes"] as? String)?.contains(
+            "estimated from Ilford's general black-and-white"
+        ) == true
+    )
+    let provenance = try #require(object["provenance"] as? [String: Any])
+    #expect(
+        (provenance["note"] as? String)?.contains("Time basis: general estimate") == true
+    )
+}
+
+@MainActor
 @Test func manualBathsGateCompletionAndPersistObservedRatherThanInventedMetadata() async throws {
     let clock = TestClock(Date(timeIntervalSince1970: 7_000))
     let writer = RecordingDevelopmentSessionWriter()
@@ -243,18 +371,17 @@ import TimerEngine
     )
     let steps = try #require(object["steps"] as? [[String: Any]])
     #expect(steps.count == 4)
-    #expect(object["agitation"] == nil)
-    #expect(object["agitationScheme"] == nil)
     #expect(steps[1]["publishedTimeSeconds"] == nil)
     #expect(steps[1]["name"] as? String == "Stop or rinse")
     #expect(steps[1]["actualTimeSeconds"] as? Int == 20)
     #expect(
-        steps[1]["agitation"] as? String
+        steps[1]["notes"] as? String
             == "Selected: not specified; observed: continuous rinse"
     )
     let actualTemperature = try #require(steps[1]["actualTemperature"] as? [String: Any])
     #expect(actualTemperature["value"] as? Int == 2_020)
     #expect(steps[3]["name"] as? String == "Wash")
+    #expect(steps[3]["kind"] as? String == "wash")
     #expect(steps[3]["roles"] as? [String] == ["wash"])
 }
 
@@ -454,6 +581,16 @@ private func developmentRecipe(
             sourceLabel: origin == .catalog ? "Graycard catalog" : "Your PDS"
         )
     )
+}
+
+private func temperatureAdjustableRecipe() throws -> DevelopmentRecipeSelection {
+    var recipe = try developmentRecipe(planID: "temperature-adjustable")
+    recipe.temperaturePoints = [
+        try TemperatureTimePoint(temperatureCelsius: 20, duration: 60),
+        try TemperatureTimePoint(temperatureCelsius: 22, duration: 48),
+    ]
+    recipe.interpolationAllowed = true
+    return recipe
 }
 
 private func filmRollOption(

@@ -4006,6 +4006,7 @@ public struct AppGraycardInstanceChemistryMain: Codable, Hashable, Sendable {
     public var volumeRemainingMl: Int?
     public var rollsProcessed: Int?
     public var sessionsUsed: Int?
+    public var lastUsedAt: ATProtoDate?
     public var maxRollsRecommended: Int?
     public var storageLocation: ATURI?
     public var replenishedAt: ATProtoDate?
@@ -4032,6 +4033,7 @@ public struct AppGraycardInstanceChemistryMain: Codable, Hashable, Sendable {
         volumeRemainingMl: Int? = nil,
         rollsProcessed: Int? = nil,
         sessionsUsed: Int? = nil,
+        lastUsedAt: ATProtoDate? = nil,
         maxRollsRecommended: Int? = nil,
         storageLocation: ATURI? = nil,
         replenishedAt: ATProtoDate? = nil,
@@ -4056,6 +4058,7 @@ public struct AppGraycardInstanceChemistryMain: Codable, Hashable, Sendable {
         self.volumeRemainingMl = volumeRemainingMl
         self.rollsProcessed = rollsProcessed
         self.sessionsUsed = sessionsUsed
+        self.lastUsedAt = lastUsedAt
         self.maxRollsRecommended = maxRollsRecommended
         self.storageLocation = storageLocation
         self.replenishedAt = replenishedAt
@@ -4081,6 +4084,7 @@ public struct AppGraycardInstanceChemistryMain: Codable, Hashable, Sendable {
         case volumeRemainingMl
         case rollsProcessed
         case sessionsUsed
+        case lastUsedAt
         case maxRollsRecommended
         case storageLocation
         case replenishedAt
@@ -4236,6 +4240,8 @@ public struct AppGraycardInstanceExposureMain: Codable, Hashable, Sendable {
     public var location: AppGraycardDefsGeoLocation?
     public var photo: ATURI?
     public var takenAt: ATProtoDate?
+    public var timeZone: String?
+    public var sourceIdentifier: String?
     public var provenance: AppGraycardDefsProvenance?
     public var note: String?
     public var createdAt: ATProtoDate
@@ -4265,6 +4271,8 @@ public struct AppGraycardInstanceExposureMain: Codable, Hashable, Sendable {
         location: AppGraycardDefsGeoLocation? = nil,
         photo: ATURI? = nil,
         takenAt: ATProtoDate? = nil,
+        timeZone: String? = nil,
+        sourceIdentifier: String? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
         note: String? = nil,
         updatedAt: ATProtoDate? = nil,
@@ -4292,6 +4300,8 @@ public struct AppGraycardInstanceExposureMain: Codable, Hashable, Sendable {
         self.location = location
         self.photo = photo
         self.takenAt = takenAt
+        self.timeZone = timeZone
+        self.sourceIdentifier = sourceIdentifier
         self.provenance = provenance
         self.note = note
         self.updatedAt = updatedAt
@@ -4320,6 +4330,8 @@ public struct AppGraycardInstanceExposureMain: Codable, Hashable, Sendable {
         case location
         case photo
         case takenAt
+        case timeZone
+        case sourceIdentifier
         case provenance
         case note
         case createdAt
@@ -5717,23 +5729,76 @@ public struct AppGraycardPhotoWorkflowMain: Codable, Hashable, Sendable {
     }
 }
 
+/// An open AT Protocol known-value string. Unknown values remain decodable for forward compatibility.
+public struct AppGraycardProcessDevelopSessionAgitationMethod: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(_ rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        rawValue = try container.decode(String.self)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
+    public static let none = Self("none")
+    public static let inversion = Self("inversion")
+    public static let rotary = Self("rotary")
+    public static let swizzleStick = Self("swizzle-stick")
+    public static let trayRocking = Self("tray-rocking")
+    public static let dipAndDunk = Self("dip-and-dunk")
+    public static let rollerTransport = Self("roller-transport")
+    public static let nitrogenBurst = Self("nitrogen-burst")
+    public static let manual = Self("manual")
+    public static let other = Self("other")
+}
+
+/// An open AT Protocol known-value string. Unknown values remain decodable for forward compatibility.
+public struct AppGraycardProcessDevelopSessionBathDisposition: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(_ rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        rawValue = try container.decode(String.self)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
+    public static let oneShotDiscarded = Self("one-shot-discarded")
+    public static let discarded = Self("discarded")
+    public static let returnedToStock = Self("returned-to-stock")
+    public static let retained = Self("retained")
+    public static let replenished = Self("replenished")
+    public static let exhausted = Self("exhausted")
+    public static let notApplicable = Self("not-applicable")
+    public static let unknown = Self("unknown")
+}
+
 public struct AppGraycardProcessDevelopSessionMain: Codable, Hashable, Sendable {
-    public var recipe: ATURI?
-    public var sourceDocument: AppGraycardDefsProductDocument?
-    public var sourceSpec: AppGraycardDefsSpecSource?
-    public var chemistry: ATURI?
     public var filmRolls: [ATURI]?
     public var process: AppGraycardDefsFilmProcess
     public var steps: [AppGraycardProcessDevelopSessionStep]?
-    public var dilution: String?
-    public var temperature: AppGraycardDefsMeasure?
-    public var temperatureSetpoint: AppGraycardDefsMeasure?
-    public var actualTemperature: AppGraycardDefsMeasure?
-    public var timeSeconds: Int?
-    public var publishedTimeSeconds: Int?
-    public var actualTimeSeconds: Int?
-    public var agitation: String?
-    public var agitationScheme: AppGraycardCatalogDevRecipeAgitation?
     public var tankType: AppGraycardDefsTankType?
     public var provenance: AppGraycardDefsProvenance?
     public var pushPull: AppGraycardDefsMeasure?
@@ -5741,34 +5806,17 @@ public struct AppGraycardProcessDevelopSessionMain: Codable, Hashable, Sendable 
     public var finishedAt: ATProtoDate?
     public var labService: String?
     public var lab: ATURI?
+    public var developmentLocation: AppGraycardProcessDevelopSessionMainDevelopmentLocation?
     public var notes: String?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
-    public var stopBath: String?
-    public var stopBathChemistry: ATURI?
-    public var fixer: String?
-    public var fixerChemistry: ATURI?
-    public var bleachFix: String?
     public var recordType: String?
 
     public init(
         process: AppGraycardDefsFilmProcess,
         createdAt: ATProtoDate,
-        recipe: ATURI? = nil,
-        sourceDocument: AppGraycardDefsProductDocument? = nil,
-        sourceSpec: AppGraycardDefsSpecSource? = nil,
-        chemistry: ATURI? = nil,
         filmRolls: [ATURI]? = nil,
         steps: [AppGraycardProcessDevelopSessionStep]? = nil,
-        dilution: String? = nil,
-        temperature: AppGraycardDefsMeasure? = nil,
-        temperatureSetpoint: AppGraycardDefsMeasure? = nil,
-        actualTemperature: AppGraycardDefsMeasure? = nil,
-        timeSeconds: Int? = nil,
-        publishedTimeSeconds: Int? = nil,
-        actualTimeSeconds: Int? = nil,
-        agitation: String? = nil,
-        agitationScheme: AppGraycardCatalogDevRecipeAgitation? = nil,
         tankType: AppGraycardDefsTankType? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
         pushPull: AppGraycardDefsMeasure? = nil,
@@ -5776,32 +5824,15 @@ public struct AppGraycardProcessDevelopSessionMain: Codable, Hashable, Sendable 
         finishedAt: ATProtoDate? = nil,
         labService: String? = nil,
         lab: ATURI? = nil,
+        developmentLocation: AppGraycardProcessDevelopSessionMainDevelopmentLocation? = nil,
         notes: String? = nil,
         updatedAt: ATProtoDate? = nil,
-        stopBath: String? = nil,
-        stopBathChemistry: ATURI? = nil,
-        fixer: String? = nil,
-        fixerChemistry: ATURI? = nil,
-        bleachFix: String? = nil,
         recordType: String? = "app.graycard.process.developSession"
     ) {
         self.process = process
         self.createdAt = createdAt
-        self.recipe = recipe
-        self.sourceDocument = sourceDocument
-        self.sourceSpec = sourceSpec
-        self.chemistry = chemistry
         self.filmRolls = filmRolls
         self.steps = steps
-        self.dilution = dilution
-        self.temperature = temperature
-        self.temperatureSetpoint = temperatureSetpoint
-        self.actualTemperature = actualTemperature
-        self.timeSeconds = timeSeconds
-        self.publishedTimeSeconds = publishedTimeSeconds
-        self.actualTimeSeconds = actualTimeSeconds
-        self.agitation = agitation
-        self.agitationScheme = agitationScheme
         self.tankType = tankType
         self.provenance = provenance
         self.pushPull = pushPull
@@ -5809,33 +5840,16 @@ public struct AppGraycardProcessDevelopSessionMain: Codable, Hashable, Sendable 
         self.finishedAt = finishedAt
         self.labService = labService
         self.lab = lab
+        self.developmentLocation = developmentLocation
         self.notes = notes
         self.updatedAt = updatedAt
-        self.stopBath = stopBath
-        self.stopBathChemistry = stopBathChemistry
-        self.fixer = fixer
-        self.fixerChemistry = fixerChemistry
-        self.bleachFix = bleachFix
         self.recordType = recordType
     }
 
     private enum CodingKeys: String, CodingKey {
-        case recipe
-        case sourceDocument
-        case sourceSpec
-        case chemistry
         case filmRolls
         case process
         case steps
-        case dilution
-        case temperature
-        case temperatureSetpoint
-        case actualTemperature
-        case timeSeconds
-        case publishedTimeSeconds
-        case actualTimeSeconds
-        case agitation
-        case agitationScheme
         case tankType
         case provenance
         case pushPull
@@ -5843,56 +5857,172 @@ public struct AppGraycardProcessDevelopSessionMain: Codable, Hashable, Sendable 
         case finishedAt
         case labService
         case lab
+        case developmentLocation
         case notes
         case createdAt
         case updatedAt
-        case stopBath
-        case stopBathChemistry
-        case fixer
-        case fixerChemistry
-        case bleachFix
         case recordType = "$type"
     }
 }
 
+/// An open AT Protocol known-value string. Unknown values remain decodable for forward compatibility.
+public struct AppGraycardProcessDevelopSessionMainDevelopmentLocation: RawRepresentable, Codable, Hashable,
+    Sendable
+{
+    public let rawValue: String
+
+    public init(_ rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        rawValue = try container.decode(String.self)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
+    public static let home = Self("home")
+    public static let lab = Self("lab")
+    public static let other = Self("other")
+}
+
 public struct AppGraycardProcessDevelopSessionStep: Codable, Hashable, Sendable {
     public var name: String?
+    public var recipe: ATURI?
+    public var sourceDocument: AppGraycardDefsProductDocument?
+    public var sourceSpec: AppGraycardDefsSpecSource?
+    public var kind: AppGraycardProcessDevelopSessionStepKind?
     public var roles: [AppGraycardDefsChemistryRole]
-    public var chemistry: ATURI?
+    public var chemistries: [ATURI]?
     public var dilution: String?
-    public var temperature: AppGraycardDefsMeasure?
     public var temperatureSetpoint: AppGraycardDefsMeasure?
     public var actualTemperature: AppGraycardDefsMeasure?
-    public var timeSeconds: Int?
     public var publishedTimeSeconds: Int?
+    public var plannedTimeSeconds: Int?
+    public var timeBasis: AppGraycardProcessDevelopSessionTimeBasis?
     public var actualTimeSeconds: Int?
-    public var agitation: String?
+    public var startedAt: ATProtoDate?
+    public var finishedAt: ATProtoDate?
+    public var agitationMethod: AppGraycardProcessDevelopSessionAgitationMethod?
+    public var agitationScheme: AppGraycardCatalogDevRecipeAgitation?
+    public var volumeMl: Int?
+    public var disposition: AppGraycardProcessDevelopSessionBathDisposition?
+    public var notes: String?
 
     public init(
         roles: [AppGraycardDefsChemistryRole],
         name: String? = nil,
-        chemistry: ATURI? = nil,
+        recipe: ATURI? = nil,
+        sourceDocument: AppGraycardDefsProductDocument? = nil,
+        sourceSpec: AppGraycardDefsSpecSource? = nil,
+        kind: AppGraycardProcessDevelopSessionStepKind? = nil,
+        chemistries: [ATURI]? = nil,
         dilution: String? = nil,
-        temperature: AppGraycardDefsMeasure? = nil,
         temperatureSetpoint: AppGraycardDefsMeasure? = nil,
         actualTemperature: AppGraycardDefsMeasure? = nil,
-        timeSeconds: Int? = nil,
         publishedTimeSeconds: Int? = nil,
+        plannedTimeSeconds: Int? = nil,
+        timeBasis: AppGraycardProcessDevelopSessionTimeBasis? = nil,
         actualTimeSeconds: Int? = nil,
-        agitation: String? = nil
+        startedAt: ATProtoDate? = nil,
+        finishedAt: ATProtoDate? = nil,
+        agitationMethod: AppGraycardProcessDevelopSessionAgitationMethod? = nil,
+        agitationScheme: AppGraycardCatalogDevRecipeAgitation? = nil,
+        volumeMl: Int? = nil,
+        disposition: AppGraycardProcessDevelopSessionBathDisposition? = nil,
+        notes: String? = nil
     ) {
         self.roles = roles
         self.name = name
-        self.chemistry = chemistry
+        self.recipe = recipe
+        self.sourceDocument = sourceDocument
+        self.sourceSpec = sourceSpec
+        self.kind = kind
+        self.chemistries = chemistries
         self.dilution = dilution
-        self.temperature = temperature
         self.temperatureSetpoint = temperatureSetpoint
         self.actualTemperature = actualTemperature
-        self.timeSeconds = timeSeconds
         self.publishedTimeSeconds = publishedTimeSeconds
+        self.plannedTimeSeconds = plannedTimeSeconds
+        self.timeBasis = timeBasis
         self.actualTimeSeconds = actualTimeSeconds
-        self.agitation = agitation
+        self.startedAt = startedAt
+        self.finishedAt = finishedAt
+        self.agitationMethod = agitationMethod
+        self.agitationScheme = agitationScheme
+        self.volumeMl = volumeMl
+        self.disposition = disposition
+        self.notes = notes
     }
+}
+
+/// An open AT Protocol known-value string. Unknown values remain decodable for forward compatibility.
+public struct AppGraycardProcessDevelopSessionStepKind: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(_ rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        rawValue = try container.decode(String.self)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
+    public static let chemicalBath = Self("chemical-bath")
+    public static let waterBath = Self("water-bath")
+    public static let rinse = Self("rinse")
+    public static let wash = Self("wash")
+    public static let remJetRemoval = Self("rem-jet-removal")
+    public static let reExposure = Self("re-exposure")
+    public static let drain = Self("drain")
+    public static let dry = Self("dry")
+    public static let other = Self("other")
+}
+
+/// An open AT Protocol known-value string. Unknown values remain decodable for forward compatibility.
+public struct AppGraycardProcessDevelopSessionTimeBasis: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(_ rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        rawValue = try container.decode(String.self)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
+    public static let published = Self("published")
+    public static let recipeInterpolation = Self("recipe-interpolation")
+    public static let generalEstimate = Self("general-estimate")
+    public static let manual = Self("manual")
 }
 
 public struct AppGraycardProcessDigitizeSessionMain: Codable, Hashable, Sendable {

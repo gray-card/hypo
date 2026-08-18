@@ -226,7 +226,12 @@ public actor LocalDiagnosticsRecorder: DiagnosticsRecording {
             encoder.dateEncodingStrategy = .iso8601
             encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
             let data = try encoder.encode(FileEnvelope(formatVersion: 1, events: events))
-            try data.write(to: fileURL, options: [.atomic, .completeFileProtection])
+            #if os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
+                let options: Data.WritingOptions = [.atomic, .completeFileProtection]
+            #else
+                let options: Data.WritingOptions = [.atomic]
+            #endif
+            try data.write(to: fileURL, options: options)
         } catch {
             throw DiagnosticsError.storage(String(describing: error))
         }

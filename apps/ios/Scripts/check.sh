@@ -56,13 +56,35 @@ else
     echo "SwiftLint is not installed; skipping its local check." >&2
 fi
 
+clean_package_build() {
+    local package_directory="$1"
+    case "$package_directory" in
+        "$ios_root"/Packages/*) ;;
+        *)
+            echo "Refusing to clean unexpected package path: $package_directory" >&2
+            return 1
+            ;;
+    esac
+    echo "Cleaning $(basename "$package_directory") after tests"
+    swift package --package-path "$package_directory" clean
+    swift package --package-path "$package_directory" reset
+    rm -rf "$package_directory/.build" "$package_directory/build"
+}
+
 while IFS= read -r manifest; do
     package_directory="$(dirname "$manifest")"
     echo "Testing $(basename "$package_directory")"
-    swift test \
+    if swift test \
         --disable-sandbox \
         --package-path "$package_directory" \
         -Xswiftc -warnings-as-errors
+    then
+        clean_package_build "$package_directory"
+    else
+        test_status=$?
+        clean_package_build "$package_directory"
+        exit "$test_status"
+    fi
 done < <(find "$ios_root/Packages" -name .build -prune -o -name Package.swift -print | sort)
 
 echo "Building the iOS application"

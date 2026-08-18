@@ -14,5 +14,9 @@
 	<array>
 		<string>CloudKit</string>
 	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:hypo.graycard.app</string>
+	</array>
 </dict>
 </plist>

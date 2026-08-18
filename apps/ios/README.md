@@ -23,7 +23,7 @@ The app target is a composition root. Each capability is an independent local Sw
 | `DesignSystem`   | Tokens and SwiftUI components                            | SwiftUI only                                    |
 | `DiagnosticsKit` | Bounded, opt-in device-local operational diagnostics     | Foundation only                                 |
 | `PhotometryKit`  | Exposure mathematics                                     | Foundation only                                 |
-| `TimerEngine`    | Wall-clock development schedules                         | Foundation only                                 |
+| `TimerEngine`    | Wall-clock schedules and temperature calculations        | Foundation only                                 |
 | `CatalogKit`     | Bundled catalog search and provenance                    | Foundation only                                 |
 | `PersistenceKit` | Local persistence abstractions                           | Foundation only                                 |
 | `ATProtoClient`  | Native OAuth, DPoP, and repo XRPC                        | Apple security/network frameworks               |
@@ -165,9 +165,44 @@ The three provisioning profiles must be App Store distribution profiles for
 `app.graycard.hypo`, `app.graycard.hypo.TimerActivity`, and
 `app.graycard.hypo.SystemIntegration` on the configured Apple team. The workflow
 verifies every application identifier before signing. The main App ID and profile
-must authorize the `iCloud.app.graycard.hypo` CloudKit container. Cross-device
-decryption also requires the user to enable iCloud Keychain so the synchronizable
-data key can roam. The workflow maps each embedded target to its own profile for
+must authorize the `iCloud.app.graycard.hypo` CloudKit container and the
+`applinks:hypo.graycard.app` Associated Domain. Publish an unsigned
+`apple-app-site-association` JSON document at
+`https://hypo.graycard.app/.well-known/apple-app-site-association` before distributing
+a build. Replace `APPLE_TEAM_ID` with the app's 10-character Application Identifier
+Prefix:
+
+```json
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["APPLE_TEAM_ID.app.graycard.hypo"],
+        "components": [
+          {
+            "/": "/app/*",
+            "comment": "Open Hypo application routes in the installed iOS app."
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Serve the extensionless file as `application/json` over HTTPS without a redirect.
+Verify the deployed response before uploading the first build:
+
+```sh
+curl --fail --show-error --silent --location \
+  --write-out '\nstatus=%{http_code} content-type=%{content_type} redirects=%{num_redirects}\n' \
+  https://hypo.graycard.app/.well-known/apple-app-site-association
+```
+
+The expected result is status `200`, content type `application/json`, and zero
+redirects.
+Cross-device decryption requires the user to enable iCloud Keychain so the
+synchronizable data key can roam. The workflow maps each embedded target to its own profile for
 archive and export, then removes the keychain, profiles, and API key at the end of the
 job. It inspects the archive and exported IPA with `codesign`, requiring the app and
 System Integration extension to retain the reviewed app group and requiring the app
@@ -193,6 +228,12 @@ creation is not a substitute for deploying that production schema.
 Private context keeps separate timestamps for the meter reading, context collection,
 Core Motion sample, and optional location fix. Consumers must not treat the sensor
 samples as simultaneous with the reading merely because they share a private context.
+
+`ITSAppUsesNonExemptEncryption` is `false`: Hypo uses standard TLS supplied by the
+platform and CryptoKit AES-GCM for user-controlled private data, and the release is
+classified as using exempt encryption. The account holder must confirm that
+classification in App Store Connect and retain any export-compliance documentation
+Apple requests; changing the cryptography requires another review.
 
 Operational diagnostics are off by default and remain on the device until the user
 exports or deletes them in Settings. Events use reviewed operation and outcome tokens;

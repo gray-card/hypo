@@ -12,6 +12,8 @@
         "unit": "celsius"
       },
       "publishedTimeSeconds": 590,
+      "plannedTimeSeconds": 590,
+      "timeBasis": "published",
       "actualTimeSeconds": 594
     },
     {

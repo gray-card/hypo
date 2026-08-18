@@ -61,6 +61,68 @@ import TimerEngine
     #expect(selection.stages[1].chemistryRoles == ["wash"])
 }
 
+@Test func recipeDecoderCarriesPublishedTemperatureSeriesForConservativeAdjustment() throws {
+    let record = AppGraycardCatalogDevRecipeMain(
+        developerMake: "Fixture",
+        developerName: "Developer",
+        filmMake: "Fixture",
+        filmName: "Film",
+        process: .bw,
+        temps: [
+            AppGraycardCatalogDevRecipeTempPoint(tempC10: 200, timeSec: 600),
+            AppGraycardCatalogDevRecipeTempPoint(tempC10: 220, timeSec: 480),
+        ],
+        source: "Fixture manufacturer instructions",
+        interpolationAllowed: true
+    )
+
+    let selection = try #require(
+        DevelopmentRecipeDecoder.selections(
+            record: JSONEncoder().encode(record),
+            uri: nil,
+            origin: .catalog,
+            sourceLabel: "Fixture catalog"
+        ).first
+    )
+    #expect(selection.temperaturePoints.count == 2)
+    #expect(selection.adjustableTemperatureRange == 20...22)
+
+    let adjusted = try selection.adjusted(to: 21)
+    #expect(adjusted.selectedTemperatureCelsius == 21)
+    #expect(abs((adjusted.selectedDevelopmentDuration ?? 0) - sqrt(600 * 480)) < 0.001)
+    #expect(adjusted.usesInterpolatedTemperature)
+    #expect(throws: TimerFeatureError.self) {
+        try selection.adjusted(to: 23)
+    }
+}
+
+@Test func legacySavedRecipeDerivesItsExactPointWithoutEnablingInterpolation() throws {
+    let session = TimerFeatureSessionState(
+        run: DevelopmentTimerRun(plan: TimerFeatureDefaults.blackAndWhitePlan()),
+        recipe: TimerFeatureDefaults.blackAndWhiteRecipe()
+    )
+    var object = try #require(
+        JSONSerialization.jsonObject(with: JSONEncoder().encode(session)) as? [String: Any]
+    )
+    var recipe = try #require(object["recipe"] as? [String: Any])
+    recipe.removeValue(forKey: "temperaturePoints")
+    recipe.removeValue(forKey: "interpolationAllowed")
+    recipe.removeValue(forKey: "generalTemperatureEstimate")
+    object["recipe"] = recipe
+
+    let decoded = try JSONDecoder().decode(
+        TimerFeatureSessionState.self,
+        from: JSONSerialization.data(withJSONObject: object)
+    )
+    #expect(decoded.recipe.interpolationAllowed == false)
+    #expect(decoded.recipe.generalTemperatureEstimate == nil)
+    #expect(decoded.recipe.temperaturePoints.count == 1)
+    #expect(
+        decoded.recipe.temperaturePoints.first?.temperatureCelsius
+            == decoded.recipe.selectedTemperatureCelsius
+    )
+}
+
 @Test func blackAndWhiteRecipeRetainsManualAftercareWithoutInventedTimes() throws {
     let record = recipeRecord(
         process: .bw,

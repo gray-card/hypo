@@ -30,7 +30,7 @@ Water operations use the `wash` role. A chemical washing aid uses `wash-aid`. Th
 
 All per-stage dates are optional. When present, Hypo checks that (i) a stage does not finish before it starts, (ii) later stages are not dated before earlier stages, and (iii) stage dates fall within the session interval. The same check applies to a session start and finish.
 
-Planned and observed values remain distinct. `temperatureSetpoint` and `publishedTimeSeconds` describe the selected plan. `actualTemperature` and `actualTimeSeconds` describe the recorded execution. This distinction permits a session to retain a manufacturer recommendation without replacing it with the observed result.
+Published, planned, and observed values remain distinct. `publishedTimeSeconds` is only a source-published value. `plannedTimeSeconds`, `timeBasis`, and `temperatureSetpoint` describe the plan selected before processing. `actualTimeSeconds` and `actualTemperature` describe the recorded execution. Thus a general temperature estimate can remain identifiable without being presented as manufacturer data.
 
 ## Chemistry usage
 

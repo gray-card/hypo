@@ -26,6 +26,9 @@ develop-session and meter cases. The required `temps` array prevents such a redu
 `catalog.devRecipe`, so that case remains a cross-binding parse/emit/validation check. This is
 recorded explicitly in the manifest rather than hidden by a skipped test.
 
-The corpus does not claim to test a version-changing migration: the repository has no checked-in
-non-identity release chain yet. Add cases for both endpoints when such a chain is reviewed and
-committed.
+The versioned case uses the exact `v1.2.0` exposure schema retained with the reviewed release
+fixtures and the current `v1.3.0` schema. The latter adds optional import identity and time-zone
+fields, so the reviewed chain has no value transform. The gate still loads distinct source and
+target definitions, lifts a `v1.2.0` record, validates it against `v1.3.0`, and compares Swift
+lift/get/put results with the TypeScript oracle. A no-op chain here means that the released change
+was additive; it does not reduce the test to a same-schema identity projection.

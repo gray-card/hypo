@@ -77,6 +77,10 @@ plist_value() {
     /usr/libexec/PlistBuddy -c "Print :$2" "$1" 2>/dev/null || true
 }
 
+plist_canonical() {
+    /usr/libexec/PlistBuddy -c Print "$1"
+}
+
 echo "Validating Xcode release settings"
 build_settings="$(
     xcodebuild \
@@ -114,6 +118,7 @@ motion_usage_description="$(plist_value "$app_info" NSMotionUsageDescription)"
 background_refresh_identifiers="$(plist_value "$app_info" BGTaskSchedulerPermittedIdentifiers)"
 background_modes="$(plist_value "$app_info" UIBackgroundModes)"
 url_types="$(plist_value "$app_info" CFBundleURLTypes)"
+uses_non_exempt_encryption="$(plist_value "$app_info" ITSAppUsesNonExemptEncryption)"
 swift_version="$(setting SWIFT_VERSION)"
 strict_concurrency="$(setting SWIFT_STRICT_CONCURRENCY)"
 code_sign_entitlements="$(setting CODE_SIGN_ENTITLEMENTS)"
@@ -146,6 +151,8 @@ fi
     fail "the app must declare the fetch background mode"
 [[ "$url_types" == *"hypo"* && "$url_types" == *"app.graycard.hypo"* ]] || \
     fail "the app URL schemes are missing"
+[[ "$uses_non_exempt_encryption" == "false" ]] || \
+    fail "ITSAppUsesNonExemptEncryption must record the reviewed exempt-encryption classification"
 [[ "$swift_version" == "6.0" ]] || fail "the app target must compile in Swift 6 mode"
 [[ "$strict_concurrency" == "complete" ]] || fail "strict concurrency must remain complete"
 [[ "$code_sign_entitlements" == "Hypo.entitlements" ]] || \
@@ -172,10 +179,13 @@ for entitlements in "$app_entitlements" "$system_extension_entitlements"; do
 done
 icloud_containers="$(plist_value "$app_entitlements" com.apple.developer.icloud-container-identifiers)"
 icloud_services="$(plist_value "$app_entitlements" com.apple.developer.icloud-services)"
+associated_domains="$(plist_value "$app_entitlements" com.apple.developer.associated-domains)"
 [[ "$icloud_containers" == *"iCloud.app.graycard.hypo"* ]] || \
     fail "Hypo.entitlements is missing the private CloudKit container"
 [[ "$icloud_services" == *"CloudKit"* ]] || \
     fail "Hypo.entitlements is missing the CloudKit service"
+[[ "$associated_domains" == *"applinks:hypo.graycard.app"* ]] || \
+    fail "Hypo.entitlements is missing the production universal-link domain"
 [[ "$(plist_value "$privacy_manifest" NSPrivacyTracking)" == "false" ]] || \
     fail "NSPrivacyTracking must be false"
 [[ "$(plist_value "$privacy_manifest" NSPrivacyTrackingDomains)" == "Array {"$'\n'"}" ]] || \
@@ -307,8 +317,8 @@ compiled_privacy="$app_bundle/PrivacyInfo.xcprivacy"
 [[ -f "$compiled_plist" ]] || fail "compiled app is missing Info.plist"
 [[ -f "$compiled_privacy" ]] || fail "compiled app is missing PrivacyInfo.xcprivacy"
 plutil -lint "$compiled_plist" "$compiled_privacy" >/dev/null
-[[ "$(plutil -convert json -o - "$privacy_manifest")" == \
-    "$(plutil -convert json -o - "$compiled_privacy")" ]] || \
+[[ "$(plist_canonical "$privacy_manifest")" == \
+    "$(plist_canonical "$compiled_privacy")" ]] || \
     fail "compiled privacy manifest differs from the reviewed source manifest"
 
 [[ "$(plist_value "$compiled_plist" CFBundleIdentifier)" == "$bundle_id" ]] || \
@@ -355,8 +365,8 @@ compiled_system_privacy="$system_extension/PrivacyInfo.xcprivacy"
 [[ -f "$compiled_system_privacy" ]] || \
     fail "SystemIntegration is missing PrivacyInfo.xcprivacy"
 plutil -lint "$compiled_system_privacy" >/dev/null
-[[ "$(plutil -convert json -o - "$system_extension_privacy_manifest")" == \
-    "$(plutil -convert json -o - "$compiled_system_privacy")" ]] || \
+[[ "$(plist_canonical "$system_extension_privacy_manifest")" == \
+    "$(plist_canonical "$compiled_system_privacy")" ]] || \
     fail "compiled SystemIntegration privacy manifest differs from the reviewed source manifest"
 
 if [[ "$require_signature" == true ]]; then
@@ -392,6 +402,7 @@ if [[ "$require_signature" == true ]]; then
     signed_app_groups="$(plist_value "$app_signed_entitlements" com.apple.security.application-groups)"
     signed_icloud_containers="$(plist_value "$app_signed_entitlements" com.apple.developer.icloud-container-identifiers)"
     signed_icloud_services="$(plist_value "$app_signed_entitlements" com.apple.developer.icloud-services)"
+    signed_associated_domains="$(plist_value "$app_signed_entitlements" com.apple.developer.associated-domains)"
     signed_system_groups="$(plist_value "$system_signed_entitlements" com.apple.security.application-groups)"
     [[ -n "$signed_team" && "$signed_timer_team" == "$signed_team" && \
         "$signed_system_team" == "$signed_team" ]] || \
@@ -410,6 +421,8 @@ if [[ "$require_signature" == true ]]; then
         fail "signed Hypo.app is missing the private CloudKit container"
     [[ "$signed_icloud_services" == *"CloudKit"* ]] || \
         fail "signed Hypo.app is missing the CloudKit service"
+    [[ "$signed_associated_domains" == *"applinks:hypo.graycard.app"* ]] || \
+        fail "signed Hypo.app is missing the production universal-link domain"
 fi
 
 executable_name="$(plist_value "$compiled_plist" CFBundleExecutable)"

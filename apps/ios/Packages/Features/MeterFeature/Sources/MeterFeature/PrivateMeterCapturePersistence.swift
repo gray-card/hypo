@@ -1007,6 +1007,9 @@ public actor EncryptedPrivateMeterCaptureContextStore: PrivateMeterCaptureContex
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .millisecondsSince1970
         encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
-        try encoder.encode(envelope).write(to: fileURL, options: [.atomic, .completeFileProtection])
+        try encoder.encode(envelope).write(
+            to: fileURL,
+            options: privateMeterCaptureWriteOptions
+        )
     }
 }

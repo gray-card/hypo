@@ -206,6 +206,7 @@ jobs:
             local expected_bundle_id="$3"
             local expected_app_group="${4:-}"
             local expected_icloud_container="${5:-}"
+            local expected_associated_domain="${6:-}"
             local profile_path="$RUNNER_TEMP/$slug.mobileprovision"
             local profile_plist="$RUNNER_TEMP/$slug.plist"
             printf '%s' "$encoded" | base64 --decode > "$profile_path"
@@ -260,6 +261,18 @@ jobs:
                 exit 1
               }
             fi
+            if [[ -n "$expected_associated_domain" ]]; then
+              local associated_domains
+              associated_domains="$(
+                /usr/libexec/PlistBuddy \
+                  -c 'Print :Entitlements:com.apple.developer.associated-domains' \
+                  "$profile_plist"
+              )"
+              [[ "$associated_domains" == *"$expected_associated_domain"* ]] || {
+                echo "$slug does not authorize $expected_associated_domain." >&2
+                exit 1
+              }
+            fi
 
             cp "$profile_path" "$profile_install_directory/$profile_uuid.mobileprovision"
             printf '%s\t%s\n' "$profile_name" "$profile_uuid"
@@ -268,7 +281,7 @@ jobs:
           IFS=$'\t' read -r app_profile_name app_profile_uuid < <(
             install_profile "$IOS_PROVISIONING_PROFILE_BASE64" \
               hypo-app-store app.graycard.hypo group.app.graycard.hypo \
-              iCloud.app.graycard.hypo
+              iCloud.app.graycard.hypo applinks:hypo.graycard.app
           )
           IFS=$'\t' read -r timer_profile_name timer_profile_uuid < <(
             install_profile "$IOS_TIMER_ACTIVITY_PROVISIONING_PROFILE_BASE64" \

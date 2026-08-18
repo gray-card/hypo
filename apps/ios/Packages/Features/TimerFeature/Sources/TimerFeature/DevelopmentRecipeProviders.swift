@@ -28,7 +28,8 @@ public struct CompositeDevelopmentRecipeProvider: DevelopmentRecipeProviding {
 }
 
 /// Integrity-checks the bundled CatalogKit snapshot and exposes every published development
-/// temperature point as a selectable timer recipe.
+/// temperature point as a selectable timer recipe. Recipes that explicitly permit interpolation
+/// retain the complete point series so the timer can calculate an in-range time.
 public struct BundledCatalogDevelopmentRecipeProvider: DevelopmentRecipeProviding {
     public init() {}
 
@@ -59,10 +60,17 @@ public enum DevelopmentRecipeDecoder {
         guard !record.temps.isEmpty else {
             throw TimerFeatureError.invalidRecipe("A development recipe has no time points.")
         }
+        let temperaturePoints = try record.temps.map {
+            try TemperatureTimePoint(
+                temperatureCelsius: Double($0.tempC10) / 10,
+                duration: TimeInterval($0.timeSec)
+            )
+        }
         return try record.temps.map { point in
             try selection(
                 record: record,
                 point: point,
+                temperaturePoints: temperaturePoints,
                 uri: uri,
                 origin: origin,
                 sourceLabel: sourceLabel
@@ -73,6 +81,7 @@ public enum DevelopmentRecipeDecoder {
     private static func selection(
         record: AppGraycardCatalogDevRecipeMain,
         point: AppGraycardCatalogDevRecipeTempPoint,
+        temperaturePoints: [TemperatureTimePoint],
         uri: ATURI?,
         origin: DevelopmentRecipeOrigin,
         sourceLabel: String
@@ -116,7 +125,9 @@ public enum DevelopmentRecipeDecoder {
                 sourceLabel: sourceLabel,
                 sourceURI: uri,
                 note: note.isEmpty ? nil : note
-            )
+            ),
+            temperaturePoints: temperaturePoints,
+            interpolationAllowed: record.interpolationAllowed == true
         )
     }
 

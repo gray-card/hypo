@@ -92,6 +92,8 @@ interface DevelopmentStep {
   temperatureSetpoint?: Measure;
   actualTemperature?: Measure;
   publishedTimeSeconds?: number;
+  plannedTimeSeconds?: number;
+  timeBasis?: string;
   actualTimeSeconds?: number;
   agitationScheme?: AgitationScheme;
 }
@@ -109,6 +111,8 @@ interface ProcessFormInitial {
   temperatureSetpoint?: Measure | null;
   actualTemperature?: Measure | null;
   publishedTimeSeconds?: string | number;
+  plannedTimeSeconds?: string | number;
+  timeBasis?: string;
   actualTimeSeconds?: string | number;
   agitationScheme?: AgitationScheme;
   sourceDocument?: JsonObject;
@@ -391,9 +395,23 @@ export function buildProcessSessionForm(
     const publishedTime = inputField(
       "Published time (seconds)",
       "publishedTimeSeconds",
-      initial.publishedTimeSeconds ?? initial.timeSeconds ?? "",
+      initial.publishedTimeSeconds ?? "",
     );
     inputs.publishedTimeSeconds = publishedTime.input;
+    const plannedTime = inputField(
+      "Planned time (seconds)",
+      "plannedTimeSeconds",
+      initial.plannedTimeSeconds ?? initial.publishedTimeSeconds ?? initial.timeSeconds ?? "",
+    );
+    inputs.plannedTimeSeconds = plannedTime.input;
+    inputs.timeBasis = el("select", {}, [
+      el("option", { value: "" }, "(not specified)"),
+      el("option", { value: "published" }, "Published recipe row"),
+      el("option", { value: "recipe-interpolation" }, "Recipe-authorized interpolation"),
+      el("option", { value: "general-estimate" }, "General black-and-white estimate"),
+      el("option", { value: "manual" }, "Entered manually"),
+    ]);
+    inputs.timeBasis.value = initial.timeBasis || "";
     const actualTime = inputField(
       "Actual time (seconds)",
       "actualTimeSeconds",
@@ -450,6 +468,8 @@ export function buildProcessSessionForm(
         field("Selected recipe temperature °C", inputs.temperatureSetpointC),
         field("Observed actual temperature °C", inputs.actualTemperatureC),
         field("Selected recipe time (seconds)", inputs.publishedTimeSeconds),
+        plannedTime.wrap,
+        field("Planned-time basis", inputs.timeBasis),
         field("Observed actual time (seconds)", inputs.actualTimeSeconds),
         agitationInitial.wrap,
         agitationEvery.wrap,
@@ -483,14 +503,31 @@ export function buildProcessSessionForm(
       }
       let resolved = selectedRecommendation(recipe);
       if (applyDefaults) {
-        inputs.publishedTimeSeconds.value = resolved ? String(resolved.timeSec) : "";
+        inputs.publishedTimeSeconds.value = resolved?.kind === "published" ? String(resolved.timeSec) : "";
+        inputs.plannedTimeSeconds.value = resolved ? String(resolved.timeSec) : "";
+        inputs.timeBasis.value = resolved
+          ? resolved.kind === "published"
+            ? "published"
+            : "recipe-interpolation"
+          : "manual";
         if (resolved && !inputs.actualTimeSeconds.value.trim())
           inputs.actualTimeSeconds.value = String(resolved.timeSec);
         if (resolved && !inputs.timeSeconds.value.trim()) inputs.timeSeconds.value = String(resolved.timeSec);
       }
-      const selectedTime = parseInt(inputs.publishedTimeSeconds.value, 10);
+      const selectedTime = parseInt(inputs.plannedTimeSeconds.value, 10);
       const matchesRecipe = resolved && Number.isFinite(selectedTime) && selectedTime === resolved.timeSec;
       if (!matchesRecipe && Number.isFinite(selectedTime)) resolved = null;
+      if (!inputs.timeBasis.value) {
+        inputs.timeBasis.value = resolved
+          ? resolved.kind === "published"
+            ? "published"
+            : "recipe-interpolation"
+          : initial.publishedTimeSeconds != null
+            ? "published"
+            : Number.isFinite(selectedTime)
+              ? "manual"
+              : "";
+      }
       const status =
         resolved?.recommendationStatus ||
         (Number.isFinite(selectedTime) ? "observed" : recipeRecommendationStatus(recipe));
@@ -516,6 +553,19 @@ export function buildProcessSessionForm(
     inputs.recipe.addEventListener("change", () => renderRecommendation({ applyDefaults: true }));
     inputs.temperatureSetpointC.addEventListener("input", () => renderRecommendation({ applyDefaults: true }));
     inputs.publishedTimeSeconds.addEventListener("input", () => renderRecommendation());
+    inputs.plannedTimeSeconds.addEventListener("input", () => {
+      const plannedTimeSeconds = parseInt(inputs.plannedTimeSeconds.value, 10);
+      const resolved = selectedRecommendation();
+      inputs.timeBasis.value =
+        resolved && Number.isFinite(plannedTimeSeconds) && plannedTimeSeconds === resolved.timeSec
+          ? resolved.kind === "published"
+            ? "published"
+            : "recipe-interpolation"
+          : Number.isFinite(plannedTimeSeconds)
+            ? "manual"
+            : "";
+      renderRecommendation();
+    });
     renderRecommendation({ initializeSources: true });
     const disposeRecipes = options.signals
       ? renderProcessRecipesOn(options.signals, (records) => {
@@ -626,6 +676,7 @@ export function buildProcessSessionForm(
           : summaryTemperature;
         const summaryTime = parseInt(inputs.timeSeconds.value, 10);
         const publishedTimeSeconds = parseInt(inputs.publishedTimeSeconds.value, 10);
+        const plannedTimeSeconds = parseInt(inputs.plannedTimeSeconds.value, 10);
         const actualTimeSeconds = parseInt(inputs.actualTimeSeconds.value, 10);
         const agitationScheme: JsonObject = {};
         const agitationNumber = (input: FormControl): number | undefined => {
@@ -642,7 +693,7 @@ export function buildProcessSessionForm(
         const recipe = selectedRecipe();
         const resolved = selectedRecommendation(recipe);
         const selectedMatchesRecipe =
-          resolved && Number.isFinite(publishedTimeSeconds) && publishedTimeSeconds === resolved.timeSec;
+          resolved && Number.isFinite(plannedTimeSeconds) && plannedTimeSeconds === resolved.timeSec;
         let selectedSourceSpec = readJson(inputs.sourceSpec, "Exact source location");
         if (selectedMatchesRecipe && resolved.recommendationStatus === "derived" && selectedSourceSpec) {
           selectedSourceSpec = { ...selectedSourceSpec, method: "derived" };
@@ -690,11 +741,15 @@ export function buildProcessSessionForm(
           dilution: inputs.dilution.value.trim() || undefined,
           temperatureSetpoint: setpointTemperature,
           actualTemperature: observedTemperature,
-          publishedTimeSeconds: Number.isFinite(publishedTimeSeconds)
-            ? publishedTimeSeconds
+          publishedTimeSeconds: Number.isFinite(publishedTimeSeconds) ? publishedTimeSeconds : undefined,
+          plannedTimeSeconds: Number.isFinite(plannedTimeSeconds)
+            ? plannedTimeSeconds
             : Number.isFinite(summaryTime)
               ? summaryTime
               : undefined,
+          timeBasis:
+            inputs.timeBasis.value ||
+            (Number.isFinite(plannedTimeSeconds) || Number.isFinite(summaryTime) ? "manual" : undefined),
           actualTimeSeconds: Number.isFinite(actualTimeSeconds)
             ? actualTimeSeconds
             : Number.isFinite(summaryTime)

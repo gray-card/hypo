@@ -106,11 +106,17 @@ final class SchedulingAndConflictTests: XCTestCase {
         return object[field] as? String
     }
 
-    private func eventually(_ predicate: @escaping @Sendable () async -> Bool) async -> Bool {
-        for _ in 0..<200 {
+    private func eventually(
+        timeout: Duration = .seconds(5),
+        pollingEvery: Duration = .milliseconds(5),
+        _ predicate: @escaping @Sendable () async -> Bool
+    ) async -> Bool {
+        let clock = ContinuousClock()
+        let deadline = clock.now.advanced(by: timeout)
+        repeat {
             if await predicate() { return true }
-            await Task.yield()
-        }
+            try? await Task.sleep(for: pollingEvery)
+        } while clock.now < deadline
         return false
     }
 

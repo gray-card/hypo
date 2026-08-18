@@ -56,7 +56,11 @@ partial items name the remaining boundary.
       the characterization matrix and diffuser protocol remain physical-device work.
 - [x] I9.1 — absolute-date multi-stage timer, pause/skip/extend, persistence,
       and relaunch catch-up.
-- [x] I9.2 — exact temperature points and opt-in interpolation.
+- [x] I9.2 — exact temperature points, recipe-authorized logarithmic interpolation,
+      and an explicitly approximate Ilford-chart black-and-white estimator are exposed
+      before timing in 0.1 °C steps. Recipe interpolation never extrapolates. The general
+      estimate is limited to 18–27 °C, warns below five minutes and at temperature changes
+      of at least 4 °C, and persists separately from published and observed values.
 - [x] I9.3 — periodic agitation scheduling drives CoreHaptics, audio fallback,
       visual state, and local notification cues through the production presenter.
 
@@ -64,15 +68,15 @@ partial items name the remaining boundary.
 
 - [x] I13.1 — official `panproto-swift` 0.70.1 and its iOS XCFramework replace
       the planned custom C wrapper.
-- [ ] I13.2 — pin metadata and the current-release regeneration gate exist. This
-      is the first Lexicon release, so a real merge-base compatibility check and
-      dual-version corpus require the next version-changing release.
+- [ ] I13.2 — pin metadata and the current-release regeneration gate exist. A
+      v1.2-to-v1.3 app-release fixture exercises an additive exposure-schema change,
+      but the plan-required dual-pin corpus must come from two Panproto schema tags.
 - [x] I13.3 — the official engine performs explicit-version selection,
       compatible inference, lift/get/put, typed faults, and opaque complement
       custody keyed by URI/CID/chain.
 - [ ] I13.4 — the shared web/iOS corpus-oracle gate passes for six current-release
-      records. A real version-changing chain and its dual-pin corpus require a second
-      Lexicon release; an identity-chain fixture must not stand in for that evidence.
+      records and compares official-engine lift/get/put output for the additive
+      v1.2-to-v1.3 exposure change. A dual-Panproto-pin case remains outstanding.
 - [x] I13.5 — PanprotoKit DocC documents pins, bumping, complement custody,
       guarantees, and the 0.70.1 compatibility shim.
 
@@ -115,7 +119,8 @@ partial items name the remaining boundary.
       deep-link parsing and routing are implemented and covered by package tests.
       A DEBUG-only deterministic XCUITest harness covers custom-scheme cold-start
       lifecycle, HTTPS route parsing, and the actual shared-snapshot types. Associated
-      Domains and AASA hosting remain release configuration rather than simulated evidence.
+      Domains are enforced in source and signed-release preflight; production AASA
+      hosting remains release configuration rather than simulated evidence.
 - [ ] I12.1 — automated control-label, adjustable-value, Dynamic Type geometry,
       contrast, component-gallery screenshots, and a representative deterministic
       accessibility flow exist. Full VoiceOver flows and physical-device acceptance remain.
@@ -137,8 +142,8 @@ partial items name the remaining boundary.
       that exact IPA once. The protected credentials, App Store
       Connect app record, store metadata, screenshots, review notes, tester-group
       assignment, and a successful signed upload remain release-operations work.
-- [ ] I12.7 — the current-release shared web/iOS conformance corpus is green. The
-      physical-device accuracy matrix and a real version-changing Panproto corpus must
+- [ ] I12.7 — the current-release and v1.2-to-v1.3 shared web/iOS conformance corpus
+      is green. The physical-device accuracy matrix and a dual-Panproto-pin corpus must
       be green and published before the 1.0 exit review.
 
 ## Release-gate boundaries
@@ -156,8 +161,8 @@ with their reviewed sources and inspects the app and both extensions with `codes
 
 Automation cannot satisfy the remaining release evidence: incident-diffuser and
 per-device meter characterization, VoiceOver and Dynamic Type device passes, App Store
-screenshots and measurement review notes, or a real version-changing Panproto
-corpus. Those are release blockers, not skipped CI work.
+screenshots and measurement review notes, or a future dual-Panproto-pin corpus before
+a second schema tag exists. Those are release blockers, not skipped CI work.
 
 The composed app builds for the iOS 17 simulator SDK. Panproto 0.70.1 currently
 links with two upstream object-file deployment-target warnings (26.5 inside the

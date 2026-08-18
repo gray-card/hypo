@@ -71,12 +71,146 @@ public struct TimerFeatureView: View {
                 Text(model.selectedRecipe.provenance.sourceLabel)
                     .font(.caption)
                     .foregroundStyle(appearance.muted)
+                timeBasisBadge
                 if model.isLoadingRecipes {
                     ProgressView("Checking your recipes")
                         .font(.caption)
                 }
+
+                if model.canAdjustDevelopmentTemperature,
+                    let range = model.selectedRecipe.adjustableTemperatureRange,
+                    let temperature = model.selectedRecipe.selectedTemperatureCelsius,
+                    let developmentTime = model.selectedRecipe.selectedDevelopmentDuration
+                {
+                    Divider()
+                    Stepper(
+                        value: developmentTemperature,
+                        in: range,
+                        step: 0.1
+                    ) {
+                        VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
+                            Text("Development temperature")
+                                .font(.callout.weight(.medium))
+                            Text(
+                                "\(temperature.formatted(.number.precision(.fractionLength(1)))) °C · \(duration(developmentTime))"
+                            )
+                            .font(.title3.monospacedDigit())
+                            .foregroundStyle(appearance.accent)
+                        }
+                    }
+                    .accessibilityLabel("Development temperature")
+                    .accessibilityValue(
+                        "\(temperature.formatted(.number.precision(.fractionLength(1)))) degrees Celsius, \(duration(developmentTime))"
+                    )
+                    .accessibilityHint("Adjusts the development time in tenth-degree steps.")
+
+                    Text("Interpolated only between this recipe's published points; never extrapolated.")
+                        .font(.caption)
+                        .foregroundStyle(appearance.muted)
+                }
+
+                if model.canUseGeneralTemperatureEstimate
+                    || model.isUsingGeneralTemperatureEstimate
+                {
+                    Divider()
+                    Toggle("Use estimated time", isOn: usesGeneralTemperatureEstimate)
+                        .font(.callout.weight(.medium))
+                        .disabled(model.run.status != .ready)
+                        .accessibilityHint(
+                            "Uses the general Ilford black-and-white compensation chart, not this recipe's manufacturer data."
+                        )
+
+                    Text(
+                        "Approximate black-and-white conversion from Ilford's general chart. It is not a recommendation for this film and developer pair."
+                    )
+                    .font(.caption)
+                    .foregroundStyle(appearance.muted)
+
+                    if let estimate = model.selectedRecipe.generalTemperatureEstimate {
+                        Stepper(
+                            value: estimatedDevelopmentTemperature,
+                            in: model.generalTemperatureEstimateRange,
+                            step: 0.1
+                        ) {
+                            VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
+                                Text("Estimated temperature")
+                                    .font(.callout.weight(.medium))
+                                Text(
+                                    "\(estimate.targetTemperatureCelsius.formatted(.number.precision(.fractionLength(1)))) °C · \(duration(estimate.duration))"
+                                )
+                                .font(.title3.monospacedDigit())
+                                .foregroundStyle(appearance.accent)
+                            }
+                        }
+                        .disabled(model.run.status != .ready)
+                        .accessibilityLabel("Estimated development temperature")
+                        .accessibilityValue(
+                            "\(estimate.targetTemperatureCelsius.formatted(.number.precision(.fractionLength(1)))) degrees Celsius, \(duration(estimate.duration))"
+                        )
+                        .accessibilityHint(
+                            "Adjusts an approximate time in tenth-degree steps from 18 to 27 degrees Celsius."
+                        )
+
+                        Text(
+                            "Estimated from \(duration(estimate.referenceDuration)) at \(estimate.referenceTemperatureCelsius.formatted(.number.precision(.fractionLength(0...1)))) °C; rounded to 15 seconds."
+                        )
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(appearance.muted)
+
+                        if estimate.isBelowRecommendedMinimum {
+                            Label(
+                                "Times under 5:00 risk uneven development.",
+                                systemImage: "exclamationmark.triangle.fill"
+                            )
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(HypoTheme.ColorToken.danger)
+                        }
+                        if estimate.hasLargeTemperatureChange {
+                            Label(
+                                "This changes the temperature by at least 4 °C. Test before important work.",
+                                systemImage: "thermometer.medium"
+                            )
+                            .font(.caption)
+                            .foregroundStyle(appearance.muted)
+                        }
+                    }
+
+                    Link(
+                        "Read the Ilford compensation chart",
+                        destination: URL(
+                            string:
+                                "https://www.ilfordphoto.com/wp/wp-content/uploads/2017/03/Temperature-compensation-chart.pdf"
+                        )!
+                    )
+                    .font(.caption.weight(.medium))
+                }
             }
         }
+    }
+
+    private var timeBasisBadge: some View {
+        let label: String
+        let systemImage: String
+        switch model.selectedRecipe.selectedTimeBasis {
+        case "general-estimate":
+            label = "General estimate"
+            systemImage = "function"
+        case "recipe-interpolation":
+            label = "Recipe interpolation"
+            systemImage = "point.3.connected.trianglepath.dotted"
+        default:
+            label = "Published recipe time"
+            systemImage = "checkmark.seal"
+        }
+        return Label(label, systemImage: systemImage)
+            .font(.caption2.weight(.semibold))
+            .textCase(.uppercase)
+            .tracking(0.6)
+            .foregroundStyle(
+                model.selectedRecipe.usesGeneralTemperatureEstimate
+                    ? appearance.accent : appearance.muted
+            )
+            .accessibilityLabel("Time basis: \(label)")
     }
 
     private var filmRollPanel: some View {
@@ -366,6 +500,31 @@ public struct TimerFeatureView: View {
         Binding(
             get: { model.selectedRecipe.id },
             set: { model.selectRecipe(id: $0) }
+        )
+    }
+
+    private var developmentTemperature: Binding<Double> {
+        Binding(
+            get: { model.selectedRecipe.selectedTemperatureCelsius ?? 20 },
+            set: { model.setDevelopmentTemperature($0) }
+        )
+    }
+
+    private var usesGeneralTemperatureEstimate: Binding<Bool> {
+        Binding(
+            get: { model.isUsingGeneralTemperatureEstimate },
+            set: { model.setUsesGeneralTemperatureEstimate($0) }
+        )
+    }
+
+    private var estimatedDevelopmentTemperature: Binding<Double> {
+        Binding(
+            get: {
+                model.selectedRecipe.generalTemperatureEstimate?.targetTemperatureCelsius
+                    ?? model.selectedRecipe.selectedTemperatureCelsius
+                    ?? 20
+            },
+            set: { model.setEstimatedDevelopmentTemperature($0) }
         )
     }
 
