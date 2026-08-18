@@ -59,6 +59,7 @@ if (!window.matchMedia) {
 // a tiny fake atproto agent that records writes and returns empty reads, so
 // modules that call saveRecord / loadStore work without a network or PDS.
 export function mockAgent() {
+  const blobCid = "bafkreifqn5r4ki5vm4w55xd6qhot5gz6b3tvw7athjuwk4vkz6ppf5zo24";
   const created = [];
   const put = [];
   const deleted = [];
@@ -85,7 +86,7 @@ export function mockAgent() {
           },
           listRecords: async () => ({ data: { records: [] } }),
           uploadBlob: async () => ({
-            data: { blob: { $type: "blob", ref: { $link: "bafblob" }, mimeType: "image/jpeg", size: 1 } },
+            data: { blob: { $type: "blob", ref: { $link: blobCid }, mimeType: "image/jpeg", size: 1 } },
           }),
         },
       },
