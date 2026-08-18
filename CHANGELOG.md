@@ -2,6 +2,23 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.3.3] - 2026-08-18
+
+### Changed
+
+- Use Gemini's current schema-constrained response format for image analysis,
+  query parsing, and semantic reranking, with current Flash model choices and
+  without deprecated sampling parameters.
+
+### Fixed
+
+- Reject blocked, truncated, and otherwise incomplete Gemini responses before
+  they can be parsed or saved, and require every returned bounding box to
+  contain four numeric coordinates when it is present.
+- Recover from lazy application chunks replaced during a deployment without
+  resolving the failed import to `undefined`. Hypo reloads a stale application
+  shell once when no edits are pending and offers a guarded reload otherwise.
+
 ## [1.3.2] - 2026-08-18
 
 ### Fixed

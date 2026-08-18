@@ -283,15 +283,22 @@ describe("Gemini provider network contract", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const out = await PROVIDERS.gemini.analyze(
-      { apiKey: "AIzaXYZ", model: "gemini-3.5-flash" },
+      { apiKey: "AIzaXYZ", model: "gemini-3.7-flash" },
       { base64: "BBBB", mediaType: "image/png" },
     );
 
     const [url, opts] = fetchMock.mock.calls[0];
-    expect(url).toContain("/v1beta/models/gemini-3.5-flash:generateContent");
+    expect(url).toContain("/v1beta/models/gemini-3.7-flash:generateContent");
     expect(opts.method).toBe("POST");
     const body = JSON.parse(opts.body);
-    expect(body.generationConfig.responseMimeType).toBe("application/json");
+    const responseText = body.generationConfig.responseFormat.text;
+    expect(responseText.mimeType).toBe("application/json");
+    expect(responseText.schema.required).toEqual(["altText", "objects", "relations"]);
+    const boxSchema = responseText.schema.properties.objects.items.properties.box;
+    expect(boxSchema.anyOf[0].required).toEqual(["x", "y", "w", "h"]);
+    expect(boxSchema.anyOf[0].properties.x.type).toBe("number");
+    expect(boxSchema.anyOf[1]).toEqual({ type: "null" });
+    expect(body.generationConfig.responseMimeType).toBeUndefined();
     expect(body.systemInstruction.parts[0].text).toBeTruthy();
     const parts = body.contents[0].parts;
     expect(parts.find((p) => p.inlineData).inlineData).toEqual({ mimeType: "image/png", data: "BBBB" });
@@ -325,7 +332,53 @@ describe("Gemini provider network contract", () => {
     );
     await expect(
       PROVIDERS.gemini.analyze({ apiKey: "k", model: "m" }, { base64: "x", mediaType: "image/jpeg" }),
-    ).rejects.toThrow(/without a usable answer/);
+    ).rejects.toThrow(/without usable analysis/);
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        jsonResponse(200, {
+          candidates: [{ finishReason: "MAX_TOKENS", content: { parts: [{ text: '{"altText":' }] } }],
+        }),
+      ),
+    );
+    await expect(
+      PROVIDERS.gemini.analyze({ apiKey: "k", model: "m" }, { base64: "x", mediaType: "image/jpeg" }),
+    ).rejects.toThrow(/MAX_TOKENS/);
+  });
+
+  it("schema-constrains query parsing and reranking without deprecated sampling parameters", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        jsonResponse(200, {
+          candidates: [
+            {
+              finishReason: "STOP",
+              content: { parts: [{ text: '{"match":"all","clauses":[{"kind":"object","concept":"dog"}]}' }] },
+            },
+          ],
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(200, {
+          candidates: [{ finishReason: "STOP", content: { parts: [{ text: '{"scores":[{"i":1,"rel":3}]}' }] } }],
+        }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await PROVIDERS.gemini.parseQuery({ apiKey: "k" }, "dog");
+    await PROVIDERS.gemini.rerankQuery({ apiKey: "k" }, "dog", ["a dog"]);
+
+    for (const [, options] of fetchMock.mock.calls) {
+      const body = JSON.parse(options.body);
+      expect(body.generationConfig.responseFormat.text.mimeType).toBe("application/json");
+      expect(body.generationConfig.responseFormat.text.schema.type).toBe("object");
+      expect(body.generationConfig.temperature).toBeUndefined();
+      expect(body.generationConfig.topP).toBeUndefined();
+      expect(body.generationConfig.topK).toBeUndefined();
+    }
+    expect(fetchMock.mock.calls[0][0]).toContain("/models/gemini-3.5-flash-lite:generateContent");
   });
 });
 
@@ -366,7 +419,7 @@ describe("provider registry is modal-ready", () => {
 
 describe("resolveModel auto-heals retired model ids", () => {
   it("keeps a listed model and falls back to the default for an unknown/retired one", () => {
-    expect(resolveModel(PROVIDERS.gemini, { model: "gemini-3.5-flash" })).toBe("gemini-3.5-flash");
+    expect(resolveModel(PROVIDERS.gemini, { model: "gemini-3.7-flash" })).toBe("gemini-3.7-flash");
     expect(resolveModel(PROVIDERS.gemini, { model: "gemini-2.5-flash" })).toBe(PROVIDERS.gemini.defaultModel);
     expect(resolveModel(PROVIDERS.gemini, {})).toBe(PROVIDERS.gemini.defaultModel);
     expect(resolveModel(PROVIDERS.claude, { model: "claude-opus-4-8" })).toBe("claude-opus-4-8");
@@ -529,7 +582,7 @@ describe("provider.describe (alt text only, no object detection)", () => {
     expect(body.system).toMatch(/alt text/i);
   });
 
-  it("Gemini: posts a text request (no responseMimeType json) and returns alt text", async () => {
+  it("Gemini: posts a plain-text request and returns alt text", async () => {
     const fetchMock = vi.fn(async () =>
       jsonResponse(200, {
         candidates: [{ finishReason: "STOP", content: { parts: [{ text: "A dog on a porch." }] } }],
@@ -544,6 +597,20 @@ describe("provider.describe (alt text only, no object detection)", () => {
     const [, opts] = fetchMock.mock.calls[0];
     const body = JSON.parse(opts.body);
     expect(body.generationConfig?.responseMimeType).toBeUndefined();
+    expect(body.generationConfig?.responseFormat).toBeUndefined();
+  });
+
+  it("Gemini: applies the same block and finish-reason checks to alt text", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jsonResponse(200, { promptFeedback: { blockReason: "SAFETY" }, candidates: [] })),
+    );
+    await expect(
+      PROVIDERS.gemini.describe(
+        { apiKey: "k", model: "gemini-flash-latest" },
+        { base64: "AAAA", mediaType: "image/jpeg" },
+      ),
+    ).rejects.toThrow(/blocked/);
   });
 
   it("both providers expose describe (models support alt-text generation)", () => {

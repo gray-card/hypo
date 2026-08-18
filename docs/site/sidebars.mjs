@@ -28,6 +28,7 @@ const sidebars = {
         "how-to/import-frames-files",
         "how-to/record-push-pull-processing",
         "how-to/write-batch-rules",
+        "how-to/generate-image-descriptions",
         "how-to/ground-a-scene",
         "how-to/contribute-catalog-data",
         "how-to/evolve-a-lexicon",
