@@ -28,6 +28,7 @@ import { createShareActions } from "../apps/web/src/actions/share.ts";
 import { createPaletteCommands } from "../apps/web/src/actions/palette.ts";
 import { cachedImport, createAppBootstrap } from "../apps/web/src/bootstrap.ts";
 import { createLibraryRecordHistory } from "../apps/web/src/routes/library-record-history.ts";
+import { installPreloadRecovery } from "../apps/web/src/preload-recovery.ts";
 
 const BASE = (import.meta.env && import.meta.env.BASE_URL) || "/";
 const router = createRouter({ base: BASE });
@@ -488,23 +489,20 @@ window.addEventListener("beforeunload", (e) => {
   }
 });
 
-// A deploy replaces the hashed JS chunks, so a tab left open on the previous
-// index.html 404s the moment it lazily imports one (the map, the tokenizer, the
-// caption index). Vite fires `vite:preloadError` for exactly this. Without a
-// handler the failed import just rejects and the feature silently does nothing
-// (e.g. "Set on map" not opening). Offer a one-tap reload instead — but only if
-// there is nothing unsaved to lose, and only once.
-let staleReloadPrompted = false;
-window.addEventListener("vite:preloadError", (e) => {
-  e.preventDefault(); // we handle it; don't let Vite rethrow
-  if (staleReloadPrompted) return;
-  staleReloadPrompted = true;
-  toast("A newer version is available. Reload to finish this action.", "err", 15000, {
-    label: "Reload",
-    fn: () => {
-      if (!hasUnsavedChanges() || confirm("Reload now? Unsaved photo edits will be lost.")) location.reload();
-    },
-  });
+// Deploys replace hashed lazy chunks. Reload one stale shell automatically
+// when it is safe, or let the user protect unsaved edits and reload explicitly.
+installPreloadRecovery({
+  target: window,
+  storage: sessionStorage,
+  hasUnsavedChanges,
+  reload: () => location.reload(),
+  confirmReload: () => confirm("Reload now? Unsaved photo edits will be lost."),
+  notify: (reload) => {
+    toast("A newer version is available. Reload to finish this action.", "err", 15000, {
+      label: "Reload",
+      fn: reload,
+    });
+  },
 });
 
 /* ---------- wiring ---------- */

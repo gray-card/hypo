@@ -63,7 +63,7 @@ Writes use `putRecord` with the **same record key**, so AT-URIs stay stable, and
 - **Shoots and metering:** a mobile-friendly shot logger, capture sessions, meter readings, calibration records, exposure calculations, and film-reciprocity support.
 - **Galleries:** create from upload, edit metadata, reorder frames, batch rules, and per-gallery gear defaults.
 - **Workflows:** reusable branching templates, typed inputs and outputs, repeatable steps, per-subject runs, and stages tied to photos and process records.
-- **Scene graphs:** regions, nodes, and edges on a photo, with types grounded to Wikidata and semantic search over what's actually in each frame.
+- **Scene graphs:** regions, nodes, and edges on a photo, with optional provider-generated alt text and object analysis, types grounded to Wikidata, and semantic search over what's actually in each frame.
 - **Profiles:** a public view of anyone's setup at `https://hypo.graycard.app/profile/<handle>`. No login.
 - **Discover:** publish an `app.graycard.setup` record to list your setup network-wide; Discover enumerates every published setup in real time via [Constellation](https://constellation.microcosm.blue/), a shared backlink index, still with no Hypo backend.
 - **Following:** a device-cached activity feed for people followed through Bluesky and Grain. Hypo shows the saved copy immediately, merges new records in place, and checks known publishers first using their record count and most recent activity.
