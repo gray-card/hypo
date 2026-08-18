@@ -2,6 +2,18 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.3.2] - 2026-08-18
+
+### Fixed
+
+- Restore gallery thumbnails loaded from the local record cache by converting
+  structured-cloned blob references back to canonical AT Protocol blob JSON.
+- Validate every Grain gallery, item, photo, and EXIF create or update before
+  it reaches the PDS, including durable outbox operations created by an older
+  session.
+- Reject non-image, oversized, malformed, or incomplete Grain photo records
+  and keep browser-created uploads within Grain's 1 MB image limit.
+
 ## [1.3.1] - 2026-08-18
 
 ### Fixed
@@ -236,3 +248,4 @@ Notable changes to Hypo are recorded here.
 [1.2.0]: https://github.com/gray-card/hypo/compare/v1.1.1...v1.2.0
 [1.3.0]: https://github.com/gray-card/hypo/compare/v1.2.0...v1.3.0
 [1.3.1]: https://github.com/gray-card/hypo/compare/v1.3.0...v1.3.1
+[1.3.2]: https://github.com/gray-card/hypo/compare/v1.3.1...v1.3.2
