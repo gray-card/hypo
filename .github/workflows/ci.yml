@@ -151,11 +151,13 @@ jobs:
         run: npm run check:ios-docs
       - name: Build the combined Hypo for iOS API reference
         run: apps/ios/Scripts/build-documentation.sh "$RUNNER_TEMP/hypo-ios-api"
+      - name: Package the DocC site without rewriting symbol paths
+        run: tar -C "$RUNNER_TEMP/hypo-ios-api" -czf "$RUNNER_TEMP/hypo-ios-api.tar.gz" .
       - name: Upload the merged DocC site
         uses: actions/upload-artifact@v4
         with:
           name: hypo-ios-api-${{ github.sha }}
-          path: ${{ runner.temp }}/hypo-ios-api/
+          path: ${{ runner.temp }}/hypo-ios-api.tar.gz
           if-no-files-found: error
           retention-days: 14
 
@@ -169,7 +171,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: hypo-ios-api-${{ github.sha }}
-          path: docs/site/static/ios-api
+          path: ${{ runner.temp }}/hypo-ios-api-artifact
+      - name: Restore the validated iOS API reference
+        run: |
+          mkdir -p docs/site/static/ios-api
+          tar -xzf "$RUNNER_TEMP/hypo-ios-api-artifact/hypo-ios-api.tar.gz" -C docs/site/static/ios-api
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
