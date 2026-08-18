@@ -10,7 +10,15 @@ function objectValue(value: unknown): UnknownObject | undefined {
 
 function cidString(ref: unknown): string | undefined {
   const object = objectValue(ref);
-  const candidate = typeof ref === "string" ? ref : typeof object?.$link === "string" ? object.$link : undefined;
+  const slash = object?.["/"];
+  const candidate =
+    typeof ref === "string"
+      ? ref
+      : typeof object?.$link === "string"
+        ? object.$link
+        : typeof slash === "string"
+          ? slash
+          : undefined;
 
   if (candidate) {
     try {

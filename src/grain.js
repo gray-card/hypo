@@ -15,9 +15,10 @@
 
 import { repoClient } from "./pds.js";
 import * as outbox from "./outbox.js";
-import { normalizeBlobRef } from "@hypo/pds";
+import { normalizeBlobRef, normalizeRecordBlobRefs } from "@hypo/pds";
 import { RecordStore, openRepositoryRecordCache } from "@hypo/store";
 import { decodeSchemaRecord } from "./schemaRuntime.js";
+import { canonicalizeAndValidateGrainRecord } from "./grainValidation.js";
 
 export const COLLECTIONS = {
   gallery: "social.grain.gallery",
@@ -86,10 +87,10 @@ export async function listRecords(agent, repo, collection, { refresh = false } =
   const store = recordStore(repo);
   const hydrated = hydratedCollections.get(store);
   if (refresh || !hydrated.has(collection)) {
-    let records = await cache.read(repo, collection);
+    let records = (await cache.read(repo, collection)).map(normalizeRecordView);
     if (refresh || !(await cache.hasSnapshot(repo, collection))) {
       try {
-        records = await repoClient(agent).listAll({ repo, collection, limit: 100 });
+        records = (await repoClient(agent).listAll({ repo, collection, limit: 100 })).map(normalizeRecordView);
         await cache.replace(repo, collection, records);
       } catch (error) {
         if (!records.length && navigator.onLine !== false && error?.name !== "NetworkError") throw error;
@@ -102,6 +103,19 @@ export async function listRecords(agent, repo, collection, { refresh = false } =
   const operations = await outbox.list(repo);
   store.replaceOperations(operations);
   return [...store.collection(collection).value.values()];
+}
+
+// BlobRef and CID class instances lose their prototypes when IndexedDB applies
+// structured cloning. Normalize every record at both cache ingress and egress
+// so cached photo refs remain usable JSON instead of `[object Object]` shells.
+export function normalizeRecordView(record) {
+  try {
+    return { ...record, value: normalizeRecordBlobRefs(record.value) };
+  } catch {
+    // Keep a genuinely malformed remote record inspectable. Write paths still
+    // reject it at the mandatory Grain validation boundary.
+    return record;
+  }
 }
 
 // list the user's photos, newest first (for linking film frames to photos by AT-URI).
@@ -181,29 +195,11 @@ export async function getGalleryDetail(agent, did, galleryUri) {
 // instances whose `.ref` is a `CID` object (no `$link`), while raw json blobs
 // carry `{ ref: { $link } }`. handle both, plus bare string refs.
 export function blobCid(blob) {
-  const ref = blob?.ref;
-
-  if (!ref) {
+  try {
+    return normalizeBlobRef(blob).ref.$link;
+  } catch {
     return null;
   }
-
-  if (typeof ref === "string") {
-    return ref;
-  }
-
-  if (typeof ref.$link === "string" && ref.$link !== "[object Object]") {
-    return ref.$link;
-  }
-
-  if (typeof ref.toString === "function") {
-    const s = ref.toString();
-
-    if (s && s !== "[object Object]") {
-      return s;
-    }
-  }
-
-  return null;
 }
 
 // build an object url for a photo blob so it can be shown in an <img>.
@@ -327,24 +323,31 @@ export async function uploadImage(agent, file) {
 }
 
 export async function createGallery(agent, did, { title, description }) {
-  const value = { title: (title || "").trim() || "Untitled gallery", createdAt: new Date().toISOString() };
+  let value = { title: (title || "").trim() || "Untitled gallery", createdAt: new Date().toISOString() };
   if (description?.trim()) value.description = description.trim();
+  value = canonicalizeAndValidateGrainRecord(COLLECTIONS.gallery, value);
   const operation = outbox.enqueue(did, COLLECTIONS.gallery, value);
   const settled = await flushRecordOperation(agent, did, operation);
   return settled.acknowledgement?.uri || operation.tempUri;
 }
 
 export async function createPhoto(agent, did, { blob, alt, aspectRatio }) {
-  const value = { photo: normalizeBlobRef(blob), createdAt: new Date().toISOString() };
+  let value = { photo: normalizeBlobRef(blob), createdAt: new Date().toISOString() };
   if (alt?.trim()) value.alt = alt.trim();
   if (aspectRatio) value.aspectRatio = aspectRatio;
+  value = canonicalizeAndValidateGrainRecord(COLLECTIONS.photo, value);
   const operation = outbox.enqueue(did, COLLECTIONS.photo, value);
   const settled = await flushRecordOperation(agent, did, operation);
   return settled.acknowledgement?.uri || operation.tempUri;
 }
 
 export async function addGalleryItem(agent, did, { gallery, item, position = 0 }) {
-  const value = { gallery, item, position, createdAt: new Date().toISOString() };
+  const value = canonicalizeAndValidateGrainRecord(COLLECTIONS.galleryItem, {
+    gallery,
+    item,
+    position,
+    createdAt: new Date().toISOString(),
+  });
   const operation = outbox.enqueue(did, COLLECTIONS.galleryItem, value);
   const settled = await flushRecordOperation(agent, did, operation);
   return settled.acknowledgement?.uri || operation.tempUri;
@@ -352,7 +355,7 @@ export async function addGalleryItem(agent, did, { gallery, item, position = 0 }
 
 // update a gallery.item's position (for reordering), preserving everything else.
 export async function setGalleryItemPosition(agent, did, item, position) {
-  const value = { ...item.value, position };
+  const value = canonicalizeAndValidateGrainRecord(COLLECTIONS.galleryItem, { ...item.value, position });
   const operation = outbox.enqueuePut(did, {
     uri: item.uri,
     record: value,
@@ -362,7 +365,7 @@ export async function setGalleryItemPosition(agent, did, item, position) {
 }
 
 export async function saveGallery(agent, did, gallery, { title, description }) {
-  const value = {
+  let value = {
     ...gallery.value,
     title,
     description: description?.trim() ? description : undefined,
@@ -372,6 +375,7 @@ export async function saveGallery(agent, did, gallery, { title, description }) {
   if (value.description === undefined) {
     delete value.description;
   }
+  value = canonicalizeAndValidateGrainRecord(COLLECTIONS.gallery, value);
 
   const operation = outbox.enqueuePut(did, {
     uri: gallery.uri,
@@ -387,13 +391,14 @@ export async function savePhotoAlt(agent, did, photo, alt) {
     throw new Error("photo record is missing; cannot edit alt text");
   }
 
-  const value = { ...photo.value, photo: normalizeBlobRef(photo.value.photo) };
+  let value = { ...photo.value, photo: normalizeBlobRef(photo.value.photo) };
 
   if (alt?.trim()) {
     value.alt = alt;
   } else {
     delete value.alt;
   }
+  value = canonicalizeAndValidateGrainRecord(COLLECTIONS.photo, value);
 
   const operation = outbox.enqueuePut(did, {
     uri: photo.uri,
@@ -414,13 +419,14 @@ export async function replacePhoto(agent, did, photo, { blob, aspectRatio }) {
     throw new Error("blob is required to replace a photo");
   }
 
-  const value = { ...photo.value, photo: normalizeBlobRef(blob) };
+  let value = { ...photo.value, photo: normalizeBlobRef(blob) };
 
   if (aspectRatio) {
     value.aspectRatio = aspectRatio;
   } else {
     delete value.aspectRatio;
   }
+  value = canonicalizeAndValidateGrainRecord(COLLECTIONS.photo, value);
 
   const operation = outbox.enqueuePut(did, {
     uri: photo.uri,
@@ -434,7 +440,7 @@ export async function replacePhoto(agent, did, photo, { blob, aspectRatio }) {
 // update an existing exif record (same rkey) or create one if none exists.
 export async function saveExif(agent, did, photoUri, existingExif, form) {
   const createdAt = existingExif?.value?.createdAt;
-  const value = formToExifValue(form, photoUri, createdAt);
+  const value = canonicalizeAndValidateGrainRecord(COLLECTIONS.exif, formToExifValue(form, photoUri, createdAt));
 
   if (existingExif) {
     const operation = outbox.enqueuePut(did, {
