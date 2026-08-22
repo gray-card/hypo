@@ -4,6 +4,7 @@ import { OAUTH_SCOPE, WRITTEN_COLLECTIONS } from "../src/oauthScope.js";
 
 // vitest runs with cwd at the repo root
 const clientMetadata = JSON.parse(readFileSync("public/client-metadata.json", "utf8"));
+const iosClientMetadata = JSON.parse(readFileSync("public/ios-client-metadata.json", "utf8"));
 
 describe("OAuth scope is granular and minimal", () => {
   it("requests no broad transitional grant", () => {
@@ -48,5 +49,12 @@ describe("OAuth scope is granular and minimal", () => {
   it("the static client-metadata.json declares exactly this scope", () => {
     // (run `node scripts/gen-client-metadata.mjs` if this drifts)
     expect(clientMetadata.scope).toBe(OAUTH_SCOPE);
+  });
+
+  it("the native client metadata declares the same scope and an app-bound callback", () => {
+    expect(iosClientMetadata.scope).toBe(OAUTH_SCOPE);
+    expect(iosClientMetadata.application_type).toBe("native");
+    expect(iosClientMetadata.redirect_uris).toEqual(["app.graycard.hypo:/oauth/callback"]);
+    expect(iosClientMetadata.client_id).toBe("https://hypo.graycard.app/ios-client-metadata.json");
   });
 });

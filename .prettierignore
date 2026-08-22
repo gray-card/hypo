@@ -2,8 +2,10 @@ coverage
 dist
 docs/site/.docusaurus
 docs/site/build
+docs/site/static/ios-api
 node_modules
 .panproto
+apps/ios/**/.build
 
 # Generated catalogs and model data.
 src/data/caption-idf.json
@@ -16,3 +18,11 @@ src/data/tokenizer-model.json
 packages/lexicon/src/generated.ts
 packages/lexicon/src/namespaces.ts
 public/client-metadata.json
+public/ios-client-metadata.json
+
+# Generated iOS resources and API-site output.
+apps/ios/Packages/CatalogKit/Sources/CatalogKit/Resources/Catalog
+apps/ios/Packages/HypoLexicon/Sources/HypoLexicon/Generated
+
+# DocC uses double-backtick symbol links that Prettier rewrites as plain code.
+apps/ios/Packages/**/*.docc/**/*.md

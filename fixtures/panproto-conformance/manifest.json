@@ -1,0 +1,58 @@
+{
+  "formatVersion": 1,
+  "panprotoVersion": "0.70.1",
+  "identityChain": "apps/ios/Packages/PanprotoKit/Tests/PanprotoKitTests/Fixtures/identity-chain.json",
+  "versionedCases": [
+    {
+      "id": "exposure-v1.2.0-to-v1.3.0",
+      "record": "fixtures/panproto-conformance/versioned/exposure-v1.2.0.json",
+      "sourceLexicon": "lenses/develop-session-v2/source/app/graycard/instance/exposure.json",
+      "targetLexicon": "lexicons/app/graycard/instance/exposure.json",
+      "rootVertex": "app.graycard.instance.exposure:body"
+    }
+  ],
+  "cases": [
+    {
+      "id": "instance-camera",
+      "record": "fixtures/records/camera.json",
+      "identityRecord": "fixtures/records/camera.json",
+      "lexicon": "lexicons/app/graycard/instance/camera.json",
+      "rootVertex": "app.graycard.instance.camera:body"
+    },
+    {
+      "id": "instance-film-roll",
+      "record": "apps/ios/Packages/HypoLexicon/Tests/HypoLexiconTests/Fixtures/instance-film-roll.json",
+      "identityRecord": "apps/ios/Packages/HypoLexicon/Tests/HypoLexiconTests/Fixtures/instance-film-roll.json",
+      "lexicon": "lexicons/app/graycard/instance/filmRoll.json",
+      "rootVertex": "app.graycard.instance.filmRoll:body"
+    },
+    {
+      "id": "catalog-dev-recipe",
+      "record": "apps/ios/Packages/HypoLexicon/Tests/HypoLexiconTests/Fixtures/catalog-dev-recipe.json",
+      "lexicon": "lexicons/app/graycard/catalog/devRecipe.json",
+      "rootVertex": "app.graycard.catalog.devRecipe:body",
+      "identityLimitation": "Panproto 0.70.1 identity lenses cannot restrict through the required temps items reference."
+    },
+    {
+      "id": "process-develop-session",
+      "record": "apps/ios/Packages/HypoLexicon/Tests/HypoLexiconTests/Fixtures/process-develop-session.json",
+      "identityRecord": "fixtures/panproto-conformance/identity/process-develop-session.json",
+      "lexicon": "lexicons/app/graycard/process/developSession.json",
+      "rootVertex": "app.graycard.process.developSession:body"
+    },
+    {
+      "id": "meter-reading",
+      "record": "apps/ios/Packages/HypoLexicon/Tests/HypoLexiconTests/Fixtures/meter-reading.json",
+      "identityRecord": "fixtures/panproto-conformance/identity/meter-reading.json",
+      "lexicon": "lexicons/app/graycard/meter/reading.json",
+      "rootVertex": "app.graycard.meter.reading:body"
+    },
+    {
+      "id": "meter-calibration",
+      "record": "apps/ios/Packages/HypoLexicon/Tests/HypoLexiconTests/Fixtures/meter-calibration.json",
+      "identityRecord": "fixtures/panproto-conformance/identity/meter-calibration.json",
+      "lexicon": "lexicons/app/graycard/meter/calibration.json",
+      "rootVertex": "app.graycard.meter.calibration:body"
+    }
+  ]
+}

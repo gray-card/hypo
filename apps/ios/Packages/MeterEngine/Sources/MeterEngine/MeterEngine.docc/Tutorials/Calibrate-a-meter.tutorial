@@ -1,0 +1,55 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Calibrate a meter") {
+        Derive a correction from reference comparisons and apply it only to matching hardware and capture paths.
+    }
+
+    @Section(title: "Collect comparable observations") {
+        @ContentAndMedia {
+            Fix the phone position, target, illumination, camera module, and sensor path while comparing Hypo with a trusted reference. Capture uncorrected readings; feeding corrected values back into the builder compounds the correction.
+        }
+
+        @Steps {
+            @Step {
+                Record each measured EV100 and the corresponding reference EV100. Use several points across the range you intend to validate.
+            }
+
+            @Step {
+                Identify the exact device model, camera ID, module, and sensor path.
+
+                @Code(name: "CalibrationExample.swift", file: CalibrationExample.swift)
+            }
+        }
+    }
+
+    @Section(title: "Build and store the profile") {
+        @ContentAndMedia {
+            `CalibrationBuilder.constantOffsetProfile` averages differences in stop space and records the observed EV range. Settings stores the profile locally before selecting it and can queue a canonical `meter.calibration` record when the person is signed in.
+        }
+
+        @Steps {
+            @Step {
+                Choose a reference kind that describes the actual comparison. Put model or procedure details in the record's reference detail rather than changing the enum meaning.
+            }
+
+            @Step {
+                Store the profile through the Settings calibration manager. Do not insert it directly into a view model's selected state.
+            }
+        }
+    }
+
+    @Section(title: "Verify identity and drift") {
+        @ContentAndMedia {
+            Apply the correction only when `CalibrationProfile.matches(camera:sensorPath:)` succeeds. A future drift-check date is a prompt to repeat the comparison; it does not disable the profile or certify accuracy by itself.
+        }
+
+        @Steps {
+            @Step {
+                Test the corrected meter against held-out reference readings, including the ends of the claimed EV range.
+            }
+
+            @Step {
+                Publish accuracy only after physical-device measurements meet the release thresholds. Simulator traces establish software behavior, not meter accuracy.
+            }
+        }
+    }
+}

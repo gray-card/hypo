@@ -1,0 +1,121 @@
+name: iOS
+
+on:
+  pull_request:
+    paths:
+      - "apps/ios/**"
+      - "lexicons/**"
+      - "fixtures/records/**"
+      - "fixtures/panproto-conformance/**"
+      - "public/catalog/**"
+      - "public/ios-client-metadata.json"
+      - "src/oauthScope.js"
+      - "scripts/gen-client-metadata.mjs"
+      - "tests/oauthScope.test.js"
+      - ".github/workflows/ios.yml"
+      - ".github/workflows/ios-testflight.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/ios/**"
+      - "lexicons/**"
+      - "fixtures/records/**"
+      - "fixtures/panproto-conformance/**"
+      - "public/catalog/**"
+      - "public/ios-client-metadata.json"
+      - "src/oauthScope.js"
+      - "scripts/gen-client-metadata.mjs"
+      - "tests/oauthScope.test.js"
+      - ".github/workflows/ios.yml"
+      - ".github/workflows/ios-testflight.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Release gate (Swift, app, and metadata)
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node for lexicon generation
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Select Xcode
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+      - name: Install JavaScript dependencies for shared generators and corpus checks
+        run: npm ci
+      - name: Install SwiftLint
+        run: brew install swiftlint
+      - name: Cache SwiftPM downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ~/.cache/org.swift.swiftpm
+          key: ios-swiftpm-${{ runner.os }}-${{ hashFiles('apps/ios/**/Package.resolved', 'apps/ios/**/Package.swift') }}
+          restore-keys: |
+            ios-swiftpm-${{ runner.os }}-
+      - name: Render DesignSystem component-gallery evidence
+        run: |
+          swift run \
+            --package-path apps/ios/Packages/DesignSystem \
+            -c release \
+            generate-design-system-snapshots \
+            --output .derived-data/design-system-gallery
+      - name: Upload DesignSystem component-gallery evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: hypo-design-system-gallery-${{ github.sha }}
+          path: .derived-data/design-system-gallery/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Check packages and application
+        run: apps/ios/Scripts/check.sh
+      - name: Run composed iOS acceptance tests
+        run: |
+          xcodebuild \
+            -workspace apps/ios/Hypo.xcworkspace \
+            -scheme Hypo \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=latest" \
+            -derivedDataPath .derived-data/hypo-ios-ui-tests \
+            -disableAutomaticPackageResolution \
+            -onlyUsePackageVersionsFromResolvedFile \
+            -only-testing:HypoUITests \
+            -parallel-testing-enabled NO \
+            -maximum-parallel-testing-workers 1 \
+            GCC_TREAT_WARNINGS_AS_ERRORS=YES \
+            LD_WARNINGS_AS_ERRORS=YES \
+            SWIFT_SUPPRESS_WARNINGS=NO \
+            SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
+            test
+      - name: Package unsigned build evidence
+        run: |
+          mkdir -p .derived-data/hypo-ios-artifacts
+          ditto -c -k --keepParent \
+            .derived-data/hypo-ios/sym/Debug-iphonesimulator/Hypo.app \
+            .derived-data/hypo-ios-artifacts/Hypo-simulator.zip
+          ditto -c -k --keepParent \
+            .derived-data/hypo-ios-device/sym/Release-iphoneos/Hypo.app \
+            .derived-data/hypo-ios-artifacts/Hypo-device-unsigned.zip
+          shasum -a 256 \
+            .derived-data/hypo-ios-artifacts/Hypo-simulator.zip \
+            .derived-data/hypo-ios-artifacts/Hypo-device-unsigned.zip \
+            > .derived-data/hypo-ios-artifacts/SHA256SUMS
+          xcodebuild -version > .derived-data/hypo-ios-artifacts/toolchain.txt
+          swift --version >> .derived-data/hypo-ios-artifacts/toolchain.txt
+      - name: Upload unsigned build evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: hypo-ios-${{ github.sha }}
+          path: .derived-data/hypo-ios-artifacts/
+          if-no-files-found: error
+          retention-days: 14

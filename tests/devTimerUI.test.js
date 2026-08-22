@@ -117,6 +117,8 @@ describe("development timer logging", () => {
       expect(develop.temperatureSetpoint).toEqual({ unit: "celsius", value: recipe.temps[0].tempC10, scale: 10 });
       expect(develop.actualTemperature).toEqual({ unit: "celsius", value: 215, scale: 10 });
       expect(develop.publishedTimeSeconds).toBe(recipe.temps[0].timeSec);
+      expect(develop.plannedTimeSeconds).toBe(recipe.temps[0].timeSec);
+      expect(develop.timeBasis).toBe("published");
       expect(develop.actualTimeSeconds).toBe(0);
       expect(develop.agitationScheme).toEqual(recipe.agitation);
       expect(develop.timeSeconds).toBeUndefined();
@@ -190,12 +192,77 @@ describe("development timer logging", () => {
       await vi.waitFor(() => expect(pending(ctx.did, NS.process.developSession)).toHaveLength(1));
       const rec = pending(ctx.did, NS.process.developSession)[0].record;
       const develop = rec.steps[0];
-      expect(develop.publishedTimeSeconds).toBe(450);
+      expect(develop.publishedTimeSeconds).toBeUndefined();
+      expect(develop.plannedTimeSeconds).toBe(450);
+      expect(develop.timeBasis).toBe("recipe-interpolation");
       expect(develop.temperatureSetpoint).toEqual({ unit: "celsius", value: 220, scale: 10 });
       expect(develop.sourceSpec.method).toBe("derived");
       expect(develop.sourceSpec.note).toMatch(/interpolated.*20°C\/10:00.*24°C\/5:00/i);
       expect(rec.provenance).toMatchObject({ source: "manual" });
       expect(rec.provenance.note).toMatch(/derived by interpolation/i);
+    } finally {
+      recipes.pop();
+    }
+  });
+
+  it("offers an explicit Ilford-style estimate and records it as estimated rather than published", async () => {
+    const recipes = allRecipes();
+    const recipe = {
+      filmMake: "Test",
+      filmName: "Estimate Film",
+      developerMake: "Test",
+      developerName: "Developer",
+      dilution: "stock",
+      process: "bw",
+      recommendationStatus: "manufacturer-supported",
+      interpolationAllowed: false,
+      derived: false,
+      temps: [{ tempC10: 200, timeSec: 480 }],
+      source: "https://manufacturer.example/estimate.pdf",
+    };
+    recipes.push(recipe);
+    const ctx = {
+      agent: mockAgent(),
+      did: "did:plc:estimate",
+      store: { catalog: { devRecipe: [] }, instance: { chemistry: [], filmRoll: [] } },
+    };
+    Object.defineProperty(navigator, "onLine", { configurable: true, value: false });
+    try {
+      initLibrary(ctx);
+      openDevTimer(ctx, { allowResume: false });
+      const search = document.querySelector(".search-input");
+      search.value = "Test Estimate Film";
+      search.dispatchEvent(new Event("input", { bubbles: true }));
+      document.querySelector(".devtimer-list .devtimer-opt").click();
+      document.querySelectorAll(".devtimer-list")[1].querySelector(".devtimer-opt").click();
+
+      const estimateToggle = document.querySelector(".devtimer-estimate-toggle input");
+      expect(estimateToggle).not.toBeNull();
+      estimateToggle.checked = true;
+      estimateToggle.dispatchEvent(new Event("change", { bubbles: true }));
+      const setpoint = [...document.querySelectorAll("label.field")]
+        .find((label) => label.textContent.includes("Recipe setpoint"))
+        ?.querySelector("input");
+      setpoint.value = "24";
+      setpoint.dispatchEvent(new Event("input", { bubbles: true }));
+
+      expect(document.querySelector(".devtimer-devtime").textContent).toMatch(
+        /Estimated 5:30 at 24°C from 8:00 at 20°C/i,
+      );
+      expect(document.querySelector(".devtimer-estimate").textContent).toMatch(
+        /not a recommendation for this film and developer pair/i,
+      );
+      [...document.querySelectorAll("button")].find((button) => button.textContent === "Start development").click();
+      [...document.querySelectorAll("button")].find((button) => button.textContent === "Finish & log").click();
+
+      await vi.waitFor(() => expect(pending(ctx.did, NS.process.developSession)).toHaveLength(1));
+      const rec = pending(ctx.did, NS.process.developSession)[0].record;
+      const develop = rec.steps[0];
+      expect(develop.publishedTimeSeconds).toBeUndefined();
+      expect(develop.plannedTimeSeconds).toBe(330);
+      expect(develop.timeBasis).toBe("general-estimate");
+      expect(develop.notes).toMatch(/Ilford's general black-and-white compensation chart/i);
+      expect(rec.provenance.note).toMatch(/not a recipe-specific recommendation/i);
     } finally {
       recipes.pop();
     }
@@ -254,6 +321,8 @@ describe("development timer logging", () => {
       const rec = pending(ctx.did, NS.process.developSession)[0].record;
       expect(rec.publishedTimeSeconds).toBeUndefined();
       expect(rec.sourceSpec).toBeUndefined();
+      expect(rec.steps[0].plannedTimeSeconds).toBe(450);
+      expect(rec.steps[0].timeBasis).toBe("manual");
       expect(rec.provenance.note).toMatch(/selected time was entered manually/i);
     } finally {
       recipes.pop();
@@ -315,7 +384,9 @@ describe("manual development session form", () => {
     expect(develop.recipe).toBe(recipeUri);
     expect(develop.temperatureSetpoint).toEqual({ value: 20000000, scale: 1000000, unit: "celsius" });
     expect(develop.actualTemperature).toEqual(develop.temperatureSetpoint);
-    expect(develop.publishedTimeSeconds).toBe(600);
+    expect(develop.publishedTimeSeconds).toBeUndefined();
+    expect(develop.plannedTimeSeconds).toBe(600);
+    expect(develop.timeBasis).toBe("manual");
     expect(develop.actualTimeSeconds).toBe(600);
     expect(develop.agitationScheme).toEqual({
       everySec: 60,
@@ -375,10 +446,25 @@ describe("manual development session form", () => {
     const rec = form.read();
     const develop = rec.steps[0];
     expect(develop.publishedTimeSeconds).toBe(450);
+    expect(develop.plannedTimeSeconds).toBe(450);
+    expect(develop.timeBasis).toBe("recipe-interpolation");
     expect(develop.actualTimeSeconds).toBe(465);
     expect(develop.timeSeconds).toBeUndefined();
     expect(develop.sourceSpec.method).toBe("derived");
     expect(rec.provenance.source).toBe("manual");
     expect(rec.provenance.note).toMatch(/derived interpolation.*observed manually/i);
+
+    const plannedTime = document.querySelector('input[data-key="plannedTimeSeconds"]');
+    const timeBasis = [...document.querySelectorAll("label.field")]
+      .find((label) => label.textContent.includes("Planned-time basis"))
+      .querySelector("select");
+    plannedTime.value = "480";
+    plannedTime.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(timeBasis.value).toBe("manual");
+    expect(form.read().steps[0].timeBasis).toBe("manual");
+
+    plannedTime.value = "450";
+    plannedTime.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(timeBasis.value).toBe("recipe-interpolation");
   });
 });

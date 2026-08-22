@@ -1,11 +1,33 @@
 import { describe, it, expect } from "vitest";
 import {
+  estimateGeneralBWTemperatureTime,
   parseMMSS,
   publishedTemps,
   recipeRecommendationStatus,
   resolveTimeRecommendation,
   resolveTimeSec,
 } from "../src/devRecipes.js";
+
+describe("estimateGeneralBWTemperatureTime", () => {
+  it("matches the Ilford chart relationship and 15-second rounding", () => {
+    expect(estimateGeneralBWTemperatureTime(8 * 60, 200, 240)).toMatchObject({
+      timeSec: 5 * 60 + 30,
+      referenceTimeSec: 8 * 60,
+      referenceTempC10: 200,
+      targetTempC10: 240,
+      roundingIncrementSec: 15,
+      belowRecommendedMinimum: false,
+      largeTemperatureChange: true,
+    });
+    expect(estimateGeneralBWTemperatureTime(5 * 60, 200, 180)?.timeSec).toBe(6 * 60);
+  });
+
+  it("warns below five minutes and refuses values outside the chart range", () => {
+    expect(estimateGeneralBWTemperatureTime(5 * 60, 200, 220)?.belowRecommendedMinimum).toBe(true);
+    expect(estimateGeneralBWTemperatureTime(8 * 60, 200, 280)).toBeNull();
+    expect(estimateGeneralBWTemperatureTime(0, 200, 220)).toBeNull();
+  });
+});
 
 describe("resolveTimeSec — datasheet-only, no extrapolation", () => {
   const single = { temps: [{ tempC10: 200, timeSec: 405 }] };

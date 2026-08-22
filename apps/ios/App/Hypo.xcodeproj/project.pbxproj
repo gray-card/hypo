@@ -1,0 +1,931 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F10000000000000000000001 /* HypoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000001 /* HypoApp.swift */; };
+		F10000000000000000000002 /* AppDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000002 /* AppDependencies.swift */; };
+		F10000000000000000000003 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000003 /* RootView.swift */; };
+		F10000000000000000000012 /* HypoOAuthConfiguration.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000005 /* HypoOAuthConfiguration.generated.swift */; };
+		F10000000000000000000015 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000006 /* Assets.xcassets */; };
+		F10000000000000000000016 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000007 /* PrivacyInfo.xcprivacy */; };
+		F10000000000000000000017 /* PrivateMeterCaptureServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000008 /* PrivateMeterCaptureServices.swift */; };
+		F10000000000000000000004 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = Q10000000000000000000001 /* DesignSystem */; };
+		F10000000000000000000005 /* HypoLexicon in Frameworks */ = {isa = PBXBuildFile; productRef = Q10000000000000000000002 /* HypoLexicon */; };
+		F10000000000000000000006 /* PanprotoKit in Frameworks */ = {isa = PBXBuildFile; productRef = Q10000000000000000000003 /* PanprotoKit */; };
+		F10000000000000000000007 /* CatalogKit in Frameworks */ = {isa = PBXBuildFile; productRef = Q10000000000000000000004 /* CatalogKit */; };
+		F10000000000000000000008 /* PersistenceKit in Frameworks */ = {isa = PBXBuildFile; productRef = Q10000000000000000000005 /* PersistenceKit */; };
+		F10000000000000000000009 /* PhotometryKit in Frameworks */ = {isa = PBXBuildFile; productRef = Q10000000000000000000006 /* PhotometryKit */; };
+		F1000000000000000000000A /* TimerEngine in Frameworks */ = {isa = PBXBuildFile; productRef = Q10000000000000000000007 /* TimerEngine */; };
+		F1000000000000000000000B /* TimerFeature in Frameworks */ = {isa = PBXBuildFile; productRef = Q10000000000000000000008 /* TimerFeature */; };
+		F1000000000000000000000C /* LoggerFeature in Frameworks */ = {isa = PBXBuildFile; productRef = Q10000000000000000000009 /* LoggerFeature */; };
+		F1000000000000000000000D /* MeterEngine in Frameworks */ = {isa = PBXBuildFile; productRef = Q1000000000000000000000A /* MeterEngine */; };
+		F1000000000000000000000E /* MeterFeature in Frameworks */ = {isa = PBXBuildFile; productRef = Q1000000000000000000000B /* MeterFeature */; };
+		F1000000000000000000000F /* LibraryFeature in Frameworks */ = {isa = PBXBuildFile; productRef = Q1000000000000000000000C /* LibraryFeature */; };
+		F10000000000000000000010 /* ATProtoClient in Frameworks */ = {isa = PBXBuildFile; productRef = Q1000000000000000000000D /* ATProtoClient */; };
+		F10000000000000000000011 /* SyncKit in Frameworks */ = {isa = PBXBuildFile; productRef = Q1000000000000000000000E /* SyncKit */; };
+		F10000000000000000000013 /* SettingsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = Q1000000000000000000000F /* SettingsFeature */; };
+		F10000000000000000000014 /* SyncStatusFeature in Frameworks */ = {isa = PBXBuildFile; productRef = Q10000000000000000000010 /* SyncStatusFeature */; };
+		F20000000000000000000001 /* TimerActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* TimerActivityWidget.swift */; };
+		F20000000000000000000002 /* TimerFeature in Frameworks */ = {isa = PBXBuildFile; productRef = Q20000000000000000000001 /* TimerFeature */; };
+		F20000000000000000000003 /* TimerActivity.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = E20000000000000000000003 /* TimerActivity.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F30000000000000000000001 /* SystemIntegrationKit in Frameworks */ = {isa = PBXBuildFile; productRef = Q30000000000000000000001 /* SystemIntegrationKit */; };
+		F30000000000000000000002 /* SystemIntegrationWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30000000000000000000001 /* SystemIntegrationWidgets.swift */; };
+		F30000000000000000000003 /* SystemIntegrationKit in Frameworks */ = {isa = PBXBuildFile; productRef = Q30000000000000000000002 /* SystemIntegrationKit */; };
+		F30000000000000000000004 /* SystemIntegration.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = E30000000000000000000004 /* SystemIntegration.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F30000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E30000000000000000000006 /* PrivacyInfo.xcprivacy */; };
+		F40000000000000000000001 /* DiagnosticsKit in Frameworks */ = {isa = PBXBuildFile; productRef = Q40000000000000000000001 /* DiagnosticsKit */; };
+		F50000000000000000000001 /* HypoAcceptanceUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000001 /* HypoAcceptanceUITests.swift */; };
+		F50000000000000000000002 /* AcceptanceHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000003 /* AcceptanceHarness.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		K20000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A20000000000000000000001;
+			remoteInfo = TimerActivity;
+		};
+		K30000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A30000000000000000000001;
+			remoteInfo = SystemIntegration;
+		};
+		K50000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000000000000000000001;
+			remoteInfo = Hypo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C20000000000000000000004 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F20000000000000000000003 /* TimerActivity.appex in Embed App Extensions */,
+				F30000000000000000000004 /* SystemIntegration.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		E10000000000000000000001 /* HypoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HypoApp.swift; sourceTree = "<group>"; };
+		E10000000000000000000002 /* AppDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDependencies.swift; sourceTree = "<group>"; };
+		E10000000000000000000003 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		E10000000000000000000004 /* Hypo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hypo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E10000000000000000000005 /* HypoOAuthConfiguration.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HypoOAuthConfiguration.generated.swift; sourceTree = "<group>"; };
+		E10000000000000000000006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E10000000000000000000007 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		E10000000000000000000008 /* PrivateMeterCaptureServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateMeterCaptureServices.swift; sourceTree = "<group>"; };
+		E20000000000000000000001 /* TimerActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerActivityWidget.swift; sourceTree = "<group>"; };
+		E20000000000000000000002 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E20000000000000000000003 /* TimerActivity.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TimerActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		E30000000000000000000001 /* SystemIntegrationWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemIntegrationWidgets.swift; sourceTree = "<group>"; };
+		E30000000000000000000002 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E30000000000000000000003 /* SystemIntegration.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SystemIntegration.entitlements; sourceTree = "<group>"; };
+		E30000000000000000000004 /* SystemIntegration.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SystemIntegration.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		E30000000000000000000005 /* Hypo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Hypo.entitlements; sourceTree = "<group>"; };
+		E30000000000000000000006 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		E50000000000000000000001 /* HypoAcceptanceUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HypoAcceptanceUITests.swift; sourceTree = "<group>"; };
+		E50000000000000000000002 /* HypoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HypoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E50000000000000000000003 /* AcceptanceHarness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcceptanceHarness.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C10000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F10000000000000000000004 /* DesignSystem in Frameworks */,
+				F10000000000000000000005 /* HypoLexicon in Frameworks */,
+				F10000000000000000000006 /* PanprotoKit in Frameworks */,
+				F10000000000000000000007 /* CatalogKit in Frameworks */,
+				F10000000000000000000008 /* PersistenceKit in Frameworks */,
+				F10000000000000000000009 /* PhotometryKit in Frameworks */,
+				F1000000000000000000000A /* TimerEngine in Frameworks */,
+				F1000000000000000000000B /* TimerFeature in Frameworks */,
+				F1000000000000000000000C /* LoggerFeature in Frameworks */,
+				F1000000000000000000000D /* MeterEngine in Frameworks */,
+				F1000000000000000000000E /* MeterFeature in Frameworks */,
+				F1000000000000000000000F /* LibraryFeature in Frameworks */,
+				F10000000000000000000010 /* ATProtoClient in Frameworks */,
+				F10000000000000000000011 /* SyncKit in Frameworks */,
+				F10000000000000000000013 /* SettingsFeature in Frameworks */,
+				F10000000000000000000014 /* SyncStatusFeature in Frameworks */,
+				F30000000000000000000001 /* SystemIntegrationKit in Frameworks */,
+				F40000000000000000000001 /* DiagnosticsKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C20000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F20000000000000000000002 /* TimerFeature in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C30000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F30000000000000000000003 /* SystemIntegrationKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C50000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D10000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				E10000000000000000000001 /* HypoApp.swift */,
+				E10000000000000000000002 /* AppDependencies.swift */,
+				E10000000000000000000003 /* RootView.swift */,
+				E50000000000000000000003 /* AcceptanceHarness.swift */,
+				E10000000000000000000008 /* PrivateMeterCaptureServices.swift */,
+				E10000000000000000000005 /* HypoOAuthConfiguration.generated.swift */,
+				E10000000000000000000006 /* Assets.xcassets */,
+				E10000000000000000000007 /* PrivacyInfo.xcprivacy */,
+				E30000000000000000000005 /* Hypo.entitlements */,
+				D20000000000000000000001 /* TimerActivity */,
+				D30000000000000000000001 /* SystemIntegration */,
+				D50000000000000000000001 /* UITests */,
+				D10000000000000000000002 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D10000000000000000000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E10000000000000000000004 /* Hypo.app */,
+				E20000000000000000000003 /* TimerActivity.appex */,
+				E30000000000000000000004 /* SystemIntegration.appex */,
+				E50000000000000000000002 /* HypoUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D20000000000000000000001 /* TimerActivity */ = {
+			isa = PBXGroup;
+			children = (
+				E20000000000000000000001 /* TimerActivityWidget.swift */,
+				E20000000000000000000002 /* Info.plist */,
+			);
+			path = ../Extensions/TimerActivity;
+			sourceTree = "<group>";
+		};
+		D30000000000000000000001 /* SystemIntegration */ = {
+			isa = PBXGroup;
+			children = (
+				E30000000000000000000001 /* SystemIntegrationWidgets.swift */,
+				E30000000000000000000002 /* Info.plist */,
+				E30000000000000000000003 /* SystemIntegration.entitlements */,
+				E30000000000000000000006 /* PrivacyInfo.xcprivacy */,
+			);
+			path = ../Extensions/SystemIntegration;
+			sourceTree = "<group>";
+		};
+		D50000000000000000000001 /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				E50000000000000000000001 /* HypoAcceptanceUITests.swift */,
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A10000000000000000000001 /* Hypo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H10000000000000000000002 /* Build configuration list for PBXNativeTarget "Hypo" */;
+			buildPhases = (
+				C10000000000000000000001 /* Sources */,
+				C10000000000000000000002 /* Frameworks */,
+				C10000000000000000000003 /* Resources */,
+				C20000000000000000000004 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				T20000000000000000000001 /* PBXTargetDependency */,
+				T30000000000000000000001 /* PBXTargetDependency */,
+			);
+			name = Hypo;
+			packageProductDependencies = (
+				Q10000000000000000000001 /* DesignSystem */,
+				Q10000000000000000000002 /* HypoLexicon */,
+				Q10000000000000000000003 /* PanprotoKit */,
+				Q10000000000000000000004 /* CatalogKit */,
+				Q10000000000000000000005 /* PersistenceKit */,
+				Q10000000000000000000006 /* PhotometryKit */,
+				Q10000000000000000000007 /* TimerEngine */,
+				Q10000000000000000000008 /* TimerFeature */,
+				Q10000000000000000000009 /* LoggerFeature */,
+				Q1000000000000000000000A /* MeterEngine */,
+				Q1000000000000000000000B /* MeterFeature */,
+				Q1000000000000000000000C /* LibraryFeature */,
+				Q1000000000000000000000D /* ATProtoClient */,
+				Q1000000000000000000000E /* SyncKit */,
+				Q1000000000000000000000F /* SettingsFeature */,
+				Q10000000000000000000010 /* SyncStatusFeature */,
+				Q30000000000000000000001 /* SystemIntegrationKit */,
+				Q40000000000000000000001 /* DiagnosticsKit */,
+			);
+			productName = Hypo;
+			productReference = E10000000000000000000004 /* Hypo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A20000000000000000000001 /* TimerActivity */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H20000000000000000000001 /* Build configuration list for PBXNativeTarget "TimerActivity" */;
+			buildPhases = (
+				C20000000000000000000001 /* Sources */,
+				C20000000000000000000002 /* Frameworks */,
+				C20000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TimerActivity;
+			packageProductDependencies = (
+				Q20000000000000000000001 /* TimerFeature */,
+			);
+			productName = TimerActivity;
+			productReference = E20000000000000000000003 /* TimerActivity.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		A30000000000000000000001 /* SystemIntegration */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H30000000000000000000001 /* Build configuration list for PBXNativeTarget "SystemIntegration" */;
+			buildPhases = (
+				C30000000000000000000001 /* Sources */,
+				C30000000000000000000002 /* Frameworks */,
+				C30000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SystemIntegration;
+			packageProductDependencies = (
+				Q30000000000000000000002 /* SystemIntegrationKit */,
+			);
+			productName = SystemIntegration;
+			productReference = E30000000000000000000004 /* SystemIntegration.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		A50000000000000000000001 /* HypoUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H50000000000000000000001 /* Build configuration list for PBXNativeTarget "HypoUITests" */;
+			buildPhases = (
+				C50000000000000000000001 /* Sources */,
+				C50000000000000000000002 /* Frameworks */,
+				C50000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				T50000000000000000000001 /* PBXTargetDependency */,
+			);
+			name = HypoUITests;
+			packageProductDependencies = (
+			);
+			productName = HypoUITests;
+			productReference = E50000000000000000000002 /* HypoUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B10000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					A10000000000000000000001 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					A20000000000000000000001 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					A30000000000000000000001 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					A50000000000000000000001 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = A10000000000000000000001;
+					};
+				};
+			};
+			buildConfigurationList = H10000000000000000000001 /* Build configuration list for PBXProject "Hypo" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D10000000000000000000001;
+			packageReferences = (
+				P10000000000000000000001 /* XCLocalSwiftPackageReference "../Packages/DesignSystem" */,
+				P10000000000000000000002 /* XCLocalSwiftPackageReference "../Packages/HypoLexicon" */,
+				P10000000000000000000003 /* XCLocalSwiftPackageReference "../Packages/PanprotoKit" */,
+				P10000000000000000000004 /* XCLocalSwiftPackageReference "../Packages/CatalogKit" */,
+				P10000000000000000000005 /* XCLocalSwiftPackageReference "../Packages/PersistenceKit" */,
+				P10000000000000000000006 /* XCLocalSwiftPackageReference "../Packages/PhotometryKit" */,
+				P10000000000000000000007 /* XCLocalSwiftPackageReference "../Packages/TimerEngine" */,
+				P10000000000000000000008 /* XCLocalSwiftPackageReference "../Packages/Features/TimerFeature" */,
+				P10000000000000000000009 /* XCLocalSwiftPackageReference "../Packages/Features/LoggerFeature" */,
+				P1000000000000000000000A /* XCLocalSwiftPackageReference "../Packages/MeterEngine" */,
+				P1000000000000000000000B /* XCLocalSwiftPackageReference "../Packages/Features/MeterFeature" */,
+				P1000000000000000000000C /* XCLocalSwiftPackageReference "../Packages/Features/LibraryFeature" */,
+				P1000000000000000000000D /* XCLocalSwiftPackageReference "../Packages/ATProtoClient" */,
+				P1000000000000000000000E /* XCLocalSwiftPackageReference "../Packages/SyncKit" */,
+				P1000000000000000000000F /* XCLocalSwiftPackageReference "../Packages/Features/SettingsFeature" */,
+				P10000000000000000000010 /* XCLocalSwiftPackageReference "../Packages/Features/SyncStatusFeature" */,
+				P30000000000000000000001 /* XCLocalSwiftPackageReference "../Packages/SystemIntegrationKit" */,
+				P40000000000000000000001 /* XCLocalSwiftPackageReference "../Packages/DiagnosticsKit" */,
+			);
+			productRefGroup = D10000000000000000000002 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A10000000000000000000001 /* Hypo */,
+				A20000000000000000000001 /* TimerActivity */,
+				A30000000000000000000001 /* SystemIntegration */,
+				A50000000000000000000001 /* HypoUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C10000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F10000000000000000000015 /* Assets.xcassets in Resources */,
+				F10000000000000000000016 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C20000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C30000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F30000000000000000000005 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C50000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C10000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F10000000000000000000001 /* HypoApp.swift in Sources */,
+				F10000000000000000000002 /* AppDependencies.swift in Sources */,
+				F10000000000000000000003 /* RootView.swift in Sources */,
+				F50000000000000000000002 /* AcceptanceHarness.swift in Sources */,
+				F10000000000000000000017 /* PrivateMeterCaptureServices.swift in Sources */,
+				F10000000000000000000012 /* HypoOAuthConfiguration.generated.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C20000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F20000000000000000000001 /* TimerActivityWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C30000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F30000000000000000000002 /* SystemIntegrationWidgets.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C50000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F50000000000000000000001 /* HypoAcceptanceUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		T20000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A20000000000000000000001 /* TimerActivity */;
+			targetProxy = K20000000000000000000001 /* PBXContainerItemProxy */;
+		};
+		T30000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A30000000000000000000001 /* SystemIntegration */;
+			targetProxy = K30000000000000000000001 /* PBXContainerItemProxy */;
+		};
+		T50000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000000000000000000001 /* Hypo */;
+			targetProxy = K50000000000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		G10000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		G10000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+		};
+			name = Release;
+		};
+		G10000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Hypo.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.graycard.hypo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		G10000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Hypo.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.graycard.hypo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "$(HYPO_APP_PROFILE_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		G20000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ../Extensions/TimerActivity/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.graycard.hypo.TimerActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		G20000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ../Extensions/TimerActivity/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.graycard.hypo.TimerActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "$(HYPO_TIMER_ACTIVITY_PROFILE_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		G30000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ../Extensions/SystemIntegration/SystemIntegration.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ../Extensions/SystemIntegration/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.graycard.hypo.SystemIntegration;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		G30000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ../Extensions/SystemIntegration/SystemIntegration.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ../Extensions/SystemIntegration/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.graycard.hypo.SystemIntegration;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "$(HYPO_SYSTEM_INTEGRATION_PROFILE_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		G50000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.graycard.hypo.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Hypo;
+			};
+			name = Debug;
+		};
+		G50000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.graycard.hypo.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Hypo;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		H10000000000000000000001 /* Build configuration list for PBXProject "Hypo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10000000000000000000001 /* Debug */,
+				G10000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		H10000000000000000000002 /* Build configuration list for PBXNativeTarget "Hypo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10000000000000000000003 /* Debug */,
+				G10000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		H20000000000000000000001 /* Build configuration list for PBXNativeTarget "TimerActivity" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G20000000000000000000001 /* Debug */,
+				G20000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		H30000000000000000000001 /* Build configuration list for PBXNativeTarget "SystemIntegration" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G30000000000000000000001 /* Debug */,
+				G30000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		H50000000000000000000001 /* Build configuration list for PBXNativeTarget "HypoUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G50000000000000000000001 /* Debug */,
+				G50000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		P10000000000000000000001 /* XCLocalSwiftPackageReference "../Packages/DesignSystem" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/DesignSystem;
+		};
+		P10000000000000000000002 /* XCLocalSwiftPackageReference "../Packages/HypoLexicon" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/HypoLexicon;
+		};
+		P10000000000000000000003 /* XCLocalSwiftPackageReference "../Packages/PanprotoKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/PanprotoKit;
+		};
+		P10000000000000000000004 /* XCLocalSwiftPackageReference "../Packages/CatalogKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/CatalogKit;
+		};
+		P10000000000000000000005 /* XCLocalSwiftPackageReference "../Packages/PersistenceKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/PersistenceKit;
+		};
+		P10000000000000000000006 /* XCLocalSwiftPackageReference "../Packages/PhotometryKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/PhotometryKit;
+		};
+		P10000000000000000000007 /* XCLocalSwiftPackageReference "../Packages/TimerEngine" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/TimerEngine;
+		};
+		P10000000000000000000008 /* XCLocalSwiftPackageReference "../Packages/Features/TimerFeature" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/Features/TimerFeature;
+		};
+		P10000000000000000000009 /* XCLocalSwiftPackageReference "../Packages/Features/LoggerFeature" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/Features/LoggerFeature;
+		};
+		P1000000000000000000000A /* XCLocalSwiftPackageReference "../Packages/MeterEngine" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/MeterEngine;
+		};
+		P1000000000000000000000B /* XCLocalSwiftPackageReference "../Packages/Features/MeterFeature" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/Features/MeterFeature;
+		};
+		P1000000000000000000000C /* XCLocalSwiftPackageReference "../Packages/Features/LibraryFeature" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/Features/LibraryFeature;
+		};
+		P1000000000000000000000D /* XCLocalSwiftPackageReference "../Packages/ATProtoClient" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/ATProtoClient;
+		};
+		P1000000000000000000000E /* XCLocalSwiftPackageReference "../Packages/SyncKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/SyncKit;
+		};
+		P1000000000000000000000F /* XCLocalSwiftPackageReference "../Packages/Features/SettingsFeature" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/Features/SettingsFeature;
+		};
+		P10000000000000000000010 /* XCLocalSwiftPackageReference "../Packages/Features/SyncStatusFeature" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/Features/SyncStatusFeature;
+		};
+		P30000000000000000000001 /* XCLocalSwiftPackageReference "../Packages/SystemIntegrationKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/SystemIntegrationKit;
+		};
+		P40000000000000000000001 /* XCLocalSwiftPackageReference "../Packages/DiagnosticsKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/DiagnosticsKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		Q10000000000000000000001 /* DesignSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P10000000000000000000001 /* XCLocalSwiftPackageReference "../Packages/DesignSystem" */;
+			productName = DesignSystem;
+		};
+		Q10000000000000000000002 /* HypoLexicon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P10000000000000000000002 /* XCLocalSwiftPackageReference "../Packages/HypoLexicon" */;
+			productName = HypoLexicon;
+		};
+		Q10000000000000000000003 /* PanprotoKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P10000000000000000000003 /* XCLocalSwiftPackageReference "../Packages/PanprotoKit" */;
+			productName = PanprotoKit;
+		};
+		Q10000000000000000000004 /* CatalogKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P10000000000000000000004 /* XCLocalSwiftPackageReference "../Packages/CatalogKit" */;
+			productName = CatalogKit;
+		};
+		Q10000000000000000000005 /* PersistenceKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P10000000000000000000005 /* XCLocalSwiftPackageReference "../Packages/PersistenceKit" */;
+			productName = PersistenceKit;
+		};
+		Q10000000000000000000006 /* PhotometryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P10000000000000000000006 /* XCLocalSwiftPackageReference "../Packages/PhotometryKit" */;
+			productName = PhotometryKit;
+		};
+		Q10000000000000000000007 /* TimerEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P10000000000000000000007 /* XCLocalSwiftPackageReference "../Packages/TimerEngine" */;
+			productName = TimerEngine;
+		};
+		Q10000000000000000000008 /* TimerFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P10000000000000000000008 /* XCLocalSwiftPackageReference "../Packages/Features/TimerFeature" */;
+			productName = TimerFeature;
+		};
+		Q10000000000000000000009 /* LoggerFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P10000000000000000000009 /* XCLocalSwiftPackageReference "../Packages/Features/LoggerFeature" */;
+			productName = LoggerFeature;
+		};
+		Q1000000000000000000000A /* MeterEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P1000000000000000000000A /* XCLocalSwiftPackageReference "../Packages/MeterEngine" */;
+			productName = MeterEngine;
+		};
+		Q1000000000000000000000B /* MeterFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P1000000000000000000000B /* XCLocalSwiftPackageReference "../Packages/Features/MeterFeature" */;
+			productName = MeterFeature;
+		};
+		Q1000000000000000000000C /* LibraryFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P1000000000000000000000C /* XCLocalSwiftPackageReference "../Packages/Features/LibraryFeature" */;
+			productName = LibraryFeature;
+		};
+		Q1000000000000000000000D /* ATProtoClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P1000000000000000000000D /* XCLocalSwiftPackageReference "../Packages/ATProtoClient" */;
+			productName = ATProtoClient;
+		};
+		Q1000000000000000000000E /* SyncKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P1000000000000000000000E /* XCLocalSwiftPackageReference "../Packages/SyncKit" */;
+			productName = SyncKit;
+		};
+		Q1000000000000000000000F /* SettingsFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P1000000000000000000000F /* XCLocalSwiftPackageReference "../Packages/Features/SettingsFeature" */;
+			productName = SettingsFeature;
+		};
+		Q10000000000000000000010 /* SyncStatusFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P10000000000000000000010 /* XCLocalSwiftPackageReference "../Packages/Features/SyncStatusFeature" */;
+			productName = SyncStatusFeature;
+		};
+		Q20000000000000000000001 /* TimerFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P10000000000000000000008 /* XCLocalSwiftPackageReference "../Packages/Features/TimerFeature" */;
+			productName = TimerFeature;
+		};
+		Q30000000000000000000001 /* SystemIntegrationKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P30000000000000000000001 /* XCLocalSwiftPackageReference "../Packages/SystemIntegrationKit" */;
+			productName = SystemIntegrationKit;
+		};
+		Q30000000000000000000002 /* SystemIntegrationKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P30000000000000000000001 /* XCLocalSwiftPackageReference "../Packages/SystemIntegrationKit" */;
+			productName = SystemIntegrationKit;
+		};
+		Q40000000000000000000001 /* DiagnosticsKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = P40000000000000000000001 /* XCLocalSwiftPackageReference "../Packages/DiagnosticsKit" */;
+			productName = DiagnosticsKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = B10000000000000000000001 /* Project object */;
+}

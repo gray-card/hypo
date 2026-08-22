@@ -17,7 +17,11 @@ import {
 export {
   c10ToC,
   cToC10,
+  estimateGeneralBWTemperatureTime,
   fmtMMSS,
+  GENERAL_BW_MINIMUM_TIME_SEC,
+  GENERAL_BW_ROUNDING_INCREMENT_SEC,
+  GENERAL_BW_TEMPERATURE_RANGE_C10,
   parseMMSS,
   publishedTemps,
   recipeLabel,

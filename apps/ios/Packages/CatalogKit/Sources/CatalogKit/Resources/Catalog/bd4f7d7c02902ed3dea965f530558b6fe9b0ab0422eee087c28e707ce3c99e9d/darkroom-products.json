@@ -1,0 +1,2115 @@
+{
+  "domain": "darkroom-products",
+  "items": [
+    {
+      "brand": "Kodak",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+1",
+      "dilutions": [
+        {
+          "label": "stock"
+        },
+        {
+          "label": "1+1",
+          "oneShot": true
+        }
+      ],
+      "form": "powder",
+      "name": "D-76",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Kodak",
+              "title": "Kodak D-76 technical data",
+              "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Kodak"
+          },
+          "fields": [
+            "process"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Kodak",
+            "title": "Kodak D-76 technical data",
+            "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Kodak"
+        }
+      ]
+    },
+    {
+      "brand": "Kodak",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+31 (dil. B)",
+      "dilutions": [
+        {
+          "label": "1+31 (dil. B)",
+          "oneShot": true
+        }
+      ],
+      "form": "liquid-concentrate",
+      "name": "HC-110",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Kodak",
+              "title": "Kodak HC-110 technical data",
+              "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Kodak"
+          },
+          "fields": [
+            "process"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Kodak",
+            "title": "Kodak HC-110 technical data",
+            "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Kodak"
+        }
+      ]
+    },
+    {
+      "brand": "Kodak",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+1",
+      "dilutions": [
+        {
+          "label": "stock"
+        },
+        {
+          "label": "1+1",
+          "oneShot": true
+        }
+      ],
+      "form": "powder",
+      "name": "XTOL",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Kodak",
+              "title": "Kodak XTOL technical data",
+              "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Kodak"
+          },
+          "fields": [
+            "process"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Kodak",
+            "title": "Kodak XTOL technical data",
+            "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Kodak"
+        }
+      ]
+    },
+    {
+      "brand": "Ilford",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+1",
+      "dilutions": [
+        {
+          "label": "stock"
+        },
+        {
+          "label": "1+1",
+          "oneShot": true
+        },
+        {
+          "label": "1+3",
+          "oneShot": true
+        }
+      ],
+      "form": "powder",
+      "name": "ID-11",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "sdsDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford ID-11 safety data",
+            "url": "https://www.ilfordphoto.com/english-australian-msds/"
+          },
+          "kind": "sds",
+          "publisher": "Ilford"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Ilford",
+              "title": "Ilford ID-11 technical data",
+              "url": "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"
+            },
+            "kind": "technical-data",
+            "publisher": "Ilford"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford ID-11 technical data",
+            "url": "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"
+          },
+          "kind": "technical-data",
+          "publisher": "Ilford"
+        }
+      ]
+    },
+    {
+      "brand": "Ilford",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+4",
+      "dilutions": [
+        {
+          "label": "1+4",
+          "oneShot": true
+        }
+      ],
+      "form": "liquid-concentrate",
+      "name": "DD-X",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "sdsDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford DD-X safety data",
+            "url": "https://www.ilfordphoto.com/english-australian-msds/"
+          },
+          "kind": "sds",
+          "publisher": "Ilford"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Ilford",
+              "title": "Ilford DD-X technical data",
+              "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Ilford"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford DD-X technical data",
+            "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Ilford"
+        }
+      ]
+    },
+    {
+      "brand": "Ilford",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+9",
+      "dilutions": [
+        {
+          "label": "1+9",
+          "oneShot": true
+        },
+        {
+          "label": "1+14",
+          "oneShot": true
+        }
+      ],
+      "form": "liquid-concentrate",
+      "name": "Ilfosol 3",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "sdsDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Ilfosol 3 safety data",
+            "url": "https://www.ilfordphoto.com/english-australian-msds/"
+          },
+          "kind": "sds",
+          "publisher": "Ilford"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Ilford",
+              "title": "Ilford Ilfosol 3 technical data",
+              "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Ilford"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Ilfosol 3 technical data",
+            "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Ilford"
+        }
+      ]
+    },
+    {
+      "brand": "Ilford",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "stock",
+      "dilutions": [
+        {
+          "label": "stock"
+        },
+        {
+          "label": "1+1",
+          "oneShot": true
+        },
+        {
+          "label": "1+3",
+          "oneShot": true
+        }
+      ],
+      "form": "powder",
+      "name": "Microphen",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "sdsDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Microphen safety data",
+            "url": "https://www.ilfordphoto.com/english-australian-msds/"
+          },
+          "kind": "sds",
+          "publisher": "Ilford"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Ilford",
+              "title": "Ilford Microphen technical data",
+              "url": "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"
+            },
+            "kind": "technical-data",
+            "publisher": "Ilford"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Microphen technical data",
+            "url": "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"
+          },
+          "kind": "technical-data",
+          "publisher": "Ilford"
+        }
+      ]
+    },
+    {
+      "brand": "Ilford",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+1",
+      "dilutions": [
+        {
+          "label": "stock"
+        },
+        {
+          "label": "1+1",
+          "oneShot": true
+        },
+        {
+          "label": "1+3",
+          "oneShot": true
+        }
+      ],
+      "form": "powder",
+      "name": "Perceptol",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "sdsDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Perceptol safety data",
+            "url": "https://www.ilfordphoto.com/english-australian-msds/"
+          },
+          "kind": "sds",
+          "publisher": "Ilford"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Ilford",
+              "title": "Ilford Perceptol technical data",
+              "url": "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"
+            },
+            "kind": "technical-data",
+            "publisher": "Ilford"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Perceptol technical data",
+            "url": "https://www.ilfordphoto.com/amfile/file/download/file/1829/product/708/"
+          },
+          "kind": "technical-data",
+          "publisher": "Ilford"
+        }
+      ]
+    },
+    {
+      "brand": "Adox",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+25",
+      "dilutions": [
+        {
+          "label": "1+25",
+          "oneShot": true
+        },
+        {
+          "label": "1+50",
+          "oneShot": true
+        }
+      ],
+      "form": "liquid-concentrate",
+      "name": "Rodinal / Adonal",
+      "oneShot": true,
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Adox",
+              "title": "Adox Rodinal / Adonal technical data",
+              "url": "https://www.adox.de/adox-film-developer/rodinal-adonal/"
+            },
+            "kind": "product-page",
+            "publisher": "Adox"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Adox",
+            "title": "Adox Rodinal / Adonal technical data",
+            "url": "https://www.adox.de/adox-film-developer/rodinal-adonal/"
+          },
+          "kind": "product-page",
+          "publisher": "Adox"
+        }
+      ]
+    },
+    {
+      "brand": "Adox",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+1",
+      "dilutions": [
+        {
+          "label": "stock"
+        },
+        {
+          "label": "1+1",
+          "oneShot": true
+        }
+      ],
+      "form": "powder",
+      "name": "XT-3",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Adox",
+              "title": "Adox XT-3 technical data",
+              "url": "https://www.adox.de/xt3-en/"
+            },
+            "kind": "product-page",
+            "publisher": "Adox"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Adox",
+            "title": "Adox XT-3 technical data",
+            "url": "https://www.adox.de/xt3-en/"
+          },
+          "kind": "product-page",
+          "publisher": "Adox"
+        }
+      ]
+    },
+    {
+      "brand": "Adox",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+9",
+      "dilutions": [
+        {
+          "intendedUse": "Standard dilution.",
+          "label": "1+9",
+          "oneShot": true
+        },
+        {
+          "instructions": "Multiply the 1+9 time by 1.5.",
+          "label": "1+14",
+          "oneShot": true
+        },
+        {
+          "instructions": "Use twice the 1+9 time.",
+          "label": "1+19",
+          "oneShot": true
+        }
+      ],
+      "form": "liquid-concentrate",
+      "name": "FX-39 II",
+      "oneShot": true,
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Adox",
+              "title": "Adox FX-39 II technical data",
+              "url": "https://www.adox.de/adox-film-developer/adox-fx-39/"
+            },
+            "kind": "product-page",
+            "publisher": "Adox"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Adox",
+            "title": "Adox FX-39 II technical data",
+            "url": "https://www.adox.de/adox-film-developer/adox-fx-39/"
+          },
+          "kind": "product-page",
+          "publisher": "Adox"
+        }
+      ]
+    },
+    {
+      "brand": "Cinestill",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "monobath"
+      ],
+      "defaultDilution": "stock",
+      "dilutions": [
+        {
+          "label": "stock"
+        }
+      ],
+      "form": "liquid-ready",
+      "name": "Df96 Monobath",
+      "process": "monobath",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer",
+        "fixer"
+      ],
+      "sdsDocuments": [
+        {
+          "asset": {
+            "source": "CineStill Film",
+            "title": "CineStill Film Df96 Monobath safety data",
+            "url": "https://cinestillfilm.com/pages/resources"
+          },
+          "kind": "sds",
+          "publisher": "CineStill Film"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Cinestill",
+              "title": "Cinestill Df96 Monobath technical data",
+              "url": "https://cdn.shopify.com/s/files/1/0339/5113/files/Df96_instructions_Instructions_Complete.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Cinestill"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Cinestill",
+            "title": "Cinestill Df96 Monobath technical data",
+            "url": "https://cdn.shopify.com/s/files/1/0339/5113/files/Df96_instructions_Instructions_Complete.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Cinestill"
+        }
+      ]
+    },
+    {
+      "brand": "Bellini",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+19",
+      "dilutions": [
+        {
+          "label": "1+19"
+        }
+      ],
+      "form": "liquid-concentrate",
+      "name": "Hydrofen",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Bellini",
+              "title": "Bellini Hydrofen technical data",
+              "url": "https://www.bellinifoto.it/wp-content/uploads/2020/08/BWDROD.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Bellini"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Bellini",
+            "title": "Bellini Hydrofen technical data",
+            "url": "https://www.bellinifoto.it/wp-content/uploads/2020/08/BWDROD.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Bellini"
+        }
+      ]
+    },
+    {
+      "brand": "Foma",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+25",
+      "dilutions": [
+        {
+          "label": "1+25",
+          "oneShot": true
+        },
+        {
+          "label": "1+50",
+          "oneShot": true
+        }
+      ],
+      "form": "liquid-concentrate",
+      "name": "Fomadon R09",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Foma",
+              "title": "Foma Fomadon R09 technical data",
+              "url": "https://www.foma.cz/en/catalogue-fomadon-r09-detail-421"
+            },
+            "kind": "product-page",
+            "publisher": "Foma"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Foma",
+            "title": "Foma Fomadon R09 technical data",
+            "url": "https://www.foma.cz/en/catalogue-fomadon-r09-detail-421"
+          },
+          "kind": "product-page",
+          "publisher": "Foma"
+        }
+      ]
+    },
+    {
+      "brand": "Foma",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+1",
+      "dilutions": [
+        {
+          "label": "1+1"
+        }
+      ],
+      "form": "powder",
+      "name": "Fomadon Excel",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Foma",
+              "title": "Foma Fomadon Excel technical data",
+              "url": "https://www.foma.cz/en/catalogue-fomadon-excel-detail-422"
+            },
+            "kind": "product-page",
+            "publisher": "Foma"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Foma",
+            "title": "Foma Fomadon Excel technical data",
+            "url": "https://www.foma.cz/en/catalogue-fomadon-excel-detail-422"
+          },
+          "kind": "product-page",
+          "publisher": "Foma"
+        }
+      ]
+    },
+    {
+      "brand": "Photographers' Formulary",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+1+100",
+      "dilutions": [
+        {
+          "label": "1+1+100"
+        }
+      ],
+      "form": "liquid-concentrate",
+      "name": "Pyrocat-HD",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Photographers' Formulary",
+              "title": "Photographers' Formulary Pyrocat-HD technical data",
+              "url": "https://site.photoformulary.com/Catalog.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Photographers' Formulary"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Photographers' Formulary",
+            "title": "Photographers' Formulary Pyrocat-HD technical data",
+            "url": "https://site.photoformulary.com/Catalog.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Photographers' Formulary"
+        }
+      ]
+    },
+    {
+      "brand": "Photographers' Formulary",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "bw"
+      ],
+      "defaultDilution": "1+2+100",
+      "dilutions": [
+        {
+          "label": "1+2+100"
+        }
+      ],
+      "form": "liquid-concentrate",
+      "name": "PMK Pyro",
+      "process": "bw",
+      "productKind": "single-chemical",
+      "roles": [
+        "film-developer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Photographers' Formulary",
+              "title": "Photographers' Formulary PMK Pyro technical data",
+              "url": "https://site.photoformulary.com/Catalog.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Photographers' Formulary"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Photographers' Formulary",
+            "title": "Photographers' Formulary PMK Pyro technical data",
+            "url": "https://site.photoformulary.com/Catalog.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Photographers' Formulary"
+        }
+      ]
+    },
+    {
+      "brand": "Kodak",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "c41"
+      ],
+      "defaultDilution": "stock",
+      "dilutions": [
+        {
+          "label": "stock"
+        }
+      ],
+      "form": "kit",
+      "name": "Flexicolor C-41",
+      "process": "c41",
+      "productKind": "process-kit",
+      "roles": [
+        "color-developer",
+        "bleach",
+        "fixer",
+        "stabilizer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Kodak",
+              "title": "Kodak Flexicolor C-41 technical data",
+              "url": "https://business.kodakmoments.com/sites/default/files/wysiwyg/pro/chemistry/z131.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Kodak"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Kodak",
+            "title": "Kodak Flexicolor C-41 technical data",
+            "url": "https://business.kodakmoments.com/sites/default/files/wysiwyg/pro/chemistry/z131.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Kodak"
+        }
+      ]
+    },
+    {
+      "brand": "Bellini",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "c41"
+      ],
+      "defaultDilution": "stock",
+      "dilutions": [
+        {
+          "label": "stock"
+        }
+      ],
+      "form": "kit",
+      "name": "C-41",
+      "process": "c41",
+      "productKind": "process-kit",
+      "roles": [
+        "color-developer",
+        "bleach",
+        "fixer",
+        "stabilizer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Bellini",
+              "title": "Bellini C-41 technical data",
+              "url": "https://www.bellinifoto.it/wp-content/uploads/2019/07/C41_scheda-tecnica-5.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Bellini"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Bellini",
+            "title": "Bellini C-41 technical data",
+            "url": "https://www.bellinifoto.it/wp-content/uploads/2019/07/C41_scheda-tecnica-5.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Bellini"
+        }
+      ]
+    },
+    {
+      "brand": "Cinestill",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "c41"
+      ],
+      "defaultDilution": "stock",
+      "dilutions": [
+        {
+          "label": "stock"
+        }
+      ],
+      "form": "kit",
+      "name": "Cs41 Color Simplified",
+      "process": "c41",
+      "productKind": "process-kit",
+      "roles": [
+        "color-developer",
+        "bleach",
+        "fixer",
+        "stabilizer"
+      ],
+      "sdsDocuments": [
+        {
+          "asset": {
+            "source": "CineStill Film",
+            "title": "CineStill Film Cs41 Color Simplified safety data",
+            "url": "https://cinestillfilm.com/pages/resources"
+          },
+          "kind": "sds",
+          "publisher": "CineStill Film"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Cinestill",
+              "title": "Cinestill Cs41 Color Simplified technical data",
+              "url": "https://cdn.shopify.com/s/files/1/0339/5113/files/CS41powder_Instructions_Complete.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Cinestill"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Cinestill",
+            "title": "Cinestill Cs41 Color Simplified technical data",
+            "url": "https://cdn.shopify.com/s/files/1/0339/5113/files/CS41powder_Instructions_Complete.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Cinestill"
+        }
+      ]
+    },
+    {
+      "brand": "Bellini",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "e6"
+      ],
+      "defaultDilution": "stock",
+      "dilutions": [
+        {
+          "label": "stock"
+        }
+      ],
+      "form": "kit",
+      "name": "E-6",
+      "process": "e6",
+      "productKind": "process-kit",
+      "roles": [
+        "first-developer",
+        "color-developer",
+        "bleach",
+        "fixer",
+        "stabilizer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Bellini",
+              "title": "Bellini E-6 technical data",
+              "url": "https://www.bellinifoto.it/en/prodotto/kit-amateur-e6/"
+            },
+            "kind": "product-page",
+            "publisher": "Bellini"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Bellini",
+            "title": "Bellini E-6 technical data",
+            "url": "https://www.bellinifoto.it/en/prodotto/kit-amateur-e6/"
+          },
+          "kind": "product-page",
+          "publisher": "Bellini"
+        }
+      ]
+    },
+    {
+      "brand": "Cinestill",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "e6"
+      ],
+      "defaultDilution": "stock",
+      "dilutions": [
+        {
+          "label": "stock"
+        }
+      ],
+      "form": "kit",
+      "name": "Cs6 Creative Slide E-6",
+      "process": "e6",
+      "productKind": "process-kit",
+      "roles": [
+        "first-developer",
+        "color-developer",
+        "bleach",
+        "fixer",
+        "stabilizer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Cinestill",
+              "title": "Cinestill Cs6 Creative Slide E-6 technical data",
+              "url": "https://cinestillfilm.com/collections/tcs-temp/products/cs6-creative-slide-3-bath-kits-for-color-timing-chrome-reversal-and-e-6-film"
+            },
+            "kind": "product-page",
+            "publisher": "Cinestill"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Cinestill",
+            "title": "Cinestill Cs6 Creative Slide E-6 technical data",
+            "url": "https://cinestillfilm.com/collections/tcs-temp/products/cs6-creative-slide-3-bath-kits-for-color-timing-chrome-reversal-and-e-6-film"
+          },
+          "kind": "product-page",
+          "publisher": "Cinestill"
+        }
+      ]
+    },
+    {
+      "brand": "Cinestill",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "ecn2"
+      ],
+      "defaultDilution": "stock",
+      "dilutions": [
+        {
+          "label": "stock"
+        }
+      ],
+      "form": "kit",
+      "name": "Cs2 ECN-2",
+      "process": "ecn2",
+      "productKind": "process-kit",
+      "roles": [
+        "color-developer",
+        "bleach",
+        "fixer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Cinestill",
+              "title": "Cinestill Cs2 ECN-2 technical data",
+              "url": "https://cinestillfilm.com/collections/cs2-cine"
+            },
+            "kind": "product-page",
+            "publisher": "Cinestill"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Cinestill",
+            "title": "Cinestill Cs2 ECN-2 technical data",
+            "url": "https://cinestillfilm.com/collections/cs2-cine"
+          },
+          "kind": "product-page",
+          "publisher": "Cinestill"
+        }
+      ]
+    },
+    {
+      "brand": "Kodak",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "compatibleProcesses": [
+        "e6"
+      ],
+      "defaultDilution": "stock",
+      "dilutions": [
+        {
+          "label": "stock"
+        }
+      ],
+      "form": "kit",
+      "name": "Ektachrome E-6",
+      "process": "e6",
+      "productKind": "process-kit",
+      "roles": [
+        "first-developer",
+        "color-developer",
+        "bleach",
+        "fixer",
+        "stabilizer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Kodak",
+              "title": "Kodak Ektachrome E-6 technical data",
+              "url": "https://business.kodakmoments.com/sites/default/files/files/resources/j83.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Kodak"
+          },
+          "fields": [
+            "process",
+            "form",
+            "defaultDilution",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Kodak",
+            "title": "Kodak Ektachrome E-6 technical data",
+            "url": "https://business.kodakmoments.com/sites/default/files/files/resources/j83.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Kodak"
+        }
+      ]
+    },
+    {
+      "brand": "Ilford",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film",
+        "paper"
+      ],
+      "dilutions": [
+        {
+          "label": "1+19"
+        }
+      ],
+      "form": "liquid-concentrate",
+      "name": "Ilfostop",
+      "productKind": "single-chemical",
+      "roles": [
+        "stop"
+      ],
+      "sdsDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Ilfostop safety data",
+            "url": "https://www.ilfordphoto.com/english-australian-msds/"
+          },
+          "kind": "sds",
+          "publisher": "Ilford"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Ilford",
+              "title": "Ilford Ilfostop technical data",
+              "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Ilford"
+          },
+          "fields": [
+            "roles",
+            "dilutions"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Ilfostop technical data",
+            "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Ilford"
+        }
+      ]
+    },
+    {
+      "brand": "Kodak",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film",
+        "paper"
+      ],
+      "dilutions": [
+        {
+          "label": "1+63"
+        }
+      ],
+      "form": "liquid-concentrate",
+      "name": "Indicator Stop Bath",
+      "productKind": "single-chemical",
+      "roles": [
+        "stop"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Kodak",
+              "title": "Kodak Indicator Stop Bath technical data",
+              "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Kodak"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Kodak",
+            "title": "Kodak Indicator Stop Bath technical data",
+            "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Kodak"
+        }
+      ]
+    },
+    {
+      "brand": "Ilford",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film",
+        "paper"
+      ],
+      "form": "liquid-concentrate",
+      "name": "Rapid Fixer",
+      "productKind": "single-chemical",
+      "reusable": true,
+      "roles": [
+        "fixer"
+      ],
+      "sdsDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Rapid Fixer safety data",
+            "url": "https://www.ilfordphoto.com/english-australian-msds/"
+          },
+          "kind": "sds",
+          "publisher": "Ilford"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Ilford",
+              "title": "Ilford Rapid Fixer technical data",
+              "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Ilford"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Rapid Fixer technical data",
+            "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Ilford"
+        }
+      ]
+    },
+    {
+      "brand": "Ilford",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film",
+        "paper"
+      ],
+      "form": "liquid-concentrate",
+      "name": "Hypam",
+      "productKind": "single-chemical",
+      "reusable": true,
+      "roles": [
+        "fixer"
+      ],
+      "sdsDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Hypam safety data",
+            "url": "https://www.ilfordphoto.com/english-australian-msds/"
+          },
+          "kind": "sds",
+          "publisher": "Ilford"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Ilford",
+              "title": "Ilford Hypam technical data",
+              "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Ilford"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Hypam technical data",
+            "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Ilford"
+        }
+      ]
+    },
+    {
+      "brand": "Kodak",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film",
+        "paper"
+      ],
+      "form": "powder",
+      "name": "Professional Fixer",
+      "productKind": "single-chemical",
+      "roles": [
+        "fixer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Kodak",
+              "title": "Kodak Professional Fixer technical data",
+              "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Kodak"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Kodak",
+            "title": "Kodak Professional Fixer technical data",
+            "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Kodak"
+        }
+      ]
+    },
+    {
+      "brand": "Kodak",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film",
+        "paper"
+      ],
+      "form": "liquid-concentrate",
+      "name": "Kodafix",
+      "productKind": "single-chemical",
+      "roles": [
+        "fixer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Kodak",
+              "title": "Kodak Kodafix technical data",
+              "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Kodak"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Kodak",
+            "title": "Kodak Kodafix technical data",
+            "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Kodak"
+        }
+      ]
+    },
+    {
+      "brand": "Photographers' Formulary",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film",
+        "paper"
+      ],
+      "form": "liquid-ready",
+      "name": "TF-4 Archival Fixer",
+      "productKind": "single-chemical",
+      "roles": [
+        "fixer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Photographers' Formulary",
+              "title": "Photographers' Formulary TF-4 Archival Fixer technical data",
+              "url": "https://site.photoformulary.com/Catalog.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Photographers' Formulary"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Photographers' Formulary",
+            "title": "Photographers' Formulary TF-4 Archival Fixer technical data",
+            "url": "https://site.photoformulary.com/Catalog.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Photographers' Formulary"
+        }
+      ]
+    },
+    {
+      "brand": "Photographers' Formulary",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film",
+        "paper"
+      ],
+      "form": "liquid-ready",
+      "name": "TF-5 Archival Fixer",
+      "productKind": "single-chemical",
+      "roles": [
+        "fixer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Photographers' Formulary",
+              "title": "Photographers' Formulary TF-5 Archival Fixer technical data",
+              "url": "https://site.photoformulary.com/Catalog.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Photographers' Formulary"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Photographers' Formulary",
+            "title": "Photographers' Formulary TF-5 Archival Fixer technical data",
+            "url": "https://site.photoformulary.com/Catalog.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Photographers' Formulary"
+        }
+      ]
+    },
+    {
+      "brand": "Kodak",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film",
+        "paper"
+      ],
+      "form": "powder",
+      "name": "Hypo Clearing Agent",
+      "productKind": "single-chemical",
+      "roles": [
+        "clearing-agent"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Kodak",
+              "title": "Kodak Hypo Clearing Agent technical data",
+              "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Kodak"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Kodak",
+            "title": "Kodak Hypo Clearing Agent technical data",
+            "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Kodak"
+        }
+      ]
+    },
+    {
+      "brand": "Ilford",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film",
+        "paper"
+      ],
+      "form": "liquid-concentrate",
+      "name": "Ilfotol",
+      "productKind": "single-chemical",
+      "roles": [
+        "wetting-agent"
+      ],
+      "sdsDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Ilfotol safety data",
+            "url": "https://www.ilfordphoto.com/english-australian-msds/"
+          },
+          "kind": "sds",
+          "publisher": "Ilford"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Ilford",
+              "title": "Ilford Ilfotol technical data",
+              "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Ilford"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Ilford",
+            "title": "Ilford Ilfotol technical data",
+            "url": "https://www.ilfordphoto.com/wp/wp-content/uploads/2018/11/Film-processing-chart-301118-Final-version.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Ilford"
+        }
+      ]
+    },
+    {
+      "brand": "Kodak",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film"
+      ],
+      "form": "liquid-concentrate",
+      "name": "Photo-Flo 200",
+      "productKind": "single-chemical",
+      "roles": [
+        "wetting-agent"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Kodak",
+              "title": "Kodak Photo-Flo 200 technical data",
+              "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+            },
+            "kind": "technical-data",
+            "publisher": "Kodak"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Kodak",
+            "title": "Kodak Photo-Flo 200 technical data",
+            "url": "https://www.kodakprofessional.com/sites/default/files/wysiwyg/pro/resources/edbwf_0.pdf"
+          },
+          "kind": "technical-data",
+          "publisher": "Kodak"
+        }
+      ]
+    },
+    {
+      "brand": "Adox",
+      "capacity": [
+        {
+          "area": {
+            "unit": "m2",
+            "value": 2
+          },
+          "notes": "Manufacturer also states approximately 700 films per 1000 ml bottle.",
+          "solutionVolume": {
+            "unit": "liter",
+            "value": 1
+          }
+        }
+      ],
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "film",
+        "paper"
+      ],
+      "dilutions": [
+        {
+          "label": "1+20 to 1+40"
+        }
+      ],
+      "form": "liquid-ready",
+      "name": "Adostab II",
+      "productKind": "single-chemical",
+      "reusable": true,
+      "roles": [
+        "stabilizer"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Adox",
+              "title": "Adox Adostab II technical data",
+              "url": "https://www.adox.de/chemistry/toners-helping-aids/adostab/"
+            },
+            "kind": "product-page",
+            "publisher": "Adox"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Adox",
+            "title": "Adox Adostab II technical data",
+            "url": "https://www.adox.de/chemistry/toners-helping-aids/adostab/"
+          },
+          "kind": "product-page",
+          "publisher": "Adox"
+        }
+      ]
+    },
+    {
+      "brand": "Moersch",
+      "catalogKind": "chemistryType",
+      "compatibleMaterials": [
+        "paper"
+      ],
+      "form": "liquid-concentrate",
+      "name": "Sepia Toner",
+      "productKind": "single-chemical",
+      "roles": [
+        "toner"
+      ],
+      "specSources": [
+        {
+          "document": {
+            "asset": {
+              "source": "Moersch",
+              "title": "Moersch Sepia Toner technical data",
+              "url": "https://www.moersch-photochemie.de/en/product/mt5-sepia-schwefeltoner/"
+            },
+            "kind": "product-page",
+            "publisher": "Moersch"
+          },
+          "fields": [
+            "roles",
+            "form"
+          ],
+          "method": "manual-transcription"
+        }
+      ],
+      "technicalDocuments": [
+        {
+          "asset": {
+            "source": "Moersch",
+            "title": "Moersch Sepia Toner technical data",
+            "url": "https://www.moersch-photochemie.de/en/product/mt5-sepia-schwefeltoner/"
+          },
+          "kind": "product-page",
+          "publisher": "Moersch"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "collection": "developers",
+      "file": "curated-darkroom-products.json",
+      "itemCount": 24,
+      "metadata": {
+        "_generated": "2026-07-23T16:56:37.728Z",
+        "_license": "Hypo's original compilation: CC-BY-SA 4.0; individual specifications may be non-copyrightable facts. See data/LICENSE.md",
+        "_source": "developer and chemistry product specifications transcribed from official manufacturer technical and safety documents in data/datasheets/*.jsonl"
+      }
+    },
+    {
+      "collection": "chemistries",
+      "file": "curated-darkroom-products.json",
+      "itemCount": 13,
+      "metadata": {
+        "_generated": "2026-07-23T16:56:37.728Z",
+        "_license": "Hypo's original compilation: CC-BY-SA 4.0; individual specifications may be non-copyrightable facts. See data/LICENSE.md",
+        "_source": "developer and chemistry product specifications transcribed from official manufacturer technical and safety documents in data/datasheets/*.jsonl"
+      }
+    }
+  ]
+}

@@ -27,7 +27,7 @@ This tier supports claims such as “maximum aperture is stated on page 14 of re
 
 ## 4. Planned and observed execution
 
-Process records separate selected source values from observed values. On each development stage, `publishedTimeSeconds` and `temperatureSetpoint` retain the plan; `actualTimeSeconds` and `actualTemperature` record the run. The stage's `sourceDocument`, `sourceSpec`, and `recipe`, together with session provenance, explain why the plan was chosen.
+Process records separate published, planned, and observed values. On each development stage, `publishedTimeSeconds` retains source data; `plannedTimeSeconds`, `timeBasis`, and `temperatureSetpoint` retain the selected plan; and `actualTimeSeconds` and `actualTemperature` record the run. The stage's `sourceDocument`, `sourceSpec`, `recipe`, and notes, together with session provenance, explain why the plan was chosen.
 
 This tier prevents an observation from being rewritten as a recommendation, or a recommendation from being mistaken for what happened.
 

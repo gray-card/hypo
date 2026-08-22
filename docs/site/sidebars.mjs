@@ -18,6 +18,18 @@ const sidebars = {
     },
     {
       type: "category",
+      label: "iPhone app",
+      link: { type: "doc", id: "iphone/index" },
+      items: [
+        "iphone/meter",
+        "iphone/log-a-frame",
+        "iphone/development-timer",
+        "iphone/offline-sync",
+        "iphone/privacy-and-limits",
+      ],
+    },
+    {
+      type: "category",
       label: "How-to guides",
       link: { type: "doc", id: "how-to/index" },
       items: [
@@ -72,6 +84,7 @@ const sidebars = {
         "reference/fixture-pds-api",
         "reference/lexicon-conventions",
         "reference/generated-package",
+        "reference/ios-api",
         {
           type: "category",
           label: "Lexicon NSIDs",

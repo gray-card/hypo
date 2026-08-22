@@ -110,11 +110,20 @@ describe("structured darkroom catalog lexicons", () => {
 
   it("distinguishes published targets from observed session values", () => {
     const p = props("process/developSession.json");
-    const step = load("process/developSession.json").defs.step.properties;
+    const schema = load("process/developSession.json");
+    const step = schema.defs.step.properties;
     expect(p.steps.maxLength).toBe(64);
     expect(step.recipe.format).toBe("at-uri");
     expect(step.publishedTimeSeconds.minimum).toBe(0);
+    expect(step.plannedTimeSeconds.minimum).toBe(0);
+    expect(step.timeBasis.ref).toBe("#timeBasis");
     expect(step.actualTimeSeconds.minimum).toBe(0);
+    expect(schema.defs.timeBasis.knownValues).toEqual([
+      "published",
+      "recipe-interpolation",
+      "general-estimate",
+      "manual",
+    ]);
     expect(step.temperatureSetpoint.ref).toBe("app.graycard.defs#measure");
     expect(step.actualTemperature.ref).toBe("app.graycard.defs#measure");
     expect(step.sourceSpec.ref).toBe("app.graycard.defs#specSource");

@@ -1,0 +1,8 @@
+.build/
+**/.build/
+DerivedData/
+.derived-data/
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+App/Hypo.xcodeproj/project.xcworkspace/

@@ -19,7 +19,9 @@ import {
   publishedTemps,
   c10ToC,
   cToC10,
+  estimateGeneralBWTemperatureTime,
   fmtMMSS,
+  GENERAL_BW_TEMPERATURE_RANGE_C10,
   parseMMSS,
 } from "../devRecipes.js";
 import { activeDevRun, saveDevRun, clearDevRun } from "./devTimerState.js";
@@ -321,7 +323,11 @@ export function openDevTimer(ctx, opts = {}) {
       steps: null,
       manualDevSec: null,
       publishedDevSec: null,
+      plannedDevSec: null,
+      timeBasis: null,
       recommendation: null,
+      generalEstimate: null,
+      generalEstimateEnabled: false,
       rolls: [...(opts.rolls || [])],
       observation: null,
     };
@@ -456,7 +462,11 @@ export function openDevTimer(ctx, opts = {}) {
                 sel.actualTempC10 = sel.tempC10;
                 sel.manualDevSec = null;
                 sel.publishedDevSec = null;
+                sel.plannedDevSec = null;
+                sel.timeBasis = null;
                 sel.recommendation = null;
+                sel.generalEstimate = null;
+                sel.generalEstimateEnabled = false;
                 renderStage();
               },
             },
@@ -497,8 +507,20 @@ export function openDevTimer(ctx, opts = {}) {
       let actualTemperatureEdited = false;
       const devLine = el("div", { class: "devtimer-devtime" });
       const manualWrap = el("div");
+      const estimateWrap = el("div", { class: "devtimer-estimate" });
       let technical = null;
       const manualIn = el("input", { type: "text", class: "date-input", placeholder: "m:ss (e.g. 6:45)" });
+      const estimateReference = resolveTimeRecommendation(r, defaultTemp(r));
+      const generalEstimateEligible =
+        r.process === "bw" &&
+        estimateReference?.kind === "published" &&
+        estimateReference.tempC10 >= GENERAL_BW_TEMPERATURE_RANGE_C10.minimum &&
+        estimateReference.tempC10 <= GENERAL_BW_TEMPERATURE_RANGE_C10.maximum;
+      const estimateToggle = el("input", {
+        type: "checkbox",
+        checked: sel.generalEstimateEnabled,
+        "aria-describedby": "general-bw-estimate-help",
+      });
       // optional: link the physical chemistry bottle so its rolls-processed count
       // climbs as you develop (drives the Chemistry status card in Insights).
       const chems = ctx.store?.instance?.chemistry || [];
@@ -511,12 +533,58 @@ export function openDevTimer(ctx, opts = {}) {
       const recompute = () => {
         sel.tempC10 = cToC10(parseFloat(tempIn.value) || 20);
         const recommendation = resolveTimeRecommendation(r, sel.tempC10);
+        const estimate = sel.generalEstimateEnabled
+          ? estimateGeneralBWTemperatureTime(estimateReference.timeSec, estimateReference.tempC10, sel.tempC10)
+          : null;
         const datasheet = recommendation?.timeSec ?? null;
-        sel.recommendation = recommendation;
+        sel.recommendation = sel.generalEstimateEnabled ? null : recommendation;
+        sel.generalEstimate = estimate;
         manualWrap.replaceChildren();
-        if (datasheet != null) {
+        estimateWrap.replaceChildren();
+        if (sel.generalEstimateEnabled && estimate) {
+          sel.manualDevSec = estimate.timeSec;
+          sel.publishedDevSec = null;
+          sel.plannedDevSec = estimate.timeSec;
+          sel.timeBasis = "general-estimate";
+          devLine.className = "devtimer-devtime estimate";
+          devLine.textContent = `Estimated ${fmtMMSS(estimate.timeSec)} at ${c10ToC(sel.tempC10)}°C from ${fmtMMSS(estimate.referenceTimeSec)} at ${c10ToC(estimate.referenceTempC10)}°C`;
+          estimateWrap.append(
+            el(
+              "p",
+              { class: "muted small" },
+              "Rounded to 15 seconds from Ilford's general black-and-white chart. This is not a recommendation for this film and developer pair.",
+            ),
+          );
+          if (estimate.belowRecommendedMinimum)
+            estimateWrap.append(
+              el(
+                "p",
+                { class: "devtimer-estimate-warning", role: "alert" },
+                "Times under 5:00 risk uneven development.",
+              ),
+            );
+          if (estimate.largeTemperatureChange)
+            estimateWrap.append(
+              el(
+                "p",
+                { class: "muted small" },
+                "This changes the temperature by at least 4°C. Test before important work.",
+              ),
+            );
+          startBtn.disabled = false;
+        } else if (sel.generalEstimateEnabled) {
+          sel.manualDevSec = null;
+          sel.publishedDevSec = null;
+          sel.plannedDevSec = null;
+          sel.timeBasis = null;
+          devLine.className = "devtimer-devtime warn";
+          devLine.textContent = "The general estimate covers 18–27°C. Choose a temperature inside that range.";
+          startBtn.disabled = true;
+        } else if (datasheet != null) {
           sel.manualDevSec = datasheet;
-          sel.publishedDevSec = datasheet;
+          sel.publishedDevSec = recommendation.kind === "published" ? datasheet : null;
+          sel.plannedDevSec = datasheet;
+          sel.timeBasis = recommendation.kind === "published" ? "published" : "recipe-interpolation";
           devLine.className = "devtimer-devtime ok";
           devLine.textContent =
             recommendation.kind === "interpolated"
@@ -525,6 +593,8 @@ export function openDevTimer(ctx, opts = {}) {
           startBtn.disabled = false;
         } else {
           sel.publishedDevSec = null;
+          sel.plannedDevSec = null;
+          sel.timeBasis = "manual";
           const range = publishedTemps(r)
             .map((t) => `${c10ToC(t)}°`)
             .join(", ");
@@ -534,14 +604,26 @@ export function openDevTimer(ctx, opts = {}) {
           manualWrap.append(el("label", { class: "field" }, [el("span", {}, "Your develop time"), manualIn]));
           const parsed = parseMMSS(manualIn.value);
           sel.manualDevSec = parsed;
+          sel.plannedDevSec = parsed;
           startBtn.disabled = parsed == null;
         }
         if (technical) {
-          const next = recipeTechnicalDetails(r, recommendation);
+          const next = recipeTechnicalDetails(r, sel.recommendation);
           technical.replaceWith(next);
           technical = next;
         }
       };
+      estimateToggle.addEventListener("change", () => {
+        sel.generalEstimateEnabled = estimateToggle.checked;
+        if (sel.generalEstimateEnabled) {
+          tempIn.min = String(c10ToC(GENERAL_BW_TEMPERATURE_RANGE_C10.minimum));
+          tempIn.max = String(c10ToC(GENERAL_BW_TEMPERATURE_RANGE_C10.maximum));
+        } else {
+          tempIn.removeAttribute("min");
+          tempIn.removeAttribute("max");
+        }
+        recompute();
+      });
       tempIn.addEventListener("input", () => {
         recompute();
         if (!actualTemperatureEdited) {
@@ -557,6 +639,7 @@ export function openDevTimer(ctx, opts = {}) {
       syncTempValueText();
       manualIn.addEventListener("input", () => {
         sel.manualDevSec = parseMMSS(manualIn.value);
+        sel.plannedDevSec = sel.manualDevSec;
         startBtn.disabled = sel.manualDevSec == null;
       });
 
@@ -579,8 +662,11 @@ export function openDevTimer(ctx, opts = {}) {
           tempC10: sel.tempC10,
           actualTempC10: sel.actualTempC10 ?? sel.tempC10,
           publishedTimeSeconds: sel.publishedDevSec,
+          plannedTimeSeconds: sel.plannedDevSec,
+          timeBasis: sel.timeBasis,
           recommendationStatus: sel.recommendation?.recommendationStatus || "observed",
-          selectedTimeKind: sel.recommendation?.kind || "manual",
+          selectedTimeKind: sel.generalEstimateEnabled ? "general-estimate" : sel.recommendation?.kind || "manual",
+          generalEstimate: sel.generalEstimate,
           recipe: recipeUri(ctx.store, r),
           source: r.source,
           sourceDocument: document,
@@ -609,6 +695,30 @@ export function openDevTimer(ctx, opts = {}) {
         ]),
         devLine,
         manualWrap,
+        estimateWrap,
+        generalEstimateEligible
+          ? el("div", { class: "devtimer-estimate-control" }, [
+              el("label", { class: "devtimer-estimate-toggle" }, [
+                estimateToggle,
+                el("span", {}, "Use estimated time"),
+              ]),
+              el(
+                "p",
+                { id: "general-bw-estimate-help", class: "muted small" },
+                "Optional approximate conversion for standard black-and-white development.",
+              ),
+              el(
+                "a",
+                {
+                  href: "https://www.ilfordphoto.com/wp/wp-content/uploads/2017/03/Temperature-compensation-chart.pdf",
+                  target: "_blank",
+                  rel: "noreferrer",
+                  class: "small",
+                },
+                "Read the Ilford compensation chart ↗",
+              ),
+            ])
+          : null,
         technical,
         chems.length
           ? el("label", { class: "field" }, [el("span", {}, "Chemistry (optional — tracks usage)"), chemSel])
@@ -781,12 +891,17 @@ export function openDevTimer(ctx, opts = {}) {
       const s = curStep();
       if (s && s.actualSec == null) s.actualSec = Math.round(s.seconds - state.remaining);
       const selectionNote =
-        state.selectedTimeKind === "interpolated"
-          ? "Selected time recommendation was derived by interpolation; actual time and temperature were observed during this timer run."
-          : state.selectedTimeKind === "published"
-            ? `Selected time used an exact published recipe row (${state.recommendationStatus || "unknown"}); actual time and temperature were observed during this timer run.`
-            : "Selected time was entered manually; actual time and temperature were observed during this timer run.";
+        state.selectedTimeKind === "general-estimate"
+          ? "Selected time was estimated from Ilford's general black-and-white time/temperature chart; it was not a recipe-specific recommendation. Actual time and temperature were observed during this timer run."
+          : state.selectedTimeKind === "interpolated"
+            ? "Selected time recommendation was derived by interpolation; actual time and temperature were observed during this timer run."
+            : state.selectedTimeKind === "published"
+              ? `Selected time used an exact published recipe row (${state.recommendationStatus || "unknown"}); actual time and temperature were observed during this timer run.`
+              : "Selected time was entered manually; actual time and temperature were observed during this timer run.";
       const finishedAt = new Date().toISOString();
+      const generalEstimateNote = state.generalEstimate
+        ? `Estimated from ${fmtMMSS(state.generalEstimate.referenceTimeSec)} at ${c10ToC(state.generalEstimate.referenceTempC10)}°C to ${fmtMMSS(state.generalEstimate.timeSec)} at ${c10ToC(state.generalEstimate.targetTempC10)}°C using Ilford's general black-and-white compensation chart; rounded to 15 seconds. Approximate, not a recipe-specific recommendation.`
+        : null;
       const sessionSteps = state.steps.map((step, index) => ({
         name: step.name,
         kind: step.kind || (step.roles?.includes("wash") ? "wash" : "chemical-bath"),
@@ -807,8 +922,11 @@ export function openDevTimer(ctx, opts = {}) {
             ? { unit: "celsius", value: state.actualTempC10 ?? state.tempC10, scale: 10 }
             : step.actualTemperature,
         publishedTimeSeconds: index === 0 ? (state.publishedTimeSeconds ?? undefined) : step.publishedTimeSeconds,
+        plannedTimeSeconds: index === 0 ? (state.plannedTimeSeconds ?? undefined) : step.plannedTimeSeconds,
+        timeBasis: index === 0 ? state.timeBasis || undefined : step.timeBasis,
         actualTimeSeconds: step.actualSec ?? step.seconds,
         agitationScheme: step.agitation || undefined,
+        notes: index === 0 ? generalEstimateNote || step.notes : step.notes,
       }));
       const rec = {
         process: state.process, // faithful (bw / monobath / c41 / …)

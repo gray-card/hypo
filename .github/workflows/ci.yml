@@ -135,11 +135,47 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  ios-documentation:
+    name: iOS API documentation
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node for catalog checks
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Select Xcode
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+      - name: Check the DocC catalog inventory and canonical links
+        run: npm run check:ios-docs
+      - name: Build the combined Hypo for iOS API reference
+        run: apps/ios/Scripts/build-documentation.sh "$RUNNER_TEMP/hypo-ios-api"
+      - name: Package the DocC site without rewriting symbol paths
+        run: tar -C "$RUNNER_TEMP/hypo-ios-api" -czf "$RUNNER_TEMP/hypo-ios-api.tar.gz" .
+      - name: Upload the merged DocC site
+        uses: actions/upload-artifact@v4
+        with:
+          name: hypo-ios-api-${{ github.sha }}
+          path: ${{ runner.temp }}/hypo-ios-api.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+
   production-build:
     name: Production builds, budgets, and Lighthouse
     runs-on: ubuntu-latest
+    needs: ios-documentation
     steps:
       - uses: actions/checkout@v4
+      - name: Download the validated iOS API reference
+        uses: actions/download-artifact@v4
+        with:
+          name: hypo-ios-api-${{ github.sha }}
+          path: ${{ runner.temp }}/hypo-ios-api-artifact
+      - name: Restore the validated iOS API reference
+        run: |
+          mkdir -p docs/site/static/ios-api
+          tar -xzf "$RUNNER_TEMP/hypo-ios-api-artifact/hypo-ios-api.tar.gz" -C docs/site/static/ios-api
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -196,6 +232,7 @@ jobs:
       - unit-tests
       - browser-tests
       - mobile-browser-tests
+      - ios-documentation
       - production-build
       - dependency-audit
     runs-on: ubuntu-latest
@@ -207,6 +244,7 @@ jobs:
           UNIT_RESULT: ${{ needs.unit-tests.result }}
           BROWSER_RESULT: ${{ needs.browser-tests.result }}
           MOBILE_RESULT: ${{ needs.mobile-browser-tests.result }}
+          IOS_DOCUMENTATION_RESULT: ${{ needs.ios-documentation.result }}
           BUILD_RESULT: ${{ needs.production-build.result }}
           AUDIT_RESULT: ${{ needs.dependency-audit.result }}
         run: |
@@ -216,6 +254,7 @@ jobs:
             "$UNIT_RESULT" \
             "$BROWSER_RESULT" \
             "$MOBILE_RESULT" \
+            "$IOS_DOCUMENTATION_RESULT" \
             "$BUILD_RESULT" \
             "$AUDIT_RESULT"
           do

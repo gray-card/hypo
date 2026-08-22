@@ -6,7 +6,7 @@ async function login(page) {
   await page.goto("/");
   await page.getByRole("combobox").fill("alice.test");
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Your setup" })).toBeVisible();
+  await expect(page.locator("#library-body .tab-bar")).toBeVisible();
 }
 
 test.beforeEach(async ({ request }) => {
