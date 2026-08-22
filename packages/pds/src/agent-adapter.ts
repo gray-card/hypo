@@ -20,6 +20,7 @@ import type {
   UploadBlobInput,
   WriteOutput,
 } from "./types.js";
+import { normalizeBlobRef, normalizeRecordBlobRefs } from "./blob-ref.js";
 
 interface AgentResponse<T> {
   data: T;
@@ -60,7 +61,7 @@ interface AtprotoAgentLike {
         uploadBlob(
           bytes: string | Uint8Array | Blob,
           options?: { encoding?: string; signal?: AbortSignal },
-        ): Promise<AgentResponse<{ blob: BlobRef }>>;
+        ): Promise<AgentResponse<{ blob: unknown }>>;
       };
       sync: {
         getBlob(
@@ -107,16 +108,22 @@ export class AtprotoAgentAdapter implements RepoTransport {
   }
 
   async createRecord<T extends RepoRecord = RepoRecord>(input: CreateInput<T>): Promise<WriteOutput> {
-    const response = await this.agent.com.atproto.repo.createRecord(withoutSignal(input), {
-      signal: input.signal,
-    });
+    const response = await this.agent.com.atproto.repo.createRecord(
+      { ...withoutSignal(input), record: normalizeRecordBlobRefs(input.record) },
+      {
+        signal: input.signal,
+      },
+    );
     return response.data;
   }
 
   async putRecord<T extends RepoRecord = RepoRecord>(input: PutInput<T>): Promise<WriteOutput> {
-    const response = await this.agent.com.atproto.repo.putRecord(withoutSignal(input), {
-      signal: input.signal,
-    });
+    const response = await this.agent.com.atproto.repo.putRecord(
+      { ...withoutSignal(input), record: normalizeRecordBlobRefs(input.record) },
+      {
+        signal: input.signal,
+      },
+    );
     return response.data;
   }
 
@@ -128,9 +135,17 @@ export class AtprotoAgentAdapter implements RepoTransport {
   }
 
   async applyWrites<T extends RepoRecord = RepoRecord>(input: ApplyWritesInput<T>): Promise<ApplyWritesOutput> {
-    const response = await this.agent.com.atproto.repo.applyWrites(withoutSignal(input), {
-      signal: input.signal,
-    });
+    const writes = input.writes.map((write) =>
+      write.$type === "com.atproto.repo.applyWrites#delete"
+        ? write
+        : { ...write, value: normalizeRecordBlobRefs(write.value) },
+    );
+    const response = await this.agent.com.atproto.repo.applyWrites(
+      { ...withoutSignal(input), writes },
+      {
+        signal: input.signal,
+      },
+    );
     return response.data;
   }
 
@@ -139,7 +154,7 @@ export class AtprotoAgentAdapter implements RepoTransport {
       encoding: input.mimeType ?? "application/octet-stream",
       signal: input.signal,
     });
-    return response.data.blob;
+    return normalizeBlobRef(response.data.blob);
   }
 
   async getBlob(input: GetBlobInput): Promise<Uint8Array> {

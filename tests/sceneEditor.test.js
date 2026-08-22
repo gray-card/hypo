@@ -45,6 +45,7 @@ vi.mock("../src/ontology.js", () => ({
 }));
 
 const PHOTO = "at://did:plc:test/social.grain.photo/photo";
+const BLOB_CID = "bafkreifqn5r4ki5vm4w55xd6qhot5gz6b3tvw7athjuwk4vkz6ppf5zo24";
 const GRAPH = "at://did:plc:test/app.graycard.scene.graph/graph";
 const REGION = "at://did:plc:test/app.graycard.scene.region/region";
 const DOG = "at://did:plc:test/app.graycard.scene.node/dog";
@@ -139,14 +140,16 @@ describe("scene editor TypeScript compatibility facade", () => {
       {
         uri: PHOTO,
         idx: 0,
-        value: { photo: { ref: { $link: "bafkreiimage" } } },
+        value: {
+          photo: { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 3 },
+        },
       },
       { signals },
     );
 
     const image = document.querySelector(".scene-img-wrap img");
     expect(image).not.toBeNull();
-    expect(image.src).toBe("https://pds.test/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3Atest&cid=bafkreiimage");
+    expect(image.src).toBe(`https://pds.test/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3Atest&cid=${BLOB_CID}`);
     expect(mocks.blobUrl).not.toHaveBeenCalled();
     expect(document.querySelector(".scene-stage")?.textContent).not.toContain("image failed to load");
   });

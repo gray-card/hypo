@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { BlobRef as AtprotoBlobRef } from "@atproto/lexicon";
+import { CID } from "multiformats/cid";
 import {
   AtprotoAgentAdapter,
   AuthError,
@@ -14,6 +16,7 @@ const REPO = "did:plc:alice";
 const CAMERAS = "app.graycard.instance.camera";
 const LEGACY_DEVELOPERS = "app.graycard.instance.developer";
 const CHEMISTRY = "app.graycard.instance.chemistry";
+const BLOB_CID = "bafkreifqn5r4ki5vm4w55xd6qhot5gz6b3tvw7athjuwk4vkz6ppf5zo24";
 
 function camera(nickname) {
   return {
@@ -332,6 +335,73 @@ describe("PDS access core", () => {
 
     await expect(client.get({ repo: REPO, collection: CAMERAS, rkey: "camera-a" })).rejects.toBeInstanceOf(AuthError);
     await expect(client.getBlob({ did: REPO, cid: "bafblob" })).resolves.toEqual(new Uint8Array([4, 5, 6]));
+  });
+
+  it("turns hydrated upload responses and structured-cloned blobs into canonical wire JSON", async () => {
+    const rawBlob = {
+      $type: "blob",
+      ref: { $link: BLOB_CID },
+      mimeType: "image/jpeg",
+      size: 892396,
+    };
+    const hydratedBlob = new AtprotoBlobRef(CID.parse(BLOB_CID), "image/jpeg", 892396, rawBlob);
+    const uploadBlob = vi.fn(async () => ({ data: { blob: hydratedBlob } }));
+    const createRecord = vi.fn(async () => ({ data: { uri: "at://photo", cid: "bafrecord" } }));
+    const client = new RepoClient(
+      new AtprotoAgentAdapter({ com: { atproto: { repo: { uploadBlob, createRecord } } } }),
+      { validator: false },
+    );
+
+    await expect(client.uploadBlob({ bytes: new Uint8Array([1]), mimeType: "image/jpeg" })).resolves.toEqual(rawBlob);
+
+    const denaturedBlob = structuredClone(hydratedBlob);
+    await client.create({
+      repo: REPO,
+      collection: "social.grain.photo",
+      record: { photo: denaturedBlob, createdAt: "2026-08-18T12:00:00.000Z" },
+    });
+
+    expect(createRecord).toHaveBeenCalledWith(
+      {
+        repo: REPO,
+        collection: "social.grain.photo",
+        record: {
+          photo: rawBlob,
+          createdAt: "2026-08-18T12:00:00.000Z",
+        },
+      },
+      { signal: undefined },
+    );
+    expect(createRecord.mock.calls[0][0].record.photo).not.toHaveProperty("original");
+  });
+
+  it("refuses malformed blob links before a record reaches the PDS", async () => {
+    const putRecord = vi.fn(async () => ({ data: { uri: "at://photo", cid: "bafrecord" } }));
+    const client = new RepoClient(new AtprotoAgentAdapter({ com: { atproto: { repo: { putRecord } } } }), {
+      validator: false,
+    });
+
+    await expect(
+      client.put({
+        repo: REPO,
+        collection: "social.grain.photo",
+        rkey: "photo",
+        record: {
+          photo: {
+            ref: { $link: "[object Object]" },
+            mimeType: "image/jpeg",
+            size: 892396,
+            original: {
+              $type: "blob",
+              ref: { $link: "[object Object]" },
+              mimeType: "image/jpeg",
+              size: 892396,
+            },
+          },
+        },
+      }),
+    ).rejects.toThrow("valid CID link");
+    expect(putRecord).not.toHaveBeenCalled();
   });
 
   it("maps public XRPC validation responses and connection failures", async () => {

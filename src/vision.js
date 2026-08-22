@@ -372,8 +372,9 @@ const claudeProvider = {
 // Gemini (Google) adapter. Google AI Studio has a free tier (rate-limited); on
 // that free tier Google may use submitted content to improve its models (the
 // paid tier does not), which the connect UI surfaces. Uses the stable
-// generateContent REST endpoint with responseMimeType:application/json to force
-// JSON output, then reuses the same normalizeAnalysis + scene-graph writer.
+// generateContent REST endpoint with responseFormat.text JSON Schema for
+// schema-constrained output, then reuses the same normalizeAnalysis +
+// scene-graph writer.
 // ---------------------------------------------------------------------------
 
 // NOTE ON API CHOICE: this adapter uses the stable `generateContent` REST API,
@@ -390,11 +391,73 @@ const geminiHeaders = (key) => ({ "content-type": "application/json", "x-goog-ap
 const GEMINI_JSON_INSTRUCTION =
   "Analyze this photo and return ONLY a JSON object with this exact shape: " +
   '{"altText": string, "description": string, ' +
-  '"objects": [{"key": string, "type": string, "label": string, "box": {"x": number, "y": number, "w": number, "h": number}}], ' +
+  '"objects": [{"key": string, "type": string, "label"?: string, "box"?: {"x": number, "y": number, "w": number, "h": number} | null}], ' +
   '"relations": [{"from": string, "to": string, "type": string}]}. ' +
   "altText is concise screen-reader text (about 125 characters, no 'image of' preamble). type is a general lowercase class noun. " +
   "key is a short unique id (o1, o2, and so on) referenced by relations. box is optional, given as fractions of the image in [0,1] with a top-left origin; omit it when unsure. " +
   "A relation's type is a spatial or semantic relation such as above, below, left of, holding, or part of. Only describe what is actually visible.";
+
+// Gemini's current structured-output API accepts JSON Schema. Keep the
+// provider-neutral schema used by Claude intact, while explicitly allowing
+// Gemini to return null for an uncertain optional box. A non-null box still
+// requires four numbers, so partially null coordinates cannot reach the scene
+// record writer.
+const GEMINI_SCENE_SCHEMA = {
+  ...SCENE_SCHEMA,
+  properties: {
+    ...SCENE_SCHEMA.properties,
+    objects: {
+      ...SCENE_SCHEMA.properties.objects,
+      items: {
+        ...SCENE_SCHEMA.properties.objects.items,
+        properties: {
+          ...SCENE_SCHEMA.properties.objects.items.properties,
+          box: {
+            anyOf: [SCENE_SCHEMA.properties.objects.items.properties.box, { type: "null" }],
+            description:
+              "Approximate bounding box as fractions of image width/height in [0,1], origin at the top-left; null or omit when unsure.",
+          },
+        },
+      },
+    },
+  },
+};
+
+const geminiJsonConfig = (schema) => ({
+  responseFormat: {
+    text: {
+      mimeType: "application/json",
+      schema,
+    },
+  },
+});
+
+function geminiText(data, resultLabel) {
+  if (data?.promptFeedback?.blockReason) {
+    throw new Error(`The request was blocked by Google (${data.promptFeedback.blockReason}).`);
+  }
+  const candidate = data?.candidates?.[0];
+  const finishReason = candidate?.finishReason;
+  if (finishReason && finishReason !== "STOP") {
+    throw new Error(`The model stopped without usable ${resultLabel} (${finishReason}).`);
+  }
+  const text = (candidate?.content?.parts || [])
+    .filter((part) => !part?.thought)
+    .map((part) => part?.text)
+    .filter(Boolean)
+    .join("");
+  if (!text) throw new Error(`No ${resultLabel} was returned.`);
+  return text;
+}
+
+function geminiJson(data, resultLabel) {
+  const text = geminiText(data, resultLabel);
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`Could not parse the ${resultLabel} response as JSON.`);
+  }
+}
 
 const geminiProvider = {
   id: "gemini",
@@ -405,16 +468,17 @@ const geminiProvider = {
   keyUrl: "https://aistudio.google.com/apikey",
   billingNote:
     "Has a free tier (rate-limited). On the free tier, Google may use your images to improve its models; the paid tier does not. Images are downscaled before sending.",
-  // gemini-flash-latest is a self-updating alias (points to the current stable
-  // Flash), so the default does not rot as Google retires older versions for new
-  // users. The pinned 3.x IDs are offered for reproducibility.
+  // gemini-flash-latest is a self-updating alias, so the default does not rot as
+  // Google retires older versions for new users. Current stable IDs remain
+  // available for reproducibility and explicit cost control.
   models: [
     { id: "gemini-flash-latest", label: "Flash (latest, auto-updating)" },
-    { id: "gemini-3.5-flash", label: "3.5 Flash · most capable" },
-    { id: "gemini-3.1-flash-lite", label: "3.1 Flash-Lite · lowest cost" },
+    { id: "gemini-3.7-flash", label: "3.7 Flash · most capable" },
+    { id: "gemini-3.6-flash", label: "3.6 Flash · balanced" },
+    { id: "gemini-3.5-flash-lite", label: "3.5 Flash-Lite · lowest cost" },
   ],
   defaultModel: "gemini-flash-latest",
-  parseModel: "gemini-flash-latest", // query parsing is small/frequent — use the fast tier
+  parseModel: "gemini-3.5-flash-lite", // query parsing and reranking are small and frequent
 
   async validate(config) {
     let res;
@@ -440,7 +504,7 @@ const geminiProvider = {
           parts: [{ inlineData: { mimeType: image.mediaType, data: image.base64 } }, { text: GEMINI_JSON_INSTRUCTION }],
         },
       ],
-      generationConfig: { responseMimeType: "application/json" },
+      generationConfig: geminiJsonConfig(GEMINI_SCENE_SCHEMA),
     };
     let res;
     try {
@@ -454,24 +518,7 @@ const geminiProvider = {
     }
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.error?.message || `Gemini API error ${res.status}`);
-    if (data?.promptFeedback?.blockReason)
-      throw new Error(`The request was blocked by Google (${data.promptFeedback.blockReason}).`);
-    const cand = data?.candidates?.[0];
-    const finish = cand?.finishReason;
-    if (finish && finish !== "STOP" && finish !== "MAX_TOKENS") {
-      throw new Error(`The model stopped without a usable answer (${finish}).`);
-    }
-    const text = (cand?.content?.parts || [])
-      .map((p) => p.text)
-      .filter(Boolean)
-      .join("");
-    if (!text) throw new Error("No analysis was returned.");
-    let parsed;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      throw new Error("Could not parse the analysis response as JSON.");
-    }
+    const parsed = geminiJson(data, "analysis");
     return normalizeAnalysis(parsed);
   },
 
@@ -502,18 +549,12 @@ const geminiProvider = {
     }
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.error?.message || `Gemini API error ${res.status}`);
-    if (data?.promptFeedback?.blockReason)
-      throw new Error(`The request was blocked by Google (${data.promptFeedback.blockReason}).`);
-    const text = (data?.candidates?.[0]?.content?.parts || [])
-      .map((p) => p.text)
-      .filter(Boolean)
-      .join("");
-    if (!text) throw new Error("No alt text was returned.");
+    const text = geminiText(data, "alt text");
     return cleanAltText(text);
   },
 
-  // Parse a search query into the shared query IR. Mirrors analyze(): JSON via
-  // responseMimeType with the shape described in the prompt (no responseSchema).
+  // Parse a search query into the shared query IR with the same schema the
+  // application validates before evaluating the query.
   async parseQuery(config, query, relations = []) {
     const model = this.parseModel || resolveModel(this, config);
     const body = {
@@ -524,7 +565,7 @@ const geminiProvider = {
           parts: [{ text: `Parse this photo-search query as JSON matching the described shape: "${query}"` }],
         },
       ],
-      generationConfig: { responseMimeType: "application/json", temperature: 0 },
+      generationConfig: geminiJsonConfig(QUERY_IR_SCHEMA),
     };
     let res;
     try {
@@ -538,14 +579,7 @@ const geminiProvider = {
     }
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.error?.message || `Gemini API error ${res.status}`);
-    if (data?.promptFeedback?.blockReason)
-      throw new Error(`The request was blocked by Google (${data.promptFeedback.blockReason}).`);
-    const text = (data?.candidates?.[0]?.content?.parts || [])
-      .map((p) => p.text)
-      .filter(Boolean)
-      .join("");
-    if (!text) throw new Error("No parse was returned.");
-    return JSON.parse(text);
+    return geminiJson(data, "parse");
   },
 
   // Rerank candidate photos by text relevance (optional third fusion signal).
@@ -554,7 +588,7 @@ const geminiProvider = {
     const body = {
       systemInstruction: { parts: [{ text: RERANK_INSTRUCTION }] },
       contents: [{ role: "user", parts: [{ text: rerankPrompt(query, texts) }] }],
-      generationConfig: { responseMimeType: "application/json", temperature: 0 },
+      generationConfig: geminiJsonConfig(RERANK_SCHEMA),
     };
     let res;
     try {
@@ -568,12 +602,7 @@ const geminiProvider = {
     }
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.error?.message || `Gemini API error ${res.status}`);
-    const text = (data?.candidates?.[0]?.content?.parts || [])
-      .map((p) => p.text)
-      .filter(Boolean)
-      .join("");
-    if (!text) throw new Error("No rerank was returned.");
-    return JSON.parse(text);
+    return geminiJson(data, "rerank");
   },
 };
 

@@ -83,6 +83,27 @@ describe("outbox — offline write queue", () => {
     expect(pendingCount(did)).toBe(2); // the failed one + the untried third remain
   });
 
+  it("refuses an invalid durable Grain operation during replay", async () => {
+    const replayDid = "did:plc:grain-replay";
+    const agent = mockAgent();
+    enqueue(replayDid, "social.grain.photo", {
+      photo: {
+        $type: "blob",
+        ref: { $link: "[object Object]" },
+        mimeType: "image/jpeg",
+        size: 892396,
+      },
+      aspectRatio: { width: 3, height: 2 },
+      createdAt: "2026-08-18T12:00:00.000Z",
+    });
+
+    const result = await flush(agent, replayDid);
+
+    expect(result).toMatchObject({ failed: 1, sent: 0, left: 1 });
+    expect(result.error).toContain("valid CID link");
+    expect(agent.created).toHaveLength(0);
+  });
+
   it("migrates and clears a legacy localStorage queue before listing it", async () => {
     localStorage.setItem(
       `hypo:outbox:${did}`,

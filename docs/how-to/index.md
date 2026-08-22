@@ -15,6 +15,7 @@ Use these guides when the desired outcome is already known:
 - [Import `.frames` files](./import-frames-files.md)
 - [Record push and pull processing](./record-push-pull-processing.md)
 - [Write and apply batch rules](./write-batch-rules.md)
+- [Generate alt text and scene graphs](./generate-image-descriptions.md)
 - [Ground objects and relations in a scene](./ground-a-scene.md)
 - [Contribute catalog data](./contribute-catalog-data.md)
 - [Evolve a lexicon safely](./evolve-a-lexicon.md)

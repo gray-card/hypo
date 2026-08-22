@@ -142,8 +142,8 @@ export interface ApplyWritesOutput {
 }
 
 export interface BlobRef {
-  $type?: string;
-  ref: unknown;
+  $type: "blob";
+  ref: { $link: string };
   mimeType: string;
   size: number;
 }

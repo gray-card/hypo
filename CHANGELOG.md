@@ -2,6 +2,51 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.3.3] - 2026-08-18
+
+### Changed
+
+- Use Gemini's current schema-constrained response format for image analysis,
+  query parsing, and semantic reranking, with current Flash model choices and
+  without deprecated sampling parameters.
+
+### Fixed
+
+- Reject blocked, truncated, and otherwise incomplete Gemini responses before
+  they can be parsed or saved, and require every returned bounding box to
+  contain four numeric coordinates when it is present.
+- Recover from lazy application chunks replaced during a deployment without
+  resolving the failed import to `undefined`. Hypo reloads a stale application
+  shell once when no edits are pending and offers a guarded reload otherwise.
+
+## [1.3.2] - 2026-08-18
+
+### Fixed
+
+- Restore gallery thumbnails loaded from the local record cache by converting
+  structured-cloned blob references back to canonical AT Protocol blob JSON.
+- Validate every Grain gallery, item, photo, and EXIF create or update before
+  it reaches the PDS, including durable outbox operations created by an older
+  session.
+- Reject non-image, oversized, malformed, or incomplete Grain photo records
+  and keep browser-created uploads within Grain's 1 MB image limit.
+
+## [1.3.1] - 2026-08-18
+
+### Fixed
+
+- Preserve canonical Grain photo blob references when creating or replacing an
+  image and when editing photo metadata, preventing the source blob from
+  becoming unreferenced and eligible for PDS garbage collection.
+- Normalize queued blob references before every PDS write and reject malformed
+  CID links instead of publishing a corrupt photo record.
+
+### Recovery
+
+- No metadata migration is required. Images whose source blobs were already
+  garbage-collected cannot be restored automatically and must be re-uploaded
+  from the original files.
+
 ## [1.3.0] - 2026-08-16
 
 ### Added
@@ -219,3 +264,5 @@ Notable changes to Hypo are recorded here.
 [1.1.1]: https://github.com/gray-card/hypo/compare/v1.1.0...v1.1.1
 [1.2.0]: https://github.com/gray-card/hypo/compare/v1.1.1...v1.2.0
 [1.3.0]: https://github.com/gray-card/hypo/compare/v1.2.0...v1.3.0
+[1.3.1]: https://github.com/gray-card/hypo/compare/v1.3.0...v1.3.1
+[1.3.2]: https://github.com/gray-card/hypo/compare/v1.3.1...v1.3.2

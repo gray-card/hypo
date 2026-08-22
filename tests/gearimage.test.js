@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { instanceImageUrl, gearThumb } from "../src/data/gearImage.js";
 
+const BLOB_CID = "bafkreifqn5r4ki5vm4w55xd6qhot5gz6b3tvw7athjuwk4vkz6ppf5zo24";
+
 // agent whose sync.getBlob returns bytes, so blobUrl() can build an object URL.
 function blobAgent() {
   return { com: { atproto: { sync: { getBlob: async () => ({ data: new Uint8Array([1, 2, 3]) }) } } } };
@@ -25,7 +27,7 @@ beforeEach(() => {
 describe("instanceImageUrl", () => {
   it("uses the user's own uploaded photo when present", async () => {
     const url = await instanceImageUrl(blobAgent(), "did:plc:test", { byUri: new Map() }, "camera", {
-      image: { ref: { $link: "bafblob" }, mimeType: "image/jpeg" },
+      image: { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 3 },
     });
     expect(url).toBe("blob:fake"); // from the object-URL polyfill
   });
@@ -71,7 +73,7 @@ describe("instanceImageUrl", () => {
       },
     };
     const url = await instanceImageUrl(badAgent, "did:plc:test", { byUri: new Map() }, "camera", {
-      image: { ref: { $link: "bafblob" }, mimeType: "image/jpeg" },
+      image: { $type: "blob", ref: { $link: BLOB_CID }, mimeType: "image/jpeg", size: 3 },
     });
     expect(url).toBe(null);
   });

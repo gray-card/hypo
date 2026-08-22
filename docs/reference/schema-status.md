@@ -57,7 +57,11 @@ The current release checks enforce four properties:
 1. `npm run check:lexicons` regenerates the TypeScript schema table, namespace map, and record types, then fails when the checked-in outputs differ.
 2. `npm run check:lexicon-docs` does the same for generated NSID pages, the sidebar, and the summary. Unit tests also check source IDs, resolved references, generated page coverage, deterministic output, and definition anchors.
 3. Type checking, unit tests, end-to-end tests, lint, formatting, application builds, and documentation builds run in CI.
-4. `@hypo/pds` validates `app.graycard.*` creates and puts against the generated record validator by default. Callers explicitly disable that validator for external Grain collections whose schemas are not owned here.
+4. `@hypo/pds` validates `app.graycard.*` creates and puts against the generated
+   record validator by default. Hypo separately validates the Grain gallery,
+   gallery-item, photo, and EXIF contracts at enqueue and flush time. The PDS
+   validator remains disabled for these external collections because many PDS
+   installations do not have Grain's lexicons.
 
 These checks establish freshness and current-program conformance. The pull-request compatibility gate separately compares the proposed suite with the released Git baseline. A breaking change requires an acknowledgement marker, a transition manifest, an exact source suite, a reviewed Panproto lens, and fixtures that validate against the target suite. The stable and experimental labels remain review policy rather than schema syntax.
 
