@@ -9,7 +9,7 @@ Hypo's phone client needs camera, persistence, synchronization, timer, and UI ca
 platform requirements and testing costs. The metadata model must also remain compatible with web Hypo while the
 two clients release independently.
 
-Panproto 0.70.1 provides official Swift bindings and a published XCFramework for iOS. Its core API isolates
+Panproto 0.71.0 provides official Swift bindings and a published XCFramework for iOS. Its core API isolates
 engine calls to `PanprotoEngine`, a global actor backed by a pinned thread. The released package also provides a
 pure `PanprotoStructural` value layer.
 
@@ -20,7 +20,7 @@ Swift packages with iOS 17 and macOS 14 baselines, Swift 6 language mode, and st
 manifests enforce dependency direction; the app target contains navigation and live dependency assembly only.
 
 `PanprotoKit` depends on
-`https://github.com/panproto/panproto-swift.git` at the exact version `0.70.1` and exposes app-specific protocols
+`https://github.com/panproto/panproto-swift.git` at the exact version `0.71.0` and exposes app-specific protocols
 that return sendable values. It imports only the `Panproto` and `PanprotoStructural` products. It neither wraps the
 C ABI nor creates a second handle type.
 

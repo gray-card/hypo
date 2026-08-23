@@ -14,7 +14,7 @@ private let newestTestLexicon = Data(
 )
 
 @Test func usesReleasedBindingVersion() {
-    #expect(PanprotoAdoption.version == "0.70.1")
+    #expect(PanprotoAdoption.version == "0.71.0")
 }
 
 @Test func inspectsAnATProtoLexiconThroughTheOfficialEngine() async throws {
@@ -174,12 +174,12 @@ private let newestTestLexicon = Data(
     }
 }
 
-/// Removal gate for the Panproto 0.70.1 decimal fingerprint-message compatibility shim.
+/// Removal gate for the Panproto 0.71.0 decimal fingerprint-message compatibility shim.
 ///
 /// When a later binding maps this engine spelling to `PanprotoError.Fault` itself, remove the
 /// fallback parser in `PanprotoFault.wrapping(_:)`; this test must continue to pass through the
 /// official structured-fault path.
-@Test func panproto0701DecimalFingerprintMessageIsNormalized() async throws {
+@Test func panproto0710DecimalFingerprintMessageIsNormalized() async throws {
     let inspector = PanprotoSchemaInspector()
     let old = PanprotoSchemaRelease(
         label: "v1",

@@ -8,7 +8,7 @@ release as one tested change.
 Hypo pins three related inputs:
 
 1. The `panproto-swift` package and its engine XCFramework. PanprotoKit currently resolves the
-   exact `0.70.1` package release.
+   exact `0.71.0` package release.
 2. The Hypo lexicon release label written in a record's optional `schemaVersion` field.
 3. The reviewed chain set that relates supported lexicon releases.
 
@@ -79,13 +79,13 @@ Two typed failures require a fresh projection rather than a retry with the same 
 Other parse, validation, and migration failures are also mapped to `PanprotoFault` so callers do
 not branch on Panproto engine messages.
 
-### Panproto 0.70.1 fingerprint normalization
+### Panproto 0.71.0 fingerprint normalization
 
-Panproto 0.70.1 may report a lens `put` mismatch as `source fingerprint mismatch: complement has
+Panproto 0.71.0 may report a lens `put` mismatch as `source fingerprint mismatch: complement has
 …, lens expects …`. That decimal spelling is not recognized by the binding's structured-fault
 parser, which expects the engine's other fingerprint form. `PanprotoFault.wrapping(_:)` therefore
 normalizes this exact message to `complementFingerprintMismatch` after first checking the official
-structured fault. The test `panproto0701DecimalFingerprintMessageIsNormalized` is the removal
+structured fault. The test `panproto0710DecimalFingerprintMessageIsNormalized` is the removal
 gate: when an adopted upstream binding recognizes the decimal form, delete the fallback parser and
 keep the test passing through the official structured-fault path.
 
@@ -108,7 +108,7 @@ when a new record shape or lexicon feature appears.
 
 ## Panproto references
 
-- [Panproto Swift SDK reference](https://github.com/panproto/panproto/blob/v0.70.1/book/src/reference/sdk-swift.md)
-- [Define a schema from Swift](https://github.com/panproto/panproto/blob/v0.70.1/book/src/how-to/define-schema/swift.md)
-- [panproto-swift 0.70.1 source](https://github.com/panproto/panproto-swift/tree/v0.70.1)
-- [Panproto C ABI contract](https://github.com/panproto/panproto/blob/v0.70.1/crates/panproto-c/CONTRACT.md)
+- [Panproto Swift SDK reference](https://github.com/panproto/panproto/blob/v0.71.0/book/src/reference/sdk-swift.md)
+- [Define a schema from Swift](https://github.com/panproto/panproto/blob/v0.71.0/book/src/how-to/define-schema/swift.md)
+- [panproto-swift 0.71.0 source](https://github.com/panproto/panproto-swift/tree/v0.71.0)
+- [Panproto C ABI contract](https://github.com/panproto/panproto/blob/v0.71.0/crates/panproto-c/CONTRACT.md)

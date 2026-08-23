@@ -19,7 +19,7 @@ The app target is a composition root. Each capability is an independent local Sw
 | Package          | Responsibility                                           | May depend on                                   |
 | ---------------- | -------------------------------------------------------- | ----------------------------------------------- |
 | `HypoLexicon`    | Record values and validators                             | Foundation only                                 |
-| `PanprotoKit`    | App boundary over Panproto 0.70.1                        | `HypoLexicon`, `Panproto`, `PanprotoStructural` |
+| `PanprotoKit`    | App boundary over Panproto 0.71.0                        | `HypoLexicon`, `Panproto`, `PanprotoStructural` |
 | `DesignSystem`   | Tokens and SwiftUI components                            | SwiftUI only                                    |
 | `DiagnosticsKit` | Bounded, opt-in device-local operational diagnostics     | Foundation only                                 |
 | `PhotometryKit`  | Exposure mathematics                                     | Foundation only                                 |
@@ -36,7 +36,7 @@ Feature packages depend on the capabilities they declare. `LibraryFeature` reuse
 The app target wires live implementations; no package depends on the app target.
 
 `PanprotoKit` adopts the official
-[`panproto-swift`](https://github.com/panproto/panproto-swift) package at exactly `0.70.1`. The default
+[`panproto-swift`](https://github.com/panproto/panproto-swift) package at exactly `0.71.0`. The default
 `Panproto` and `PanprotoStructural` products are the only Panproto products allowed in the iOS application.
 The parse, project, git, and VCS tiers belong in macOS tooling, not the shipped phone binary.
 
@@ -108,7 +108,7 @@ xcodebuild \
 Application builds consume
 `Hypo.xcworkspace/xcshareddata/swiftpm/Package.resolved`. Standalone
 `PanprotoKit` tests consume `Packages/PanprotoKit/Package.resolved`; release
-preflight requires both locks to carry the same reviewed Panproto 0.70.1 pin.
+preflight requires both locks to carry the same reviewed Panproto 0.71.0 pin.
 
 The repository sandbox used by some development tools may require `--disable-sandbox` for SwiftPM manifests.
 This does not disable the iOS application sandbox.
@@ -256,6 +256,6 @@ The simulator uses package fakes and deterministic traces. The AVFoundation pipe
 negotiates RAW and processed capture, records fallback provenance, and converts Bayer
 and processed RGB samples, but incident diffusers, per-device characterization, and the
 accuracy release gate require physical iPhones and reference-meter testing. The
-published Panproto 0.70.1 XCFramework also contains two simulator objects stamped with
+published Panproto 0.71.0 XCFramework also contains two simulator objects stamped with
 a 26.5 minimum; they link into the iOS 17 app with warnings. The app does not rebuild
 Panproto with Cargo as a workaround.

@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "panprotoVersion": "0.70.1",
+  "panprotoVersion": "0.71.0",
   "identityChain": "apps/ios/Packages/PanprotoKit/Tests/PanprotoKitTests/Fixtures/identity-chain.json",
   "versionedCases": [
     {
@@ -31,7 +31,7 @@
       "record": "apps/ios/Packages/HypoLexicon/Tests/HypoLexiconTests/Fixtures/catalog-dev-recipe.json",
       "lexicon": "lexicons/app/graycard/catalog/devRecipe.json",
       "rootVertex": "app.graycard.catalog.devRecipe:body",
-      "identityLimitation": "Panproto 0.70.1 identity lenses cannot restrict through the required temps items reference."
+      "identityLimitation": "Panproto 0.71.0 identity lenses cannot restrict through the required temps items reference."
     },
     {
       "id": "process-develop-session",

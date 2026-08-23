@@ -10,7 +10,7 @@ const manifestPath = resolve(root, "fixtures/panproto-conformance/manifest.json"
 const oraclePath = resolve(root, "fixtures/panproto-conformance/oracle.json");
 const write = process.argv.includes("--write");
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-const expectedVersion = "0.70.1";
+const expectedVersion = "0.71.0";
 
 function readJson(path) {
   return JSON.parse(readFileSync(resolve(root, path), "utf8"));

@@ -1,7 +1,7 @@
 /// The released schema contract compiled into this client.
 public enum LexiconRelease {
     /// The Panproto version used to inspect and migrate records.
-    public static let panprotoVersion = "0.70.1"
+    public static let panprotoVersion = "0.71.0"
 
     /// The first stable `app.graycard.*` suite snapshot.
     public static let schemaTag = "lexicons-v1"

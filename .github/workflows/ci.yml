@@ -16,7 +16,7 @@ concurrency:
 
 env:
   NODE_VERSION: 22
-  PANPROTO_VERSION: 0.70.1
+  PANPROTO_VERSION: 0.71.0
 
 jobs:
   schema:
@@ -33,7 +33,7 @@ jobs:
       - run: npm ci
       - name: Install Panproto ${{ env.PANPROTO_VERSION }}
         env:
-          PANPROTO_INSTALLER_SHA256: 4d8cae5f15c5ae5ed28aa9a5366c47ce60d49e740b46c133661f88031b129482
+          PANPROTO_INSTALLER_SHA256: 49b1b46b1c5857286ae64b3e9f64a8efa6ae8d512cf8145d4392b98873a0664b
           PANPROTO_CLI_INSTALL_DIR: ${{ runner.temp }}/panproto-cli
           PANPROTO_CLI_NO_MODIFY_PATH: 1
         run: |

@@ -78,7 +78,7 @@
     },
     {
       "id": "catalog-dev-recipe",
-      "identityLimitation": "Panproto 0.70.1 identity lenses cannot restrict through the required temps items reference.",
+      "identityLimitation": "Panproto 0.71.0 identity lenses cannot restrict through the required temps items reference.",
       "inputSha256": "5ebba75671e856cd5b88afcf24d2c786bf3b6044d6007153d6b0b6fec693135d",
       "lexiconSha256": "c53b36d4163061a9e056487bddb5ecbc7bcfb4b4d1bf28462a26e4c84b4bee06",
       "validated": {
@@ -228,7 +228,7 @@
     }
   ],
   "formatVersion": 1,
-  "panprotoVersion": "0.70.1",
+  "panprotoVersion": "0.71.0",
   "versionedCases": [
     {
       "get": {

@@ -1,6 +1,6 @@
 # `PanprotoKit`
 
-Load Hypo's pinned ATProto schemas and reviewed migration chains through Panproto 0.70.1.
+Load Hypo's pinned ATProto schemas and reviewed migration chains through Panproto 0.71.0.
 
 ## Overview
 

@@ -2,8 +2,8 @@
 
 `manifest.json` identifies records already used by the web or iOS test suites. Both clients read
 those exact files. `oracle.json` records the canonical JSON produced by the official Panproto
-TypeScript 0.70.1 binding for identity `lift`, `get`, and `put` operations. The PanprotoKit test
-runs the same records through the official Swift 0.70.1 binding and compares every result with the
+TypeScript 0.71.0 binding for identity `lift`, `get`, and `put` operations. The PanprotoKit test
+runs the same records through the official Swift 0.71.0 binding and compares every result with the
 checked-in oracle.
 
 Regenerate the oracle after an intentional lexicon or fixture change:
@@ -19,7 +19,7 @@ npm run check:panproto-conformance
 swift test --package-path apps/ios/Packages/PanprotoKit -Xswiftc -warnings-as-errors
 ```
 
-The rich existing fixtures are always parsed, emitted, and validated. Panproto 0.70.1 cannot carry
+The rich existing fixtures are always parsed, emitted, and validated. Panproto 0.71.0 cannot carry
 records through an identity lens when their populated values traverse certain `ref` or array-item
 edges. The manifest therefore names reduced, still schema-valid identity records for the affected
 develop-session and meter cases. The required `temps` array prevents such a reduction for

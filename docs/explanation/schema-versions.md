@@ -17,7 +17,7 @@ The shared schema uses `lexicons-vN` tags. A Panproto-breaking schema transition
 
 ## Checked-in schema data
 
-The repository pins `@panproto/core` and `panproto-cli` at 0.70.1. The `.panproto/` sidecar stores the current schema objects and conformance records. Production builds copy that sidecar to `/.panproto/`, where the read-only `StaticPanprotoStore` can resolve refs and retrieve object bytes without an application server.
+The repository pins `@panproto/core` and `panproto-cli` at 0.71.0. The `.panproto/` sidecar stores the current schema objects and conformance records. Production builds copy that sidecar to `/.panproto/`, where the read-only `StaticPanprotoStore` can resolve refs and retrieve object bytes without an application server.
 
 `npm run check:panproto` verifies the current package by:
 

@@ -130,10 +130,10 @@ extension PanprotoFault {
             }
         }
 
-        // Panproto 0.70.1 compatibility shim. Its lens `put` path prefixes this engine fault
+        // Panproto 0.71.0 compatibility shim. Its lens `put` path prefixes this engine fault
         // before it reaches the binding's structured-fault recognizer. Remove this fallback once
         // the adopted binding recognizes the decimal "complement has …, lens expects …" spelling;
-        // `panproto0701DecimalFingerprintMessageIsNormalized` pins the removal condition.
+        // `panproto0710DecimalFingerprintMessageIsNormalized` pins the removal condition.
         if let fingerprints = complementFingerprints(in: error.detail.message) {
             return .complementFingerprintMismatch(
                 left: fingerprints.complement,
@@ -197,7 +197,7 @@ public protocol PanprotoSchemaChecking: Sendable {
     ) async throws(PanprotoFault) -> [String]
 }
 
-/// A facade over the official Panproto 0.70.1 Swift binding.
+/// A facade over the official Panproto 0.71.0 Swift binding.
 ///
 /// All engine work runs in one engine-isolated region. Only app-owned, sendable values cross back
 /// into application code.

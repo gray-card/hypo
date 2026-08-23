@@ -130,7 +130,7 @@ describe("schema runtime", () => {
     expect(loadEngine).toHaveBeenCalledOnce();
   });
 
-  it("round-trips a hypothetical v2 record byte-for-byte through a real Panproto 0.70.1 lens", async () => {
+  it("round-trips a hypothetical v2 record byte-for-byte through a real Panproto 0.71.0 lens", async () => {
     const panproto = await Panproto.init();
     const protocol = panproto.protocol("atproto");
     const schema = (withV2Field: boolean) => {

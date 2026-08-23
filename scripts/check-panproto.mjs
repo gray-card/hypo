@@ -5,7 +5,7 @@ import { basename, join, resolve } from "node:path";
 
 import { Panproto } from "@panproto/core";
 
-const PANPROTO_VERSION = "0.70.1";
+const PANPROTO_VERSION = "0.71.0";
 const root = resolve(import.meta.dirname, "..");
 const schemaBin = process.env.PANPROTO_SCHEMA_BIN || "schema";
 

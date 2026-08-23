@@ -10,7 +10,7 @@ partial items name the remaining boundary.
       strict format/lint/package-test gates, simulator and unsigned device-SDK build
       lanes, compiled-artifact validation, and retained CI build evidence.
 - [x] I1.2 — ATProtoKit evaluation and client ADR.
-- [x] I1.3 — Panproto 0.70.1 is pinned; all 59 monorepo Lexicons generate typed
+- [x] I1.3 — Panproto 0.71.0 is pinned; all 59 monorepo Lexicons generate typed
       Swift records, open known-value wrappers, validation metadata, source hashes,
       and a regeneration-diff gate.
 - [x] I1.4 — the shared TypeScript/Swift corpus covers instance camera and film
@@ -66,7 +66,7 @@ partial items name the remaining boundary.
 
 ## Panproto
 
-- [x] I13.1 — official `panproto-swift` 0.70.1 and its iOS XCFramework replace
+- [x] I13.1 — official `panproto-swift` 0.71.0 and its iOS XCFramework replace
       the planned custom C wrapper.
 - [ ] I13.2 — pin metadata and the current-release regeneration gate exist. A
       v1.2-to-v1.3 app-release fixture exercises an additive exposure-schema change,
@@ -78,7 +78,7 @@ partial items name the remaining boundary.
       records and compares official-engine lift/get/put output for the additive
       v1.2-to-v1.3 exposure change. A dual-Panproto-pin case remains outstanding.
 - [x] I13.5 — PanprotoKit DocC documents pins, bumping, complement custody,
-      guarantees, and the 0.70.1 compatibility shim.
+      guarantees, and the 0.71.0 compatibility shim.
 
 ## Feature and release work
 
@@ -164,7 +164,7 @@ per-device meter characterization, VoiceOver and Dynamic Type device passes, App
 screenshots and measurement review notes, or a future dual-Panproto-pin corpus before
 a second schema tag exists. Those are release blockers, not skipped CI work.
 
-The composed app builds for the iOS 17 simulator SDK. Panproto 0.70.1 currently
+The composed app builds for the iOS 17 simulator SDK. Panproto 0.71.0 currently
 links with two upstream object-file deployment-target warnings (26.5 inside the
 published XCFramework); the executable itself targets iOS 17. With linker warnings
 promoted to errors, a clean gate must either confirm that Xcode 16.4 no longer emits
