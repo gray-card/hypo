@@ -104,6 +104,31 @@ final class HypoAcceptanceUITests: XCTestCase {
         XCTAssertEqual(element("acceptance.accessibility.result", in: app).label, "Frame logged")
     }
 
+    func testSettingsTabDoesNotTrapNavigation() {
+        let app = makeApp(fixture: "synchronization", reset: true)
+        app.launch()
+
+        let settingsTab = app.tabBars.buttons["Settings"]
+        XCTAssertTrue(settingsTab.waitForExistence(timeout: 10))
+        settingsTab.tap()
+        XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 10))
+
+        app.buttons["Sign out"].tap()
+        let accountField = app.textFields["Account handle or DID"]
+        XCTAssertTrue(accountField.waitForExistence(timeout: 10))
+        accountField.tap()
+        accountField.typeText("alice.example")
+
+        element("settings.dismiss-keyboard", in: app).tap()
+
+        let meterTab = app.tabBars.buttons["Meter"]
+        XCTAssertTrue(meterTab.waitForExistence(timeout: 10))
+        XCTAssertTrue(meterTab.isHittable)
+        meterTab.tap()
+        XCTAssertTrue(app.navigationBars["Meter"].waitForExistence(timeout: 10))
+        XCTAssertTrue(meterTab.isSelected)
+    }
+
     private func makeApp(
         fixture: String,
         reset: Bool,

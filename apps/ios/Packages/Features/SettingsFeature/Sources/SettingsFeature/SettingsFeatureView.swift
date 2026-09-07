@@ -6,6 +6,7 @@ import UniformTypeIdentifiers
 public struct SettingsFeatureView: View {
     @Bindable private var model: SettingsFeatureModel
     @State private var isExportingDiagnostics = false
+    @FocusState private var isIdentifierFocused: Bool
 
     public init(model: SettingsFeatureModel) {
         self.model = model
@@ -33,11 +34,21 @@ public struct SettingsFeatureView: View {
                 }
                 .padding(HypoTheme.Space.four)
             }
+            #if os(iOS)
+                .scrollDismissesKeyboard(.interactively)
+            #endif
         }
         .foregroundStyle(HypoTheme.ColorToken.text)
         .navigationTitle("Settings")
         .toolbar {
             ToolbarItem(placement: .automatic) { HypoToolbarWordmark() }
+            #if os(iOS)
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { isIdentifierFocused = false }
+                        .accessibilityIdentifier("settings.dismiss-keyboard")
+                }
+            #endif
         }
         .task {
             model.restore()
@@ -87,11 +98,14 @@ public struct SettingsFeatureView: View {
                         }
                 }
 
-                Button("Sign in") { model.signIn() }
-                    .buttonStyle(HypoPrimaryButtonStyle())
-                    .frame(maxWidth: .infinity)
-                    .disabled(!model.canSignIn)
-                    .opacity(model.canSignIn ? 1 : 0.45)
+                Button("Sign in") {
+                    isIdentifierFocused = false
+                    model.signIn()
+                }
+                .buttonStyle(HypoPrimaryButtonStyle())
+                .frame(maxWidth: .infinity)
+                .disabled(!model.canSignIn)
+                .opacity(model.canSignIn ? 1 : 0.45)
 
                 Label(
                     "Hypo requests access to its photography records and Grain galleries. It does not request account-management access.",
@@ -107,11 +121,16 @@ public struct SettingsFeatureView: View {
     private var identifierField: some View {
         #if os(iOS)
             TextField("alice.example", text: $model.identifier)
+                .accessibilityLabel("Account handle or DID")
+                .focused($isIdentifierFocused)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .textContentType(.username)
                 .submitLabel(.continue)
-                .onSubmit { model.signIn() }
+                .onSubmit {
+                    isIdentifierFocused = false
+                    model.signIn()
+                }
         #else
             TextField("alice.example", text: $model.identifier)
                 .onSubmit { model.signIn() }
