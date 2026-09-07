@@ -1,4 +1,5 @@
 import ATProtoClient
+@preconcurrency import AVFoundation
 import BackgroundTasks
 @preconcurrency import CoreLocation
 import Darwin
@@ -33,6 +34,15 @@ final class AppAuthenticationState {
     func replace(with session: OAuthSession?) {
         self.session = session
         pdsURL = session?.pdsURL
+    }
+}
+
+@MainActor
+private final class LiveMeterPreviewProvider: MeterPreviewSessionProviding {
+    let meterPreviewSession: AVCaptureSession?
+
+    init(session: AVCaptureSession) {
+        meterPreviewSession = session
     }
 }
 
@@ -1723,7 +1733,8 @@ final class AppModel {
         let deviceModel = HardwareIdentity.modelIdentifier()
         self.deviceModel = deviceModel
         let phoneMeterIdentity = PersistentPhoneMeterIdentity.load()
-        let meterEngine = DefaultMeterEngine(sensor: AVFoundationMeterSensor())
+        let meterSensor = AVFoundationMeterSensor()
+        let meterEngine = DefaultMeterEngine(sensor: meterSensor)
         self.meterEngine = meterEngine
         let meterCalibrationApplier = MeterEngineCalibrationApplier(engine: meterEngine)
         let meterReadingWriter = QueuedMeterReadingWriter(
@@ -1752,7 +1763,8 @@ final class AppModel {
             ),
             privateCaptureStore: dependencies.privateMeterCaptureStore,
             privateCaptureSettingsStore: dependencies.privateMeterCaptureSettingsStore,
-            deviceModelName: deviceModel
+            deviceModelName: deviceModel,
+            previewProvider: LiveMeterPreviewProvider(session: meterSensor.previewSession)
         )
         meterModel = meterFeatureModel
         timerModel = TimerFeatureModel(

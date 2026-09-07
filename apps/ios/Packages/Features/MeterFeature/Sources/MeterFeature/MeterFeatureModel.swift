@@ -82,7 +82,7 @@ public final class MeterFeatureModel {
     private var privateCaptureDeletionGeneration = 0
 
     #if canImport(AVFoundation)
-        private weak var previewProvider: (any MeterPreviewSessionProviding)?
+        private let previewProvider: (any MeterPreviewSessionProviding)?
     #endif
 
     public init(

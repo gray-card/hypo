@@ -10,8 +10,12 @@
     /// full-resolution still frames for spot metering. Its rendered RAW and processed-frame
     /// measurements remain explicitly approximate until physical-device characterization.
     public actor AVFoundationMeterSensor: MeterSensor, MeterFrameCapturing {
+        /// The capture session shared with the preview layer. It exists for the lifetime of the
+        /// sensor so SwiftUI can attach the preview before the first measurement configures and
+        /// starts the camera.
+        public nonisolated let previewSession = AVCaptureSession()
+
         private var selectedDevice: AVCaptureDevice?
-        private var session: AVCaptureSession?
         private var photoOutput: AVCapturePhotoOutput?
         private var photoDelegates: [Int64: FrameCapturePhotoDelegate] = [:]
 
@@ -75,7 +79,7 @@
                 }
                 try await selectCamera(id: first.id)
             }
-            session?.startRunning()
+            previewSession.startRunning()
             return AsyncThrowingStream { continuation in
                 let task = Task { [weak self] in
                     do {
@@ -225,7 +229,7 @@
                 let avCodec: AVVideoCodecType = codec == .jpeg ? .jpeg : .hevc
                 settings = AVCapturePhotoSettings(format: [AVVideoCodecKey: avCodec])
             }
-            session?.startRunning()
+            previewSession.startRunning()
             #if os(iOS) || targetEnvironment(macCatalyst)
                 let supportsRAW = !photoOutput.availableRawPhotoPixelFormatTypes.isEmpty
             #else
@@ -282,7 +286,7 @@
                         selectedDevice.exposureMode = .continuousAutoExposure
                         selectedDevice.unlockForConfiguration()
                     }
-                    session?.startRunning()
+                    previewSession.startRunning()
                     try await waitForUsableExposure(on: selectedDevice)
                     try selectedDevice.lockForConfiguration()
                     defer { selectedDevice.unlockForConfiguration() }
@@ -308,13 +312,20 @@
         }
 
         public func stop() async {
-            session?.stopRunning()
+            previewSession.stopRunning()
         }
 
         private func configureSession(device: AVCaptureDevice) throws {
-            let newSession = AVCaptureSession()
+            let newSession = previewSession
+            newSession.stopRunning()
             newSession.beginConfiguration()
             defer { newSession.commitConfiguration() }
+            for input in newSession.inputs {
+                newSession.removeInput(input)
+            }
+            for output in newSession.outputs {
+                newSession.removeOutput(output)
+            }
             let input = try AVCaptureDeviceInput(device: device)
             guard newSession.canAddInput(input) else {
                 throw MeterError.capabilityUnavailable("camera input")
@@ -325,8 +336,6 @@
                 throw MeterError.capabilityUnavailable("photo output")
             }
             newSession.addOutput(newPhotoOutput)
-            session?.stopRunning()
-            session = newSession
             photoOutput = newPhotoOutput
         }
 

@@ -6,6 +6,26 @@ import Testing
 
 @testable import MeterFeature
 
+#if canImport(AVFoundation)
+    @preconcurrency import AVFoundation
+#endif
+
+#if canImport(AVFoundation)
+    @MainActor
+    @Test func previewSessionProviderLivesWithTheMeterModel() throws {
+        let session = AVCaptureSession()
+        var provider: FixtureMeterPreviewProvider? = FixtureMeterPreviewProvider(session: session)
+        let model = MeterFeatureModel(
+            service: FixtureMeterService(reading: try fixtureReading(ev: 10)),
+            previewProvider: provider
+        )
+
+        provider = nil
+
+        #expect(model.previewSession === session)
+    }
+#endif
+
 @MainActor
 @Test func measurePresentsEngineReadingAndCanHoldIt() async throws {
     let reading = try fixtureReading(ev: 12)
@@ -592,6 +612,17 @@ private actor AcceptingMeterReadingWriter: MeterReadingSemanticWriting {
         )
     }
 }
+
+#if canImport(AVFoundation)
+    @MainActor
+    private final class FixtureMeterPreviewProvider: MeterPreviewSessionProviding {
+        let meterPreviewSession: AVCaptureSession?
+
+        init(session: AVCaptureSession) {
+            meterPreviewSession = session
+        }
+    }
+#endif
 
 private actor TransactionalMeterReadingWriter: MeterReadingSemanticWriting {
     let rejectedReadingID: UUID?
