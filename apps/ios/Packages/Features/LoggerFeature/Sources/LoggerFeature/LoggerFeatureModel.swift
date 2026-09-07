@@ -1,6 +1,8 @@
 import Foundation
+import DesignSystem
 import HypoLexicon
 import Observation
+import SyncKit
 
 @MainActor
 @Observable
@@ -21,6 +23,8 @@ public final class LoggerFeatureModel {
     public private(set) var isLoadingFrameDetails = false
     public private(set) var confirmation: String?
     public private(set) var error: LoggerError?
+
+    public var errorPresentation: HypoErrorPresentation? { error?.presentation }
 
     private let writer: any ExposureWriting
     private let lifecycleWriter: (any FilmRollLifecycleWriting)?
@@ -173,7 +177,7 @@ public final class LoggerFeatureModel {
         isRequestingLocation = true
         defer { isRequestingLocation = false }
         guard await locationProvider.requestWhenInUseAuthorization() else {
-            error = .locationUnavailable("Allow location access in Settings to use this option.")
+            error = .locationPermissionDenied
             return
         }
         locationEnabledShoots.insert(shoot)
@@ -216,9 +220,11 @@ public final class LoggerFeatureModel {
             draft.meterReadings = []
         } catch let loggerError as LoggerError {
             error = loggerError
+            HypoErrorReporter.record(loggerError, presentation: loggerError.presentation)
             confirmation = nil
         } catch {
-            self.error = .write(String(describing: error))
+            self.error = userFacingWriteError(for: error)
+            HypoErrorReporter.record(error, presentation: self.error!.presentation)
             confirmation = nil
         }
     }
@@ -274,11 +280,13 @@ public final class LoggerFeatureModel {
             confirmation = "Roll dates updated"
         } catch let loggerError as LoggerError {
             error = loggerError
+            HypoErrorReporter.record(loggerError, presentation: loggerError.presentation)
             confirmation = nil
             throw loggerError
         } catch {
-            let writeError = LoggerError.write(String(describing: error))
+            let writeError = userFacingWriteError(for: error)
             self.error = writeError
+            HypoErrorReporter.record(error, presentation: writeError.presentation)
             confirmation = nil
             throw writeError
         }
@@ -303,6 +311,7 @@ public final class LoggerFeatureModel {
             error = nil
         } catch {
             self.error = .read(String(describing: error))
+            HypoErrorReporter.record(error, presentation: self.error!.presentation)
             frameDetails = []
         }
     }
@@ -324,6 +333,7 @@ public final class LoggerFeatureModel {
             error = nil
         } catch {
             self.error = .read(String(describing: error))
+            HypoErrorReporter.record(error, presentation: self.error!.presentation)
             frameSummaries = []
         }
     }
@@ -363,11 +373,26 @@ public final class LoggerFeatureModel {
             confirmation = "Frame \(editingExposure.draft.frameNumber) updated"
         } catch let loggerError as LoggerError {
             error = loggerError
+            HypoErrorReporter.record(loggerError, presentation: loggerError.presentation)
             confirmation = nil
         } catch {
-            self.error = .write(String(describing: error))
+            self.error = userFacingWriteError(for: error)
+            HypoErrorReporter.record(error, presentation: self.error!.presentation)
             confirmation = nil
         }
+    }
+
+    public func dismissError() {
+        error = nil
+    }
+
+    private func userFacingWriteError(for error: any Error) -> LoggerError {
+        if let syncError = error as? ATProtoSyncAdapterError,
+            case .missingSession = syncError
+        {
+            return .authenticationRequired
+        }
+        return .write(String(reflecting: error))
     }
 
     private static func normalizedRolls(

@@ -2,16 +2,26 @@ import DesignSystem
 import MeterEngine
 import SwiftUI
 
+#if canImport(UIKit)
+    import UIKit
+#endif
+
 public struct MeterFeatureView: View {
     @Bindable private var model: MeterFeatureModel
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openURL) private var openURL
+    private let onOpenAccountSettings: () -> Void
     @State private var isShowingCalibration = false
     @State private var isShowingReadingLog = false
     @State private var isShowingPrivateCapture = false
     @State private var zoomAtGestureStart = 1.0
 
-    public init(model: MeterFeatureModel) {
+    public init(
+        model: MeterFeatureModel,
+        onOpenAccountSettings: @escaping () -> Void = {}
+    ) {
         self.model = model
+        self.onOpenAccountSettings = onOpenAccountSettings
     }
 
     public var body: some View {
@@ -255,10 +265,12 @@ public struct MeterFeatureView: View {
                             .font(.callout)
                     }
 
-                    if !reading.flags.isEmpty {
-                        Text(reading.flags.sorted().map(\.rawValue).joined(separator: " · "))
-                            .font(.caption.monospaced())
-                            .foregroundStyle(HypoTheme.ColorToken.danger)
+                    if let quality = qualityPresentation(for: reading) {
+                        HypoErrorNotice(
+                            quality,
+                            onRecovery: quality.recoveryLabel == nil
+                                ? nil : { isShowingCalibration = true }
+                        )
                     }
                 } else {
                     Text("Measure to read the scene")
@@ -353,11 +365,12 @@ public struct MeterFeatureView: View {
                     .foregroundStyle(HypoTheme.ColorToken.success)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            if let errorMessage = model.errorMessage {
-                Label(errorMessage, systemImage: "exclamationmark.triangle.fill")
-                    .font(.footnote)
-                    .foregroundStyle(HypoTheme.ColorToken.danger)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            if let presentation = model.errorPresentation {
+                HypoErrorNotice(
+                    presentation,
+                    onRecovery: { recover(from: presentation) },
+                    onDismiss: model.dismissError
+                )
             }
         }
     }
@@ -382,6 +395,59 @@ public struct MeterFeatureView: View {
             .buttonStyle(.bordered)
             .disabled(model.reading == nil || model.isPromoting)
             .accessibilityHint("Makes this reading available to the exposure logger.")
+        }
+    }
+
+    private func recover(from presentation: HypoErrorPresentation) {
+        switch presentation.recoveryAction {
+        case .signIn:
+            onOpenAccountSettings()
+        case .openSettings:
+            #if canImport(UIKit)
+                if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+            #endif
+        case .retry:
+            if presentation.code == "METER-HISTORY" {
+                Task { await model.loadDurableState() }
+            } else if presentation.code == "METER-LOGGER" {
+                Task { await model.promoteToLogger() }
+            } else if presentation.code.hasPrefix("CALIBRATION-") {
+                isShowingCalibration = true
+            } else {
+                Task { await model.measure() }
+            }
+        case .reviewConflict, .openDiagnostics, .dismiss:
+            break
+        }
+    }
+
+    private func qualityPresentation(for reading: Reading) -> HypoErrorPresentation? {
+        guard !reading.flags.isEmpty else { return nil }
+        let calibrationWarning =
+            reading.flags.contains(.calibrationMissing)
+            || reading.flags.contains(.calibrationMismatch)
+        let messages = reading.flags.sorted().map(qualityMessage).joined(separator: " ")
+        return HypoErrorPresentation(
+            code: calibrationWarning ? "METER-UNCALIBRATED" : "METER-QUALITY",
+            title: calibrationWarning ? "Uncalibrated estimate" : "Reading may be less accurate",
+            message: messages,
+            severity: .warning,
+            recoveryLabel: calibrationWarning ? "Review Calibration" : nil,
+            recoveryAction: calibrationWarning ? .openSettings : .dismiss
+        )
+    }
+
+    private func qualityMessage(_ flag: MeterFlag) -> String {
+        switch flag {
+        case .approximate: "This meter mode is approximate on iPhone."
+        case .calibrationMissing:
+            "No matching calibration is applied, so this is an uncorrected estimate."
+        case .calibrationMismatch:
+            "The selected calibration does not match this camera, so it was not applied."
+        case .flareRisk: "Strong light near the measured area may affect this reading."
+        case .outOfRange: "The scene is outside the meter’s tested range."
+        case .patchClipped: "Highlights in the measured area are clipping."
+        case .rawFallback: "RAW sampling was unavailable, so Hypo used processed camera data."
         }
     }
 
@@ -779,6 +845,12 @@ private struct PrivateMeterCaptureView: View {
                                     .foregroundStyle(appearance.muted)
                             }
                         }
+                        if let presentation = model.privateCaptureErrorPresentation {
+                            HypoErrorNotice(
+                                presentation,
+                                onDismiss: model.dismissPrivateCaptureError
+                            )
+                        }
                     }
                     .padding(HypoTheme.Space.four)
                 }
@@ -1051,6 +1123,14 @@ private struct CalibrationProfilesView: View {
         NavigationStack {
             Form {
                 calibrationExplanation
+                if let presentation = model.errorPresentation {
+                    Section {
+                        HypoErrorNotice(
+                            presentation,
+                            onDismiss: model.dismissError
+                        )
+                    }
+                }
                 appliedProfiles
                 newProfile
                 characterizationBoundary

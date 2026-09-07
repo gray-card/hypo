@@ -69,6 +69,80 @@ public struct InstrumentPanel<Content: View>: View {
     }
 }
 
+/// A consistent, nearby failure state with an explicit recovery action when one is available.
+public struct HypoErrorNotice: View {
+    @Environment(\.hypoAppearance) private var appearance
+
+    private let presentation: HypoErrorPresentation
+    private let onRecovery: (() -> Void)?
+    private let onDismiss: (() -> Void)?
+
+    public init(
+        _ presentation: HypoErrorPresentation,
+        onRecovery: (() -> Void)? = nil,
+        onDismiss: (() -> Void)? = nil
+    ) {
+        self.presentation = presentation
+        self.onRecovery = onRecovery
+        self.onDismiss = onDismiss
+    }
+
+    public var body: some View {
+        VStack(alignment: .leading, spacing: HypoTheme.Space.three) {
+            HStack(alignment: .top, spacing: HypoTheme.Space.three) {
+                Image(systemName: icon)
+                    .foregroundStyle(tint)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
+                    Text(presentation.title)
+                        .font(.headline)
+                        .foregroundStyle(appearance.text)
+                    Text(presentation.message)
+                        .font(.footnote)
+                        .foregroundStyle(appearance.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 0)
+                if let onDismiss {
+                    Button(action: onDismiss) {
+                        Image(systemName: "xmark")
+                            .frame(width: 44, height: 44)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Dismiss \(presentation.title.lowercased())")
+                }
+            }
+
+            if let label = presentation.recoveryLabel, let onRecovery {
+                Button(label, action: onRecovery)
+                    .buttonStyle(.bordered)
+                    .tint(tint)
+                    .frame(minHeight: 44)
+                    .accessibilityHint(presentation.message)
+            }
+        }
+        .padding(HypoTheme.Space.three)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(tint.opacity(0.09))
+        .clipShape(RoundedRectangle(cornerRadius: HypoTheme.Radius.regular))
+        .overlay {
+            RoundedRectangle(cornerRadius: HypoTheme.Radius.regular)
+                .stroke(tint.opacity(0.45), lineWidth: 1)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("hypo-error-\(presentation.code.lowercased())")
+    }
+
+    private var tint: Color {
+        presentation.severity == .warning ? appearance.accent : HypoTheme.ColorToken.danger
+    }
+
+    private var icon: String {
+        presentation.severity == .warning
+            ? "exclamationmark.circle.fill" : "exclamationmark.triangle.fill"
+    }
+}
+
 /// A compact title treatment shared by the app shell and extensions.
 public struct HypoWordmark: View {
     @Environment(\.hypoAppearance) private var appearance

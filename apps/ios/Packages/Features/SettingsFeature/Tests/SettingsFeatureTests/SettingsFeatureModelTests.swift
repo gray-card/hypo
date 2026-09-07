@@ -8,6 +8,10 @@ private enum SettingsClientTestError: Error {
     case failed
 }
 
+private struct RawSettingsFailure: Error, LocalizedError {
+    var errorDescription: String? { "RAW-SENTINEL OAuth server trace" }
+}
+
 private actor SettingsAuthenticationClientFake: SettingsAuthenticationClient {
     var restored: OAuthSession?
     var signedIn: OAuthSession
@@ -131,6 +135,20 @@ final class SettingsFeatureModelTests: XCTestCase, @unchecked Sendable {
             model.authenticationError?.message,
             "Enter a full handle such as alice.example, or an account DID."
         )
+    }
+
+    func testUnknownAuthenticationFailureNeverDisplaysRawErrorText() async {
+        let client = SettingsAuthenticationClientFake(session: session())
+        await client.setSignInError(RawSettingsFailure())
+        let model = SettingsFeatureModel(client: client, sessionID: sessionID)
+        model.identifier = "alice.example"
+
+        model.signIn()
+        await model.waitForCurrentOperation()
+
+        XCTAssertEqual(model.authenticationError?.title, "Account connection failed")
+        XCTAssertFalse(model.authenticationError?.message.contains("RAW-SENTINEL") ?? true)
+        XCTAssertNil(model.session)
     }
 
     func testExpiredExternalCallbackIsIgnoredDuringActiveSignIn() async {

@@ -128,11 +128,12 @@ struct MeterReadingLogView: View {
             .disabled(model.isPromoting)
             .accessibilityHint("Attaches the selected saved readings to the next logged exposure.")
 
-            if let errorMessage = model.errorMessage {
-                Text(errorMessage)
-                    .font(.footnote)
-                    .foregroundStyle(HypoTheme.ColorToken.danger)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            if let presentation = model.errorPresentation {
+                HypoErrorNotice(
+                    presentation,
+                    onRecovery: { Task { await model.promoteSelectedReadingLog() } },
+                    onDismiss: model.dismissError
+                )
             }
         }
         .padding(HypoTheme.Space.three)

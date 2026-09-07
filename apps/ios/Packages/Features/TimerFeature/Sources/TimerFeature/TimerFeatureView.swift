@@ -7,9 +7,14 @@ import TimerEngine
 public struct TimerFeatureView: View {
     @Bindable private var model: TimerFeatureModel
     @Environment(\.hypoAppearance) private var appearance
+    private let onOpenAccountSettings: () -> Void
 
-    public init(model: TimerFeatureModel) {
+    public init(
+        model: TimerFeatureModel,
+        onOpenAccountSettings: @escaping () -> Void = {}
+    ) {
         self.model = model
+        self.onOpenAccountSettings = onOpenAccountSettings
     }
 
     public var body: some View {
@@ -401,11 +406,18 @@ public struct TimerFeatureView: View {
                 .buttonStyle(.bordered)
             }
 
-            if let errorMessage = model.errorMessage {
-                Text(errorMessage)
-                    .font(.footnote)
-                    .foregroundStyle(HypoTheme.ColorToken.danger)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            if let presentation = model.errorPresentation {
+                HypoErrorNotice(
+                    presentation,
+                    onRecovery: {
+                        if presentation.recoveryAction == .signIn {
+                            onOpenAccountSettings()
+                        } else {
+                            Task { await model.retryFailedOperation() }
+                        }
+                    },
+                    onDismiss: model.dismissError
+                )
             }
         }
     }

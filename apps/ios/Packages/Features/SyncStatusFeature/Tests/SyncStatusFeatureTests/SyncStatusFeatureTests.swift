@@ -40,6 +40,19 @@ private actor StatusServiceStub: SyncStatusServicing {
     func rebasedIDs() -> [UUID] { rebased }
 }
 
+private actor RawFailingStatusService: SyncStatusServicing {
+    func status() throws -> SyncStatusSnapshot { throw RawSyncFailure() }
+    func retry(now _: Date) -> FlushReport { FlushReport() }
+    func discardConflict(id _: UUID, now _: Date) throws { throw RawSyncFailure() }
+    func rebaseConflict(id _: UUID, now _: Date) throws { throw RawSyncFailure() }
+    func didEnterForeground(now _: Date) -> FlushReport { FlushReport() }
+    func connectivityDidChange(isOnline _: Bool, now _: Date) -> FlushReport? { nil }
+}
+
+private struct RawSyncFailure: Error, CustomStringConvertible {
+    var description: String { "RAW-SENTINEL sync database detail" }
+}
+
 @Suite("Sync status projection")
 struct SyncStatusProjectionTests {
     @Test("Queue states and record names remain approachable")
@@ -106,6 +119,30 @@ struct SyncStatusProjectionTests {
         #expect(item.canRebase)
     }
 
+    @Test("Unknown conflict details never appear in the interface")
+    func sanitizesUnknownConflictReason() {
+        let operation = OutboxOperation(
+            kind: .put,
+            repo: "did:plc:test",
+            collection: "app.graycard.instance.exposure",
+            rkey: "frame-1",
+            record: Data("{}".utf8)
+        )
+        let conflict = ParkedConflict(
+            operation: operation,
+            reason: "RAW-SENTINEL internal transport detail",
+            remoteCID: "cid-remote",
+            remoteRecord: Data("{}".utf8)
+        )
+
+        let item = SyncStatusProjection.make(
+            from: PersistenceSnapshot(conflicts: [conflict])
+        ).conflicts[0]
+
+        #expect(item.explanation.contains("could not be updated safely"))
+        #expect(item.explanation.contains("RAW-SENTINEL") == false)
+    }
+
     @Test("An account-scoped projection never exposes another repository's queue")
     func projectsOnlyTheActiveRepository() {
         let first = OutboxOperation(
@@ -151,6 +188,20 @@ struct SyncStatusFeatureModelTests {
         #expect(model.transportAvailability == .signInRequired)
         model.setTransportAvailability(.available)
         #expect(model.transportAvailability == .available)
+    }
+
+    @Test("Status failures provide recovery without exposing storage details")
+    func statusFailureIsSafe() async {
+        let model = SyncStatusFeatureModel(
+            service: RawFailingStatusService(),
+            transportAvailability: .available
+        )
+
+        await model.refresh()
+
+        #expect(model.errorPresentation?.code == "SYNC-STATUS")
+        #expect(model.errorPresentation?.message.contains("RAW-SENTINEL") == false)
+        #expect(model.errorPresentation?.recoveryAction == .retry)
     }
 
     private func pendingStatus() -> SyncStatusSnapshot {

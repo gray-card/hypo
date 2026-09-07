@@ -83,11 +83,13 @@ public struct SyncStatusFeatureView: View {
                         .accessibilityIdentifier("sync-notice")
                 }
 
-                if let error = model.errorMessage {
-                    Label(error, systemImage: "exclamationmark.triangle.fill")
-                        .font(.footnote)
-                        .foregroundStyle(HypoTheme.ColorToken.danger)
-                        .accessibilityIdentifier("sync-error")
+                if let presentation = model.errorPresentation {
+                    HypoErrorNotice(
+                        presentation,
+                        onRecovery: { Task { await model.refresh() } },
+                        onDismiss: model.dismissError
+                    )
+                    .accessibilityIdentifier("sync-error")
                 }
 
                 Button {

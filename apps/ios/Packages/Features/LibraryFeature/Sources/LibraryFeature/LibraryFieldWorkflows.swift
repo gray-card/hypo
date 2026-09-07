@@ -173,8 +173,8 @@ public enum LibraryFieldError: Error, Equatable, Sendable, LocalizedError {
         case .labelTooLong: "The roll label can contain at most 128 characters."
         case .nicknameTooLong: "The nickname can contain at most 64 characters."
         case .serialNumberTooLong: "The serial number can contain at most 128 characters."
-        case .malformedCatalogItem(let detail): "The catalog item cannot be added: \(detail)"
-        case .invalidRecord(let detail): "The record is not valid: \(detail)"
+        case .malformedCatalogItem: "This catalog item cannot be added."
+        case .invalidRecord: "This record cannot be saved."
         }
     }
 }

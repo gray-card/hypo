@@ -1,3 +1,4 @@
+import DesignSystem
 import Foundation
 import Observation
 import SyncKit
@@ -10,7 +11,8 @@ public final class SyncStatusFeatureModel {
     public private(set) var isLoading = false
     public private(set) var actionConflictID: UUID?
     public private(set) var notice: String?
-    public private(set) var errorMessage: String?
+    public private(set) var errorPresentation: HypoErrorPresentation?
+    public var errorMessage: String? { errorPresentation?.message }
 
     public private(set) var transportAvailability: SyncTransportAvailability
 
@@ -71,9 +73,9 @@ public final class SyncStatusFeatureModel {
         defer { isLoading = false }
         do {
             snapshot = try await service.status()
-            errorMessage = nil
+            errorPresentation = nil
         } catch {
-            errorMessage = "Hypo couldn’t read the local sync queue. Your records were not changed."
+            report(error, as: .syncStatusUnavailable)
         }
     }
 
@@ -117,13 +119,21 @@ public final class SyncStatusFeatureModel {
     ) async {
         actionConflictID = conflictID
         notice = nil
-        errorMessage = nil
+        errorPresentation = nil
         defer { actionConflictID = nil }
         do {
             notice = try await operation()
             await reloadAfterAction()
         } catch {
-            errorMessage = "Hypo couldn’t update this conflict. Nothing was discarded or overwritten."
+            let presentation = HypoErrorPresentation(
+                code: "SYNC-CONFLICT-ACTION",
+                title: "Conflict unchanged",
+                message: "Hypo couldn’t apply that choice. Nothing was discarded or overwritten.",
+                recoveryLabel: nil,
+                recoveryAction: .dismiss
+            )
+            errorPresentation = presentation
+            HypoErrorReporter.record(error, presentation: presentation)
             await reloadAfterAction(clearError: false)
         }
     }
@@ -131,9 +141,19 @@ public final class SyncStatusFeatureModel {
     private func reloadAfterAction(clearError: Bool = true) async {
         do {
             snapshot = try await service.status()
-            if clearError { errorMessage = nil }
+            if clearError { errorPresentation = nil }
         } catch {
-            errorMessage = "Hypo couldn’t refresh the local sync queue."
+            report(error, as: .syncStatusUnavailable)
         }
+    }
+
+    public func dismissError() {
+        errorPresentation = nil
+    }
+
+    private func report(_ error: any Error, as failure: HypoError) {
+        let presentation = HypoErrorPresenter.presentation(for: failure)
+        errorPresentation = presentation
+        HypoErrorReporter.record(error, presentation: presentation)
     }
 }

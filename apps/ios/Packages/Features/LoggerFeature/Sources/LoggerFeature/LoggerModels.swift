@@ -1,3 +1,4 @@
+import DesignSystem
 import Foundation
 import HypoLexicon
 
@@ -407,6 +408,7 @@ public extension FrameDetailStoring {
 }
 
 public enum LoggerError: Error, Equatable, Sendable {
+    case authenticationRequired
     case invalidFrameNumber(Int)
     case invalidAperture(String)
     case invalidShutterSpeed(String)
@@ -416,12 +418,14 @@ public enum LoggerError: Error, Equatable, Sendable {
     case noteTooLong
     case lifecycle([ConsumableLifecycleIssue])
     case frameDetailsUnavailable
+    case locationPermissionDenied
     case locationUnavailable(String)
     case read(String)
     case write(String)
 
     public var message: String {
         switch self {
+        case .authenticationRequired: "Sign in before saving frames."
         case let .invalidFrameNumber(number): "Frame \(number) is not valid."
         case let .invalidAperture(value): "Aperture \(value) is not valid."
         case let .invalidShutterSpeed(value): "Shutter speed \(value) is not valid."
@@ -433,10 +437,35 @@ public enum LoggerError: Error, Equatable, Sendable {
         case let .lifecycle(issues):
             issues.first?.message ?? "The roll dates are out of order."
         case .frameDetailsUnavailable: "Frame details are not available for this roll."
-        case let .locationUnavailable(detail): "Could not add the shoot location: \(detail)"
-        case let .read(detail): "Could not load the frame: \(detail)"
-        case let .write(detail): "Could not save the change: \(detail)"
+        case .locationPermissionDenied: "Allow location access in Settings, or log without it."
+        case .locationUnavailable: "The current location could not be added. You can log without it."
+        case .read: "The saved frames could not be loaded."
+        case .write: "The change could not be saved."
         }
+    }
+
+    public var presentation: HypoErrorPresentation {
+        let failure: HypoError
+        switch self {
+        case .authenticationRequired:
+            failure = .authenticationRequired
+        case .locationPermissionDenied:
+            failure = .locationPermissionDenied
+        case .locationUnavailable:
+            failure = .locationUnavailable
+        case .read:
+            failure = .frameHistoryUnavailable
+        case .frameDetailsUnavailable:
+            failure = .unsupported(
+                message: "Frame review is not available for this roll. Logging still works."
+            )
+        case .write:
+            failure = .exposureSaveUnavailable
+        case .invalidFrameNumber, .invalidAperture, .invalidShutterSpeed, .invalidISO,
+            .invalidMultipleExposureIndex, .tooManyMeterReadings, .noteTooLong, .lifecycle:
+            failure = .validation(message: message)
+        }
+        return HypoErrorPresenter.presentation(for: failure)
     }
 }
 

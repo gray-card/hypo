@@ -1,5 +1,6 @@
 #if DEBUG
     import ATProtoClient
+    import DesignSystem
     import DiagnosticsKit
     import Foundation
     import HypoLexicon
@@ -16,6 +17,7 @@
         enum Fixture: String, Sendable {
             case accessibility
             case deepLink = "deep-link"
+            case errorStates = "error-states"
             case sharedSnapshot = "shared-snapshot"
             case synchronization
         }
@@ -58,6 +60,8 @@
                         AcceptanceAccessibilityFixtureView()
                     case .deepLink:
                         AcceptanceDeepLinkFixtureView(initialURL: configuration.initialURL)
+                    case .errorStates:
+                        AcceptanceErrorStatesFixtureView()
                     case .sharedSnapshot:
                         AcceptanceSharedSnapshotFixtureView(
                             resetsPersistentState: configuration.resetsPersistentState
@@ -414,6 +418,94 @@
             case nil:
                 return "Unsupported link"
             }
+        }
+    }
+
+    private struct AcceptanceErrorStatesFixtureView: View {
+        @State private var index = 0
+        @State private var recoveryMessage = "No recovery action selected"
+
+        private let presentations =
+            [
+                HypoError.authenticationRequired,
+                .authenticationExpired,
+                .networkUnavailable,
+                .conflict(recordURI: "at://did:plc:fixture/app.graycard.fixture/record"),
+                .validation(message: "Enter a value within the supported range."),
+                .cameraPermissionDenied,
+                .locationPermissionDenied,
+                .locationUnavailable,
+                .cameraUnavailable,
+                .measurementUnavailable,
+                .calibrationUnavailable,
+                .calibrationStorageUnavailable,
+                .meterHistoryUnavailable,
+                .meterSaveRequiresSignIn,
+                .meterSaveUnavailable,
+                .meterPromotionUnavailable,
+                .privateDataUnavailable,
+                .privateCloudUnavailable(localCopyExists: true),
+                .libraryUnavailable,
+                .librarySaveRequiresSignIn,
+                .librarySaveUnavailable,
+                .frameHistoryUnavailable,
+                .exposureSaveUnavailable,
+                .recipeUnavailable,
+                .timerStorageUnavailable,
+                .developmentSaveRequiresSignIn,
+                .developmentSaveUnavailable,
+                .syncStatusUnavailable,
+                .localStorageUnavailable,
+                .permissionDenied(capability: "Motion Data"),
+                .unsupported(message: "This feature needs a physical iPhone."),
+                .unexpected,
+            ].map { HypoErrorPresenter.presentation(for: $0) } + [
+                HypoErrorPresentation(
+                    code: "METER-UNCALIBRATED",
+                    title: "Uncalibrated estimate",
+                    message: "No matching calibration is applied, so this is an uncorrected estimate.",
+                    severity: .warning,
+                    recoveryLabel: "Review Calibration",
+                    recoveryAction: .openSettings
+                )
+            ]
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: HypoTheme.Space.four) {
+                Text("Actionable failure states")
+                    .font(.title2.bold())
+                    .accessibilityIdentifier("acceptance.errors.heading")
+                Text("State \(index + 1) of \(presentations.count)")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(HypoTheme.ColorToken.muted)
+                    .accessibilityIdentifier("acceptance.errors.position")
+
+                HypoErrorNotice(
+                    presentations[index],
+                    onRecovery: { recoveryMessage = "Recovery action selected" },
+                    onDismiss: { recoveryMessage = "Failure dismissed" }
+                )
+
+                Text(recoveryMessage)
+                    .font(.footnote)
+                    .accessibilityIdentifier("acceptance.errors.action")
+
+                HStack {
+                    Button("Previous failure") {
+                        index = max(0, index - 1)
+                        recoveryMessage = "No recovery action selected"
+                    }
+                    .disabled(index == 0)
+                    Spacer()
+                    Button("Next failure") {
+                        index = min(presentations.count - 1, index + 1)
+                        recoveryMessage = "No recovery action selected"
+                    }
+                    .disabled(index == presentations.count - 1)
+                }
+                .buttonStyle(.bordered)
+            }
+            .padding(HypoTheme.Space.four)
         }
     }
 

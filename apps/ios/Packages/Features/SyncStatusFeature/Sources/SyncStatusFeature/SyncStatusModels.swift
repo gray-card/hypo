@@ -209,7 +209,7 @@ public enum SyncStatusProjection {
         if conflict.remoteCID == nil {
             return "Hypo stopped before replacing server data. Review the saved copies below."
         }
-        return conflict.reason
+        return "Hypo stopped this change because the server copy could not be updated safely."
     }
 
     private static func formattedJSON(_ data: Data?) -> String? {

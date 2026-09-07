@@ -292,7 +292,12 @@ private actor QueuedDevelopmentSessionWriter: DevelopmentSessionWriting {
     }
 
     func writeDevelopmentSession(record: Data, idempotencyKey: String) async throws -> ATURI {
-        let session = try await sessionProvider.session()
+        let session: OAuthSession
+        do {
+            session = try await sessionProvider.session()
+        } catch ATProtoSyncAdapterError.missingSession {
+            throw TimerFeatureError.authenticationRequired
+        }
         let repo = session.subject
         let uri = try ATURI("at://\(repo)/\(Self.collection)/\(idempotencyKey)")
         let snapshot = try await store.snapshot()
@@ -356,7 +361,12 @@ private actor HydratingFilmRollDevelopmentAdvancer: FilmRollDevelopmentAdvancing
         else {
             throw TimerFeatureError.completion("The linked film roll URI is incomplete.")
         }
-        let session = try await sessionProvider.session()
+        let session: OAuthSession
+        do {
+            session = try await sessionProvider.session()
+        } catch ATProtoSyncAdapterError.missingSession {
+            throw TimerFeatureError.authenticationRequired
+        }
         guard request.roll.authority == session.subject else {
             throw TimerFeatureError.completion(
                 "A development session can update only a film roll in the signed-in repository."
@@ -899,7 +909,12 @@ private actor QueuedMeterReadingWriter: MeterReadingSemanticWriting {
     func storeMeterReadings(_ request: MeterReadingBatchWriteRequest) async throws
         -> MeterReadingBatchPersistenceReceipt
     {
-        let repo = try await sessionProvider.session().subject
+        let repo: String
+        do {
+            repo = try await sessionProvider.session().subject
+        } catch ATProtoSyncAdapterError.missingSession {
+            throw MeterFeatureBoundaryError.authenticationRequired
+        }
         let meterURI = try ATURI(
             "at://\(repo)/\(Self.meterCollection)/\(meterIdentity.rkey)"
         )

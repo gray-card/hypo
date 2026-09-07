@@ -53,13 +53,15 @@ public final class MeterFeatureModel {
     public private(set) var selectedCalibrationID: UUID?
     public private(set) var isMeasuring = false
     public private(set) var isPromoting = false
-    public private(set) var errorMessage: String?
+    public private(set) var errorPresentation: HypoErrorPresentation?
+    public var errorMessage: String? { errorPresentation?.message }
     public private(set) var confirmationMessage: String?
     public private(set) var privateCaptureSettings = PrivateMeterCaptureSettings()
     public private(set) var privateCaptureContextCount = 0
     public private(set) var privateCaptureDataMayExist = false
     public private(set) var isSavingPrivateCapture = false
     public private(set) var privateCaptureMessage: String?
+    public private(set) var privateCaptureErrorPresentation: HypoErrorPresentation?
     public private(set) var privateCaptureExport: String?
 
     private let service: any MeterService
@@ -196,16 +198,16 @@ public final class MeterFeatureModel {
             }
             selectedCalibrationID = loadedCalibrationState.selectedID
             await calibrationApplier.applyCalibration(selectedCalibration)
-            errorMessage = nil
+            errorPresentation = nil
         } catch {
-            errorMessage = MeterFeatureBoundaryError.statePersistence(String(describing: error)).message
+            present(.meterHistoryUnavailable, underlying: error)
             haptics.play(.failure)
         }
 
         do {
             privateCaptureSettings = try await privateCaptureSettingsStore.settings()
         } catch {
-            privateCaptureMessage = "Private capture choices could not be loaded: \(error)"
+            presentPrivate(.privateDataUnavailable, underlying: error)
         }
         do {
             privateCaptureDataMayExist = await privateCaptureStore.containsLocalPrivateData()
@@ -213,7 +215,7 @@ public final class MeterFeatureModel {
             privateCaptureDataMayExist = privateCaptureDataMayExist || privateCaptureContextCount > 0
         } catch {
             privateCaptureDataMayExist = await privateCaptureStore.containsLocalPrivateData()
-            privateCaptureMessage = "Private capture data could not be opened: \(error)"
+            presentPrivate(.privateDataUnavailable, underlying: error)
         }
         await synchronizePrivateCaptureIfEnabled(reportSuccess: false)
     }
@@ -228,7 +230,7 @@ public final class MeterFeatureModel {
             captureConfiguration = try configuration
             captured = try await service.captureBatch(configuration: captureConfiguration)
         } catch {
-            errorMessage = String(describing: error)
+            present(measurementFailure(for: error), underlying: error)
             confirmationMessage = nil
             haptics.play(.failure)
             return
@@ -282,7 +284,7 @@ public final class MeterFeatureModel {
                         + String(describing: error)
                 )
             }
-            errorMessage = nil
+            errorPresentation = nil
             confirmationMessage =
                 captured.constituents.isEmpty
                 ? "Reading saved"
@@ -298,7 +300,7 @@ public final class MeterFeatureModel {
                 )
             }
         } catch {
-            errorMessage = persistenceMessage(for: error)
+            present(persistenceFailure(for: error), underlying: error)
             confirmationMessage = nil
             haptics.play(.failure)
         }
@@ -315,12 +317,12 @@ public final class MeterFeatureModel {
                 for try await reading in stream {
                     if Task.isCancelled { break }
                     self.reading = reading
-                    self.errorMessage = nil
+                    self.errorPresentation = nil
                 }
             } catch is CancellationError {
                 // Cancellation is the normal stop path.
             } catch {
-                self.errorMessage = String(describing: error)
+                self.present(self.measurementFailure(for: error), underlying: error)
                 self.haptics.play(.failure)
             }
             self.isMeasuring = false
@@ -384,7 +386,7 @@ public final class MeterFeatureModel {
 
     public func promoteSpotAnalysisToLogger() async {
         guard let analysis = spotAnalysis else {
-            errorMessage = MeterFeatureBoundaryError.noReading.message
+            present(.validation(message: MeterFeatureBoundaryError.noReading.message))
             haptics.play(.warning)
             return
         }
@@ -396,7 +398,7 @@ public final class MeterFeatureModel {
 
     public func promoteToLogger(_ selected: Reading? = nil) async {
         guard let preferred = selected ?? reading else {
-            errorMessage = MeterFeatureBoundaryError.noReading.message
+            present(.validation(message: MeterFeatureBoundaryError.noReading.message))
             haptics.play(.warning)
             return
         }
@@ -409,7 +411,7 @@ public final class MeterFeatureModel {
 
     public func promoteStoredReading(id: UUID) async {
         guard let entry = readingLog.first(where: { $0.id == id }) else {
-            errorMessage = MeterFeatureBoundaryError.noReading.message
+            present(.validation(message: MeterFeatureBoundaryError.noReading.message))
             haptics.play(.warning)
             return
         }
@@ -433,7 +435,7 @@ public final class MeterFeatureModel {
     public func promoteSelectedReadingLog() async {
         let entries = readingLog.filter { selectedReadingLogIDs.contains($0.id) }
         guard let preferred = entries.first else {
-            errorMessage = MeterFeatureBoundaryError.noReading.message
+            present(.validation(message: MeterFeatureBoundaryError.noReading.message))
             haptics.play(.warning)
             return
         }
@@ -450,10 +452,10 @@ public final class MeterFeatureModel {
             try await calibrationStore.saveCalibrationProfileState(calibrationState)
             await calibrationApplier.applyCalibration(profile)
             confirmationMessage = profile.map { _ in "Calibration applied" } ?? "Calibration removed"
-            errorMessage = nil
+            errorPresentation = nil
             haptics.play(.selectionChanged)
         } catch {
-            errorMessage = MeterFeatureBoundaryError.calibration(String(describing: error)).message
+            present(.calibrationStorageUnavailable, underlying: error)
             haptics.play(.failure)
         }
     }
@@ -463,7 +465,7 @@ public final class MeterFeatureModel {
         reference: CalibrationReference
     ) async {
         guard let reading else {
-            errorMessage = MeterFeatureBoundaryError.noReading.message
+            present(.validation(message: MeterFeatureBoundaryError.noReading.message))
             haptics.play(.warning)
             return
         }
@@ -489,7 +491,7 @@ public final class MeterFeatureModel {
             await selectCalibration(id: profile.id)
             confirmationMessage = "One-point calibration saved"
         } catch {
-            errorMessage = MeterFeatureBoundaryError.calibration(String(describing: error)).message
+            present(.calibrationStorageUnavailable, underlying: error)
             confirmationMessage = nil
             haptics.play(.failure)
         }
@@ -503,9 +505,9 @@ public final class MeterFeatureModel {
                 await calibrationApplier.applyCalibration(nil)
             }
             try await calibrationStore.saveCalibrationProfileState(calibrationState)
-            errorMessage = nil
+            errorPresentation = nil
         } catch {
-            errorMessage = MeterFeatureBoundaryError.calibration(String(describing: error)).message
+            present(.calibrationStorageUnavailable, underlying: error)
             haptics.play(.failure)
         }
     }
@@ -563,7 +565,7 @@ public final class MeterFeatureModel {
             privateCaptureSettings.privateCloudSyncEnabled = false
             privateCaptureSettings.privateCloudAccountIdentifier = nil
             await persistPrivateCaptureSettings()
-            privateCaptureMessage = "Private iCloud sync could not be enabled: \(error)"
+            presentPrivate(.privateCloudUnavailable(localCopyExists: false), underlying: error)
             return
         }
         await synchronizePrivateCaptureIfEnabled(reportSuccess: true)
@@ -581,11 +583,14 @@ public final class MeterFeatureModel {
             )
             privateCaptureContextCount = try await privateCaptureStore.contexts().count
             privateCaptureDataMayExist = await privateCaptureStore.containsLocalPrivateData()
-            if reportSuccess { privateCaptureMessage = "Private iCloud data is up to date." }
+            if reportSuccess {
+                privateCaptureMessage = "Private iCloud data is up to date."
+                privateCaptureErrorPresentation = nil
+            }
         } catch PrivateMeterCaptureError.privateCloudAccountChanged {
             await disablePrivateCloudAfterAccountChange()
         } catch {
-            privateCaptureMessage = "Private iCloud sync could not finish: \(error)"
+            presentPrivate(.privateCloudUnavailable(localCopyExists: true), underlying: error)
         }
     }
 
@@ -597,8 +602,9 @@ public final class MeterFeatureModel {
             }
             privateCaptureExport = json
             privateCaptureMessage = "Private capture data is ready to share."
+            privateCaptureErrorPresentation = nil
         } catch {
-            privateCaptureMessage = "Private capture data could not be exported: \(error)"
+            presentPrivate(.privateDataUnavailable, underlying: error)
         }
     }
 
@@ -626,8 +632,15 @@ public final class MeterFeatureModel {
             privateCaptureDataMayExist = true
             privateCaptureExport = nil
             privateCaptureMessage =
-                "Local private capture payloads were deleted. iCloud deletion markers are saved "
-                + "locally for retry: \(detail)"
+                "Local private capture data was deleted. The iCloud deletion is saved on this "
+                + "iPhone and will retry automatically."
+            privateCaptureErrorPresentation = nil
+            HypoErrorReporter.record(
+                PrivateMeterCaptureError.privateCloudDeletionPending(detail),
+                presentation: HypoErrorPresenter.presentation(
+                    for: .privateCloudUnavailable(localCopyExists: true)
+                )
+            )
         } catch PrivateMeterCaptureError.privateCloudAccountChangedAfterLocalDeletion {
             privateCaptureContextCount = 0
             privateCaptureDataMayExist = true
@@ -637,7 +650,7 @@ public final class MeterFeatureModel {
             )
         } catch {
             privateCaptureDataMayExist = await privateCaptureStore.containsLocalPrivateData()
-            privateCaptureMessage = "Private capture data could not be deleted: \(error)"
+            presentPrivate(.privateDataUnavailable, underlying: error)
         }
     }
 
@@ -699,20 +712,21 @@ public final class MeterFeatureModel {
             privateCaptureDataMayExist = true
             if !syncWasRequested || expectedAccountID != nil {
                 privateCaptureMessage = "Private device context saved."
+                privateCaptureErrorPresentation = nil
             }
         } catch is CancellationError {
             return
         } catch PrivateMeterCaptureError.keyUnavailable {
             guard deletionGeneration == privateCaptureDeletionGeneration else { return }
-            privateCaptureMessage =
-                "The public reading was saved, but private context could not be encrypted."
+            presentPrivate(.privateDataUnavailable, underlying: PrivateMeterCaptureError.keyUnavailable)
         } catch PrivateMeterCaptureError.privateCloudSaveFailedAfterLocalSave(let detail) {
             guard deletionGeneration == privateCaptureDeletionGeneration else { return }
             privateCaptureContextCount = (try? await privateCaptureStore.contexts().count) ?? 0
             privateCaptureDataMayExist = true
-            privateCaptureMessage =
-                "The public reading and local private context were saved, but private iCloud sync "
-                + "could not finish: \(detail)"
+            presentPrivate(
+                .privateCloudUnavailable(localCopyExists: true),
+                underlying: PrivateMeterCaptureError.privateCloudSaveFailedAfterLocalSave(detail)
+            )
         } catch PrivateMeterCaptureError.privateCloudAccountChangedAfterLocalSave {
             guard deletionGeneration == privateCaptureDeletionGeneration else { return }
             privateCaptureContextCount = (try? await privateCaptureStore.contexts().count) ?? 0
@@ -726,15 +740,16 @@ public final class MeterFeatureModel {
             privateCaptureDataMayExist = true
             privateCaptureMessage =
                 "The public reading was saved. Private context for this capture remains deleted."
+            privateCaptureErrorPresentation = nil
         } catch {
             guard deletionGeneration == privateCaptureDeletionGeneration else { return }
             privateCaptureContextCount = (try? await privateCaptureStore.contexts().count) ?? 0
             privateCaptureDataMayExist = await privateCaptureStore.containsLocalPrivateData()
-            privateCaptureMessage =
+            presentPrivate(
                 localSaveCompleted
-                ? "The public reading and local private context were saved, but the private data "
-                    + "panel could not refresh: \(error)"
-                : "The public reading was saved, but private context was not: \(error)"
+                    ? .privateCloudUnavailable(localCopyExists: true) : .privateDataUnavailable,
+                underlying: error
+            )
         }
     }
 
@@ -749,12 +764,12 @@ public final class MeterFeatureModel {
                 await persistPrivateCaptureSettings()
                 privateCaptureMessage =
                     "The iCloud account changed. Private sync is off until you review and enable it again."
+                privateCaptureErrorPresentation = nil
                 return nil
             }
             return currentAccountID
         } catch {
-            privateCaptureMessage =
-                "Hypo could not verify the current iCloud account, so no private data was synced: \(error)"
+            presentPrivate(.privateCloudUnavailable(localCopyExists: true), underlying: error)
             return nil
         }
     }
@@ -766,14 +781,16 @@ public final class MeterFeatureModel {
         privateCaptureMessage =
             prefix
             + "The iCloud account changed. Private sync is off until you review and enable it again."
+        privateCaptureErrorPresentation = nil
     }
 
     private func persistPrivateCaptureSettings() async {
         do {
             try await privateCaptureSettingsStore.save(privateCaptureSettings)
             privateCaptureMessage = nil
+            privateCaptureErrorPresentation = nil
         } catch {
-            privateCaptureMessage = "Private capture choices could not be saved: \(error)"
+            presentPrivate(.privateDataUnavailable, underlying: error)
         }
     }
 
@@ -793,10 +810,7 @@ public final class MeterFeatureModel {
                 try await heldReadingStore.saveHeldReadings(readings)
             } catch {
                 guard let self else { return }
-                self.errorMessage =
-                    MeterFeatureBoundaryError.statePersistence(
-                        String(describing: error)
-                    ).message
+                self.present(.meterHistoryUnavailable, underlying: error)
                 self.haptics.play(.failure)
             }
         }
@@ -829,21 +843,56 @@ public final class MeterFeatureModel {
                 )
             )
             confirmationMessage = "Reading ready in Logger"
-            errorMessage = nil
+            errorPresentation = nil
             selectedReadingLogIDs.subtract(ids)
             haptics.play(.actionSucceeded)
         } catch {
-            errorMessage = MeterFeatureBoundaryError.promotion(String(describing: error)).message
+            let failure: HypoError =
+                error as? MeterFeatureBoundaryError == .authenticationRequired
+                ? .meterSaveRequiresSignIn : .meterPromotionUnavailable
+            present(failure, underlying: error)
             confirmationMessage = nil
             haptics.play(.failure)
         }
     }
 
-    private func persistenceMessage(for error: any Error) -> String {
-        if let boundary = error as? MeterFeatureBoundaryError {
-            return boundary.message
+    public func dismissError() {
+        errorPresentation = nil
+    }
+
+    public func dismissPrivateCaptureError() {
+        privateCaptureErrorPresentation = nil
+    }
+
+    private func measurementFailure(for error: any Error) -> HypoError {
+        guard let meterError = error as? MeterError else { return .measurementUnavailable }
+        return switch meterError {
+        case .authorizationDenied: .cameraPermissionDenied
+        case .cameraNotFound, .capabilityUnavailable: .cameraUnavailable
+        case .invalidConfiguration:
+            .validation(message: "Check the selected meter mode and try again.")
+        case .invalidSensorSample, .traceExhausted: .measurementUnavailable
         }
-        return MeterFeatureBoundaryError.persistence(String(describing: error)).message
+    }
+
+    private func persistenceFailure(for error: any Error) -> HypoError {
+        if error as? MeterFeatureBoundaryError == .authenticationRequired {
+            return .meterSaveRequiresSignIn
+        }
+        return .meterSaveUnavailable
+    }
+
+    private func present(_ error: HypoError, underlying: (any Error)? = nil) {
+        let presentation = HypoErrorPresenter.presentation(for: error)
+        errorPresentation = presentation
+        if let underlying { HypoErrorReporter.record(underlying, presentation: presentation) }
+    }
+
+    private func presentPrivate(_ error: HypoError, underlying: any Error) {
+        let presentation = HypoErrorPresenter.presentation(for: error)
+        privateCaptureMessage = nil
+        privateCaptureErrorPresentation = presentation
+        HypoErrorReporter.record(underlying, presentation: presentation)
     }
 }
 

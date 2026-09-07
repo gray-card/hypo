@@ -1,6 +1,8 @@
+import DesignSystem
 import Foundation
 import HypoLexicon
 import Observation
+import SyncKit
 
 @MainActor
 @Observable
@@ -9,7 +11,8 @@ public final class LibraryFeatureModel {
     public var query = ""
     public private(set) var items: [LibraryItem] = []
     public private(set) var isLoading = false
-    public private(set) var errorMessage: String?
+    public private(set) var errorPresentation: HypoErrorPresentation?
+    public var errorMessage: String? { errorPresentation?.message }
     public private(set) var dataWarnings: [LibraryDataWarning] = []
     public var presentedFieldAction: LibraryFieldAction?
     public var rollLabel = ""
@@ -17,7 +20,8 @@ public final class LibraryFeatureModel {
     public var gearNickname = ""
     public var gearSerialNumber = ""
     public private(set) var isSavingFieldAction = false
-    public private(set) var fieldErrorMessage: String?
+    public private(set) var fieldErrorPresentation: HypoErrorPresentation?
+    public var fieldErrorMessage: String? { fieldErrorPresentation?.message }
     public private(set) var fieldSuccessMessage: String?
 
     private let provider: any LibraryProviding
@@ -65,7 +69,7 @@ public final class LibraryFeatureModel {
     }
 
     public func beginFieldAction(_ action: LibraryFieldAction) {
-        fieldErrorMessage = nil
+        fieldErrorPresentation = nil
         fieldSuccessMessage = nil
         rollLabel = ""
         selectedCameraURI = nil
@@ -77,13 +81,13 @@ public final class LibraryFeatureModel {
     public func cancelFieldAction() {
         guard !isSavingFieldAction else { return }
         presentedFieldAction = nil
-        fieldErrorMessage = nil
+        fieldErrorPresentation = nil
     }
 
     public func savePresentedFieldAction(now: Date = Date()) async {
         guard let action = presentedFieldAction, !isSavingFieldAction else { return }
         isSavingFieldAction = true
-        fieldErrorMessage = nil
+        fieldErrorPresentation = nil
         defer { isSavingFieldAction = false }
 
         do {
@@ -115,8 +119,8 @@ public final class LibraryFeatureModel {
             presentedFieldAction = nil
             await load()
         } catch {
-            fieldErrorMessage =
-                (error as? LocalizedError)?.errorDescription ?? String(describing: error)
+            fieldErrorPresentation = fieldPresentation(for: error)
+            HypoErrorReporter.record(error, presentation: fieldErrorPresentation!)
         }
     }
 
@@ -127,9 +131,39 @@ public final class LibraryFeatureModel {
         do {
             items = try await provider.items()
             dataWarnings = await provider.warnings()
-            errorMessage = nil
+            errorPresentation = nil
         } catch {
-            errorMessage = String(describing: error)
+            errorPresentation = HypoErrorPresenter.presentation(for: .libraryUnavailable)
+            HypoErrorReporter.record(error, presentation: errorPresentation!)
+        }
+    }
+
+    public func dismissLoadError() {
+        errorPresentation = nil
+    }
+
+    public func dismissFieldError() {
+        fieldErrorPresentation = nil
+    }
+
+    private func fieldPresentation(for error: any Error) -> HypoErrorPresentation {
+        if let syncError = error as? ATProtoSyncAdapterError,
+            case .missingSession = syncError
+        {
+            return HypoErrorPresenter.presentation(for: .librarySaveRequiresSignIn)
+        }
+        guard let fieldError = error as? LibraryFieldError else {
+            return HypoErrorPresenter.presentation(for: .librarySaveUnavailable)
+        }
+        switch fieldError {
+        case .writerUnavailable:
+            return HypoErrorPresenter.presentation(for: .librarySaveRequiresSignIn)
+        case .malformedCatalogItem, .invalidRecord:
+            return HypoErrorPresenter.presentation(for: .librarySaveUnavailable)
+        default:
+            return HypoErrorPresenter.presentation(
+                for: .validation(message: fieldError.errorDescription ?? "Check this entry.")
+            )
         }
     }
 

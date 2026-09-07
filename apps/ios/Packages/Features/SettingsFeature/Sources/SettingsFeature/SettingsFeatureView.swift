@@ -63,7 +63,9 @@ public struct SettingsFeatureView: View {
             document: model.diagnosticsExportData.map(SettingsDiagnosticsExportDocument.init),
             contentType: .json,
             defaultFilename: "Hypo diagnostics"
-        ) { _ in }
+        ) { result in
+            model.finishDiagnosticsExport(result)
+        }
     }
 
     private var signInPanel: some View {
@@ -292,15 +294,16 @@ public struct SettingsFeatureView: View {
                 }
 
                 if let issue = model.diagnosticsIssue {
-                    HStack(alignment: .top, spacing: HypoTheme.Space.two) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundStyle(HypoTheme.ColorToken.danger)
-                        Text(issue.message)
-                            .font(.footnote)
-                        Spacer()
-                        Button("Dismiss") { model.dismissDiagnosticsIssue() }
-                            .font(.footnote)
-                    }
+                    HypoErrorNotice(
+                        HypoErrorPresentation(
+                            code: "DIAGNOSTICS",
+                            title: "Diagnostics unavailable",
+                            message: issue.message,
+                            recoveryLabel: nil,
+                            recoveryAction: .dismiss
+                        ),
+                        onDismiss: model.dismissDiagnosticsIssue
+                    )
                 }
             }
         }

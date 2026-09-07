@@ -40,6 +40,59 @@ import Testing
 }
 
 @MainActor
+@Test func loadFailureKeepsRawProviderDetailsOutOfTheInterface() async {
+    let model = LibraryFeatureModel(provider: RawFailingLibraryProvider())
+
+    await model.load()
+
+    #expect(model.errorPresentation?.code == "LIBRARY-LOAD")
+    #expect(model.errorPresentation?.message.contains("RAW-SENTINEL") == false)
+    #expect(model.errorPresentation?.recoveryAction == .retry)
+}
+
+@MainActor
+@Test func fieldWriteFailureKeepsRawWriterDetailsOutOfTheInterface() async throws {
+    let selection = CatalogGearSelection(
+        kind: .camera,
+        stableIdentity: "cameraType:fixture:safe-errors",
+        label: "Fixture Camera",
+        fields: ["catalogKind": .string("cameraType")]
+    )
+    let model = LibraryFeatureModel(
+        provider: StaticLibraryProvider([]),
+        fieldWriter: RawFailingLibraryFieldWriter()
+    )
+    model.beginFieldAction(.quickAddGear(selection))
+
+    await model.savePresentedFieldAction()
+
+    #expect(model.fieldErrorPresentation?.code == "LIBRARY-SAVE")
+    #expect(model.fieldErrorPresentation?.message.contains("RAW-SENTINEL") == false)
+    #expect(model.presentedFieldAction != nil)
+}
+
+@MainActor
+@Test func signedOutFieldActionOffersAccountSettings() async throws {
+    let selection = CatalogGearSelection(
+        kind: .lens,
+        stableIdentity: "lensType:fixture:signed-out",
+        label: "Fixture Lens",
+        fields: ["catalogKind": .string("lensType")]
+    )
+    let model = LibraryFeatureModel(
+        provider: StaticLibraryProvider([]),
+        fieldWriter: SignedOutLibraryFieldWriter()
+    )
+    model.beginFieldAction(.quickAddGear(selection))
+
+    await model.savePresentedFieldAction()
+
+    #expect(model.fieldErrorPresentation?.code == "LIBRARY-SIGN-IN")
+    #expect(model.fieldErrorPresentation?.recoveryAction == .signIn)
+    #expect(model.fieldErrorPresentation?.message.contains("RAW-SENTINEL") == false)
+}
+
+@MainActor
 @Test func modelSendsAValidatedRollLoadToTheSemanticWriter() async throws {
     let writer = RecordingLibraryFieldWriter()
     let stockpile = FilmStockpileSelection(
@@ -726,6 +779,34 @@ private actor FixedLibraryRecordKeyGenerator: LibraryRecordKeyGenerating {
     func nextRecordKey(at _: Date) -> String {
         precondition(!values.isEmpty)
         return values.removeFirst()
+    }
+}
+
+private struct RawFailingLibraryProvider: LibraryProviding {
+    func items() async throws -> [LibraryItem] { throw RawLibraryFailure() }
+}
+
+private struct RawFailingLibraryFieldWriter: LibraryFieldSemanticWriting {
+    func loadFilmRoll(_: FilmRollLoadRequest) async throws -> LibraryFieldWriteReceipt {
+        throw RawLibraryFailure()
+    }
+
+    func quickAddGear(_: GearQuickAddRequest) async throws -> LibraryFieldWriteReceipt {
+        throw RawLibraryFailure()
+    }
+}
+
+private struct RawLibraryFailure: Error, CustomStringConvertible {
+    var description: String { "RAW-SENTINEL library transport detail" }
+}
+
+private struct SignedOutLibraryFieldWriter: LibraryFieldSemanticWriting {
+    func loadFilmRoll(_: FilmRollLoadRequest) async throws -> LibraryFieldWriteReceipt {
+        throw ATProtoSyncAdapterError.missingSession("RAW-SENTINEL signed-out detail")
+    }
+
+    func quickAddGear(_: GearQuickAddRequest) async throws -> LibraryFieldWriteReceipt {
+        throw ATProtoSyncAdapterError.missingSession("RAW-SENTINEL signed-out detail")
     }
 }
 

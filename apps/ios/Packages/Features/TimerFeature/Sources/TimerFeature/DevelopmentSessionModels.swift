@@ -1,3 +1,4 @@
+import DesignSystem
 import Foundation
 import HypoLexicon
 import TimerEngine
@@ -667,6 +668,7 @@ public struct DiscardingFilmRollDevelopmentAdvancer: FilmRollDevelopmentAdvancin
 }
 
 public enum TimerFeatureError: Error, Equatable, Sendable {
+    case authenticationRequired
     case recipeUnavailable(String)
     case invalidRecipe(String)
     case incompleteRun
@@ -675,12 +677,30 @@ public enum TimerFeatureError: Error, Equatable, Sendable {
 
     public var message: String {
         switch self {
-        case let .recipeUnavailable(detail): "Could not load recipes: \(detail)"
+        case .authenticationRequired: "Sign in before recording this development."
+        case .recipeUnavailable: "Personal recipes could not be loaded. Built-in recipes remain available."
         case let .invalidRecipe(detail): "The recipe cannot be used: \(detail)"
         case .incompleteRun: "The development session has not finished."
-        case let .persistence(detail): "Could not save the timer: \(detail)"
-        case let .completion(detail): "Could not finish the development record: \(detail)"
+        case .persistence: "Timer progress could not be saved on this iPhone."
+        case .completion: "The completed development could not be recorded."
         }
+    }
+
+    public var presentation: HypoErrorPresentation {
+        let failure: HypoError
+        switch self {
+        case .authenticationRequired:
+            failure = .developmentSaveRequiresSignIn
+        case .recipeUnavailable:
+            failure = .recipeUnavailable
+        case .persistence:
+            failure = .timerStorageUnavailable
+        case .completion:
+            failure = .developmentSaveUnavailable
+        case .invalidRecipe, .incompleteRun:
+            failure = .validation(message: message)
+        }
+        return HypoErrorPresenter.presentation(for: failure)
     }
 }
 

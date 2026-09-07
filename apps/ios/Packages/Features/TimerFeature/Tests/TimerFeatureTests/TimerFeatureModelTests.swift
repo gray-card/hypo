@@ -40,6 +40,61 @@ import TimerEngine
 }
 
 @MainActor
+@Test func recipeFailureUsesSafeCopyAndRetainsBuiltInRecipes() async {
+    let model = TimerFeatureModel(
+        recipe: TimerFeatureDefaults.blackAndWhiteRecipe(),
+        recipeProvider: RawFailingRecipeProvider(),
+        store: InMemoryTimerFeatureSessionStore(),
+        completionWriter: DiscardingDevelopmentSessionWriter(),
+        rollAdvancer: DiscardingFilmRollDevelopmentAdvancer()
+    )
+
+    await model.loadRecipes()
+
+    #expect(model.errorPresentation?.code == "TIMER-RECIPES")
+    #expect(model.errorPresentation?.message.contains("RAW-SENTINEL") == false)
+    #expect(!model.availableRecipes.isEmpty)
+}
+
+@MainActor
+@Test func timerStoreFailureUsesSafeCopyWithoutStoppingTheOnScreenTimer() async {
+    let model = TimerFeatureModel(
+        recipe: TimerFeatureDefaults.blackAndWhiteRecipe(),
+        store: RawFailingTimerStore(),
+        completionWriter: DiscardingDevelopmentSessionWriter(),
+        rollAdvancer: DiscardingFilmRollDevelopmentAdvancer()
+    )
+
+    await model.restoreDurableSession()
+
+    #expect(model.errorPresentation?.code == "TIMER-SAVE")
+    #expect(model.errorPresentation?.message.contains("RAW-SENTINEL") == false)
+    #expect(model.run.status == .ready)
+}
+
+@MainActor
+@Test func signedOutCompletionPreservesTheFinishedTimerAndOffersSettings() async throws {
+    let clock = TestClock(Date(timeIntervalSince1970: 2_500))
+    let model = TimerFeatureModel(
+        recipe: try developmentRecipe(planID: "signed-out"),
+        store: InMemoryTimerFeatureSessionStore(),
+        completionWriter: SignedOutDevelopmentWriter(),
+        rollAdvancer: DiscardingFilmRollDevelopmentAdvancer(),
+        now: { clock.date }
+    )
+
+    model.performPrimaryAction()
+    await model.flushPersistence()
+    clock.date = clock.date.addingTimeInterval(125)
+    model.refresh()
+    await model.flushPersistence()
+
+    #expect(model.run.status == .completed)
+    #expect(model.errorPresentation?.code == "TIMER-SIGN-IN")
+    #expect(model.errorPresentation?.recoveryAction == .signIn)
+}
+
+@MainActor
 @Test func skipAndExtensionUseTimerEngineTransitions() throws {
     let clock = TestClock(Date(timeIntervalSince1970: 3_000))
     let model = TimerFeatureModel(plan: try plan(), now: { clock.date })
@@ -514,6 +569,28 @@ private final class TestClock: @unchecked Sendable {
 
     init(_ date: Date) {
         self.date = date
+    }
+}
+
+private struct RawFailingRecipeProvider: DevelopmentRecipeProviding {
+    func recipes() async throws -> [DevelopmentRecipeSelection] {
+        throw RawTimerFailure()
+    }
+}
+
+private actor RawFailingTimerStore: TimerFeatureSessionStoring {
+    func load() throws -> TimerFeatureSessionState? { throw RawTimerFailure() }
+    func save(_: TimerFeatureSessionState) throws { throw RawTimerFailure() }
+    func clear() throws { throw RawTimerFailure() }
+}
+
+private struct RawTimerFailure: Error, CustomStringConvertible {
+    var description: String { "RAW-SENTINEL timer storage detail" }
+}
+
+private struct SignedOutDevelopmentWriter: DevelopmentSessionWriting {
+    func writeDevelopmentSession(record _: Data, idempotencyKey _: String) async throws -> ATURI {
+        throw TimerFeatureError.authenticationRequired
     }
 }
 

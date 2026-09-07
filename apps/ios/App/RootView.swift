@@ -16,8 +16,11 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $model.selectedTab) {
             NavigationStack {
-                MeterFeatureView(model: model.meterModel)
-                    .toolbar { syncStatusToolbar }
+                MeterFeatureView(
+                    model: model.meterModel,
+                    onOpenAccountSettings: { model.selectedTab = .settings }
+                )
+                .toolbar { syncStatusToolbar }
             }
             .tabItem {
                 Label("Meter", systemImage: "camera.metering.center.weighted")
@@ -28,7 +31,10 @@ struct RootView: View {
             NavigationStack {
                 Group {
                     if let loggerModel = model.loggerModel {
-                        LoggerFeatureView(model: loggerModel)
+                        LoggerFeatureView(
+                            model: loggerModel,
+                            onOpenAccountSettings: { model.selectedTab = .settings }
+                        )
                     } else if model.isLoadingAccountData {
                         ProgressView("Loading active rolls")
                     } else {
@@ -51,8 +57,11 @@ struct RootView: View {
             .tag(AppModel.Tab.logger)
 
             NavigationStack {
-                TimerFeatureView(model: model.timerModel)
-                    .toolbar { syncStatusToolbar }
+                TimerFeatureView(
+                    model: model.timerModel,
+                    onOpenAccountSettings: { model.selectedTab = .settings }
+                )
+                .toolbar { syncStatusToolbar }
             }
             .tabItem {
                 Label("Timer", systemImage: "timer")
@@ -61,8 +70,11 @@ struct RootView: View {
             .tag(AppModel.Tab.timer)
 
             NavigationStack {
-                LibraryFeatureView(model: model.libraryModel)
-                    .toolbar { syncStatusToolbar }
+                LibraryFeatureView(
+                    model: model.libraryModel,
+                    onOpenAccountSettings: { model.selectedTab = .settings }
+                )
+                .toolbar { syncStatusToolbar }
             }
             .tabItem {
                 Label("Library", systemImage: "rectangle.stack")
@@ -117,16 +129,12 @@ struct RootView: View {
         }
         .safeAreaInset(edge: .top) {
             if !model.dependencies.persistenceIsDurable {
-                Label(
-                    "Local storage is unavailable. Changes will last only until Hypo closes.",
-                    systemImage: "exclamationmark.triangle.fill"
+                HypoErrorNotice(
+                    HypoErrorPresenter.presentation(for: .localStorageUnavailable)
                 )
-                .font(.footnote)
-                .foregroundStyle(HypoTheme.ColorToken.background)
                 .padding(.horizontal, HypoTheme.Space.three)
                 .padding(.vertical, HypoTheme.Space.two)
-                .frame(maxWidth: .infinity)
-                .background(HypoTheme.ColorToken.danger)
+                .background(.ultraThinMaterial)
             }
         }
     }

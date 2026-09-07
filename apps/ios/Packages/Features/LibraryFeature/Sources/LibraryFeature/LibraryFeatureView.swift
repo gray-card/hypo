@@ -3,9 +3,14 @@ import SwiftUI
 
 public struct LibraryFeatureView: View {
     @Bindable private var model: LibraryFeatureModel
+    private let onOpenAccountSettings: () -> Void
 
-    public init(model: LibraryFeatureModel) {
+    public init(
+        model: LibraryFeatureModel,
+        onOpenAccountSettings: @escaping () -> Void = {}
+    ) {
         self.model = model
+        self.onOpenAccountSettings = onOpenAccountSettings
     }
 
     public var body: some View {
@@ -35,10 +40,12 @@ public struct LibraryFeatureView: View {
                             }
                         }
                     }
-                    if let errorMessage = model.errorMessage {
-                        Text(errorMessage)
-                            .font(.footnote)
-                            .foregroundStyle(HypoTheme.ColorToken.danger)
+                    if let presentation = model.errorPresentation {
+                        HypoErrorNotice(
+                            presentation,
+                            onRecovery: { Task { await model.load() } },
+                            onDismiss: model.dismissLoadError
+                        )
                     }
                     if let successMessage = model.fieldSuccessMessage {
                         Label(successMessage, systemImage: "checkmark.circle.fill")
@@ -224,12 +231,20 @@ public struct LibraryFeatureView: View {
                             }
                         }
                     }
-                    if let error = model.fieldErrorMessage {
+                    if let presentation = model.fieldErrorPresentation {
                         Section {
-                            Label(error, systemImage: "exclamationmark.triangle.fill")
-                                .font(.footnote)
-                                .foregroundStyle(HypoTheme.ColorToken.danger)
-                                .accessibilityLabel("Could not save. \(error)")
+                            HypoErrorNotice(
+                                presentation,
+                                onRecovery: {
+                                    if presentation.recoveryAction == .signIn {
+                                        model.cancelFieldAction()
+                                        onOpenAccountSettings()
+                                    } else {
+                                        Task { await model.savePresentedFieldAction() }
+                                    }
+                                },
+                                onDismiss: model.dismissFieldError
+                            )
                         }
                     }
                 }

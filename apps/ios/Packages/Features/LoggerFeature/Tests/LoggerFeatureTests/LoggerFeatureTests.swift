@@ -1,5 +1,6 @@
 import Foundation
 import HypoLexicon
+import SyncKit
 import Testing
 
 @testable import LoggerFeature
@@ -170,7 +171,7 @@ import Testing
     await model.setLocationCaptureEnabled(true)
     #expect(model.isLocationCaptureEnabledForSelectedShoot == false)
     #expect(await provider.locationRequests == 0)
-    guard case .locationUnavailable = model.error else {
+    guard case .locationPermissionDenied = model.error else {
         Issue.record("Expected a location permission error")
         return
     }
@@ -194,6 +195,35 @@ import Testing
     #expect(object["frameExposureIndex"] as? Int == 1)
     #expect(model.draft.frameNumber == 4)
     #expect(model.draft.frameExposureIndex == 2)
+}
+
+@MainActor
+@Test func writeFailuresExposeRecoveryCopyWithoutRawDiagnostics() async throws {
+    let model = LoggerFeatureModel(
+        activeRoll: try roll(),
+        writer: RawFailingExposureWriter()
+    )
+
+    await model.logFrame()
+
+    #expect(model.errorPresentation?.code == "LOGGER-SAVE")
+    #expect(model.errorPresentation?.message.contains("RAW-SENTINEL") == false)
+    #expect(model.errorPresentation?.recoveryAction == .retry)
+    #expect(model.draft.frameNumber == 4)
+}
+
+@MainActor
+@Test func signedOutLoggerOffersAccountSettingsWithoutAdvancingTheFrame() async throws {
+    let model = LoggerFeatureModel(
+        activeRoll: try roll(),
+        writer: SignedOutExposureWriter()
+    )
+
+    await model.logFrame()
+
+    #expect(model.errorPresentation?.code == "AUTH-REQUIRED")
+    #expect(model.errorPresentation?.recoveryAction == .signIn)
+    #expect(model.draft.frameNumber == 4)
 }
 
 @MainActor
@@ -228,6 +258,22 @@ import Testing
     #expect(model.draft.multipleExposure == false)
     #expect(model.draft.frameExposureIndex == nil)
     #expect(model.draft.shotAtISO == nil)
+}
+
+private struct RawFailingExposureWriter: ExposureWriting {
+    func createExposure(record _: Data) async throws {
+        throw RawLoggerFailure()
+    }
+}
+
+private struct RawLoggerFailure: Error, CustomStringConvertible {
+    var description: String { "RAW-SENTINEL logger database detail" }
+}
+
+private struct SignedOutExposureWriter: ExposureWriting {
+    func createExposure(record _: Data) async throws {
+        throw ATProtoSyncAdapterError.missingSession("RAW-SENTINEL missing session detail")
+    }
 }
 
 @MainActor

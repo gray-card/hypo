@@ -112,3 +112,36 @@ func diagnosticsDeleteHistory() async throws {
     #expect(model.diagnosticsExportData == nil)
     #expect(try await recorder.events().isEmpty)
 }
+
+@MainActor
+@Test("Diagnostics export reports save failures without exposing their details")
+func diagnosticsExportSaveFailureIsSanitized() async {
+    let model = SettingsFeatureModel(
+        client: DiagnosticsAuthenticationClientFake(),
+        sessionID: OAuthSessionID(rawValue: "diagnostics-export-test")
+    )
+
+    model.finishDiagnosticsExport(
+        .failure(NSError(domain: "RAW-SENTINEL", code: 42))
+    )
+
+    let issue = model.diagnosticsIssue
+    #expect(issue != nil)
+    #expect(issue?.message.contains("not saved") == true)
+    #expect(issue?.message.contains("RAW-SENTINEL") == false)
+}
+
+@MainActor
+@Test("Cancelling diagnostics export does not show an error")
+func diagnosticsExportCancellationIsQuiet() async {
+    let model = SettingsFeatureModel(
+        client: DiagnosticsAuthenticationClientFake(),
+        sessionID: OAuthSessionID(rawValue: "diagnostics-export-cancel-test")
+    )
+
+    model.finishDiagnosticsExport(
+        .failure(CocoaError(.userCancelled))
+    )
+
+    #expect(model.diagnosticsIssue == nil)
+}

@@ -145,7 +145,8 @@ import Testing
 
     #expect(await writer.requests.count == 1)
     #expect(model.errorMessage == nil)
-    #expect(model.privateCaptureMessage?.contains("public reading was saved") == true)
+    #expect(model.privateCaptureErrorPresentation?.code == "PRIVATE-DATA")
+    #expect(model.privateCaptureErrorPresentation?.message.contains("Public readings are unaffected") == true)
     #expect(!FileManager.default.fileExists(atPath: file.path))
 }
 
@@ -744,7 +745,8 @@ import Testing
     #expect(model.confirmationMessage == "Reading saved")
     #expect(model.errorMessage == nil)
     #expect(model.privateCaptureContextCount == 1)
-    #expect(model.privateCaptureMessage?.contains("local private context were saved") == true)
+    #expect(model.privateCaptureErrorPresentation?.code == "PRIVATE-ICLOUD")
+    #expect(model.privateCaptureErrorPresentation?.message.contains("local copy is safe") == true)
 }
 
 private struct PrivateFixtureMeterService: MeterService {

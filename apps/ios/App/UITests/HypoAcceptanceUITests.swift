@@ -129,6 +129,46 @@ final class HypoAcceptanceUITests: XCTestCase {
         XCTAssertTrue(meterTab.isSelected)
     }
 
+    func testEveryFailureStateIsActionableAndContainsNoRawDiagnostics() {
+        let app = makeApp(fixture: "error-states", reset: true)
+        app.launch()
+
+        XCTAssertTrue(
+            element("acceptance.errors.heading", in: app).waitForExistence(timeout: 10)
+        )
+        let codes = [
+            "auth-required", "auth-expired", "network-offline", "sync-conflict",
+            "input-invalid", "camera-permission", "location-permission",
+            "location-unavailable", "camera-unavailable", "meter-measure",
+            "calibration-measure",
+            "calibration-save", "meter-history", "meter-sign-in", "meter-save",
+            "meter-logger", "private-data", "private-icloud", "library-load",
+            "library-sign-in", "library-save", "logger-frames", "logger-save",
+            "timer-recipes", "timer-save", "timer-sign-in", "timer-complete",
+            "sync-status", "storage-unavailable", "permission-denied",
+            "feature-unavailable", "unexpected", "meter-uncalibrated",
+        ]
+
+        for (index, code) in codes.enumerated() {
+            XCTAssertTrue(
+                element("hypo-error-\(code)", in: app).exists,
+                "Failure state \(code) was not rendered."
+            )
+            XCTAssertEqual(
+                element("acceptance.errors.position", in: app).label,
+                "State \(index + 1) of \(codes.count)"
+            )
+            XCTAssertEqual(
+                app.staticTexts.matching(
+                    NSPredicate(
+                        format: "label CONTAINS[c] %@ OR label CONTAINS[c] %@ OR label CONTAINS[c] %@",
+                        "Error Domain", "localizedDescription", "RAW-SENTINEL"
+                    )
+                ).count, 0)
+            if index < codes.count - 1 { app.buttons["Next failure"].tap() }
+        }
+    }
+
     private func makeApp(
         fixture: String,
         reset: Bool,

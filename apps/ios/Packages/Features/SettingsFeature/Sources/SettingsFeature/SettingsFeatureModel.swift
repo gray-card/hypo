@@ -1,4 +1,5 @@
 import ATProtoClient
+import DesignSystem
 import DiagnosticsKit
 import Foundation
 import MeterEngine
@@ -157,7 +158,7 @@ public final class SettingsFeatureModel {
         } catch is CancellationError {
             return
         } catch {
-            calibrationIssue = Self.presentCalibration(error)
+            presentCalibrationIssue(error)
         }
     }
 
@@ -180,7 +181,7 @@ public final class SettingsFeatureModel {
         } catch is CancellationError {
             return nil
         } catch {
-            calibrationIssue = Self.presentCalibration(error)
+            presentCalibrationIssue(error)
             return nil
         }
     }
@@ -224,7 +225,7 @@ public final class SettingsFeatureModel {
         } catch is CancellationError {
             return
         } catch {
-            calibrationIssue = Self.presentCalibration(error)
+            presentCalibrationIssue(error)
         }
     }
 
@@ -234,9 +235,7 @@ public final class SettingsFeatureModel {
             beginCalibrationOperation(.saving)
         else {
             if calibrationSample != nil {
-                calibrationIssue = Self.presentCalibration(
-                    SettingsCalibrationManagementError.invalidReferenceEV
-                )
+                presentCalibrationIssue(SettingsCalibrationManagementError.invalidReferenceEV)
             }
             return
         }
@@ -257,7 +256,7 @@ public final class SettingsFeatureModel {
         } catch is CancellationError {
             return
         } catch {
-            calibrationIssue = Self.presentCalibration(error)
+            presentCalibrationIssue(error)
         }
     }
 
@@ -274,7 +273,7 @@ public final class SettingsFeatureModel {
         } catch is CancellationError {
             return
         } catch {
-            calibrationIssue = Self.presentCalibration(error)
+            presentCalibrationIssue(error)
         }
     }
 
@@ -290,7 +289,7 @@ public final class SettingsFeatureModel {
         } catch is CancellationError {
             return
         } catch {
-            calibrationIssue = Self.presentCalibration(error)
+            presentCalibrationIssue(error)
         }
     }
 
@@ -314,8 +313,9 @@ public final class SettingsFeatureModel {
             if !diagnosticsEnabled { diagnosticsExportData = nil }
             diagnosticsIssue = nil
         } catch {
-            diagnosticsIssue = SettingsDiagnosticsIssue(
-                message: "Hypo could not read the local diagnostic history."
+            presentDiagnosticsIssue(
+                "Hypo could not read the local diagnostic history. Try again in a moment.",
+                underlying: error
             )
         }
     }
@@ -331,8 +331,9 @@ public final class SettingsFeatureModel {
             if !enabled { diagnosticsExportData = nil }
             diagnosticsIssue = nil
         } catch {
-            diagnosticsIssue = SettingsDiagnosticsIssue(
-                message: "Hypo could not update the local diagnostics setting."
+            presentDiagnosticsIssue(
+                "The local diagnostics setting was not changed. Try again.",
+                underlying: error
             )
         }
     }
@@ -348,10 +349,26 @@ public final class SettingsFeatureModel {
             diagnosticsIssue = nil
             return true
         } catch {
-            diagnosticsIssue = SettingsDiagnosticsIssue(
-                message: "Hypo could not prepare the local diagnostic export."
+            presentDiagnosticsIssue(
+                "Hypo could not prepare the local diagnostic export. Try exporting again.",
+                underlying: error
             )
             return false
+        }
+    }
+
+    public func finishDiagnosticsExport(_ result: Result<URL, Error>) {
+        switch result {
+        case .success:
+            diagnosticsExportData = nil
+            diagnosticsIssue = nil
+        case let .failure(error) where Self.isUserCancelledExport(error):
+            break
+        case let .failure(error):
+            presentDiagnosticsIssue(
+                "The diagnostic file was not saved. Choose another location and try again.",
+                underlying: error
+            )
         }
     }
 
@@ -365,8 +382,9 @@ public final class SettingsFeatureModel {
             diagnosticsExportData = nil
             diagnosticsIssue = nil
         } catch {
-            diagnosticsIssue = SettingsDiagnosticsIssue(
-                message: "Hypo could not delete the local diagnostic history."
+            presentDiagnosticsIssue(
+                "The diagnostic history was not deleted. Try again.",
+                underlying: error
             )
         }
     }
@@ -514,7 +532,53 @@ public final class SettingsFeatureModel {
         guard operationID == id else { return }
         operationTask = nil
         operation = nil
-        authenticationError = Self.present(error)
+        let userFacing = Self.present(error)
+        authenticationError = userFacing
+        HypoErrorReporter.record(
+            error,
+            presentation: HypoErrorPresentation(
+                code: "AUTH-CONNECTION",
+                title: userFacing.title,
+                message: userFacing.message,
+                recoveryLabel: "Try Again",
+                recoveryAction: .retry
+            )
+        )
+    }
+
+    private func presentCalibrationIssue(_ error: Error) {
+        let issue = Self.presentCalibration(error)
+        calibrationIssue = issue
+        HypoErrorReporter.record(
+            error,
+            presentation: HypoErrorPresentation(
+                code: "CALIBRATION-SETTINGS",
+                title: issue.title,
+                message: issue.message,
+                recoveryLabel: nil,
+                recoveryAction: .dismiss
+            )
+        )
+    }
+
+    private func presentDiagnosticsIssue(_ message: String, underlying error: Error) {
+        diagnosticsIssue = SettingsDiagnosticsIssue(message: message)
+        HypoErrorReporter.record(
+            error,
+            presentation: HypoErrorPresentation(
+                code: "DIAGNOSTICS",
+                title: "Diagnostics unavailable",
+                message: message,
+                recoveryLabel: nil,
+                recoveryAction: .dismiss
+            )
+        )
+    }
+
+    private static func isUserCancelledExport(_ error: Error) -> Bool {
+        let cocoaError = error as NSError
+        return cocoaError.domain == NSCocoaErrorDomain
+            && cocoaError.code == CocoaError.Code.userCancelled.rawValue
     }
 
     private static func present(_ error: Error) -> SettingsAuthenticationError {
@@ -544,10 +608,11 @@ public final class SettingsFeatureModel {
         }
         if let error = error as? OAuthCallbackValidationError {
             switch error {
-            case .authorizationError(let code, let description):
+            case .authorizationError:
                 return SettingsAuthenticationError(
                     title: "Access was not granted",
-                    message: description ?? "The authorization server returned \(code)."
+                    message:
+                        "Check that you selected the intended account and approved access, then try again."
                 )
             default:
                 return SettingsAuthenticationError(

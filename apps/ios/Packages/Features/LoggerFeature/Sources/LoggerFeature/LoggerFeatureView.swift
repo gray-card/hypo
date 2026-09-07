@@ -2,13 +2,23 @@ import DesignSystem
 import HypoLexicon
 import SwiftUI
 
+#if canImport(UIKit)
+    import UIKit
+#endif
+
 public struct LoggerFeatureView: View {
     @Bindable private var model: LoggerFeatureModel
+    @Environment(\.openURL) private var openURL
+    private let onOpenAccountSettings: () -> Void
     @State private var isEditingLifecycle = false
     @State private var isShowingFrameBrowser = false
 
-    public init(model: LoggerFeatureModel) {
+    public init(
+        model: LoggerFeatureModel,
+        onOpenAccountSettings: @escaping () -> Void = {}
+    ) {
         self.model = model
+        self.onOpenAccountSettings = onOpenAccountSettings
     }
 
     public var body: some View {
@@ -34,10 +44,16 @@ public struct LoggerFeatureView: View {
             ToolbarItem(placement: .automatic) { HypoToolbarWordmark() }
         }
         .sheet(isPresented: $isEditingLifecycle) {
-            RollLifecycleEditorView(model: model)
+            RollLifecycleEditorView(
+                model: model,
+                onOpenAccountSettings: onOpenAccountSettings
+            )
         }
         .sheet(isPresented: $isShowingFrameBrowser) {
-            FrameBrowserView(model: model)
+            FrameBrowserView(
+                model: model,
+                onOpenAccountSettings: onOpenAccountSettings
+            )
         }
     }
 
@@ -227,12 +243,31 @@ public struct LoggerFeatureView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityLabel(confirmation)
         }
-        if let error = model.error {
-            Label(error.message, systemImage: "exclamationmark.triangle.fill")
-                .font(.footnote)
-                .foregroundStyle(HypoTheme.ColorToken.danger)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .accessibilityLabel("Error: \(error.message)")
+        if let presentation = model.errorPresentation {
+            HypoErrorNotice(
+                presentation,
+                onRecovery: { recover(from: presentation) },
+                onDismiss: model.dismissError
+            )
+        }
+    }
+
+    private func recover(from presentation: HypoErrorPresentation) {
+        switch presentation.recoveryAction {
+        case .signIn:
+            onOpenAccountSettings()
+        case .openSettings:
+            #if canImport(UIKit)
+                if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+            #endif
+        case .retry:
+            if presentation.code == "LOGGER-FRAMES" {
+                Task { await model.loadFrameList() }
+            } else {
+                Task { await model.logFrame() }
+            }
+        case .reviewConflict, .openDiagnostics, .dismiss:
+            break
         }
     }
 
@@ -355,11 +390,13 @@ public struct LoggerFeatureView: View {
 private struct RollLifecycleEditorView: View {
     @Bindable var model: LoggerFeatureModel
     @Environment(\.dismiss) private var dismiss
+    let onOpenAccountSettings: () -> Void
     @State private var milestones: FilmRollMilestones
     @State private var developmentLocation: FilmRollDevelopmentLocation?
 
-    init(model: LoggerFeatureModel) {
+    init(model: LoggerFeatureModel, onOpenAccountSettings: @escaping () -> Void) {
         self.model = model
+        self.onOpenAccountSettings = onOpenAccountSettings
         _milestones = State(initialValue: model.activeRoll.milestones)
         _developmentLocation = State(initialValue: model.activeRoll.developmentLocation)
     }
@@ -398,11 +435,25 @@ private struct RollLifecycleEditorView: View {
                     lifecycleDate("Archived", date: $milestones.archivedAt)
                 }
 
-                if let error = model.error {
+                if let presentation = model.errorPresentation {
                     Section {
-                        Label(error.message, systemImage: "exclamationmark.triangle.fill")
-                            .foregroundStyle(HypoTheme.ColorToken.danger)
-                            .accessibilityLabel("Error: \(error.message)")
+                        HypoErrorNotice(
+                            presentation,
+                            onRecovery: {
+                                if presentation.recoveryAction == .signIn {
+                                    dismiss()
+                                    onOpenAccountSettings()
+                                } else {
+                                    Task {
+                                        try? await model.saveMilestones(
+                                            milestones,
+                                            developmentLocation: developmentLocation
+                                        )
+                                    }
+                                }
+                            },
+                            onDismiss: model.dismissError
+                        )
                     }
                 }
             }
@@ -470,6 +521,7 @@ private struct RollLifecycleEditorView: View {
 private struct FrameBrowserView: View {
     @Bindable var model: LoggerFeatureModel
     @Environment(\.dismiss) private var dismiss
+    let onOpenAccountSettings: () -> Void
 
     var body: some View {
         NavigationStack {
@@ -504,6 +556,30 @@ private struct FrameBrowserView: View {
                     }
                 }
             }
+            .safeAreaInset(edge: .bottom) {
+                if let presentation = model.errorPresentation {
+                    HypoErrorNotice(
+                        presentation,
+                        onRecovery: { recover(from: presentation) },
+                        onDismiss: model.dismissError
+                    )
+                    .padding(HypoTheme.Space.three)
+                    .background(.ultraThinMaterial)
+                }
+            }
+        }
+    }
+
+    private func recover(from presentation: HypoErrorPresentation) {
+        if presentation.recoveryAction == .signIn {
+            dismiss()
+            onOpenAccountSettings()
+        } else if model.editingExposure != nil {
+            Task { await model.saveEditingExposure() }
+        } else if let frameNumber = model.selectedFrameNumber {
+            Task { await model.loadFrameDetails(frameNumber: frameNumber) }
+        } else {
+            Task { await model.loadFrameList() }
         }
     }
 

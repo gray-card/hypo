@@ -386,7 +386,8 @@ import Testing
     #expect(model.readingLog.isEmpty)
     #expect(await log.loadMeterReadingLog().isEmpty)
     #expect(model.confirmationMessage == nil)
-    #expect(model.errorMessage?.contains("recordRejected") == true)
+    #expect(model.errorPresentation?.code == "METER-SAVE")
+    #expect(model.errorMessage?.contains("recordRejected") == false)
 }
 
 @MainActor
@@ -428,7 +429,26 @@ import Testing
     #expect(model.readingLog.isEmpty)
     #expect(await log.loadMeterReadingLog().isEmpty)
     #expect(model.confirmationMessage == nil)
-    #expect(model.errorMessage?.contains("serializationRejected") == true)
+    #expect(model.errorPresentation?.code == "METER-SAVE")
+    #expect(model.errorMessage?.contains("serializationRejected") == false)
+}
+
+@MainActor
+@Test func signedOutMeasurementKeepsTheReadingAndOffersAccountSettings() async throws {
+    let reading = try fixtureReading(ev: 12)
+    let model = MeterFeatureModel(
+        service: FixtureMeterService(reading: reading),
+        readingWriter: SignedOutMeterReadingWriter(),
+        readingLogStore: InMemoryMeterReadingLogStore(),
+        haptics: RecordingHaptics()
+    )
+
+    await model.measure()
+
+    #expect(model.reading == reading)
+    #expect(model.errorPresentation?.code == "METER-SIGN-IN")
+    #expect(model.errorPresentation?.recoveryAction == .signIn)
+    #expect(model.errorPresentation?.message.contains("reading remains on screen") == true)
 }
 
 @MainActor
@@ -445,8 +465,9 @@ import Testing
 
     #expect(model.readingLog.isEmpty)
     #expect(model.confirmationMessage == nil)
-    #expect(model.errorMessage?.contains("queued for sync") == true)
-    #expect(model.errorMessage?.contains("local log") == true)
+    #expect(model.errorPresentation?.code == "METER-SAVE")
+    #expect(model.errorMessage?.contains("queued for sync") == false)
+    #expect(model.errorMessage?.contains("local log") == false)
 }
 
 @MainActor
@@ -673,6 +694,14 @@ private struct FailingMeterReadingWriter: MeterReadingSemanticWriting {
         -> MeterReadingBatchPersistenceReceipt
     {
         throw TestFailure.serializationRejected
+    }
+}
+
+private struct SignedOutMeterReadingWriter: MeterReadingSemanticWriting {
+    func storeMeterReadings(_: MeterReadingBatchWriteRequest) async throws
+        -> MeterReadingBatchPersistenceReceipt
+    {
+        throw MeterFeatureBoundaryError.authenticationRequired
     }
 }
 

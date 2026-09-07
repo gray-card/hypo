@@ -312,6 +312,7 @@ public struct DiscardingMeterCalibrationApplier: MeterCalibrationApplying {
 
 public enum MeterFeatureBoundaryError: Error, Equatable, Sendable {
     case noReading
+    case authenticationRequired
     case persistence(String)
     case statePersistence(String)
     case promotion(String)
@@ -320,6 +321,7 @@ public enum MeterFeatureBoundaryError: Error, Equatable, Sendable {
     public var message: String {
         switch self {
         case .noReading: "Measure or select a held reading first."
+        case .authenticationRequired: "Sign in before saving meter readings."
         case let .persistence(detail): "Could not save the meter reading: \(detail)"
         case let .statePersistence(detail): "Could not save meter history or settings: \(detail)"
         case let .promotion(detail): "Could not send the reading to Logger: \(detail)"

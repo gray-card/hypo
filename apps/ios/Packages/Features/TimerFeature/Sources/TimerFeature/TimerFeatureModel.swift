@@ -18,6 +18,7 @@ public final class TimerFeatureModel {
     public private(set) var manualStageStates: [String: DevelopmentManualStageState]
     public private(set) var finishedAt: Date?
     public private(set) var errorMessage: String?
+    private var presentedError: HypoErrorPresentation?
     public private(set) var isLoadingRecipes = false
     public private(set) var isPersisting = false
 
@@ -32,6 +33,12 @@ public final class TimerFeatureModel {
     private let now: @MainActor @Sendable () -> Date
     private var persistenceTask: Task<TimerFeatureSessionState?, Never>?
     private var hasAttemptedDurableRestore = false
+
+    public var errorPresentation: HypoErrorPresentation? {
+        guard let errorMessage else { return nil }
+        if let presentedError, presentedError.message == errorMessage { return presentedError }
+        return HypoErrorPresenter.presentation(for: .validation(message: errorMessage))
+    }
 
     public init(
         run: DevelopmentTimerRun,
@@ -206,10 +213,10 @@ public final class TimerFeatureModel {
                 queuePersistence()
             }
         } catch let error as TimerFeatureError {
-            errorMessage = error.message
+            present(error)
             haptics.play(.failure)
         } catch {
-            errorMessage = TimerFeatureError.persistence(String(describing: error)).message
+            present(.persistence(String(reflecting: error)), underlying: error)
             haptics.play(.failure)
         }
     }
@@ -307,7 +314,7 @@ public final class TimerFeatureModel {
             }
             errorMessage = nil
         } catch {
-            errorMessage = TimerFeatureError.recipeUnavailable(String(describing: error)).message
+            present(.recipeUnavailable(String(reflecting: error)), underlying: error)
             haptics.play(.failure)
         }
     }
@@ -354,10 +361,13 @@ public final class TimerFeatureModel {
             guard adjusted != selectedRecipe else { return }
             applyReadyRecipeAdjustment(adjusted)
         } catch let error as TimerFeatureError {
-            errorMessage = error.message
+            present(error)
             haptics.play(.warning)
         } catch {
-            errorMessage = TimerFeatureError.invalidRecipe(String(describing: error)).message
+            present(
+                .invalidRecipe("Hypo could not calculate an adjusted time for this recipe."),
+                underlying: error
+            )
             haptics.play(.failure)
         }
     }
@@ -391,10 +401,13 @@ public final class TimerFeatureModel {
                 applyReadyRecipeAdjustment(publishedRecipe)
             }
         } catch let error as TimerFeatureError {
-            errorMessage = error.message
+            present(error)
             haptics.play(.warning)
         } catch {
-            errorMessage = TimerFeatureError.invalidRecipe(String(describing: error)).message
+            present(
+                .invalidRecipe("Hypo could not calculate an estimate for this recipe."),
+                underlying: error
+            )
             haptics.play(.failure)
         }
     }
@@ -416,10 +429,13 @@ public final class TimerFeatureModel {
             guard adjusted != selectedRecipe else { return }
             applyReadyRecipeAdjustment(adjusted)
         } catch let error as TimerFeatureError {
-            errorMessage = error.message
+            present(error)
             haptics.play(.warning)
         } catch {
-            errorMessage = TimerFeatureError.invalidRecipe(String(describing: error)).message
+            present(
+                .invalidRecipe("Hypo could not calculate an estimate for this temperature."),
+                underlying: error
+            )
             haptics.play(.failure)
         }
     }
@@ -681,7 +697,7 @@ public final class TimerFeatureModel {
             reconcilePlatformPresentation()
             if persistUnchanged || changed { queuePersistence() }
         } catch {
-            errorMessage = String(describing: error)
+            present(.persistence(String(reflecting: error)), underlying: error)
             haptics.play(.failure)
         }
     }
@@ -690,7 +706,7 @@ public final class TimerFeatureModel {
         do {
             snapshot = try run.snapshot(at: now())
         } catch {
-            errorMessage = String(describing: error)
+            present(.persistence(String(reflecting: error)), underlying: error)
         }
     }
 
@@ -748,13 +764,13 @@ public final class TimerFeatureModel {
                 return persisted
             } catch let featureError as TimerFeatureError {
                 guard let self else { return nil }
-                self.errorMessage = featureError.message
+                self.present(featureError)
                 self.isPersisting = false
                 self.haptics.play(.failure)
                 return nil
             } catch {
                 guard let self else { return nil }
-                self.errorMessage = TimerFeatureError.persistence(String(describing: error)).message
+                self.present(.persistence(String(reflecting: error)), underlying: error)
                 self.isPersisting = false
                 self.haptics.play(.failure)
                 return nil
@@ -830,6 +846,31 @@ public final class TimerFeatureModel {
             states[id] = state
         }
         return states
+    }
+
+    public func dismissError() {
+        errorMessage = nil
+        presentedError = nil
+    }
+
+    public func retryFailedOperation() async {
+        if errorPresentation?.code == "TIMER-RECIPES" {
+            await loadRecipes()
+        } else {
+            queuePersistence()
+            await flushPersistence()
+        }
+    }
+
+    private func present(_ error: TimerFeatureError, underlying: (any Error)? = nil) {
+        let presentation = error.presentation
+        presentedError = presentation
+        errorMessage = presentation.message
+        if let underlying {
+            HypoErrorReporter.record(underlying, presentation: presentation)
+        } else {
+            HypoErrorReporter.record(error, presentation: presentation)
+        }
     }
 }
 
