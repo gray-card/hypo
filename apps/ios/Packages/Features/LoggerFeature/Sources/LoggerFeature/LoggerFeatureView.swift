@@ -31,7 +31,7 @@ public struct LoggerFeatureView: View {
         .foregroundStyle(HypoTheme.ColorToken.text)
         .navigationTitle("Log")
         .toolbar {
-            ToolbarItem(placement: .automatic) { HypoWordmark() }
+            ToolbarItem(placement: .automatic) { HypoToolbarWordmark() }
         }
         .sheet(isPresented: $isEditingLifecycle) {
             RollLifecycleEditorView(model: model)

@@ -55,7 +55,7 @@ public struct LibraryFeatureView: View {
         .navigationTitle("Library")
         .searchable(text: $model.query, prompt: "Search \(model.category.rawValue.lowercased())")
         .toolbar {
-            ToolbarItem(placement: .automatic) { HypoWordmark() }
+            ToolbarItem(placement: .automatic) { HypoToolbarWordmark() }
         }
         .task { await model.load() }
         .sheet(

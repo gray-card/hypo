@@ -89,6 +89,16 @@ public struct HypoWordmark: View {
     }
 }
 
+/// Hypo's wordmark with the inset required when it appears inside a toolbar group.
+public struct HypoToolbarWordmark: View {
+    public init() {}
+
+    public var body: some View {
+        HypoWordmark()
+            .padding(.leading, HypoTheme.Space.two)
+    }
+}
+
 /// A temporary leaf-feature surface used while feature packages come online.
 public struct FeaturePlaceholder: View {
     @Environment(\.hypoAppearance) private var appearance

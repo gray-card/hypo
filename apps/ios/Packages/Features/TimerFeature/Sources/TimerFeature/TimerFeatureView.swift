@@ -32,7 +32,7 @@ public struct TimerFeatureView: View {
         .navigationTitle("Timer")
         .toolbar {
             ToolbarItem(placement: .automatic) {
-                HypoWordmark()
+                HypoToolbarWordmark()
             }
         }
         .task {

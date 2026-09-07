@@ -35,7 +35,7 @@ public struct MeterFeatureView: View {
         .hypoAppearance(activeAppearance)
         .navigationTitle("Meter")
         .toolbar {
-            ToolbarItem(placement: .automatic) { HypoWordmark() }
+            ToolbarItem(placement: .automatic) { HypoToolbarWordmark() }
             ToolbarItem(placement: .automatic) {
                 Button {
                     model.darkroomMode.toggle()

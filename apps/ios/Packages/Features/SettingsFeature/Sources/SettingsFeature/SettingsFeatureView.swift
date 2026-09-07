@@ -37,7 +37,7 @@ public struct SettingsFeatureView: View {
         .foregroundStyle(HypoTheme.ColorToken.text)
         .navigationTitle("Settings")
         .toolbar {
-            ToolbarItem(placement: .automatic) { HypoWordmark() }
+            ToolbarItem(placement: .automatic) { HypoToolbarWordmark() }
         }
         .task {
             model.restore()
