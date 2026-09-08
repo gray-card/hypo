@@ -14,6 +14,7 @@ import {
 } from "@hypo/sync";
 import { repoClient } from "./pds.js";
 import { canonicalizeAndValidateGrainRecord } from "./grainValidation.js";
+import { normalizeLegacyFormEncoding, validateSchemaRecordForWrite } from "./schemaRuntime.js";
 
 const runtimes = new Map();
 const acknowledgementListeners = new Map();
@@ -142,19 +143,25 @@ function clientDelegate(runtime) {
     create: (input) =>
       client().create({
         ...input,
-        record: canonicalizeAndValidateGrainRecord(input.collection, input.record),
+        record: canonicalizeQueuedRecord(input.collection, input.record, { repairLegacy: true }),
         validate: false,
       }),
     put: (input) =>
       withConflictRecord(input, () =>
         client().put({
           ...input,
-          record: canonicalizeAndValidateGrainRecord(input.collection, input.record),
+          record: canonicalizeQueuedRecord(input.collection, input.record, { repairLegacy: true }),
           validate: false,
         }),
       ),
     delete: (input) => withConflictRecord(input, () => client().delete(input)),
   };
+}
+
+function canonicalizeQueuedRecord(collection, record, { repairLegacy = false } = {}) {
+  const grainRecord = canonicalizeAndValidateGrainRecord(collection, record);
+  const candidate = repairLegacy ? normalizeLegacyFormEncoding(collection, grainRecord) : grainRecord;
+  return validateSchemaRecordForWrite(collection, candidate);
 }
 
 function memoryMarkerKey(repo) {
@@ -272,12 +279,13 @@ function remember(runtime, operation) {
 
 // Queue a create and return its optimistic operation immediately.
 export function enqueue(did, collection, record, options = {}) {
+  const canonical = canonicalizeQueuedRecord(collection, record);
   const runtime = runtimeFor(did);
   const metadata = operationMetadata(runtime, collection, options);
   const operation = {
     ...metadata,
     kind: "create",
-    record: { ...record, $type: record.$type || collection },
+    record: canonical,
     ...(options.rkey ? { rkey: options.rkey } : {}),
     tempUri: `outbox://${collection}/${metadata.id}`,
   };
@@ -285,7 +293,7 @@ export function enqueue(did, collection, record, options = {}) {
   scheduleMutation(runtime, (outbox) =>
     outbox.enqueueCreate({
       collection,
-      record,
+      record: canonical,
       rkey: options.rkey,
       id: metadata.id,
       createdAt: metadata.createdAt,
@@ -310,6 +318,7 @@ export function enqueuePut(did, uriOrInput, record, swapRecord, options = {}) {
   if (!collection || !rkey || typeof input.swapRecord !== "string") {
     throw new TypeError("A put needs an AT URI (or collection/rkey) and swapRecord");
   }
+  const canonical = canonicalizeQueuedRecord(collection, input.record);
   const runtime = runtimeFor(did);
   const metadata = operationMetadata(runtime, collection, input);
   const operation = {
@@ -317,12 +326,19 @@ export function enqueuePut(did, uriOrInput, record, swapRecord, options = {}) {
     kind: "put",
     uri: input.uri,
     rkey,
-    record: { ...input.record, $type: input.record.$type || collection },
+    record: canonical,
     swapRecord: input.swapRecord,
   };
   remember(runtime, operation);
   scheduleMutation(runtime, (outbox) =>
-    outbox.enqueuePut({ ...input, collection, rkey, id: metadata.id, createdAt: metadata.createdAt }),
+    outbox.enqueuePut({
+      ...input,
+      collection,
+      rkey,
+      record: canonical,
+      id: metadata.id,
+      createdAt: metadata.createdAt,
+    }),
   ).catch(() => runtime.operations.delete(operation.id));
   return compatibilityOperation(operation);
 }

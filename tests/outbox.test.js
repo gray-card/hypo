@@ -17,12 +17,13 @@ import { mockAgent } from "./setup.js";
 
 const did = "did:plc:test";
 const EXP = "app.graycard.instance.exposure";
+const WHEN = "2026-01-01T00:00:00.000Z";
 
 beforeEach(() => localStorage.clear());
 
 describe("outbox — offline write queue", () => {
   it("keeps synchronous optimistic reads while persisting through the sync runtime", async () => {
-    const op = enqueue(did, EXP, { frameNumber: 1, createdAt: "2026-01-01" });
+    const op = enqueue(did, EXP, { frameNumber: 1, createdAt: WHEN });
     expect(op.tempUri).toContain("outbox://");
     expect(pendingCount(did)).toBe(1);
     expect(pending(did, EXP)[0].record.frameNumber).toBe(1);
@@ -33,8 +34,8 @@ describe("outbox — offline write queue", () => {
 
   it("flush creates every queued record and drains the queue", async () => {
     const agent = mockAgent();
-    enqueue(did, EXP, { frameNumber: 1, createdAt: "x" });
-    enqueue(did, EXP, { frameNumber: 2, createdAt: "x" });
+    enqueue(did, EXP, { frameNumber: 1, createdAt: WHEN });
+    enqueue(did, EXP, { frameNumber: 2, createdAt: WHEN });
     const res = await flush(agent, did);
     expect(res.sent).toBe(2);
     expect(pendingCount(did)).toBe(0);
@@ -44,7 +45,7 @@ describe("outbox — offline write queue", () => {
   it("keeps everything queued when offline", async () => {
     const agent = mockAgent();
     Object.defineProperty(navigator, "onLine", { value: false, configurable: true });
-    enqueue(did, EXP, { createdAt: "x" });
+    enqueue(did, EXP, { createdAt: WHEN });
     const res = await flush(agent, did);
     expect(res.offline).toBe(true);
     expect(pendingCount(did)).toBe(1);
@@ -56,7 +57,7 @@ describe("outbox — offline write queue", () => {
     const agent = mockAgent();
     Object.defineProperty(navigator, "onLine", { value: true, configurable: true });
     window.dispatchEvent(new Event("offline"));
-    enqueue(did, EXP, { createdAt: "x" });
+    enqueue(did, EXP, { createdAt: WHEN });
 
     const res = await flush(agent, did);
 
@@ -75,9 +76,9 @@ describe("outbox — offline write queue", () => {
       agent.created.push({ collection, record });
       return { data: { uri: "at://x", cid: "c" } };
     };
-    enqueue(did, EXP, { i: 1, createdAt: "x" });
-    enqueue(did, EXP, { i: 2, createdAt: "x" });
-    enqueue(did, EXP, { i: 3, createdAt: "x" });
+    enqueue(did, EXP, { i: 1, createdAt: WHEN });
+    enqueue(did, EXP, { i: 2, createdAt: WHEN });
+    enqueue(did, EXP, { i: 3, createdAt: WHEN });
     const res = await flush(agent, did);
     expect(res.sent).toBe(1);
     expect(pendingCount(did)).toBe(2); // the failed one + the untried third remain
@@ -86,22 +87,63 @@ describe("outbox — offline write queue", () => {
   it("refuses an invalid durable Grain operation during replay", async () => {
     const replayDid = "did:plc:grain-replay";
     const agent = mockAgent();
-    enqueue(replayDid, "social.grain.photo", {
-      photo: {
-        $type: "blob",
-        ref: { $link: "[object Object]" },
-        mimeType: "image/jpeg",
-        size: 892396,
-      },
-      aspectRatio: { width: 3, height: 2 },
-      createdAt: "2026-08-18T12:00:00.000Z",
-    });
+    localStorage.setItem(
+      `hypo:outbox:${replayDid}`,
+      JSON.stringify([
+        {
+          id: "legacy-invalid-photo",
+          collection: "social.grain.photo",
+          record: {
+            photo: {
+              $type: "blob",
+              ref: { $link: "[object Object]" },
+              mimeType: "image/jpeg",
+              size: 892396,
+            },
+            aspectRatio: { width: 3, height: 2 },
+            createdAt: "2026-08-18T12:00:00.000Z",
+          },
+          queuedAt: WHEN,
+        },
+      ]),
+    );
 
     const result = await flush(agent, replayDid);
 
     expect(result).toMatchObject({ failed: 1, sent: 0, left: 1 });
     expect(result.error).toContain("valid CID link");
     expect(agent.created).toHaveLength(0);
+  });
+
+  it("rejects invalid app records before enqueue and repairs a legacy durable integer encoding", async () => {
+    const collection = "app.graycard.instance.chemistry";
+    const chemistry = {
+      type: `at://${did}/app.graycard.catalog.chemistryType/developer`,
+      maxRollsRecommended: "16",
+      createdAt: WHEN,
+    };
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(() => enqueue(did, collection, chemistry)).toThrow("invalid value");
+    consoleError.mockRestore();
+
+    const replayDid = "did:plc:legacy-chemistry-queue";
+    localStorage.setItem(
+      `hypo:outbox:${replayDid}`,
+      JSON.stringify([
+        {
+          id: "legacy-chemistry",
+          collection,
+          record: chemistry,
+          queuedAt: WHEN,
+        },
+      ]),
+    );
+    const agent = mockAgent();
+    expect(await flush(agent, replayDid)).toMatchObject({ sent: 1, left: 0 });
+    expect(agent.created[0].record).toMatchObject({
+      $type: collection,
+      maxRollsRecommended: 16,
+    });
   });
 
   it("migrates and clears a legacy localStorage queue before listing it", async () => {
@@ -134,7 +176,7 @@ describe("outbox — offline write queue", () => {
       writes.push({ kind: "delete", ...input });
       return { data: {} };
     };
-    enqueuePut(did, uri, { frameNumber: 2 }, "cid-old");
+    enqueuePut(did, uri, { frameNumber: 2, createdAt: WHEN }, "cid-old");
     enqueueDelete(did, uri, "cid-new");
 
     expect(await flush(agent, did)).toMatchObject({ sent: 2, left: 0 });
@@ -153,7 +195,7 @@ describe("outbox — offline write queue", () => {
     agent.com.atproto.repo.putRecord = async () => {
       throw Object.assign(new Error("record changed remotely"), { status: 400, error: "InvalidSwap" });
     };
-    const operation = enqueuePut(did, uri, { frameNumber: 2 }, "cid-stale");
+    const operation = enqueuePut(did, uri, { frameNumber: 2, createdAt: WHEN }, "cid-stale");
 
     expect(await flush(agent, did)).toMatchObject({ conflicts: 1, left: 1 });
     expect(await conflicts(did)).toEqual([
@@ -177,7 +219,7 @@ describe("outbox — offline write queue", () => {
     const onFlushed = vi.fn();
     Object.defineProperty(navigator, "onLine", { value: false, configurable: true });
     const dispose = installAutoFlush(agent, did, onFlushed);
-    enqueue(did, EXP, { frameNumber: 9, createdAt: "x" });
+    enqueue(did, EXP, { frameNumber: 9, createdAt: WHEN });
     await list(did);
 
     Object.defineProperty(navigator, "onLine", { value: true, configurable: true });
@@ -198,14 +240,14 @@ describe("outbox — offline write queue", () => {
     await Promise.resolve();
     await Promise.resolve();
 
-    enqueue(did, EXP, { frameNumber: 1, createdAt: "online" });
+    enqueue(did, EXP, { frameNumber: 1, createdAt: WHEN });
     await vi.waitFor(() => expect(agent.created).toHaveLength(1));
     await vi.waitFor(() => expect(acknowledged).toHaveBeenCalledTimes(1));
     expect(onFlushed).not.toHaveBeenCalled();
 
     Object.defineProperty(navigator, "onLine", { value: false, configurable: true });
     window.dispatchEvent(new Event("offline"));
-    enqueue(did, EXP, { frameNumber: 2, createdAt: "offline" });
+    enqueue(did, EXP, { frameNumber: 2, createdAt: WHEN });
     await list(did);
     Object.defineProperty(navigator, "onLine", { value: true, configurable: true });
     window.dispatchEvent(new Event("online"));

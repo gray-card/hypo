@@ -3,6 +3,7 @@ import { GEAR_CATALOG_FORM_META, GEAR_INSTANCE_FORM_META } from "@hypo/lexicon";
 import {
   DATE_ONLY,
   ENUM_SELECT,
+  INTEGER_FIELDS,
   INSTANCE_ENUM_OPTIONS,
   INSTANCE_FIELDS,
   STRING_LIST,
@@ -31,5 +32,8 @@ describe("gear form metadata compatibility projections", () => {
     expect(INSTANCE_ENUM_OPTIONS.chemistry.status).toEqual(["unopened", "active", "exhausted", "discarded"]);
     expect(INSTANCE_ENUM_OPTIONS.filmRoll.developmentLocation).toEqual(["home", "lab", "other"]);
     expect([...STRING_LIST]).toEqual(["alternativeNames"]);
+    expect([...INTEGER_FIELDS]).toEqual(
+      expect.arrayContaining(["maxRollsRecommended", "rollsProcessed", "sessionsUsed", "quantity", "shotAtIso"]),
+    );
   });
 });

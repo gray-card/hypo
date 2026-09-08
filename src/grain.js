@@ -17,7 +17,7 @@ import { repoClient } from "./pds.js";
 import * as outbox from "./outbox.js";
 import { normalizeBlobRef, normalizeRecordBlobRefs } from "@hypo/pds";
 import { RecordStore, openRepositoryRecordCache } from "@hypo/store";
-import { decodeSchemaRecord } from "./schemaRuntime.js";
+import { decodeSchemaRecords } from "./schemaRuntime.js";
 import { canonicalizeAndValidateGrainRecord } from "./grainValidation.js";
 
 export const COLLECTIONS = {
@@ -96,7 +96,7 @@ export async function listRecords(agent, repo, collection, { refresh = false } =
         if (!records.length && navigator.onLine !== false && error?.name !== "NetworkError") throw error;
       }
     }
-    records = await Promise.all(records.map((record) => decodeSchemaRecord(record, collection)));
+    records = await decodeSchemaRecords(records, collection);
     store.replaceRemote(collection, records);
     hydrated.add(collection);
   }

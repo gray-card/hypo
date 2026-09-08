@@ -83,19 +83,21 @@ describe("record-cache read policy", () => {
     const collection = NS.instance.camera;
     const firstUri = `at://${did}/${collection}/first`;
     const removedUri = `at://${did}/${collection}/removed`;
+    const type = `at://${did}/${NS.catalog.cameraType}/camera`;
+    const createdAt = "2026-08-12T00:00:00.000Z";
     const agent = statefulAgent(did, collection, [
-      { uri: firstUri, cid: "cid-first", value: { nickname: "remote first" } },
-      { uri: removedUri, cid: "cid-removed", value: { nickname: "remote removed" } },
+      { uri: firstUri, cid: "cid-first", value: { nickname: "remote first", type, createdAt } },
+      { uri: removedUri, cid: "cid-removed", value: { nickname: "remote removed", type, createdAt } },
     ]);
     await listRecords(agent, did, collection);
     setOnline(false);
-    await saveRecord(agent, did, collection, { nickname: "pending create" }, null);
+    await saveRecord(agent, did, collection, { nickname: "pending create", type, createdAt }, null);
     await saveRecord(
       agent,
       did,
       collection,
-      { nickname: "pending put" },
-      { uri: firstUri, cid: "cid-first", rkey: "first", value: { nickname: "remote first" } },
+      { nickname: "pending put", type, createdAt },
+      { uri: firstUri, cid: "cid-first", rkey: "first", value: { nickname: "remote first", type, createdAt } },
     );
     await deleteRecord(agent, did, removedUri);
 
