@@ -74,6 +74,9 @@ export const ENUM_LIST = new Set(
 export const STRING_LIST = new Set(
   ALL_FORM_FIELDS.filter((field) => field.control === "string-list").map((field) => field.key),
 );
+export const INTEGER_FIELDS = new Set(
+  ALL_FORM_FIELDS.filter((field) => field.control === "integer").map((field) => field.key),
+);
 
 export const GEAR_TABS: Readonly<Record<string, readonly string[]>> = {
   cameras: ["camera"],

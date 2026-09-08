@@ -23,16 +23,24 @@ describe("all-feature offline writes", () => {
       agent,
       did,
       NS.instance.camera,
-      { type: "at://catalog/camera", nickname: "field body", createdAt: "2026-08-11T12:00:00Z" },
+      {
+        type: "at://did:plc:catalog/app.graycard.catalog.cameraType/camera",
+        nickname: "field body",
+        createdAt: "2026-08-11T12:00:00Z",
+      },
       null,
     );
     const existing = {
       uri: `at://${did}/${NS.instance.camera}/camera-a`,
       rkey: "camera-a",
       cid: "cid-old",
-      value: { nickname: "old" },
+      value: {
+        type: "at://did:plc:catalog/app.graycard.catalog.cameraType/camera",
+        nickname: "old",
+        createdAt: "2026-08-11T12:00:00Z",
+      },
     };
-    await saveRecord(agent, did, NS.instance.camera, { nickname: "edited" }, existing);
+    await saveRecord(agent, did, NS.instance.camera, { ...existing.value, nickname: "edited" }, existing);
 
     expect(created).toMatch(/^outbox:/);
     expect(agent.created).toHaveLength(0);
@@ -55,7 +63,11 @@ describe("all-feature offline writes", () => {
       uri: `at://${did}/${NS.instance.filmStockpile}/reserve-a`,
       rkey: "reserve-a",
       cid: "cid-reserve",
-      value: { stock: "at://catalog/film", quantity: 3, createdAt: "2026-08-11T12:00:00Z" },
+      value: {
+        stock: "at://did:plc:catalog/app.graycard.catalog.filmStock/film",
+        quantity: 3,
+        createdAt: "2026-08-11T12:00:00Z",
+      },
     };
 
     const rollUri = await splitRollFromStockpile(agent, did, stockpile, { label: "Roll 3" });

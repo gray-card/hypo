@@ -2,6 +2,19 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.3.4] - 2026-09-08
+
+### Fixed
+
+- Serialize every lexicon-declared integer field in the generic catalog and
+  equipment forms as a JSON integer, including chemistry capacity.
+- Validate every `app.graycard.*` record both when it enters the offline outbox
+  and when a durable operation is replayed, before writing it to the PDS.
+- Read integer strings created by the affected chemistry form as their
+  canonical integer values and repair queued copies before they are sent.
+- Keep the rest of a setup available when one saved record cannot be decoded,
+  and replace internal schema errors with an actionable message.
+
 ## [1.3.3] - 2026-08-18
 
 ### Changed

@@ -1,22 +1,6 @@
 import { dateField, el, field, inputField } from "@hypo/ui";
-import { DATE_ONLY, ENUM_LIST, ENUM_SELECT, STRING_LIST, TYPE_IDENTITY } from "./gear-config.ts";
+import { DATE_ONLY, ENUM_LIST, ENUM_SELECT, INTEGER_FIELDS, STRING_LIST, TYPE_IDENTITY } from "./gear-config.ts";
 import type { GearInput, GearInputMap, GearServices, GearValue } from "./gear-types.ts";
-
-const INT_FORM_KEYS = new Set([
-  "rollsProcessed",
-  "sessionsUsed",
-  "exposuresTotal",
-  "exposuresUsed",
-  "frameIndex",
-  "iso",
-  "bitDepth",
-  "quantity",
-  "shotAtIso",
-  "threadDiameterMm",
-  "threadSize",
-  "frameNumber",
-  "focalLength",
-]);
 
 export function readGearFormFields(
   inputs: GearInputMap,
@@ -51,9 +35,12 @@ export function readGearFormFields(
         .map((value) => value.trim())
         .filter(Boolean);
       if (values.length) record[key] = [...new Set(values)];
-    } else if (INT_FORM_KEYS.has(key)) {
-      const value = Number.parseInt(text, 10);
-      if (Number.isFinite(value)) record[key] = value;
+    } else if (INTEGER_FIELDS.has(key)) {
+      const value = Number(text);
+      if (!Number.isSafeInteger(value) || value < 0) {
+        throw new Error("Use a non-negative whole number for counts, ISO values, and dimensions.");
+      }
+      record[key] = value;
     } else if (key.endsWith("At")) record[key] = new Date(text).toISOString();
     else record[key] = text;
   }
@@ -180,6 +167,17 @@ export function gearFieldControl(
       ]),
       input: input as GearInput,
     };
+  }
+  if (INTEGER_FIELDS.has(key)) {
+    const input = el("input", {
+      type: "number",
+      min: "0",
+      step: "1",
+      inputmode: "numeric",
+      value,
+      "data-key": key,
+    });
+    return { node: field(label, input), input };
   }
   if (key.endsWith("At")) {
     const cleanLabel = label.replace(/\s*\(ISO 8601\)/i, "");

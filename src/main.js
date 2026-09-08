@@ -68,11 +68,16 @@ function beginFeatureLoad(view, target, message) {
 function showFeatureLoadError(target, error) {
   const host = $(target);
   if (!host) return;
+  console.error("Hypo could not load a view", error);
   const retry = el("button", { type: "button", onclick: () => router.refresh() }, "Try again");
   host.replaceChildren(
     el("div", { class: "empty-state" }, [
       el("div", { class: "empty-title" }, "This view couldn't load"),
-      el("div", { class: "empty-hint muted small" }, error?.message || "The feature chunk was unavailable."),
+      el(
+        "div",
+        { class: "empty-hint muted small" },
+        "Your records are still stored in your PDS. Check your connection and try again, or use Reload to fetch a fresh copy.",
+      ),
       retry,
     ]),
   );
@@ -258,6 +263,16 @@ document.addEventListener("hypo:complement-conflict", async (event) => {
   } catch (error) {
     toast(`Schema conflict tools couldn't load: ${error?.message || error}`, "err");
   }
+});
+
+document.addEventListener("hypo:schema-records-skipped", (event) => {
+  const count = Number(event.detail?.count) || 1;
+  const noun = count === 1 ? "record has" : "records have";
+  toast(
+    `${count} library ${noun} an unsupported saved value, so Hypo left ${count === 1 ? "it" : "them"} out. The rest of your setup is available. Use Reload after the record is repaired.`,
+    "err",
+    12000,
+  );
 });
 
 const { openSettings, openVisionConnect } = createSettingsActions({

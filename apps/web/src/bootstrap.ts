@@ -101,7 +101,6 @@ export interface AppBootstrapServices {
 
 const ONBOARDING_ROUTES = new Set(["home", "library", "roll", "gear", "timer", "meter"]);
 
-const messageOf = (error: unknown): string => (error instanceof Error ? error.message || String(error) : String(error));
 const logDetail = (error: unknown): unknown =>
   error && typeof error === "object" && "message" in error ? (error as { message?: unknown }).message || error : error;
 
@@ -187,8 +186,9 @@ export function createAppBootstrap(services: AppBootstrapServices) {
       await handler(route);
     } catch (error) {
       if (revision !== routeRenderRevision) return;
+      logger.warn("Route rendering failed:", logDetail(error));
       services.showFeatureLoadError(routeErrorTarget(route), error);
-      services.toast(`View couldn't load: ${messageOf(error)}`, "err");
+      services.toast("Hypo couldn't load this view. Try again or use Reload to fetch a fresh copy.", "err");
     }
   };
 

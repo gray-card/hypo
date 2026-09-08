@@ -34,14 +34,15 @@ describe("splitRollFromStockpile", () => {
   it("creates a loaded roll and decrements the reserve", async () => {
     const agent = mockAgent();
     const sp = stockpile();
-    const rollUri = await splitRollFromStockpile(agent, did, sp, { camera: "at://cam", label: "Roll 12" });
+    const camera = "at://did:plc:test/app.graycard.instance.camera/cam";
+    const rollUri = await splitRollFromStockpile(agent, did, sp, { camera, label: "Roll 12" });
 
     const created = agent.created.find((c) => c.collection === NS.instance.filmRoll);
     expect(created.record).toMatchObject({
       stock: sp.value.stock,
       stockpile: sp.uri,
       status: "loaded",
-      camera: "at://cam",
+      camera,
       label: "Roll 12",
       format: "35mm",
     });
@@ -71,7 +72,9 @@ describe("splitRollFromStockpile", () => {
   it("carries batch, expiry and storage from the reserve onto the roll", async () => {
     const agent = mockAgent();
     const sp = fullStockpile();
-    await splitRollFromStockpile(agent, did, sp, { camera: "at://cam" });
+    await splitRollFromStockpile(agent, did, sp, {
+      camera: "at://did:plc:test/app.graycard.instance.camera/cam",
+    });
     const created = agent.created.find((c) => c.collection === NS.instance.filmRoll);
     expect(created.record).toMatchObject({
       format: "120",

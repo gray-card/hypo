@@ -252,6 +252,21 @@ describe("web bootstrap boundary", () => {
     expect(harness.services.toast).not.toHaveBeenCalled();
   });
 
+  it("reports route failures without exposing internal record errors", async () => {
+    const harness = bootstrapHarness({ session: { agent: { kind: "agent" }, did: "did:plc:alice" } });
+    const internal = "Record in app.graycard.instance.chemistry does not match a supported schema version";
+    harness.services.goSection.mockRejectedValueOnce(new Error(internal));
+
+    await harness.bootstrap.renderRoute({ name: "home", params: {} });
+
+    expect(harness.services.showFeatureLoadError).toHaveBeenCalledWith("#library-body", expect.any(Error));
+    expect(harness.services.toast).toHaveBeenCalledWith(
+      "Hypo couldn't load this view. Try again or use Reload to fetch a fresh copy.",
+      "err",
+    );
+    expect(harness.services.toast.mock.calls.flat().join(" ")).not.toContain(internal);
+  });
+
   it("still renders a public-profile deep link when session startup fails", async () => {
     const route = { name: "profile", params: { handle: "alice.test" } };
     const harness = bootstrapHarness({ route });
