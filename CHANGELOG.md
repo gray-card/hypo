@@ -2,6 +2,30 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.4.0] - 2026-09-20
+
+### Added
+
+- Add a routable Sessions workspace with searchable processing and capture
+  history, reusable development and digitization entry, and human-readable
+  record details.
+- Record field- and relationship-level provenance, including privacy-safe
+  references to supporting evidence.
+
+### Changed
+
+- Give capture, development, digitization, printing, and rendering sessions
+  independent start and finish controls. Partial historical records may retain
+  only the endpoint that is known.
+
+### Fixed
+
+- Show interval chronology errors beside the finish field without clearing the
+  user's entries, and reject reversed spans at offline-write and bundle-import
+  boundaries.
+- Stop manufacturing zero-duration spans for finish-only lab work, workflows,
+  or single-frame imports.
+
 ## [1.3.3] - 2026-08-18
 
 ### Changed
@@ -266,3 +290,5 @@ Notable changes to Hypo are recorded here.
 [1.3.0]: https://github.com/gray-card/hypo/compare/v1.2.0...v1.3.0
 [1.3.1]: https://github.com/gray-card/hypo/compare/v1.3.0...v1.3.1
 [1.3.2]: https://github.com/gray-card/hypo/compare/v1.3.1...v1.3.2
+[1.3.3]: https://github.com/gray-card/hypo/compare/v1.3.2...v1.3.3
+[1.4.0]: https://github.com/gray-card/hypo/compare/v1.3.3...v1.4.0
