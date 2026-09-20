@@ -5,7 +5,7 @@
 // backgrounding, screen-lock, or a refresh never causes drift — and an in-progress
 // run is mirrored to localStorage for crash/refresh recovery.
 
-import { el, toast } from "./dom.js";
+import { checkList, el, toast } from "./dom.js";
 import { bindValueText } from "@hypo/ui";
 import { NS, saveRecord, instanceLabel } from "../graycard.js";
 import * as outbox from "../outbox.js";
@@ -346,13 +346,21 @@ export function openDevTimer(ctx, opts = {}) {
     });
     const filmList = el("div", { class: "devtimer-list" });
     const availableRolls = (ctx.store?.instance?.filmRoll || []).filter((roll) => roll.value.status !== "archived");
-    const rollSel = el("select", { class: "date-input", "aria-label": "Roll to develop" }, [
-      el("option", { value: "" }, "No roll selected"),
-      ...availableRolls.map((roll) =>
-        el("option", { value: roll.uri }, instanceLabel("filmRoll", roll.value, ctx.store)),
-      ),
-    ]);
-    rollSel.value = sel.rolls[0] || "";
+    const rollList = checkList(
+      availableRolls.map((roll) => ({
+        value: roll.uri,
+        label: instanceLabel("filmRoll", roll.value, ctx.store),
+      })),
+      {
+        selected: sel.rolls,
+        className: "check-list devtimer-roll-list",
+      },
+    );
+    const batchSummary = el("p", {
+      class: "muted small devtimer-batch-summary",
+      role: "status",
+      "aria-live": "polite",
+    });
     const stockForRoll = (uri) => {
       const roll = availableRolls.find((candidate) => candidate.uri === uri);
       return (ctx.store?.catalog?.filmStock || []).find((stock) => stock.uri === roll?.value.stock)?.value || null;
@@ -371,24 +379,32 @@ export function openDevTimer(ctx, opts = {}) {
     const updateObservation = () => {
       sel.observation = deriveExposureObservation({ store: ctx.store, rollUris: sel.rolls, meterReadings });
     };
-    const selectRoll = (uri) => {
-      sel.rolls = uri ? [uri] : [];
-      rollSel.value = uri || "";
+    const selectRolls = (uris) => {
+      const previousPrimary = sel.rolls[0] || "";
+      sel.rolls = [...new Set(uris.filter(Boolean))];
       updateObservation();
-      const film = filmForRoll(uri);
-      sel.recipe = null;
-      if (film) {
-        sel.film = film;
-        filmSearch.value = `${film.make} ${film.name}`;
-      } else if (uri) {
-        sel.film = null;
-        filmSearch.value = "";
+      const primary = sel.rolls[0] || "";
+      if (primary !== previousPrimary || !sel.film) {
+        const film = filmForRoll(primary);
+        sel.recipe = null;
+        if (film) {
+          sel.film = film;
+          filmSearch.value = `${film.make} ${film.name}`;
+        } else if (primary) {
+          sel.film = null;
+          filmSearch.value = "";
+        }
       }
+      batchSummary.textContent = sel.rolls.length
+        ? `${sel.rolls.length} roll${sel.rolls.length === 1 ? "" : "s"} will share this timer, tank, and chemistry record.`
+        : "No tracked rolls selected. You can still time an untracked development.";
     };
-    rollSel.addEventListener("change", () => {
-      selectRoll(rollSel.value);
-      renderStage();
-    });
+    for (const input of rollList.inputs) {
+      input.addEventListener("change", () => {
+        selectRolls(rollList.getSelected());
+        renderStage();
+      });
+    }
     const renderFilms = () => {
       filmList.replaceChildren(
         ...searchFilms(filmSearch.value, 30).map((f) =>
@@ -415,7 +431,13 @@ export function openDevTimer(ctx, opts = {}) {
     function renderStage() {
       stage.replaceChildren();
       if (availableRolls.length) {
-        stage.append(el("label", { class: "field" }, [el("span", {}, "Roll (optional)"), rollSel]));
+        stage.append(
+          el("section", { class: "devtimer-batch", "aria-labelledby": "devtimer-batch-heading" }, [
+            el("h4", { id: "devtimer-batch-heading", class: "stat-h" }, "Rolls in this batch (optional)"),
+            batchSummary,
+            rollList.node,
+          ]),
+        );
       }
       stage.append(el("label", { class: "field" }, [el("span", {}, "Film"), filmSearch]), filmList);
       renderFilms();
@@ -732,8 +754,7 @@ export function openDevTimer(ctx, opts = {}) {
       );
       recompute();
     }
-    if (rollSel.value) selectRoll(rollSel.value);
-    else updateObservation();
+    selectRolls(sel.rolls);
     renderStage();
   }
 

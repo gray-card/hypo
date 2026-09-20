@@ -205,8 +205,8 @@ test("rolls show processing history and open preselected completed-session forms
     .toBe(630);
 
   await rollDialog.getByRole("button", { name: "Log development" }).click();
-  const developmentDialog = page.getByRole("dialog", { name: "Log completed development" });
-  await expect(developmentDialog.getByText(/same session record as the timer/)).toBeVisible();
+  const developmentDialog = page.getByRole("dialog", { name: "Log development batch" });
+  await expect(developmentDialog.getByText(/same tank, process, and chemistry/)).toBeVisible();
   await expect(developmentDialog.getByRole("checkbox", { name: /Processed fixture roll/ })).toBeChecked();
   await expect(developmentDialog.getByLabel("Actual minutes").first()).toBeVisible();
   await developmentDialog.getByText("Dates, targets, agitation, and bath details").click();

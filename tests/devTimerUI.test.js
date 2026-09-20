@@ -56,6 +56,63 @@ describe("development recipe progressive disclosure", () => {
 });
 
 describe("development timer logging", () => {
+  it("logs several selected rolls as one timer batch", async () => {
+    const agent = mockAgent();
+    const did = "did:plc:timer-batch";
+    const recipe = allRecipes()[0];
+    const stock = `at://${did}/app.graycard.catalog.filmStock/stock`;
+    const firstRoll = `at://${did}/app.graycard.instance.filmRoll/one`;
+    const secondRoll = `at://${did}/app.graycard.instance.filmRoll/two`;
+    const store = {
+      catalog: {
+        filmStock: [
+          {
+            uri: stock,
+            value: { brand: recipe.filmMake, name: recipe.filmName, iso: recipe.ei || 400 },
+          },
+        ],
+        devRecipe: [],
+      },
+      instance: {
+        chemistry: [],
+        filmRoll: [
+          {
+            uri: firstRoll,
+            cid: "cid-roll-one",
+            rkey: "one",
+            value: { label: "Tank roll one", stock, status: "exposed" },
+          },
+          {
+            uri: secondRoll,
+            cid: "cid-roll-two",
+            rkey: "two",
+            value: { label: "Tank roll two", stock, status: "exposed" },
+          },
+        ],
+      },
+    };
+    const ctx = { agent, did, store };
+    initLibrary(ctx);
+    Object.defineProperty(navigator, "onLine", { configurable: true, value: false });
+    try {
+      openDevTimer(ctx, { allowResume: false, visualOnly: true });
+      const checkboxes = document.querySelectorAll('.devtimer-roll-list input[type="checkbox"]');
+      checkboxes[0].click();
+      checkboxes[1].click();
+
+      expect(document.querySelector(".devtimer-batch-summary").textContent).toContain("2 rolls will share");
+      document.querySelectorAll(".devtimer-list")[1].querySelector(".devtimer-opt").click();
+      [...document.querySelectorAll("button")].find((button) => button.textContent === "Start development").click();
+      [...document.querySelectorAll("button")].find((button) => button.textContent === "Finish & log").click();
+
+      await vi.waitFor(() => expect(pending(did, NS.process.developSession)).toHaveLength(1));
+      expect(pending(did, NS.process.developSession)[0].record.filmRolls).toEqual([firstRoll, secondRoll]);
+      await vi.waitFor(() => expect(pending(did, NS.instance.filmRoll)).toHaveLength(2));
+    } finally {
+      Object.defineProperty(navigator, "onLine", { configurable: true, value: true });
+    }
+  });
+
   it("persists recipe/source refs and published-vs-actual conditions", async () => {
     const agent = mockAgent();
     const recipe = allRecipes()[0];

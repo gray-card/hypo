@@ -4,6 +4,7 @@ import {
   openDevelopmentSession,
   openLabDevelopment,
   openManualDevelopment,
+  renderDarkroomActivity,
   saveCompletedDevelopmentRecords,
 } from "../apps/web/src/views/library/maintenance-darkroom.ts";
 import {
@@ -389,6 +390,48 @@ describe("extracted library activity views", () => {
     expect(advanceWorkflowStage).toHaveBeenCalledWith("develop", [roll.uri], "at://saved");
   });
 
+  it("logs several rolls as one development batch and one chemistry session", async () => {
+    const chemistry = item("at://chemistry", {
+      nickname: "XTOL stock",
+      roles: ["film-developer"],
+      rollsProcessed: 3,
+      sessionsUsed: 2,
+    });
+    const firstRoll = item("at://roll/one", { label: "Roll 1", status: "exposed" });
+    const secondRoll = item("at://roll/two", { label: "Roll 2", status: "exposed" });
+    const store = emptyStore({
+      instance: { chemistry: [chemistry], filmRoll: [firstRoll, secondRoll] },
+      byUri: new Map([[chemistry.uri, { layer: "instance", kind: "chemistry", item: chemistry }]]),
+    });
+    const advanceWorkflowStage = vi.fn(async () => 2);
+    const services = createServices(store, { advanceWorkflowStage });
+
+    openManualDevelopment(undefined, services);
+    const modal = document.querySelector(".modal");
+    modal.querySelector(`input[value="${firstRoll.uri}"]`).click();
+    modal.querySelector(`input[value="${secondRoll.uri}"]`).click();
+    modal.querySelector('[aria-label="Primary chemistry for stage"]').value = chemistry.uri;
+
+    expect(modal.querySelector('[role="status"]').textContent).toContain("2 rolls will share");
+    modal.querySelector(".modal-actions button:not(.ghost)").click();
+
+    await vi.waitFor(() => expect(services.saveRecord).toHaveBeenCalledTimes(4));
+    expect(services.saveRecord.mock.calls[0]).toEqual([
+      "develop-session",
+      expect.objectContaining({
+        filmRolls: [firstRoll.uri, secondRoll.uri],
+        developmentLocation: "home",
+      }),
+      null,
+    ]);
+    expect(services.saveRecord).toHaveBeenCalledWith(
+      "chemistry",
+      expect.objectContaining({ rollsProcessed: 5, sessionsUsed: 3 }),
+      chemistry,
+    );
+    expect(advanceWorkflowStage).toHaveBeenCalledWith("develop", [firstRoll.uri, secondRoll.uri], "at://saved");
+  });
+
   it("edits a legacy step-less home development in the full process editor", () => {
     const chemistry = item("at://chemistry", { nickname: "D-76", roles: ["film-developer"] });
     const roll = item("at://roll", { label: "Roll 1", status: "developed" });
@@ -496,6 +539,22 @@ describe("extracted library activity views", () => {
       expect.objectContaining({ rollsProcessed: 5, sessionsUsed: 5, lastUsedAt: replacement.finishedAt }),
       newDeveloper,
     );
+  });
+
+  it("identifies multi-roll sessions as batches in darkroom activity", () => {
+    const development = item("at://development/batch", {
+      process: "bw",
+      filmRolls: ["at://roll/one", "at://roll/two"],
+      finishedAt: "2026-01-02T10:00:00Z",
+      createdAt: "2026-01-02T10:00:00Z",
+    });
+    const store = emptyStore({ developSessions: [development] });
+    const body = document.createElement("main");
+
+    renderDarkroomActivity(body, createServices(store));
+
+    expect(body.textContent).toContain("Development batch");
+    expect(body.textContent).toContain("2 rolls · BW");
   });
 
   it("writes schema-shaped scan sessions", async () => {
