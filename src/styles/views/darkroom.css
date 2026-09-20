@@ -835,9 +835,9 @@
   }
   .primary-nav {
     display: grid;
-    grid-template-columns: repeat(4, minmax(78px, 1fr));
+    grid-template-columns: repeat(5, minmax(70px, 1fr));
     flex: 1 1 430px;
-    max-width: 470px;
+    max-width: 580px;
     gap: 2px;
     margin-left: 8px;
     padding: 3px;
@@ -864,7 +864,7 @@
 
   @media (max-width: 900px) {
     .primary-nav {
-      grid-template-columns: repeat(4, minmax(70px, 1fr));
+      grid-template-columns: repeat(5, minmax(62px, 1fr));
       margin-left: 0;
     }
     .primary-nav .nav-tab {

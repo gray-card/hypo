@@ -7,7 +7,6 @@ import {
   type WorkflowStep,
   type WorkflowTemplateConnection,
 } from "@hypo/domain";
-import { renderDarkroomActivity } from "./maintenance-darkroom.ts";
 import { createCatalogSelect, createChemistrySelect, createInstanceSelect } from "./maintenance-selectors.ts";
 import type { ActivityServices, LibraryRecord, LibraryValue } from "./maintenance-types.ts";
 import { renderRollBoard } from "./workflows-board.ts";
@@ -762,7 +761,6 @@ export function renderWorkflowsView(body: HTMLElement, services: ActivityService
     );
   }
   renderRollBoard(body, services);
-  renderDarkroomActivity(body, services, render);
 }
 
 export function renderRulesView(body: HTMLElement, services: ActivityServices): void {

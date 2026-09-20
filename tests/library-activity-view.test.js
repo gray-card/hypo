@@ -511,7 +511,7 @@ describe("extracted library activity views", () => {
         label.querySelector("input,select"),
       ]),
     );
-    fields.Roll.value = roll.uri;
+    modal.querySelector('.scan-roll-list input[type="checkbox"]').click();
     fields.Scanner.value = scanner.uri;
     fields.Software.value = "VueScan";
     fields["Resolution (dpi)"].value = "3200";

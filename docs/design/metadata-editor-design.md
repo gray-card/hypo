@@ -37,8 +37,9 @@ required whenever Hypo supplies a derived value**. [nngroup.com/articles/eas-fra
 
 **Model**: adopt a PROV-style stamp per field: the value `wasDerivedFrom` a source,
 `wasAttributedTo` an engine/human, with a confidence. [w3.org/TR/prov-o] PROV supports attribute-level
-granularity, which is exactly Hypo's need. The lexicons already carry `app.graycard.defs#provenance`
-and `#fieldProvenance`: Hypo renders and writes those; **no schema change needed** for the core model.
+granularity, which is exactly Hypo's need. The lexicons carry `app.graycard.defs#provenance`
+and `#fieldProvenance`; records that can combine sources expose an optional `fieldProvenance[]`. The
+annotation binds to a value digest and identifies relationship members by stable value rather than array position.
 
 **UI**: a compact **source + confidence chip** next to the field (source ∈ `EXIF | bundle | lens-DB |
 film-DB | edit-graph | authority | manual`), styled by tier (§1), with confirm/override. Visual precedent:
@@ -192,8 +193,9 @@ consistency goal in the desktop's film QoL plan.
 
 Mostly the lexicons already support the design:
 
-- **Provenance**: `defs#provenance` / `#fieldProvenance` already exist → the field-chip model (§2)
-  needs no change.
+- **Provenance**: `defs#provenance` / `#fieldProvenance` and optional record-level
+  `fieldProvenance[]` arrays support the field-chip model (§2), including stable relationship members,
+  value-digest staleness checks, and privacy-preserving evidence references.
 - **External links**: `catalogLinks.externalIds` + `forkedFrom` already exist → reconciliation (§4)
   and forking (§6) have their slots.
 - **Type/instance**: instance→type AT-URI refs already model inheritance (§5).

@@ -186,10 +186,11 @@ export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
   }
 
   const maintenanceBySubject = new Map();
-  for (const r of maintenanceRecs) {
+  const maintenanceSessions = mapRecords(maintenanceRecs);
+  for (const r of maintenanceSessions) {
     if (!r.value.subject) continue;
     const list = maintenanceBySubject.get(r.value.subject) || [];
-    list.push({ uri: r.uri, value: r.value, schemaRuntime: r.schemaRuntime });
+    list.push(r);
     maintenanceBySubject.set(r.value.subject, list);
   }
 
@@ -217,6 +218,7 @@ export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
     ...editSessions,
     ...printSessions,
     ...renderSessions,
+    ...maintenanceSessions,
   ]) {
     byUri.set(item.uri, { layer: "other", item });
   }
@@ -240,6 +242,7 @@ export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
     editSessions,
     printSessions,
     renderSessions,
+    maintenanceSessions,
     processSessions: [...developSessions, ...digitizeSessions, ...editSessions, ...printSessions, ...renderSessions],
   };
 }

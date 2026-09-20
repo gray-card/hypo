@@ -13,13 +13,14 @@ Fixed-point number scaled by 1,000,000. Used for values projected into a photo's
 
 - **Source:** `lexicons/app/graycard/defs.json`
 - **Lexicon version:** `1`
-- **Definitions:** 39
+- **Definitions:** 40
 
 ## Resolved references
 
 | Reference                                               | Resolved kind |
 | ------------------------------------------------------- | ------------- |
 | [`app.graycard.defs#assetRef`](#assetref)               | `object`      |
+| [`app.graycard.defs#evidenceRef`](#evidenceref)         | `object`      |
 | [`app.graycard.defs#externalId`](#externalid)           | `object`      |
 | [`app.graycard.defs#measure`](#measure)                 | `object`      |
 | [`app.graycard.defs#placemark`](#placemark)             | `object`      |
@@ -175,19 +176,28 @@ How and when a value was asserted.
 
 Referenced object fields are expanded once. A linked type name opens the definition that supplies the field.
 
-| Field        | Required | Type / resolved ref   | Constraints     | Known values                                                                                             | Description |
-| ------------ | -------- | --------------------- | --------------- | -------------------------------------------------------------------------------------------------------- | ----------- |
-| `source`     | no       | `string`              |                 | `manual`<br />`imported-exif`<br />`inferred`<br />`analysis`<br />`batch-rule`<br />`workflow-template` |             |
-| `confidence` | no       | `string`              |                 | `certain`<br />`likely`<br />`guess`                                                                     |             |
-| `assertedAt` | no       | `string` (`datetime`) |                 |                                                                                                          |             |
-| `assertedBy` | no       | `string` (`did`)      |                 |                                                                                                          |             |
-| `note`       | no       | `string`              | `maxLength=500` |                                                                                                          |             |
+| Field                 | Required | Type / resolved ref                                                   | Constraints     | Known values                                                                                                                                                  | Description                                                                                                              |
+| --------------------- | -------- | --------------------------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `source`              | no       | `string`                                                              |                 | `manual`<br />`observed`<br />`imported-exif`<br />`inferred`<br />`analysis`<br />`reconciled`<br />`transformed`<br />`batch-rule`<br />`workflow-template` |                                                                                                                          |
+| `confidence`          | no       | `string`                                                              |                 | `certain`<br />`likely`<br />`guess`                                                                                                                          |                                                                                                                          |
+| `assertedAt`          | no       | `string` (`datetime`)                                                 |                 |                                                                                                                                                               |                                                                                                                          |
+| `assertedBy`          | no       | `string` (`did`)                                                      |                 |                                                                                                                                                               |                                                                                                                          |
+| `method`              | no       | `string`                                                              | `maxLength=128` |                                                                                                                                                               | Machine-readable or human-readable identifier for the import, inference, reconciliation, or transformation method.       |
+| `evidence`            | no       | `array` of [`app.graycard.defs#evidenceRef`](#evidenceref) → `object` | `maxLength=16`  |                                                                                                                                                               | Sources supporting this assertion. A withheld entry records that private or local evidence exists without publishing it. |
+| `evidence[].kind`     | yes      | `string`                                                              |                 | `record`<br />`external`<br />`file`<br />`content`<br />`withheld`<br />`unavailable`                                                                        |                                                                                                                          |
+| `evidence[].record`   | no       | `string` (`at-uri`)                                                   |                 |                                                                                                                                                               | AT-URI of a source session, workflow stage, rule, artifact, or assertion record.                                         |
+| `evidence[].uri`      | no       | `string` (`uri`)                                                      |                 |                                                                                                                                                               | Public external document or authority.                                                                                   |
+| `evidence[].digest`   | no       | `string`                                                              | `maxLength=256` |                                                                                                                                                               | Content-addressed identifier for a local file or value without exposing a local path.                                    |
+| `evidence[].label`    | no       | `string`                                                              | `maxLength=256` |                                                                                                                                                               |                                                                                                                          |
+| `evidence[].redacted` | no       | `boolean`                                                             |                 |                                                                                                                                                               | True when identifying evidence details were deliberately omitted for privacy.                                            |
+| `evidence[].note`     | no       | `string`                                                              | `maxLength=500` |                                                                                                                                                               |                                                                                                                          |
+| `note`                | no       | `string`                                                              | `maxLength=500` |                                                                                                                                                               |                                                                                                                          |
 
-<a id="fieldprovenance"></a>
+<a id="evidenceref"></a>
 
-## `fieldProvenance`
+## `evidenceRef`
 
-Provenance for a single named field within a record, so make can come from EXIF while aperture is entered by hand.
+A machine-readable source for an assertion. Use the least revealing kind that still permits the assertion to be audited.
 
 **Kind:** `object`
 
@@ -195,15 +205,41 @@ Provenance for a single named field within a record, so make can come from EXIF 
 
 Referenced object fields are expanded once. A linked type name opens the definition that supplies the field.
 
-| Field                   | Required | Type / resolved ref                                      | Constraints     | Known values                                                                                             | Description                        |
-| ----------------------- | -------- | -------------------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `field`                 | yes      | `string`                                                 | `maxLength=128` |                                                                                                          |                                    |
-| `provenance`            | yes      | [`app.graycard.defs#provenance`](#provenance) → `object` |                 |                                                                                                          | How and when a value was asserted. |
-| `provenance.source`     | no       | `string`                                                 |                 | `manual`<br />`imported-exif`<br />`inferred`<br />`analysis`<br />`batch-rule`<br />`workflow-template` |                                    |
-| `provenance.confidence` | no       | `string`                                                 |                 | `certain`<br />`likely`<br />`guess`                                                                     |                                    |
-| `provenance.assertedAt` | no       | `string` (`datetime`)                                    |                 |                                                                                                          |                                    |
-| `provenance.assertedBy` | no       | `string` (`did`)                                         |                 |                                                                                                          |                                    |
-| `provenance.note`       | no       | `string`                                                 | `maxLength=500` |                                                                                                          |                                    |
+| Field      | Required | Type / resolved ref | Constraints     | Known values                                                                           | Description                                                                           |
+| ---------- | -------- | ------------------- | --------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `kind`     | yes      | `string`            |                 | `record`<br />`external`<br />`file`<br />`content`<br />`withheld`<br />`unavailable` |                                                                                       |
+| `record`   | no       | `string` (`at-uri`) |                 |                                                                                        | AT-URI of a source session, workflow stage, rule, artifact, or assertion record.      |
+| `uri`      | no       | `string` (`uri`)    |                 |                                                                                        | Public external document or authority.                                                |
+| `digest`   | no       | `string`            | `maxLength=256` |                                                                                        | Content-addressed identifier for a local file or value without exposing a local path. |
+| `label`    | no       | `string`            | `maxLength=256` |                                                                                        |                                                                                       |
+| `redacted` | no       | `boolean`           |                 |                                                                                        | True when identifying evidence details were deliberately omitted for privacy.         |
+| `note`     | no       | `string`            | `maxLength=500` |                                                                                        |                                                                                       |
+
+<a id="fieldprovenance"></a>
+
+## `fieldProvenance`
+
+Provenance for one value or relationship. field is an RFC 6901 JSON Pointer (legacy top-level field names remain valid); relationship identifies one stable collection member without an array index; valueDigest binds the assertion to the value it describes.
+
+**Kind:** `object`
+
+### Resolved fields
+
+Referenced object fields are expanded once. A linked type name opens the definition that supplies the field.
+
+| Field                   | Required | Type / resolved ref                                                   | Constraints      | Known values                                                                                                                                                  | Description                                                                                                              |
+| ----------------------- | -------- | --------------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `field`                 | yes      | `string`                                                              | `maxLength=256`  |                                                                                                                                                               |                                                                                                                          |
+| `relationship`          | no       | `string`                                                              | `maxLength=2048` |                                                                                                                                                               | Stable serialized relationship value, normally an AT-URI. Clients match the value rather than its array position.        |
+| `valueDigest`           | no       | `string`                                                              | `maxLength=256`  |                                                                                                                                                               | Digest of the canonical encoded current value. A mismatch makes this assertion stale.                                    |
+| `provenance`            | yes      | [`app.graycard.defs#provenance`](#provenance) → `object`              |                  |                                                                                                                                                               | How and when a value was asserted.                                                                                       |
+| `provenance.source`     | no       | `string`                                                              |                  | `manual`<br />`observed`<br />`imported-exif`<br />`inferred`<br />`analysis`<br />`reconciled`<br />`transformed`<br />`batch-rule`<br />`workflow-template` |                                                                                                                          |
+| `provenance.confidence` | no       | `string`                                                              |                  | `certain`<br />`likely`<br />`guess`                                                                                                                          |                                                                                                                          |
+| `provenance.assertedAt` | no       | `string` (`datetime`)                                                 |                  |                                                                                                                                                               |                                                                                                                          |
+| `provenance.assertedBy` | no       | `string` (`did`)                                                      |                  |                                                                                                                                                               |                                                                                                                          |
+| `provenance.method`     | no       | `string`                                                              | `maxLength=128`  |                                                                                                                                                               | Machine-readable or human-readable identifier for the import, inference, reconciliation, or transformation method.       |
+| `provenance.evidence`   | no       | `array` of [`app.graycard.defs#evidenceRef`](#evidenceref) → `object` | `maxLength=16`   |                                                                                                                                                               | Sources supporting this assertion. A withheld entry records that private or local evidence exists without publishing it. |
+| `provenance.note`       | no       | `string`                                                              | `maxLength=500`  |                                                                                                                                                               |                                                                                                                          |
 
 <a id="sourcefile"></a>
 

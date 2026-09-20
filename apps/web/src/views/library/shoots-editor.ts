@@ -156,6 +156,7 @@ export function openShootEditor(
       if (endInput.value) record.endedAt = new Date(endInput.value).toISOString();
       if (manualPlaces.length) record.places = manualPlaces;
       if (notesInput.value.trim()) record.notes = notesInput.value.trim();
+      if (Array.isArray(value.fieldProvenance)) record.fieldProvenance = value.fieldProvenance;
       if (existing) record.updatedAt = new Date().toISOString();
       else record.provenance = { source: "manual", assertedAt: new Date().toISOString() };
       const uri = await services.saveRecord(services.collections.capture, record, existing);

@@ -41,6 +41,28 @@ test.beforeEach(async ({ request }) => {
   await resetFixture(request);
 });
 
+test("session routes stay first-class across list, detail, history, and mobile navigation", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await login(page);
+
+  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  await expect(page).toHaveURL(/\/sessions$/);
+  await expect(page.getByRole("heading", { name: "Sessions", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "More", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Capture .*Fixture photo walk/ })).toBeVisible();
+  expect(await page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth)).toBe(true);
+
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  await expect(page).toHaveURL(/\/session\/capture\/shoot-a$/);
+  await expect(page.getByRole("heading", { name: "Capture session" })).toBeVisible();
+  const timing = page.getByRole("heading", { name: "Timing" }).locator("..", { hasText: "Finished" });
+  await expect(timing).toContainText("FinishedNot recorded");
+
+  await page.getByRole("button", { name: "← All sessions", exact: true }).click();
+  await expect(page).toHaveURL(/\/sessions$/);
+  await expect(page.getByRole("heading", { name: "Sessions", exact: true })).toBeVisible();
+});
+
 test("gear deep links preserve Library context across close, Back, Forward, and record changes", async ({ page }) => {
   await login(page);
   await page.goto("/gear/camera/camera-a");

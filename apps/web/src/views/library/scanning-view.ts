@@ -1,13 +1,17 @@
 import { assertConsumableLifecycle } from "@hypo/domain";
-import { dateField, el, field, localInputToIso, openModal, toast } from "@hypo/ui";
-import { createInstanceSelect } from "./maintenance-selectors.ts";
+import { checkList, dateField, el, field, localInputToIso, openModal, toast } from "@hypo/ui";
+import { createCatalogSelect, createInstanceSelect } from "./maintenance-selectors.ts";
 import type { ActivityServices, LibraryRecord, LibraryValue } from "./maintenance-types.ts";
+import { renderDarkroomActivity } from "./maintenance-darkroom.ts";
 import { openFrameLinker } from "./scanning-linker.ts";
 
 const FILM_ROLL_COLLECTION = "app.graycard.instance.filmRoll";
 
 export interface ScanSessionOptions {
   readonly selectedRoll?: string;
+  readonly selectedRolls?: readonly string[];
+  readonly existing?: LibraryRecord | null;
+  readonly initial?: LibraryValue;
 }
 
 export const DIGITIZE_METHODS = [
@@ -47,6 +51,12 @@ export function renderScanningHeader(body: HTMLElement, services: ActivityServic
       ]),
     ]),
   );
+  renderDarkroomActivity(body, services, render, {
+    kinds: ["digitize"],
+    limit: 5,
+    title: "Recent digitization sessions",
+    showAllLink: true,
+  });
 }
 
 export function openScanSession(
@@ -54,77 +64,208 @@ export function openScanSession(
   services: ActivityServices,
   options: ScanSessionOptions = {},
 ) {
-  const rollSelect = createInstanceSelect("filmRoll", options.selectedRoll || "", services);
-  const scannerSelect = createInstanceSelect("scanner", "", services);
+  const existing = options.existing || null;
+  const value = existing?.value || options.initial || {};
+  const selectedRolls =
+    options.selectedRolls || value.filmRolls || (options.selectedRoll ? [options.selectedRoll] : []);
+  const rolls = services.getStore().instance.filmRoll || [];
+  const rollSearch = el("input", {
+    type: "search",
+    class: "search-input",
+    placeholder: "Search rolls by label, stock, or status…",
+    "aria-label": "Search rolls for this digitization",
+  });
+  const rollList = checkList(
+    rolls.map((roll) => ({
+      value: roll.uri,
+      label: `${services.instanceLabel("filmRoll", roll.value)} · ${services.enumLabel(roll.value.status || "unknown")}`,
+    })),
+    {
+      selected: selectedRolls,
+      className: "check-list scan-roll-list",
+      emptyMessage: el("p", { class: "muted small" }, "No film rolls are in your setup yet."),
+    },
+  );
+  const selectionSummary = el("p", { class: "muted small", role: "status", "aria-live": "polite" });
+  const updateSelectionSummary = () => {
+    const count = rollList.getSelected().length;
+    selectionSummary.textContent = count
+      ? `${count} roll${count === 1 ? "" : "s"} linked to this digitization.`
+      : "No rolls selected. You can still record a print, file, or untracked negative scan.";
+  };
+  rollList.inputs.forEach((input) => input.addEventListener("change", updateSelectionSummary));
+  rollSearch.addEventListener("input", () => {
+    const query = rollSearch.value.trim().toLocaleLowerCase();
+    rollList.node.querySelectorAll<HTMLElement>(".check-row").forEach((row) => {
+      row.classList.toggle("hidden", Boolean(query) && !row.textContent?.toLocaleLowerCase().includes(query));
+    });
+  });
+  updateSelectionSummary();
+
+  const scannerSelect = createInstanceSelect("scanner", value.scanner || "", services);
+  const cameraSelect = createInstanceSelect("camera", value.camera || "", services);
+  const lensSelect = createInstanceSelect("lens", value.lens || "", services);
+  const profileSelect = createCatalogSelect("scanProfile", value.scanProfile || "", services);
   const methodSelect = el(
     "select",
     { class: "select" },
     DIGITIZE_METHODS.map(([value, label]) => el("option", { value }, label)),
   );
-  const softwareInput = el("input", { type: "text", placeholder: "e.g. SilverFast, VueScan, Negative Lab Pro" });
-  const dpiInput = el("input", { type: "number", min: "0", placeholder: "e.g. 3200" });
-  const formatInput = el("input", { type: "text", placeholder: "e.g. TIFF, DNG, JPEG" });
-  const completed = dateField("Scanned", new Date().toISOString());
-  const notesInput = el("textarea", { rows: "3", placeholder: "Optional scan notes" });
+  methodSelect.value = String(value.method || "dedicated-film-scanner");
+  const softwareInput = el("input", {
+    type: "text",
+    value: value.software || "",
+    placeholder: "e.g. SilverFast, VueScan, Negative Lab Pro",
+  });
+  const driverInput = el("input", { type: "text", value: value.driver || "", placeholder: "Optional driver" });
+  const dpiInput = el("input", {
+    type: "number",
+    min: "0",
+    value: value.resolution?.value ? String(value.resolution.value / (value.resolution.scale || 1)) : "",
+    placeholder: "e.g. 3200",
+  });
+  const bitDepthInput = el("input", { type: "number", min: "1", value: value.bitDepth || "", placeholder: "e.g. 16" });
+  const colorProfileInput = el("input", {
+    type: "text",
+    value: value.colorProfile || "",
+    placeholder: "e.g. Adobe RGB",
+  });
+  const formatInput = el("input", { type: "text", value: value.fileFormat || "", placeholder: "e.g. TIFF, DNG, JPEG" });
+  const inversionSelect = el(
+    "select",
+    {},
+    [
+      ["", "Not recorded"],
+      ["none", "None"],
+      ["hardware", "Scanner hardware"],
+      ["software-auto", "Software, automatic"],
+      ["software-manual", "Software, manual"],
+      ["preset", "Preset"],
+      ["other", "Other"],
+    ].map(([optionValue, label]) => el("option", { value: optionValue }, label)),
+  );
+  inversionSelect.value = String(value.inversionMethod || "");
+  const labServiceInput = el("input", {
+    type: "text",
+    value: value.labService || "",
+    placeholder: "Lab or service name",
+  });
+  const started = dateField("Started", value.startedAt || value.finishedAt || new Date().toISOString());
+  const finished = dateField("Finished", value.finishedAt || new Date().toISOString());
+  const unknownTime = el("input", { type: "checkbox" });
+  unknownTime.checked = Boolean(existing && !value.startedAt && !value.finishedAt);
+  const updateTimeState = () => {
+    started.input.disabled = unknownTime.checked;
+    finished.input.disabled = unknownTime.checked;
+  };
+  unknownTime.addEventListener("change", updateTimeState);
+  updateTimeState();
+  const notesInput = el("textarea", { rows: "3", placeholder: "Optional scan notes" }, value.notes || "");
   return openModal(
-    "Log scan session",
+    existing ? "Edit digitization session" : options.initial ? "Repeat digitization setup" : "Log digitization session",
     [
       el(
         "p",
         { class: "muted small" },
-        "Associate a completed scan with its roll and scanner. Only the roll, scanner, method, and date are needed.",
+        "Link every roll in the batch, then record the shared scanner or camera-copy setup. Process details remain optional.",
       ),
-      field("Roll", rollSelect),
-      field("Scanner", scannerSelect),
+      el("h3", { class: "modal-sub" }, "Essentials"),
+      rollSearch,
+      selectionSummary,
+      rollList.node,
       field("Method", methodSelect),
-      completed.wrap,
-      field("Software", softwareInput),
-      field("Resolution (dpi)", dpiInput),
-      field("File format", formatInput),
+      el("div", { class: "process-time-grid" }, [started.wrap, finished.wrap]),
+      el("label", { class: "row small", style: "gap:8px" }, [unknownTime, el("span", {}, "Exact time is unknown")]),
+      el("details", { class: "process-disclosure", open: Boolean(options.initial || existing) }, [
+        el("summary", {}, "Process details"),
+        el("div", { class: "process-entry-grid" }, [
+          field("Scanner", scannerSelect),
+          field("Camera (copy stand)", cameraSelect),
+          field("Lens (copy stand)", lensSelect),
+          field("Scan profile", profileSelect),
+          field("Software", softwareInput),
+          field("Driver", driverInput),
+          field("Resolution (dpi)", dpiInput),
+          field("Bit depth", bitDepthInput),
+          field("Color profile", colorProfileInput),
+          field("File format", formatInput),
+          field("Inversion", inversionSelect),
+          field("Lab service", labServiceInput),
+        ]),
+      ]),
       field("Notes", notesInput),
     ],
     async () => {
       const now = new Date().toISOString();
-      const finishedAt = localInputToIso(completed.input.value) || now;
+      const startedAt = unknownTime.checked ? undefined : localInputToIso(started.input.value) || undefined;
+      const finishedAt = unknownTime.checked ? undefined : localInputToIso(finished.input.value) || undefined;
+      if (startedAt && finishedAt && Date.parse(finishedAt) < Date.parse(startedAt)) {
+        throw new Error("Finished time must be after the start time");
+      }
       const record: LibraryValue = {
         method: methodSelect.value,
-        createdAt: now,
-        startedAt: finishedAt,
-        finishedAt,
-        provenance: { source: "manual", assertedAt: new Date().toISOString() },
+        createdAt: existing ? value.createdAt || now : now,
+        provenance: value.provenance || { source: "manual", assertedAt: now },
       };
+      if (Array.isArray(value.fieldProvenance)) record.fieldProvenance = value.fieldProvenance;
+      if (existing) record.updatedAt = now;
+      if (startedAt) record.startedAt = startedAt;
+      if (finishedAt) record.finishedAt = finishedAt;
       if (scannerSelect.value) record.scanner = scannerSelect.value;
+      if (cameraSelect.value) record.camera = cameraSelect.value;
+      if (lensSelect.value) record.lens = lensSelect.value;
+      if (profileSelect.value) record.scanProfile = profileSelect.value;
       if (softwareInput.value.trim()) record.software = softwareInput.value.trim();
+      if (driverInput.value.trim()) record.driver = driverInput.value.trim();
+      if (colorProfileInput.value.trim()) record.colorProfile = colorProfileInput.value.trim();
       if (formatInput.value.trim()) record.fileFormat = formatInput.value.trim();
+      if (inversionSelect.value) record.inversionMethod = inversionSelect.value;
+      if (labServiceInput.value.trim()) record.labService = labServiceInput.value.trim();
       if (notesInput.value.trim()) record.notes = notesInput.value.trim();
       const dpi = Number.parseInt(dpiInput.value, 10);
       if (Number.isFinite(dpi)) record.resolution = { unit: "dpi", value: dpi, scale: 1 };
-      if (rollSelect.value) record.filmRolls = [rollSelect.value];
-      let rollUpdate: { roll: LibraryRecord; next: LibraryValue } | null = null;
-      if (rollSelect.value) {
-        const roll = (services.getStore().instance.filmRoll || []).find(
-          (candidate) => candidate.uri === rollSelect.value,
-        ) as LibraryRecord | undefined;
-        if (roll) {
-          const next = {
-            ...roll.value,
-            status: roll.value.status === "archived" ? "archived" : "scanned",
-            scannedAt: roll.value.scannedAt || finishedAt,
-            updatedAt: now,
-          };
+      const bitDepth = Number.parseInt(bitDepthInput.value, 10);
+      if (Number.isFinite(bitDepth)) record.bitDepth = bitDepth;
+      const rollUris = rollList.getSelected();
+      if (rollUris.length) record.filmRolls = rollUris;
+
+      const prospectiveSessions = [
+        ...(services.getStore().digitizeSessions || []).filter((candidate) => candidate.uri !== existing?.uri),
+        { uri: existing?.uri || "pending:digitization", value: record },
+      ];
+      const affectedRolls = new Set([...(existing?.value.filmRolls || []), ...rollUris]);
+      const rollUpdates = (services.getStore().instance.filmRoll || [])
+        .filter((roll) => affectedRolls.has(roll.uri))
+        .map((roll) => {
+          const related = prospectiveSessions.filter((session) => session.value.filmRolls?.includes(roll.uri));
+          const completions = related
+            .map((session) => session.value.finishedAt)
+            .filter(Boolean)
+            .sort();
+          const latest = completions.at(-1);
+          const next: LibraryValue = { ...roll.value, updatedAt: now };
+          if (latest) next.scannedAt = latest;
+          else delete next.scannedAt;
+          if (latest && next.status !== "archived") next.status = "scanned";
+          else if (next.status === "scanned") {
+            const developed = (services.getStore().developSessions || []).some((session) =>
+              session.value.filmRolls?.includes(roll.uri),
+            );
+            if (developed) next.status = "developed";
+            else if (next.exposedAt) next.status = "exposed";
+          }
           assertConsumableLifecycle(FILM_ROLL_COLLECTION, next);
-          rollUpdate = { roll, next };
-        }
+          return { roll, next };
+        });
+      const sessionUri = await services.saveRecord(services.collections.digitizeSession, record, existing);
+      for (const { roll, next } of rollUpdates) {
+        await services.saveRecord(services.collections.filmRoll, next, roll);
       }
-      const sessionUri = await services.saveRecord(services.collections.digitizeSession, record, null);
-      if (rollUpdate) {
-        await services.saveRecord(services.collections.filmRoll, rollUpdate.next, rollUpdate.roll);
-      }
-      await services.advanceWorkflowStage?.("digitize", rollSelect.value ? [rollSelect.value] : [], sessionUri);
+      await services.advanceWorkflowStage?.("digitize", rollUris, sessionUri);
       await services.reloadStore();
-      toast("Logged scan session", "ok");
+      toast(existing ? "Updated digitization session" : "Logged digitization session", "ok");
       onDone?.();
     },
-    { saveLabel: "Log scan" },
+    { saveLabel: existing ? "Save changes" : "Log digitization" },
   );
 }

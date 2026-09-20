@@ -9,8 +9,18 @@
 }
 .metric {
   background: var(--surface-2);
+  border: 1px solid transparent;
   border-radius: var(--radius);
   padding: 14px;
+}
+.metric-link {
+  color: var(--text);
+  text-align: left;
+}
+.metric-link:hover,
+.metric-link:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 .metric-num {
   font-size: 26px;

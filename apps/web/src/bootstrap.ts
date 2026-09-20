@@ -84,8 +84,10 @@ export interface AppBootstrapServices {
   loadOnboarding(): Promise<OnboardingModule>;
   libraryFeature(): Promise<LibraryFeature>;
   openLibraryRecord(target: LibraryRecordTarget): Promise<unknown>;
+  openSessions(scope?: string): Promise<unknown>;
+  openSessionRecord(target: { kind: string; rkey: string }): Promise<unknown>;
   closeLibraryRecord(): unknown;
-  goSection(section: "setup" | "galleries" | "following" | "discover"): unknown;
+  goSection(section: "setup" | "sessions" | "galleries" | "following" | "discover"): unknown;
   navigateSection(section: string): unknown;
   setLibraryTab(tab: string): void;
   setActiveSection(section: string): void;
@@ -99,7 +101,17 @@ export interface AppBootstrapServices {
   logger?: BootstrapLogger;
 }
 
-const ONBOARDING_ROUTES = new Set(["home", "library", "roll", "gear", "timer", "meter"]);
+const ONBOARDING_ROUTES = new Set([
+  "home",
+  "library",
+  "roll",
+  "gear",
+  "timer",
+  "meter",
+  "sessions",
+  "sessionsScope",
+  "session",
+]);
 
 const messageOf = (error: unknown): string => (error instanceof Error ? error.message || String(error) : String(error));
 const logDetail = (error: unknown): unknown =>
@@ -113,6 +125,7 @@ export function isPublicProfileRoute(route: AppRoute): boolean {
 
 export function routeErrorTarget(route: AppRoute): string {
   if (route.name === "gallery") return "#editor-body";
+  if (route.name === "sessions" || route.name === "sessionsScope" || route.name === "session") return "#sessions-body";
   if (route.name === "following") return "#following-body";
   if (route.name === "profile" || route.name === "profileSection" || route.name === "discover") {
     return "#profile-body";
@@ -155,6 +168,23 @@ export function createAppBootstrap(services: AppBootstrapServices) {
   const routeHandlers: Record<string, (route: AppRoute) => unknown> = {
     home: () => setupRoute(),
     galleries: () => (services.session().agent ? services.goSection("galleries") : services.showLoggedOut()),
+    sessions: () => (services.session().agent ? services.goSection("sessions") : services.showLoggedOut()),
+    sessionsScope: (route) => {
+      if (!services.session().agent) return services.showLoggedOut();
+      services.setActiveSection("sessions");
+      services.showView("sessions-view");
+      return services.openSessions(route.params.scope);
+    },
+    session: async (route) => {
+      if (!services.session().agent) return services.showLoggedOut();
+      services.setActiveSection("sessions");
+      services.showView("sessions-view");
+      await services.openSessions();
+      return services.openSessionRecord({
+        kind: route.params.kind as string,
+        rkey: route.params.rkey as string,
+      });
+    },
     library: (route) => setupRoute(route.params.tab),
     gallery: (route) => {
       const session = services.session();

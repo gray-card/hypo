@@ -51,6 +51,7 @@ export function withTransition(mutate) {
   if (document.startViewTransition && !prefersReducedMotion()) {
     try {
       const transition = document.startViewTransition(mutate);
+      transition?.ready?.catch(() => {});
       transition?.finished?.catch(() => {});
       transition?.updateCallbackDone?.catch(() => {});
     } catch {
@@ -63,7 +64,15 @@ export function withTransition(mutate) {
 
 export function showView(id) {
   withTransition(() => {
-    for (const view of ["login-view", "list-view", "library-view", "editor-view", "profile-view", "following-view"]) {
+    for (const view of [
+      "login-view",
+      "list-view",
+      "library-view",
+      "sessions-view",
+      "editor-view",
+      "profile-view",
+      "following-view",
+    ]) {
       $("#" + view)?.classList.toggle("hidden", view !== id);
     }
     window.scrollTo({ top: 0 });

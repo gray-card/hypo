@@ -43,6 +43,7 @@
       </a>
       <nav id="primary-nav" class="primary-nav hidden" aria-label="Primary">
         <button class="nav-tab" data-section="setup" type="button">Setup</button>
+        <button class="nav-tab" data-section="sessions" type="button">Sessions</button>
         <button class="nav-tab" data-section="galleries" type="button">Galleries</button>
         <button class="nav-tab" data-section="following" type="button">Following</button>
         <button class="nav-tab" data-section="discover" type="button">Discover</button>
@@ -140,6 +141,11 @@
         <div id="library-body"></div>
       </section>
 
+      <!-- sessions: chronological photographic work -->
+      <section id="sessions-view" class="hidden">
+        <div id="sessions-body"></div>
+      </section>
+
       <!-- following: public activity from the viewer's Grain + Bluesky follows -->
       <section id="following-view" class="hidden">
         <div class="view-head row between">
@@ -184,14 +190,14 @@
       <button class="nav-item" data-section="setup" type="button">
         <span class="nav-ico"></span><span class="nav-label">Setup</span>
       </button>
+      <button class="nav-item" data-section="sessions" type="button">
+        <span class="nav-ico"></span><span class="nav-label">Sessions</span>
+      </button>
       <button class="nav-item" data-section="galleries" type="button">
         <span class="nav-ico"></span><span class="nav-label">Galleries</span>
       </button>
       <button class="nav-item" data-section="following" type="button">
         <span class="nav-ico"></span><span class="nav-label">Following</span>
-      </button>
-      <button class="nav-item" data-section="discover" type="button">
-        <span class="nav-ico"></span><span class="nav-label">Discover</span>
       </button>
       <button class="nav-item" id="bottom-account" type="button">
         <span class="nav-ico"></span><span class="nav-label">More</span>
