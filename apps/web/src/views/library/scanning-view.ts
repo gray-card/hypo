@@ -1,5 +1,5 @@
 import { assertConsumableLifecycle } from "@hypo/domain";
-import { checkList, dateField, el, field, localInputToIso, openModal, toast } from "@hypo/ui";
+import { checkList, dateTimeRange, el, field, openModal, toast } from "@hypo/ui";
 import { createCatalogSelect, createInstanceSelect } from "./maintenance-selectors.ts";
 import type { ActivityServices, LibraryRecord, LibraryValue } from "./maintenance-types.ts";
 import { renderDarkroomActivity } from "./maintenance-darkroom.ts";
@@ -150,13 +150,17 @@ export function openScanSession(
     value: value.labService || "",
     placeholder: "Lab or service name",
   });
-  const started = dateField("Started", value.startedAt || value.finishedAt || new Date().toISOString());
-  const finished = dateField("Finished", value.finishedAt || new Date().toISOString());
+  const timing = dateTimeRange({
+    startLabel: "Started",
+    endLabel: "Finished",
+    startValue: existing ? String(value.startedAt || "") : "",
+    endValue: existing ? String(value.finishedAt || "") : new Date().toISOString(),
+    chronologyMessage: "Finished time must be later than start time.",
+  });
   const unknownTime = el("input", { type: "checkbox" });
   unknownTime.checked = Boolean(existing && !value.startedAt && !value.finishedAt);
   const updateTimeState = () => {
-    started.input.disabled = unknownTime.checked;
-    finished.input.disabled = unknownTime.checked;
+    timing.setDisabled(unknownTime.checked);
   };
   unknownTime.addEventListener("change", updateTimeState);
   updateTimeState();
@@ -174,7 +178,7 @@ export function openScanSession(
       selectionSummary,
       rollList.node,
       field("Method", methodSelect),
-      el("div", { class: "process-time-grid" }, [started.wrap, finished.wrap]),
+      timing.node,
       el("label", { class: "row small", style: "gap:8px" }, [unknownTime, el("span", {}, "Exact time is unknown")]),
       el("details", { class: "process-disclosure", open: Boolean(options.initial || existing) }, [
         el("summary", {}, "Process details"),
@@ -197,11 +201,9 @@ export function openScanSession(
     ],
     async () => {
       const now = new Date().toISOString();
-      const startedAt = unknownTime.checked ? undefined : localInputToIso(started.input.value) || undefined;
-      const finishedAt = unknownTime.checked ? undefined : localInputToIso(finished.input.value) || undefined;
-      if (startedAt && finishedAt && Date.parse(finishedAt) < Date.parse(startedAt)) {
-        throw new Error("Finished time must be after the start time");
-      }
+      const interval = unknownTime.checked ? {} : timing.read();
+      const startedAt = interval.start;
+      const finishedAt = interval.end;
       const record: LibraryValue = {
         method: methodSelect.value,
         createdAt: existing ? value.createdAt || now : now,

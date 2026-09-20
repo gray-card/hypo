@@ -4,7 +4,7 @@ import { exifToForm, flushRecordOperation, formToExifValue, listRecords, parseAt
 import * as outbox from "./outbox.js";
 import { prepareSchemaWrite } from "./schemaRuntime.js";
 import { NS, CATALOG_KINDS, INSTANCE_KINDS } from "../packages/lexicon/src/namespaces.ts";
-import { assertConsumableLifecycle } from "@hypo/domain";
+import { assertConsumableLifecycle, assertRecordTimeSpans } from "@hypo/domain";
 import { migrateLegacyDeveloperRecords } from "./legacyDeveloperMigration.ts";
 import { migrateDevelopSessions } from "./developSessionMigration.ts";
 
@@ -320,6 +320,7 @@ export async function saveRecord(agent, did, collection, record, existing) {
   // survive the generic record writer. Other records default to the collection.
   const value = { ...prepared, $type: prepared.$type || collection };
   assertConsumableLifecycle(collection, value);
+  assertRecordTimeSpans(collection, value);
   if (existing) {
     const operation = outbox.enqueuePut(did, {
       uri: existing.uri,

@@ -1,4 +1,4 @@
-import { checkList, dateField, el, field, inputField, openModal, toast } from "@hypo/ui";
+import { checkList, dateTimeRange, el, field, inputField, openModal, toast } from "@hypo/ui";
 import { inheritedShootGear, inheritedShootLocations } from "./shoots-selectors.ts";
 import type { ShootGearKind, ShootRecord, ShootServices, ShootValue } from "./shoots-types.ts";
 import { createWorkflowOccurrenceEditor } from "./workflow-occurrences.ts";
@@ -43,8 +43,13 @@ export function openShootEditor(
   const value = existing?.value || {};
   const shootUri = existing?.uri;
   const { wrap: labelWrap, input: labelInput } = inputField("Label", "label", value.label || "");
-  const { wrap: startWrap, input: startInput } = dateField("Started", value.startedAt || new Date().toISOString());
-  const { wrap: endWrap, input: endInput } = dateField("Ended (optional)", value.endedAt || "");
+  const timing = dateTimeRange({
+    startLabel: "Started",
+    endLabel: "Ended (optional)",
+    startValue: existing ? String(value.startedAt || "") : new Date().toISOString(),
+    endValue: String(value.endedAt || ""),
+    chronologyMessage: "End time must be later than start time.",
+  });
   const locked = (kind: ShootGearKind) => (shootUri ? inheritedShootGear(shootUri, kind, services.getStore()) : []);
   const cameras = createShootGearChecklist("camera", value.cameras || [], locked("camera"), services);
   const lenses = createShootGearChecklist("lens", value.lenses || [], locked("lens"), services);
@@ -123,8 +128,7 @@ export function openShootEditor(
     existing ? "Edit shoot" : "Start a shoot",
     [
       labelWrap,
-      startWrap,
-      endWrap,
+      timing.node,
       el("h3", { class: "modal-sub" }, "Cameras"),
       cameras.node,
       el("h3", { class: "modal-sub" }, "Lenses"),
@@ -152,8 +156,9 @@ export function openShootEditor(
         filters: filters.getSelected(),
         createdAt: value.createdAt || new Date().toISOString(),
       };
-      if (startInput.value) record.startedAt = new Date(startInput.value).toISOString();
-      if (endInput.value) record.endedAt = new Date(endInput.value).toISOString();
+      const interval = timing.read();
+      if (interval.start) record.startedAt = interval.start;
+      if (interval.end) record.endedAt = interval.end;
       if (manualPlaces.length) record.places = manualPlaces;
       if (notesInput.value.trim()) record.notes = notesInput.value.trim();
       if (Array.isArray(value.fieldProvenance)) record.fieldProvenance = value.fieldProvenance;

@@ -137,7 +137,9 @@ describe("workflow runtime", () => {
       session: "at://did:plc:test/app.graycard.process.developSession/session",
     });
     expect(stageUpdates.slice(1).map((write) => write.record.status)).toEqual(["ready", "ready"]);
-    expect(agent.put.find((write) => write.collection === NS.workflow.run)?.record.status).toBe("in-progress");
+    const runUpdate = agent.put.find((write) => write.collection === NS.workflow.run)?.record;
+    expect(runUpdate.status).toBe("in-progress");
+    expect(runUpdate).not.toHaveProperty("startedAt");
   });
 
   it("honors optional and repeatable occurrence counts", async () => {

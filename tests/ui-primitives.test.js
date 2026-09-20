@@ -14,6 +14,7 @@ describe("@hypo/ui public primitives", () => {
       "field",
       "inputField",
       "dateField",
+      "dateTimeRange",
       "toast",
       "withButton",
       "openModal",
@@ -34,6 +35,25 @@ describe("@hypo/ui public primitives", () => {
     const date = ui.dateField("Released", "2026-08-11T00:00:00.000Z", { type: "date" });
     expect(date.input.type).toBe("date");
     expect(date.input.value).toBe("2026-08-11");
+  });
+
+  it("keeps invalid interval values visible and reports the error beside the finish field", () => {
+    const range = ui.dateTimeRange({
+      startValue: "2026-09-20T12:00:00Z",
+      endValue: "2026-09-20T12:00:00Z",
+    });
+    document.body.append(range.node);
+
+    expect(() => range.read()).toThrow("Finish time must be later than start time");
+    expect(range.start.input.value).toBe(ui.isoToLocalInput("2026-09-20T12:00:00Z"));
+    expect(range.end.input.value).toBe(ui.isoToLocalInput("2026-09-20T12:00:00Z"));
+    expect(range.error.classList.contains("hidden")).toBe(false);
+    expect(range.end.input.getAttribute("aria-invalid")).toBe("true");
+
+    range.start.input.value = "";
+    range.start.input.dispatchEvent(new Event("input"));
+    expect(range.read()).toEqual({ end: new Date(range.end.input.value).toISOString() });
+    expect(range.error.classList.contains("hidden")).toBe(true);
   });
 
   it("keeps inherited checklist values visible but out of editable selection", () => {

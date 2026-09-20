@@ -238,6 +238,26 @@ describe("consumable lifecycle write boundary", () => {
     expect(agent.created).toHaveLength(0);
     expect(agent.put).toHaveLength(0);
   });
+
+  it("rejects a reversed session interval before enqueuing a write", async () => {
+    const agent = mockAgent();
+    await expect(
+      saveRecord(
+        agent,
+        "did:plc:test",
+        NS.process.digitizeSession,
+        {
+          method: "dedicated-film-scanner",
+          startedAt: "2026-09-20T12:00:00Z",
+          finishedAt: "2026-09-20T11:00:00Z",
+          createdAt: "2026-09-20T12:00:00Z",
+        },
+        null,
+      ),
+    ).rejects.toMatchObject({ name: "RecordTimeSpanValidationError" });
+    expect(agent.created).toHaveLength(0);
+    expect(agent.put).toHaveLength(0);
+  });
 });
 
 describe("shoot ordering", () => {

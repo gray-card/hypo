@@ -282,7 +282,9 @@ describe("extracted library activity views", () => {
       labService: "Praus",
       filmRolls: [roll.uri],
       pushPull: { unit: "stop", value: 1, scale: 1 },
+      finishedAt: expect.any(String),
     });
+    expect(services.saveRecord.mock.calls[0][1]).not.toHaveProperty("startedAt");
     expect(services.saveRecord.mock.calls[1]).toEqual([
       "film-roll",
       expect.objectContaining({
@@ -319,6 +321,8 @@ describe("extracted library activity views", () => {
       [...root.querySelectorAll("label.field")]
         .find((candidate) => candidate.querySelector(":scope > span")?.textContent === label)
         .querySelector("input,select,textarea");
+    expect(fieldControl(modal, "Session started (optional)").value).toBe("");
+    expect(fieldControl(modal, "Session finished").value).not.toBe("");
     const developerStage = modal.querySelector(".development-stage-card");
     developerStage.querySelector('[aria-label="Primary chemistry for stage"]').value = chemistry.uri;
     fieldControl(developerStage, "Actual minutes").value = "9";
@@ -366,6 +370,8 @@ describe("extracted library activity views", () => {
       }),
       null,
     ]);
+    const development = services.saveRecord.mock.calls[0][1];
+    expect(Date.parse(development.finishedAt)).toBeGreaterThan(Date.parse(development.startedAt));
     expect(services.saveRecord.mock.calls[1]).toEqual([
       "film-roll",
       expect.objectContaining({
@@ -516,6 +522,8 @@ describe("extracted library activity views", () => {
     fields.Software.value = "VueScan";
     fields["Resolution (dpi)"].value = "3200";
     fields["File format"].value = "TIFF";
+    fields.Started.value = "2026-09-20T11:00";
+    fields.Finished.value = "2026-09-20T12:00";
     modal.querySelector(".modal-actions button:not(.ghost)").click();
     await vi.waitFor(() => expect(services.saveRecord).toHaveBeenCalledTimes(2));
     expect(services.saveRecord.mock.calls[0]).toEqual([
@@ -526,14 +534,61 @@ describe("extracted library activity views", () => {
         fileFormat: "TIFF",
         resolution: { unit: "dpi", value: 3200, scale: 1 },
         filmRolls: [roll.uri],
+        startedAt: new Date("2026-09-20T11:00").toISOString(),
+        finishedAt: new Date("2026-09-20T12:00").toISOString(),
       }),
       null,
     ]);
     expect(services.saveRecord.mock.calls[1]).toEqual([
       "film-roll",
-      expect.objectContaining({ status: "scanned", scannedAt: expect.any(String) }),
+      expect.objectContaining({ status: "scanned", scannedAt: new Date("2026-09-20T12:00").toISOString() }),
       roll,
     ]);
+  });
+
+  it.each([
+    ["reversed", "2026-09-20T11:59"],
+    ["equal", "2026-09-20T12:00"],
+  ])("keeps scan values and shows an inline error for a %s interval", async (_case, finished) => {
+    const services = createServices(emptyStore({ instance: { filmRoll: [], scanner: [] } }));
+    openScanSession(undefined, services);
+    const modal = document.querySelector(".modal");
+    const fields = Object.fromEntries(
+      [...modal.querySelectorAll("label.field")].map((label) => [
+        label.querySelector("span").textContent,
+        label.querySelector("input,select"),
+      ]),
+    );
+    fields.Started.value = "2026-09-20T12:00";
+    fields.Finished.value = finished;
+
+    modal.querySelector(".modal-actions button:not(.ghost)").click();
+    await vi.waitFor(() => expect(modal.querySelector(".field-error:not(.hidden)")?.textContent).toContain("later"));
+    expect(services.saveRecord).not.toHaveBeenCalled();
+    expect(fields.Started.value).toBe("2026-09-20T12:00");
+    expect(fields.Finished.value).toBe(finished);
+    expect(fields.Finished.getAttribute("aria-invalid")).toBe("true");
+  });
+
+  it("allows a finish-only scan without inventing a start time", async () => {
+    const services = createServices(emptyStore({ instance: { filmRoll: [], scanner: [] } }));
+    openScanSession(undefined, services);
+    const modal = document.querySelector(".modal");
+    const fields = Object.fromEntries(
+      [...modal.querySelectorAll("label.field")].map((label) => [
+        label.querySelector("span").textContent,
+        label.querySelector("input,select"),
+      ]),
+    );
+    fields.Started.value = "";
+    fields.Finished.value = "2026-09-20T12:00";
+
+    modal.querySelector(".modal-actions button:not(.ghost)").click();
+    await vi.waitFor(() => expect(services.saveRecord).toHaveBeenCalledOnce());
+    expect(services.saveRecord.mock.calls[0][1]).toMatchObject({
+      finishedAt: new Date("2026-09-20T12:00").toISOString(),
+    });
+    expect(services.saveRecord.mock.calls[0][1]).not.toHaveProperty("startedAt");
   });
 
   it("auto-links frame records to loaded photos through injected persistence", async () => {

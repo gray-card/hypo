@@ -31,6 +31,18 @@ describe("outbox — offline write queue", () => {
     expect(localStorage.getItem(`hypo:outbox:${did}`)).toBeNull();
   });
 
+  it("rejects a reversed time span before it enters the offline queue", () => {
+    const intervalDid = "did:plc:invalid-interval";
+    expect(() =>
+      enqueue(intervalDid, "app.graycard.session.capture", {
+        startedAt: "2026-09-20T12:00:00Z",
+        endedAt: "2026-09-20T11:00:00Z",
+        createdAt: "2026-09-20T12:00:00Z",
+      }),
+    ).toThrow(/endedAt.*startedAt/);
+    expect(pendingCount(intervalDid)).toBe(0);
+  });
+
   it("flush creates every queued record and drains the queue", async () => {
     const agent = mockAgent();
     enqueue(did, EXP, { frameNumber: 1, createdAt: "x" });

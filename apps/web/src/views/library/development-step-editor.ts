@@ -1,4 +1,4 @@
-import { dateField, el, field, localInputToIso } from "@hypo/ui";
+import { dateTimeRange, el, field } from "@hypo/ui";
 import { createCatalogSelect, createChemistrySelect } from "./maintenance-selectors.ts";
 import type { ActivityServices, LibraryValue } from "./maintenance-types.ts";
 
@@ -295,8 +295,8 @@ export function validateDevelopmentChronology(
 ): void {
   const sessionStart = timestamp(startedAt);
   const sessionFinish = timestamp(finishedAt);
-  if (sessionStart !== undefined && sessionFinish !== undefined && sessionStart > sessionFinish) {
-    throw new Error("Session start cannot be after session finish");
+  if (sessionStart !== undefined && sessionFinish !== undefined && sessionStart >= sessionFinish) {
+    throw new Error("Session finish must be later than session start");
   }
 
   let previousObserved: number | undefined;
@@ -304,8 +304,8 @@ export function validateDevelopmentChronology(
     const start = timestamp(step.startedAt);
     const finish = timestamp(step.finishedAt);
     const label = String(step.name || `Stage ${index + 1}`);
-    if (start !== undefined && finish !== undefined && start > finish) {
-      throw new Error(`${label} cannot finish before it starts`);
+    if (start !== undefined && finish !== undefined && start >= finish) {
+      throw new Error(`${label} finish must be later than its start`);
     }
     if (sessionStart !== undefined && (start ?? finish) !== undefined && (start ?? finish)! < sessionStart) {
       throw new Error(`${label} cannot occur before the session starts`);
@@ -438,8 +438,13 @@ export function createDevelopmentStepEditor(
     });
     setDuration(initial.publishedTimeSeconds, plannedMinutes, plannedSeconds);
     setDuration(initial.actualTimeSeconds ?? initial.timeSeconds, actualMinutes, actualSeconds);
-    const started = dateField("Stage started (optional)", String(initial.startedAt || ""));
-    const finished = dateField("Stage finished (optional)", String(initial.finishedAt || ""));
+    const timing = dateTimeRange({
+      startLabel: "Stage started (optional)",
+      endLabel: "Stage finished (optional)",
+      startValue: String(initial.startedAt || ""),
+      endValue: String(initial.finishedAt || ""),
+      chronologyMessage: "Stage finish must be later than its start.",
+    });
     const agitationMethod = el(
       "select",
       {},
@@ -513,8 +518,9 @@ export function createDevelopmentStepEditor(
         const hasAgitation = Object.values(agitationScheme).some((value) => value !== undefined);
         const target = measure(targetTemp);
         const observed = measure(actualTemp);
-        const startedAt = localInputToIso(started.input.value) || undefined;
-        const finishedAt = localInputToIso(finished.input.value) || undefined;
+        const interval = timing.read();
+        const startedAt = interval.start;
+        const finishedAt = interval.end;
         const volumeMl = nonnegativeInteger(volume, `${name.value || `Stage ${position}`} volume`);
         return {
           name: name.value.trim() || preset.name,
@@ -624,8 +630,8 @@ export function createDevelopmentStepEditor(
           field("Planned minutes", plannedMinutes),
           field("Planned seconds", plannedSeconds),
           field("Target temperature °C", targetTemp),
-          started.wrap,
-          finished.wrap,
+          timing.start.wrap,
+          timing.end.wrap,
           field("Working volume (ml)", volume),
           field("Bath after use", disposition),
           field("Agitation method", agitationMethod),
