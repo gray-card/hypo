@@ -273,7 +273,7 @@ export function renderDarkroomActivity(
     .sort((left, right) => (right.at || "").localeCompare(left.at || ""))
     .slice(0, limit);
   if (!activity.length) return;
-  const list = el("ul", { class: "gear-list" });
+  const list = el("ul", { class: "gear-list development-activity-list" });
   for (const { record, kind, at } of activity) {
     const when = new Date(at).toLocaleDateString();
     const labName = record.value.lab
@@ -316,7 +316,7 @@ export function renderDarkroomActivity(
           "button",
           {
             type: "button",
-            class: "gear-row row between development-activity-row",
+            class: "gear-row development-activity-row",
             onclick: () =>
               kind === "develop"
                 ? openDevelopmentSession(
@@ -334,12 +334,12 @@ export function renderDarkroomActivity(
             title: kind === "develop" ? "Edit development session" : "Edit digitization session",
           },
           [
-            el("div", {}, [
+            el("span", { class: "development-activity-main" }, [
               el("strong", {}, kind === "develop" ? (labName ? "Lab developed" : "Developed") : "Scanned"),
-              el("div", { class: "small" }, subjectLabel),
-              el("div", { class: "muted small" }, label),
+              el("span", { class: "small development-activity-subject" }, subjectLabel),
+              el("span", { class: "muted small development-activity-summary" }, label),
             ]),
-            el("span", { class: "muted small mono" }, when),
+            el("time", { class: "muted small mono development-activity-date", datetime: at }, when),
           ],
         ),
       ]),

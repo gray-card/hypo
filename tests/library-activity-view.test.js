@@ -4,6 +4,7 @@ import {
   openDevelopmentSession,
   openLabDevelopment,
   openManualDevelopment,
+  renderDarkroomActivity,
   saveCompletedDevelopmentRecords,
 } from "../apps/web/src/views/library/maintenance-darkroom.ts";
 import {
@@ -88,6 +89,46 @@ beforeEach(() => {
 });
 
 describe("extracted library activity views", () => {
+  it("renders recent darkroom activity as neutral, wrapping ledger rows", () => {
+    const roll = item("at://roll/one", { label: "Roll with a deliberately long descriptive label" });
+    const chemistry = item("at://chemistry/developer", { nickname: "D-76 stock working bottle" });
+    const development = item("at://development/one", {
+      process: "bw",
+      filmRolls: [roll.uri],
+      steps: [
+        {
+          name: "Developer",
+          kind: "chemical-bath",
+          roles: ["film-developer"],
+          chemistries: [chemistry.uri],
+          actualTimeSeconds: 440,
+          agitationMethod: "inversion",
+          agitationScheme: { initialSec: 60, everySec: 60, forSec: 10 },
+        },
+      ],
+      finishedAt: "2026-09-20T16:20:00.000Z",
+      createdAt: "2026-09-20T16:00:00.000Z",
+    });
+    const store = emptyStore({
+      developSessions: [development],
+      byUri: new Map([
+        [roll.uri, { layer: "instance", kind: "filmRoll", item: roll }],
+        [chemistry.uri, { layer: "instance", kind: "chemistry", item: chemistry }],
+      ]),
+    });
+    const body = document.createElement("main");
+
+    renderDarkroomActivity(body, createServices(store));
+
+    const list = body.querySelector(".development-activity-list");
+    const row = list.querySelector("button.development-activity-row");
+    expect(row.classList).not.toContain("row");
+    expect(row.querySelector(".development-activity-main")).toBeInstanceOf(HTMLSpanElement);
+    expect(row.querySelector(".development-activity-subject").textContent).toContain("Roll with a deliberately long");
+    expect(row.querySelector(".development-activity-summary").textContent).toContain("D-76 stock working bottle");
+    expect(row.querySelector("time").dateTime).toBe(development.value.finishedAt);
+  });
+
   it("renders active workflow actions, including parallel logging and optional skipping", () => {
     const stage = item("at://stage/print", {
       $type: "app.graycard.workflow#printStage",

@@ -20,6 +20,8 @@ Notable changes to Hypo are recorded here.
 
 ### Fixed
 
+- Present recent darkroom activity as neutral ledger rows, with long roll,
+  equipment, software, and process descriptions wrapping inside the panel.
 - Show interval chronology errors beside the finish field without clearing the
   user's entries, and reject reversed spans at offline-write and bundle-import
   boundaries.
