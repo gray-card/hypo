@@ -586,7 +586,7 @@ export type AppGraycardDefsCatalogLinks = {
 };
 
 export type AppGraycardDefsProvenance = {
-  "source"?: KnownValue<"manual" | "observed" | "imported-exif" | "inferred" | "analysis" | "reconciled" | "transformed" | "batch-rule" | "workflow-template">;
+  "source"?: string;
   "confidence"?: KnownValue<"certain" | "likely" | "guess">;
   "assertedAt"?: string;
   "assertedBy"?: string;
@@ -596,7 +596,7 @@ export type AppGraycardDefsProvenance = {
 };
 
 export type AppGraycardDefsEvidenceRef = {
-  "kind": KnownValue<"record" | "external" | "file" | "content" | "withheld" | "unavailable">;
+  "kind"?: KnownValue<"record" | "external" | "file" | "content" | "withheld" | "unavailable">;
   "record"?: string;
   "uri"?: string;
   "digest"?: string;
@@ -2111,17 +2111,6 @@ export const KNOWN_VALUES = {
     "wikipedia",
     "uri",
     "other"
-  ],
-  "app.graycard.defs/defs/provenance/properties/source": [
-    "manual",
-    "observed",
-    "imported-exif",
-    "inferred",
-    "analysis",
-    "reconciled",
-    "transformed",
-    "batch-rule",
-    "workflow-template"
   ],
   "app.graycard.defs/defs/provenance/properties/confidence": [
     "certain",
@@ -5668,17 +5657,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "properties": {
           "source": {
             "type": "string",
-            "knownValues": [
-              "manual",
-              "observed",
-              "imported-exif",
-              "inferred",
-              "analysis",
-              "reconciled",
-              "transformed",
-              "batch-rule",
-              "workflow-template"
-            ]
+            "description": "Origin of the assertion. Recommended values include manual, observed, imported-exif, inferred, analysis, reconciled, transformed, batch-rule, and workflow-template; clients must preserve other values."
           },
           "confidence": {
             "type": "string",
@@ -5718,10 +5697,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
       },
       "evidenceRef": {
         "type": "object",
-        "description": "A machine-readable source for an assertion. Use the least revealing kind that still permits the assertion to be audited.",
-        "required": [
-          "kind"
-        ],
+        "description": "A machine-readable source for an assertion. Use the least revealing kind that still permits the assertion to be audited. New entries should identify their kind; legacy entries without one remain valid.",
         "properties": {
           "kind": {
             "type": "string",

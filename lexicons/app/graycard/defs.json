@@ -90,17 +90,7 @@
       "properties": {
         "source": {
           "type": "string",
-          "knownValues": [
-            "manual",
-            "observed",
-            "imported-exif",
-            "inferred",
-            "analysis",
-            "reconciled",
-            "transformed",
-            "batch-rule",
-            "workflow-template"
-          ]
+          "description": "Origin of the assertion. Recommended values include manual, observed, imported-exif, inferred, analysis, reconciled, transformed, batch-rule, and workflow-template; clients must preserve other values."
         },
         "confidence": {
           "type": "string",
@@ -124,8 +114,7 @@
     },
     "evidenceRef": {
       "type": "object",
-      "description": "A machine-readable source for an assertion. Use the least revealing kind that still permits the assertion to be audited.",
-      "required": ["kind"],
+      "description": "A machine-readable source for an assertion. Use the least revealing kind that still permits the assertion to be audited. New entries should identify their kind; legacy entries without one remain valid.",
       "properties": {
         "kind": {
           "type": "string",

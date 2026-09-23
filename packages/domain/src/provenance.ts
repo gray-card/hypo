@@ -1,5 +1,5 @@
 export interface ProvenanceEvidence {
-  kind: string;
+  kind?: string;
   record?: string;
   uri?: string;
   digest?: string;
