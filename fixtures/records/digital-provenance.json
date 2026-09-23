@@ -1,0 +1,40 @@
+{
+  "$type": "app.graycard.photo.capture",
+  "photo": "at://did:plc:example/social.grain.photo/photo-a",
+  "camera": "at://did:plc:example/app.graycard.instance.camera/camera-a",
+  "location": {
+    "latitude": 407000000,
+    "longitude": -740000000
+  },
+  "provenance": {
+    "source": "imported-exif",
+    "confidence": "certain",
+    "assertedAt": "2026-09-20T12:00:00.000Z"
+  },
+  "fieldProvenance": [
+    {
+      "field": "/camera",
+      "provenance": {
+        "source": "manual",
+        "confidence": "certain",
+        "note": "Photographer corrected the EXIF model match."
+      }
+    },
+    {
+      "field": "/location",
+      "provenance": {
+        "source": "transformed",
+        "confidence": "certain",
+        "method": "round-coordinate-to-0.1-degree",
+        "evidence": [
+          {
+            "kind": "withheld",
+            "redacted": true,
+            "label": "Private precise location retained locally"
+          }
+        ]
+      }
+    }
+  ],
+  "createdAt": "2026-09-20T12:00:00.000Z"
+}

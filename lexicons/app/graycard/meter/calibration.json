@@ -77,6 +77,11 @@
             "description": "OS build at calibration time; camera pipelines change between releases."
           },
           "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "fieldProvenance": {
+            "type": "array",
+            "maxLength": 256,
+            "items": { "type": "ref", "ref": "app.graycard.defs#fieldProvenance" }
+          },
           "note": { "type": "string", "maxLength": 1000 },
           "createdAt": { "type": "string", "format": "datetime" },
           "supersedes": {

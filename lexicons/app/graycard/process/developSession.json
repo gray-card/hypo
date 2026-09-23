@@ -174,6 +174,11 @@
           },
           "tankType": { "type": "ref", "ref": "app.graycard.defs#tankType" },
           "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "fieldProvenance": {
+            "type": "array",
+            "maxLength": 256,
+            "items": { "type": "ref", "ref": "app.graycard.defs#fieldProvenance" }
+          },
           "pushPull": {
             "type": "ref",
             "ref": "app.graycard.defs#measure",

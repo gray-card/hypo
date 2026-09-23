@@ -344,10 +344,14 @@ function shootValue(
   const lenses = [
     ...new Set(cluster.frames.map((frame) => uniqueGearMatch("lens", frame.lens, services)).filter(Boolean)),
   ];
+  const endedAt =
+    cluster.startedAt && cluster.endedAt && Date.parse(cluster.endedAt) > Date.parse(cluster.startedAt)
+      ? cluster.endedAt
+      : undefined;
   return {
     label: cluster.label.trim() || state.archive.name,
     startedAt: cluster.startedAt,
-    endedAt: cluster.endedAt,
+    ...(endedAt ? { endedAt } : {}),
     cameras: state.cameraSelect.value ? [state.cameraSelect.value] : undefined,
     lenses: lenses.length ? lenses : undefined,
     rolls: [roll],

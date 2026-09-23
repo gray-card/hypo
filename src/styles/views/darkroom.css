@@ -11,6 +11,14 @@
   height: 300px;
   margin-top: 6px;
 }
+.map-canvas.map-fallback {
+  height: auto;
+  min-height: 0;
+  padding: 12px;
+}
+.map-canvas.map-fallback > p {
+  margin: 0 0 10px;
+}
 .map-modal {
   width: min(680px, 94vw);
 }
@@ -524,10 +532,51 @@
   flex: 0 0 auto;
   margin: 0;
 }
-.development-activity-row {
+.development-activity-list {
+  margin-top: 12px;
+}
+.development-activity-list > li:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+button.development-activity-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
   width: 100%;
+  padding: 11px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
   color: var(--text);
   text-align: left;
+  white-space: normal;
+}
+button.development-activity-row:hover {
+  background: var(--surface-2);
+}
+button.development-activity-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.development-activity-main {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.development-activity-subject,
+.development-activity-summary {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.development-activity-summary {
+  line-height: 1.45;
+}
+.development-activity-date {
+  align-self: start;
+  margin-left: 0;
+  white-space: nowrap;
 }
 .roll-processing-head {
   gap: 10px;
@@ -604,6 +653,13 @@
   }
   .roll-processing-row {
     grid-template-columns: auto minmax(0, 1fr);
+  }
+  button.development-activity-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+  .development-activity-date {
+    margin-left: 0;
   }
   .roll-processing-date {
     grid-column: 2;
@@ -835,9 +891,9 @@
   }
   .primary-nav {
     display: grid;
-    grid-template-columns: repeat(4, minmax(78px, 1fr));
+    grid-template-columns: repeat(5, minmax(70px, 1fr));
     flex: 1 1 430px;
-    max-width: 470px;
+    max-width: 580px;
     gap: 2px;
     margin-left: 8px;
     padding: 3px;
@@ -864,7 +920,7 @@
 
   @media (max-width: 900px) {
     .primary-nav {
-      grid-template-columns: repeat(4, minmax(70px, 1fr));
+      grid-template-columns: repeat(5, minmax(62px, 1fr));
       margin-left: 0;
     }
     .primary-nav .nav-tab {

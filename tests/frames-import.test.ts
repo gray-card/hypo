@@ -138,8 +138,8 @@ describe(".frames import and shoot inference", () => {
       rolls: [roll.uri],
       cameras: [camera.uri],
       startedAt: at(1),
-      endedAt: at(1),
     });
+    expect(captureWrite[1]).not.toHaveProperty("endedAt");
     const exposureWrites = saveRecord.mock.calls.filter(([collection]) => collection === "exposure");
     expect(exposureWrites).toHaveLength(1);
     expect(exposureWrites[0]?.[1]).toMatchObject({

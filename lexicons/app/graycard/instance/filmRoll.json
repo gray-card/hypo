@@ -161,6 +161,12 @@
             "type": "string",
             "maxLength": 2000
           },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "fieldProvenance": {
+            "type": "array",
+            "maxLength": 256,
+            "items": { "type": "ref", "ref": "app.graycard.defs#fieldProvenance" }
+          },
           "createdAt": {
             "type": "string",
             "format": "datetime"

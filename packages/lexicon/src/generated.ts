@@ -11,6 +11,7 @@ export type AppGraycardArtifactMain = {
   "producedBy"?: string;
   "temporal"?: AppGraycardDefsTemporalRef;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "createdAt": string;
   "updatedAt"?: string;
   $type?: "app.graycard.artifact";
@@ -469,6 +470,7 @@ export type AppGraycardCatalogMeterTypeMain = {
   "specSources"?: Array<AppGraycardDefsSpecSource>;
   "links"?: AppGraycardDefsCatalogLinks;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "note"?: string;
   "createdAt": string;
   "updatedAt"?: string;
@@ -584,15 +586,29 @@ export type AppGraycardDefsCatalogLinks = {
 };
 
 export type AppGraycardDefsProvenance = {
-  "source"?: KnownValue<"manual" | "imported-exif" | "inferred" | "analysis" | "batch-rule" | "workflow-template">;
+  "source"?: string;
   "confidence"?: KnownValue<"certain" | "likely" | "guess">;
   "assertedAt"?: string;
   "assertedBy"?: string;
+  "method"?: string;
+  "evidence"?: Array<AppGraycardDefsEvidenceRef>;
+  "note"?: string;
+};
+
+export type AppGraycardDefsEvidenceRef = {
+  "kind"?: KnownValue<"record" | "external" | "file" | "content" | "withheld" | "unavailable">;
+  "record"?: string;
+  "uri"?: string;
+  "digest"?: string;
+  "label"?: string;
+  "redacted"?: boolean;
   "note"?: string;
 };
 
 export type AppGraycardDefsFieldProvenance = {
   "field": string;
+  "relationship"?: string;
+  "valueDigest"?: string;
   "provenance": AppGraycardDefsProvenance;
 };
 
@@ -702,6 +718,7 @@ export type AppGraycardEditRecipeMain = {
   "paramsHash"?: string;
   "preset"?: string;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "createdAt": string;
   "updatedAt"?: string;
   $type?: "app.graycard.edit.recipe";
@@ -811,6 +828,7 @@ export type AppGraycardInstanceExposureMain = {
   "timeZone"?: string;
   "sourceIdentifier"?: string;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "note"?: string;
   "createdAt": string;
   "updatedAt"?: string;
@@ -851,6 +869,8 @@ export type AppGraycardInstanceFilmRollMain = {
   "finishedAt"?: string;
   "labNotes"?: string;
   "notes"?: string;
+  "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "createdAt": string;
   "updatedAt"?: string;
   "image"?: BlobRef;
@@ -939,6 +959,7 @@ export type AppGraycardInstanceMeterMain = {
   "acquiredAt"?: string;
   "status"?: KnownValue<"in-use" | "backup" | "loaned" | "sold" | "retired" | "broken">;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "note"?: string;
   "createdAt": string;
   "updatedAt"?: string;
@@ -995,6 +1016,7 @@ export type AppGraycardMeterCalibrationMain = {
   "deviceModel"?: string;
   "osVersion"?: string;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "note"?: string;
   "createdAt": string;
   "supersedes"?: string;
@@ -1071,6 +1093,7 @@ export type AppGraycardMeterReadingMain = {
   "shoot"?: string;
   "takenAt"?: string;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "note"?: string;
   "createdAt": string;
   "updatedAt"?: string;
@@ -1088,6 +1111,7 @@ export type AppGraycardPhotoCaptureMain = {
   "location"?: AppGraycardDefsGeoLocation;
   "projectMode"?: AppGraycardDefsProjectMode;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "notes"?: string;
   "createdAt": string;
   "updatedAt"?: string;
@@ -1136,6 +1160,7 @@ export type AppGraycardProcessDevelopSessionMain = {
   "steps"?: Array<AppGraycardProcessDevelopSessionStep>;
   "tankType"?: AppGraycardDefsTankType;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "pushPull"?: AppGraycardDefsMeasure;
   "startedAt"?: string;
   "finishedAt"?: string;
@@ -1165,6 +1190,7 @@ export type AppGraycardProcessDigitizeSessionMain = {
   "inversionMethod"?: AppGraycardDefsInversionMethod;
   "labService"?: string;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "startedAt"?: string;
   "finishedAt"?: string;
   "notes"?: string;
@@ -1180,6 +1206,7 @@ export type AppGraycardProcessEditSessionMain = {
   "recipe"?: string;
   "paramsHash"?: string;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "notes"?: string;
   "createdAt": string;
   "updatedAt"?: string;
@@ -1195,6 +1222,7 @@ export type AppGraycardProcessMaintenanceSessionMain = {
   "createdAt": string;
   "updatedAt"?: string;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   $type?: "app.graycard.process.maintenanceSession";
 };
 
@@ -1277,6 +1305,7 @@ export type AppGraycardProcessPrintSessionMain = {
   "labService"?: string;
   "lab"?: string;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "startedAt"?: string;
   "finishedAt"?: string;
   "notes"?: string;
@@ -1299,6 +1328,7 @@ export type AppGraycardProcessRenderSessionMain = {
   "bitDepth"?: number;
   "quality"?: number;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "startedAt"?: string;
   "finishedAt"?: string;
   "notes"?: string;
@@ -1369,6 +1399,7 @@ export type AppGraycardSceneEdgeMain = {
   "to": string;
   "attrs"?: unknown;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "createdAt": string;
   "updatedAt"?: string;
   $type?: "app.graycard.scene.edge";
@@ -1381,6 +1412,7 @@ export type AppGraycardSceneGraphMain = {
   "label"?: string;
   "temporal"?: AppGraycardDefsTemporalRef;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "createdAt": string;
   "updatedAt"?: string;
   $type?: "app.graycard.scene.graph";
@@ -1393,6 +1425,7 @@ export type AppGraycardSceneNodeMain = {
   "region"?: string;
   "attrs"?: unknown;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "createdAt": string;
   "updatedAt"?: string;
   $type?: "app.graycard.scene.node";
@@ -1453,6 +1486,7 @@ export type AppGraycardSessionCaptureMain = {
   "filters"?: Array<string>;
   "places"?: Array<AppGraycardDefsGeoLocation>;
   "provenance"?: AppGraycardDefsProvenance;
+  "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
   "notes"?: string;
   "createdAt": string;
   "updatedAt"?: string;
@@ -2078,18 +2112,18 @@ export const KNOWN_VALUES = {
     "uri",
     "other"
   ],
-  "app.graycard.defs/defs/provenance/properties/source": [
-    "manual",
-    "imported-exif",
-    "inferred",
-    "analysis",
-    "batch-rule",
-    "workflow-template"
-  ],
   "app.graycard.defs/defs/provenance/properties/confidence": [
     "certain",
     "likely",
     "guess"
+  ],
+  "app.graycard.defs/defs/evidenceRef/properties/kind": [
+    "record",
+    "external",
+    "file",
+    "content",
+    "withheld",
+    "unavailable"
   ],
   "app.graycard.defs/defs/productDocument/properties/kind": [
     "technical-data",
@@ -2805,6 +2839,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "provenance": {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
+            },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
             },
             "createdAt": {
               "type": "string",
@@ -5092,6 +5134,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
             },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
+            },
             "note": {
               "type": "string",
               "maxLength": 1000
@@ -5607,14 +5657,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "properties": {
           "source": {
             "type": "string",
-            "knownValues": [
-              "manual",
-              "imported-exif",
-              "inferred",
-              "analysis",
-              "batch-rule",
-              "workflow-template"
-            ]
+            "description": "Origin of the assertion. Recommended values include manual, observed, imported-exif, inferred, analysis, reconciled, transformed, batch-rule, and workflow-template; clients must preserve other values."
           },
           "confidence": {
             "type": "string",
@@ -5632,6 +5675,64 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "type": "string",
             "format": "did"
           },
+          "method": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Machine-readable or human-readable identifier for the import, inference, reconciliation, or transformation method."
+          },
+          "evidence": {
+            "type": "array",
+            "maxLength": 16,
+            "items": {
+              "type": "ref",
+              "ref": "#evidenceRef"
+            },
+            "description": "Sources supporting this assertion. A withheld entry records that private or local evidence exists without publishing it."
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "evidenceRef": {
+        "type": "object",
+        "description": "A machine-readable source for an assertion. Use the least revealing kind that still permits the assertion to be audited. New entries should identify their kind; legacy entries without one remain valid.",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "knownValues": [
+              "record",
+              "external",
+              "file",
+              "content",
+              "withheld",
+              "unavailable"
+            ]
+          },
+          "record": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "AT-URI of a source session, workflow stage, rule, artifact, or assertion record."
+          },
+          "uri": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public external document or authority."
+          },
+          "digest": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Content-addressed identifier for a local file or value without exposing a local path."
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "redacted": {
+            "type": "boolean",
+            "description": "True when identifying evidence details were deliberately omitted for privacy."
+          },
           "note": {
             "type": "string",
             "maxLength": 500
@@ -5640,7 +5741,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
       },
       "fieldProvenance": {
         "type": "object",
-        "description": "Provenance for a single named field within a record, so make can come from EXIF while aperture is entered by hand.",
+        "description": "Provenance for one value or relationship. field is an RFC 6901 JSON Pointer (legacy top-level field names remain valid); relationship identifies one stable collection member without an array index; valueDigest binds the assertion to the value it describes.",
         "required": [
           "field",
           "provenance"
@@ -5648,7 +5749,17 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "properties": {
           "field": {
             "type": "string",
-            "maxLength": 128
+            "maxLength": 256
+          },
+          "relationship": {
+            "type": "string",
+            "maxLength": 2048,
+            "description": "Stable serialized relationship value, normally an AT-URI. Clients match the value rather than its array position."
+          },
+          "valueDigest": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Digest of the canonical encoded current value. A mismatch makes this assertion stale."
           },
           "provenance": {
             "type": "ref",
@@ -6284,6 +6395,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
             },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
+            },
             "createdAt": {
               "type": "string",
               "format": "datetime"
@@ -6803,6 +6922,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "ref": "app.graycard.defs#provenance",
               "description": "How this exposure's data was asserted — e.g. manually logged vs imported from EXIF."
             },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
+            },
             "note": {
               "type": "string",
               "maxLength": 1000
@@ -6995,6 +7122,18 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "notes": {
               "type": "string",
               "maxLength": 2000
+            },
+            "provenance": {
+              "type": "ref",
+              "ref": "app.graycard.defs#provenance"
+            },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
             },
             "createdAt": {
               "type": "string",
@@ -7435,6 +7574,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
             },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
+            },
             "note": {
               "type": "string",
               "maxLength": 1000
@@ -7704,6 +7851,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "provenance": {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
+            },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
             },
             "note": {
               "type": "string",
@@ -8084,6 +8239,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
             },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
+            },
             "note": {
               "type": "string",
               "maxLength": 1000
@@ -8155,6 +8318,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "provenance": {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
+            },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
             },
             "notes": {
               "type": "string",
@@ -8400,6 +8571,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
             },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
+            },
             "pushPull": {
               "type": "ref",
               "ref": "app.graycard.defs#measure",
@@ -8540,6 +8719,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
             },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
+            },
             "startedAt": {
               "type": "string",
               "format": "datetime"
@@ -8603,6 +8790,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "provenance": {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
+            },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
             },
             "notes": {
               "type": "string",
@@ -8676,6 +8871,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "provenance": {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
+            },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
             }
           }
         },
@@ -9051,6 +9254,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
             },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
+            },
             "startedAt": {
               "type": "string",
               "format": "datetime"
@@ -9154,6 +9365,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "provenance": {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
+            },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
             },
             "startedAt": {
               "type": "string",
@@ -9510,6 +9729,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
             },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
+            },
             "createdAt": {
               "type": "string",
               "format": "datetime"
@@ -9567,6 +9794,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
             },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
+            },
             "createdAt": {
               "type": "string",
               "format": "datetime"
@@ -9621,6 +9856,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "provenance": {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
+            },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
             },
             "createdAt": {
               "type": "string",
@@ -9930,6 +10173,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "provenance": {
               "type": "ref",
               "ref": "app.graycard.defs#provenance"
+            },
+            "fieldProvenance": {
+              "type": "array",
+              "maxLength": 256,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#fieldProvenance"
+              }
             },
             "notes": {
               "type": "string",

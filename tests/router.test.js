@@ -5,6 +5,12 @@ describe("route contract", () => {
   it("matches every v1 route and decodes parameters", () => {
     expect(matchRoute("/")).toMatchObject({ name: "home", params: {} });
     expect(matchRoute("/galleries")).toMatchObject({ name: "galleries", params: {} });
+    expect(matchRoute("/sessions")).toMatchObject({ name: "sessions", params: {} });
+    expect(matchRoute("/sessions/develop")).toMatchObject({ name: "sessionsScope", params: { scope: "develop" } });
+    expect(matchRoute("/session/digitize/scan%201")).toMatchObject({
+      name: "session",
+      params: { kind: "digitize", rkey: "scan 1" },
+    });
     expect(matchRoute("/library/film")).toMatchObject({ name: "library", params: { tab: "film" } });
     expect(matchRoute("/gallery/abc")).toMatchObject({ name: "gallery", params: { rkey: "abc" } });
     expect(matchRoute("/roll/r1")).toMatchObject({ name: "roll", params: { rkey: "r1" } });
@@ -27,6 +33,9 @@ describe("route contract", () => {
     expect(routeNames).toEqual([
       "home",
       "galleries",
+      "sessions",
+      "sessionsScope",
+      "session",
       "library",
       "gallery",
       "roll",
@@ -50,6 +59,8 @@ describe("route contract", () => {
     expect(routePath("profile", { handle: "did:plc:alice" })).toBe("/profile/did%3Aplc%3Aalice");
     expect(routePath("galleries")).toBe("/galleries");
     expect(routePath("following")).toBe("/following");
+    expect(routePath("sessionsScope", { scope: "develop" })).toBe("/sessions/develop");
+    expect(routePath("session", { kind: "digitize", rkey: "scan 1" })).toBe("/session/digitize/scan%201");
     expect(routePath("gear", { kind: "camera", rkey: "body 1" })).toBe("/gear/camera/body%201");
     expect(routePath("profileSection", { handle: "a.test", section: "recent work" })).toBe(
       "/profile/a.test/recent%20work",

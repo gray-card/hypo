@@ -395,7 +395,6 @@ export async function completeWorkflowStageAndAdvance(
     ...run.value,
     ...(productRefs.length ? { products: [...(run.value.products || []), ...productRefs] } : {}),
     status: complete ? "completed" : "in-progress",
-    startedAt: run.value.startedAt || completedAt,
     ...(complete ? { completedAt } : {}),
     updatedAt: completedAt,
   };

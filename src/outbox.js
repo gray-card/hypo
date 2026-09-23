@@ -12,6 +12,7 @@ import {
   openSyncDatabase,
   parseAtUri,
 } from "@hypo/sync";
+import { assertRecordTimeSpans } from "@hypo/domain";
 import { repoClient } from "./pds.js";
 import { canonicalizeAndValidateGrainRecord } from "./grainValidation.js";
 
@@ -274,10 +275,12 @@ function remember(runtime, operation) {
 export function enqueue(did, collection, record, options = {}) {
   const runtime = runtimeFor(did);
   const metadata = operationMetadata(runtime, collection, options);
+  const preparedRecord = { ...record, $type: record.$type || collection };
+  assertRecordTimeSpans(collection, preparedRecord);
   const operation = {
     ...metadata,
     kind: "create",
-    record: { ...record, $type: record.$type || collection },
+    record: preparedRecord,
     ...(options.rkey ? { rkey: options.rkey } : {}),
     tempUri: `outbox://${collection}/${metadata.id}`,
   };
@@ -312,12 +315,14 @@ export function enqueuePut(did, uriOrInput, record, swapRecord, options = {}) {
   }
   const runtime = runtimeFor(did);
   const metadata = operationMetadata(runtime, collection, input);
+  const preparedRecord = { ...input.record, $type: input.record.$type || collection };
+  assertRecordTimeSpans(collection, preparedRecord);
   const operation = {
     ...metadata,
     kind: "put",
     uri: input.uri,
     rkey,
-    record: { ...input.record, $type: input.record.$type || collection },
+    record: preparedRecord,
     swapRecord: input.swapRecord,
   };
   remember(runtime, operation);

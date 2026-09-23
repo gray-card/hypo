@@ -18,6 +18,7 @@
 @import url("./styles/views/account.css") layer(ui);
 @import url("./styles/views/onboarding.css") layer(ui);
 @import url("./styles/views/catalog.css") layer(ui);
+@import url("./styles/views/sessions.css") layer(ui);
 
 /*
  * Static selector index retained for tests that verify the responsive

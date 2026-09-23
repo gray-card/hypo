@@ -66,7 +66,30 @@ describe("process form TypeScript compatibility facade", () => {
       resolution: { value: 300_000_000, scale: 1_000_000, unit: "dpi" },
       bitDepth: 16,
       inversionMethod: "software-auto",
+      finishedAt: expect.any(String),
     });
+    expect(record).not.toHaveProperty("startedAt");
+  });
+
+  it.each([
+    ["developSession", { chemistry: "at://chemistry" }],
+    ["digitizeSession", { method: "dedicated-film-scanner" }],
+    ["printSession", {}],
+    ["renderSession", {}],
+  ])("records independent, positive-duration times for %s", (kind, required) => {
+    const form = buildProcessSessionForm(kind, store, {
+      ...required,
+      startedAt: "2026-09-20T11:00:00Z",
+      finishedAt: "2026-09-20T12:00:00Z",
+    });
+    document.body.replaceChildren(...form.nodes);
+
+    expect(form.read()).toMatchObject({
+      startedAt: "2026-09-20T11:00:00.000Z",
+      finishedAt: "2026-09-20T12:00:00.000Z",
+    });
+    expect(document.body.textContent).toContain("Started (optional)");
+    expect(document.body.textContent).toContain("Finished");
   });
 
   it("records render output settings without the removed general digital-session fields", () => {

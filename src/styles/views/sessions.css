@@ -1,0 +1,371 @@
+/* Sessions are a chronological contact sheet: dates form the rail, events form the frames. */
+.session-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 8px;
+  padding: 18px 0 16px;
+  border-bottom: 1px solid var(--border);
+}
+.session-hero h2,
+.session-detail-head h2 {
+  margin: 0;
+}
+.session-hero p {
+  max-width: 62ch;
+  margin: 5px 0 0;
+}
+.session-create-actions,
+.session-actions,
+.session-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.session-filter-panel {
+  display: grid;
+  grid-template-columns: minmax(16rem, 1fr) auto auto;
+  gap: 12px;
+  align-items: end;
+  margin: 10px 0 0;
+}
+.session-date-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(8.5rem, 1fr));
+  gap: 8px;
+}
+.session-date-fields .field {
+  margin: 0;
+}
+.session-review-toggle {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  gap: 8px;
+  white-space: nowrap;
+}
+.session-results {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 18px;
+}
+.session-day {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 18px;
+}
+.session-day-label {
+  position: sticky;
+  top: 78px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  padding-top: 8px;
+}
+.session-day-name {
+  color: var(--accent);
+  font: 650 13px/1.2 var(--font-sans);
+}
+.session-day-date {
+  margin-top: 3px;
+  color: var(--muted);
+  font: 500 11px/1.45 var(--font-mono);
+}
+.session-day-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.session-day-list::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -10px;
+  width: 1px;
+  background: var(--border);
+}
+.session-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.session-card:hover,
+.session-card:focus-within {
+  border-color: color-mix(in oklab, var(--accent) 54%, var(--border));
+}
+.session-card-main {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+.session-card-main:hover {
+  background: transparent;
+}
+.session-kind-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  min-height: 30px;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  color: var(--muted);
+  font: 700 10px/1 var(--font-mono);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.session-kind-mark.develop,
+.session-kind-mark.print {
+  border-color: color-mix(in oklab, var(--accent) 54%, var(--border));
+  color: var(--accent);
+}
+.session-kind-mark.digitize,
+.session-kind-mark.render {
+  border-color: color-mix(in oklab, var(--ok) 44%, var(--border));
+  color: var(--ok);
+}
+.session-kind-mark.large {
+  width: 58px;
+  min-height: 58px;
+  font-size: 12px;
+}
+.session-card-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+.session-card-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.session-time {
+  flex: none;
+  color: var(--muted);
+  font-size: 11px;
+}
+.session-subjects,
+.session-process {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.session-subjects.missing {
+  color: var(--danger);
+}
+.session-chips {
+  margin-top: 5px;
+}
+.session-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 21px;
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.2;
+}
+.session-chip.review {
+  border-color: color-mix(in oklab, var(--danger) 42%, var(--border));
+  color: color-mix(in oklab, var(--danger) 82%, var(--text));
+}
+.session-card > .session-actions {
+  justify-content: flex-end;
+  padding: 10px 12px 10px 0;
+}
+.session-load-more {
+  align-self: center;
+}
+.session-empty {
+  margin-top: 8px;
+}
+.session-detail {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.session-detail-nav {
+  margin-bottom: 16px;
+}
+.session-detail-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0 22px;
+  border-bottom: 1px solid var(--border);
+}
+.session-detail-time {
+  margin: 0 0 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.session-detail-title > p:last-child {
+  margin: 5px 0 0;
+}
+.session-review-callout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 14px 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--danger);
+  background: color-mix(in oklab, var(--danger) 8%, transparent);
+  font-size: 13px;
+}
+.session-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.session-detail-section {
+  margin: 12px 0 0;
+}
+.session-detail-section h3 {
+  margin-top: 0;
+}
+.session-relationship-list {
+  margin: 0;
+  padding-left: 18px;
+}
+.session-definition-list {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.35fr) minmax(0, 1fr);
+  gap: 8px 18px;
+  margin: 0;
+}
+.session-definition-list dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+.session-definition-list dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.session-definition-list.process dd {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.session-notes {
+  max-width: 74ch;
+  white-space: pre-wrap;
+}
+.session-evidence {
+  margin-top: 12px;
+}
+.session-evidence summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+.session-evidence[open] summary {
+  margin-bottom: 16px;
+}
+.session-field-provenance {
+  margin-top: 18px;
+}
+.session-evidence-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) auto minmax(8rem, 1fr);
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 760px) {
+  .session-hero,
+  .session-detail-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .session-hero {
+    display: flex;
+  }
+  .session-create-actions > * {
+    flex: 1 1 auto;
+  }
+  .session-filter-panel {
+    grid-template-columns: 1fr;
+  }
+  .session-day {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+  .session-day-label {
+    position: static;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 7px;
+  }
+  .session-day-list::before {
+    display: none;
+  }
+  .session-card {
+    grid-template-columns: 1fr;
+  }
+  .session-card > .session-actions {
+    padding: 0 12px 12px 66px;
+    justify-content: flex-start;
+  }
+  .session-card-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .session-subjects,
+  .session-process {
+    white-space: normal;
+  }
+  .session-detail-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .session-detail-head > .session-actions {
+    grid-column: 1 / -1;
+  }
+  .session-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .session-definition-list,
+  .session-evidence-row {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+}
+
+@media (max-width: 460px) {
+  .session-date-fields {
+    grid-template-columns: 1fr;
+  }
+  .session-card-main {
+    grid-template-columns: 1fr;
+  }
+  .session-kind-mark:not(.large) {
+    width: auto;
+    min-height: 23px;
+    justify-self: start;
+    padding-inline: 7px;
+  }
+  .session-card > .session-actions {
+    padding-left: 12px;
+  }
+}

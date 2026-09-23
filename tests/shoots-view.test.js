@@ -137,6 +137,26 @@ describe("extracted Shoots view", () => {
     expect(services.reloadStore).toHaveBeenCalled();
   });
 
+  it("blocks an equal shoot interval inline without clearing either value", async () => {
+    const store = {
+      catalog: {},
+      instance: { camera: [], lens: [], filmRoll: [], filter: [], exposure: [] },
+      shoots: [],
+      workflowTemplates: [],
+    };
+    const services = createServices(store);
+    openShootEditor(null, undefined, services);
+    const modal = document.querySelector(".modal");
+    const timeInputs = modal.querySelectorAll('.process-time-grid input[type="datetime-local"]');
+    timeInputs[0].value = "2026-09-20T12:00";
+    timeInputs[1].value = "2026-09-20T12:00";
+
+    modal.querySelector(".modal-actions button:not(.ghost)").click();
+    await vi.waitFor(() => expect(modal.querySelector(".field-error:not(.hidden)")?.textContent).toContain("later"));
+    expect(services.saveRecord).not.toHaveBeenCalled();
+    expect([...timeInputs].map((input) => input.value)).toEqual(["2026-09-20T12:00", "2026-09-20T12:00"]);
+  });
+
   it("does not double-count a pending exposure already present in the projected store", () => {
     const shoot = item("at://shoot/one", { label: "Photo walk", cameras: ["at://camera/a"] });
     const store = {

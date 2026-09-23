@@ -1,0 +1,30 @@
+{
+  "$type": "app.graycard.process.developSession",
+  "filmRolls": ["at://did:plc:example/app.graycard.instance.filmRoll/roll-a"],
+  "process": "bw",
+  "provenance": {
+    "source": "observed",
+    "confidence": "certain",
+    "assertedAt": "2026-09-20T14:00:00.000Z"
+  },
+  "fieldProvenance": [
+    {
+      "field": "/filmRolls",
+      "relationship": "at://did:plc:example/app.graycard.instance.filmRoll/roll-a",
+      "valueDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "provenance": {
+        "source": "inferred",
+        "confidence": "likely",
+        "method": "batch-time-correlation-v1",
+        "evidence": [
+          {
+            "kind": "record",
+            "record": "at://did:plc:example/app.graycard.workflow.stage/develop-a",
+            "label": "Development workflow stage"
+          }
+        ]
+      }
+    }
+  ],
+  "createdAt": "2026-09-20T14:00:00.000Z"
+}

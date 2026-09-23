@@ -4,7 +4,7 @@
 // to add and there is nothing to tap. these guard that regression.
 
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { cssColorToRgb } from "../src/ui/mapView.js";
+import { cssColorToRgb, heatmapPopupContent, loadMaplibre } from "../src/ui/mapView.js";
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -34,5 +34,26 @@ describe("cssColorToRgb — maplibre-safe accent color", () => {
     const out = cssColorToRgb("", "#123456");
     expect(out).toBe("#123456");
     expect(out).toMatch(/^(#|rgb)/);
+  });
+});
+
+describe("heatmapPopupContent", () => {
+  it("renders record labels as text instead of executable popup HTML", () => {
+    const popup = heatmapPopupContent('<img src=x onerror="globalThis.compromised=true">', "2");
+
+    expect(popup.textContent).toBe('<img src=x onerror="globalThis.compromised=true">2 photos');
+    expect(popup.querySelector("img")).toBeNull();
+  });
+
+  it("uses singular photo copy for one result", () => {
+    expect(heatmapPopupContent("Downtown", 1).textContent).toBe("Downtown1 photo");
+  });
+});
+
+describe("loadMaplibre", () => {
+  it("configures the self-contained Vite worker before returning MapLibre", async () => {
+    const maplibregl = await loadMaplibre();
+
+    expect(maplibregl.workerUrlForTest()).toBe("/assets/maplibre-gl-worker.js");
   });
 });
