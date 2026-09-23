@@ -1,5 +1,5 @@
 import { assertConsumableLifecycle } from "@hypo/domain";
-import { checkList, dateField, el, field, localInputToIso, openModal, toast } from "@hypo/ui";
+import { checkList, dateTimeRange, el, field, openModal, toast } from "@hypo/ui";
 import {
   chemistryUrisForDevelopment,
   createDevelopmentStepEditor,
@@ -78,6 +78,7 @@ export function primaryDevelopmentStep(value: LibraryValue): LibraryValue | unde
 export interface ManualDevelopmentOptions {
   readonly selectedRolls?: readonly string[];
   readonly existing?: LibraryRecord | null;
+  readonly initial?: LibraryValue;
 }
 
 const sessionFinishedAt = (value: LibraryValue) => String(value.finishedAt || value.createdAt || "");
@@ -241,7 +242,19 @@ export async function saveCompletedDevelopmentRecords(
   return sessionUri;
 }
 
-export function renderDarkroomActivity(body: HTMLElement, services: ActivityServices, render?: () => void): void {
+export interface ActivityListOptions {
+  readonly kinds?: readonly ("develop" | "digitize")[];
+  readonly limit?: number;
+  readonly title?: string;
+  readonly showAllLink?: boolean;
+}
+
+export function renderDarkroomActivity(
+  body: HTMLElement,
+  services: ActivityServices,
+  render?: () => void,
+  options: ActivityListOptions = {},
+): void {
   const developments = (services.getStore().developSessions || []).map((record) => ({
     record,
     kind: "develop",
@@ -249,15 +262,18 @@ export function renderDarkroomActivity(body: HTMLElement, services: ActivityServ
   }));
   const scans = (services.getStore().digitizeSessions || []).map((record) => ({
     record,
-    kind: "scan",
+    kind: "digitize",
     at: record.value.finishedAt || record.value.createdAt,
   }));
+  const kinds = new Set(options.kinds || ["develop", "digitize"]);
+  const limit = options.limit ?? 12;
   const activity = [...developments, ...scans]
+    .filter((entry) => kinds.has(entry.kind as "develop" | "digitize"))
     .filter((entry) => entry.at)
     .sort((left, right) => (right.at || "").localeCompare(left.at || ""))
-    .slice(0, 12);
+    .slice(0, limit);
   if (!activity.length) return;
-  const list = el("ul", { class: "gear-list" });
+  const list = el("ul", { class: "gear-list development-activity-list" });
   for (const { record, kind, at } of activity) {
     const when = new Date(at).toLocaleDateString();
     const labName = record.value.lab
@@ -272,6 +288,12 @@ export function renderDarkroomActivity(body: HTMLElement, services: ActivityServ
     const scannerName = record.value.scanner
       ? services.instanceLabel("scanner", services.getStore().byUri.get(record.value.scanner)?.item.value)
       : undefined;
+    const rollUris = Array.isArray(record.value.filmRolls) ? record.value.filmRolls : [];
+    const rollLabels = rollUris
+      .slice(0, 2)
+      .map((uri: string) => services.instanceLabel("filmRoll", services.getStore().byUri.get(uri)?.item.value));
+    if (rollUris.length > 2) rollLabels.push(`+${rollUris.length - 2} more`);
+    const subjectLabel = rollLabels.join(", ") || "No rolls linked";
     const label =
       kind === "develop"
         ? labName
@@ -305,7 +327,7 @@ export function renderDarkroomActivity(body: HTMLElement, services: ActivityServ
           "button",
           {
             type: "button",
-            class: "gear-row row between development-activity-row",
+            class: "gear-row development-activity-row",
             onclick: () =>
               kind === "develop"
                 ? openDevelopmentSession(
@@ -316,11 +338,14 @@ export function renderDarkroomActivity(body: HTMLElement, services: ActivityServ
                     },
                     services,
                   )
-                : services.inspect(record),
-            title: kind === "develop" ? "Edit development session" : "Inspect scan session",
+                : services.editSession?.("digitize", record, async () => {
+                    await services.reloadStore();
+                    render?.();
+                  }) || services.inspect(record),
+            title: kind === "develop" ? "Edit development session" : "Edit digitization session",
           },
           [
-            el("div", {}, [
+            el("span", { class: "development-activity-main" }, [
               el(
                 "strong",
                 {},
@@ -334,15 +359,34 @@ export function renderDarkroomActivity(body: HTMLElement, services: ActivityServ
                       : "Developed"
                   : "Scanned",
               ),
-              el("div", { class: "muted small" }, label),
+              el("span", { class: "small development-activity-subject" }, subjectLabel),
+              el("span", { class: "muted small development-activity-summary" }, label),
             ]),
-            el("span", { class: "muted small mono" }, when),
+            el("time", { class: "muted small mono development-activity-date", datetime: at }, when),
           ],
         ),
       ]),
     );
   }
-  body.append(el("div", { class: "card" }, [el("h3", {}, "Recent darkroom activity"), list]));
+  body.append(
+    el("div", { class: "card" }, [
+      el("div", { class: "row between wrap" }, [
+        el("h3", { style: "margin:0" }, options.title || "Recent darkroom activity"),
+        options.showAllLink && services.navigateSessions
+          ? el(
+              "button",
+              {
+                type: "button",
+                class: "ghost small-btn",
+                onclick: () => services.navigateSessions?.(options.kinds?.length === 1 ? options.kinds[0] : undefined),
+              },
+              "View all sessions",
+            )
+          : null,
+      ]),
+      list,
+    ]),
+  );
 }
 
 export function renderDarkroomHeader(body: HTMLElement, services: ActivityServices, render: () => void): void {
@@ -382,6 +426,12 @@ export function renderDarkroomHeader(body: HTMLElement, services: ActivityServic
       ]),
     ]),
   );
+  renderDarkroomActivity(body, services, render, {
+    kinds: ["develop"],
+    limit: 5,
+    title: "Recent development sessions",
+    showAllLink: true,
+  });
 }
 
 export function openManualDevelopment(
@@ -390,7 +440,7 @@ export function openManualDevelopment(
   options: ManualDevelopmentOptions = {},
 ) {
   const existing = options.existing || null;
-  const value = existing?.value || {};
+  const value = existing?.value || options.initial || {};
   const rolls = services.getStore().instance.filmRoll || [];
   const chemistry = services.getStore().instance.chemistry || [];
   const processSelect = el(
@@ -401,8 +451,15 @@ export function openManualDevelopment(
     ),
   );
   processSelect.value = String(value.process || "bw");
-  const started = dateField("Session started (optional)", value.startedAt || "");
-  const completed = dateField("Session finished", value.finishedAt || new Date().toISOString());
+  const timing = dateTimeRange({
+    startLabel: "Session started (optional)",
+    endLabel: "Session finished",
+    startValue: existing ? String(value.startedAt || "") : "",
+    endValue: existing ? String(value.finishedAt || "") : new Date().toISOString(),
+    requireEnd: true,
+    missingEndMessage: "Enter when the development session finished.",
+    chronologyMessage: "Session finish must be later than session start.",
+  });
   const locationSelect = el("select", { "data-key": "developmentLocation" }, [
     el("option", { value: "home" }, "Home darkroom"),
     el("option", { value: "other" }, "Other"),
@@ -435,7 +492,10 @@ export function openManualDevelopment(
     String(value.notes || ""),
   );
   const rollList = checkList(
-    rolls.map((roll) => ({ value: roll.uri, label: services.instanceLabel("filmRoll", roll.value) })),
+    rolls.map((roll) => ({
+      value: roll.uri,
+      label: `${services.instanceLabel("filmRoll", roll.value)} · ${services.enumLabel(roll.value.status || "unknown")}`,
+    })),
     {
       selected: options.selectedRolls || (Array.isArray(value.filmRolls) ? value.filmRolls : []),
       emptyMessage: el("p", { class: "muted small" }, "No rolls yet — add one in the Film tab first."),
@@ -450,10 +510,37 @@ export function openManualDevelopment(
   };
   for (const input of rollList.inputs) input.addEventListener("change", updateBatchSummary);
   updateBatchSummary();
+  const rollSearch = el("input", {
+    type: "search",
+    class: "search-input",
+    placeholder: "Search rolls by label, stock, or status…",
+    "aria-label": "Search rolls for this development",
+  });
+  const rollScope = el("select", { "aria-label": "Filter rolls for this development" }, [
+    el("option", { value: "ready" }, "Ready to develop"),
+    el("option", { value: "all" }, "All rolls"),
+  ]);
+  if (existing || options.initial) rollScope.value = "all";
+  const filterRolls = () => {
+    const query = rollSearch.value.trim().toLocaleLowerCase();
+    rollList.node.querySelectorAll<HTMLElement>(".check-row").forEach((row, index) => {
+      const roll = rolls[index];
+      const ready = !DEVELOPED_OR_LATER.has(String(roll?.value.status || ""));
+      const selected = Boolean(row.querySelector<HTMLInputElement>('input[type="checkbox"]')?.checked);
+      const inScope = rollScope.value === "all" || ready || selected;
+      row.classList.toggle(
+        "hidden",
+        !inScope || (Boolean(query) && !row.textContent?.toLocaleLowerCase().includes(query)),
+      );
+    });
+  };
+  rollSearch.addEventListener("input", filterRolls);
+  rollScope.addEventListener("change", filterRolls);
+  filterRolls();
   const stageEditor = createDevelopmentStepEditor(services, Array.isArray(value.steps) ? value.steps : []);
 
   return openModal(
-    existing ? "Edit development" : "Log development batch",
+    existing ? "Edit development" : options.initial ? "Repeat development setup" : "Log completed development",
     [
       el(
         "p",
@@ -469,15 +556,15 @@ export function openManualDevelopment(
             { class: "muted small" },
             "Add your working chemistry under Setup → Darkroom before logging this session.",
           ),
-      el("h3", { class: "modal-sub" }, "Rolls in this batch"),
+      el("h3", { class: "modal-sub" }, "Rolls and session"),
       batchSummary,
+      el("div", { class: "library-filter-bar" }, [rollSearch, field("Show", rollScope)]),
       rollList.node,
       field("Process", processSelect),
       field("Tank or processor", tankTypeSelect),
       field("Push / pull", pushPullSelect),
       field("Development location", locationSelect),
-      started.wrap,
-      completed.wrap,
+      timing.node,
       el("h3", { class: "modal-sub" }, "Ordered process stages"),
       stageEditor.node,
       field("Notes", notesInput),
@@ -490,12 +577,13 @@ export function openManualDevelopment(
       if (!primaryDeveloper) {
         throw new Error("Link tracked chemistry to at least one developer stage");
       }
-      const finishedAt = localInputToIso(completed.input.value) || new Date().toISOString();
+      const interval = timing.read();
+      const finishedAt = interval.end!;
       const primaryStep = steps.find((step) => {
         const roles = Array.isArray(step.roles) ? step.roles : [];
         return roles.some((role) => ["film-developer", "first-developer", "color-developer"].includes(role));
       })!;
-      const explicitStartedAt = localInputToIso(started.input.value) || undefined;
+      const explicitStartedAt = interval.start;
       const earliestStepStart = steps.map((step) => step.startedAt).find(Boolean);
       const primaryDuration = primaryStep.actualTimeSeconds;
       const startedAt =
@@ -503,7 +591,7 @@ export function openManualDevelopment(
         earliestStepStart ||
         (primaryDuration
           ? new Date(new Date(finishedAt).getTime() - Number(primaryDuration) * 1000).toISOString()
-          : finishedAt);
+          : undefined);
       validateDevelopmentChronology(steps, startedAt, finishedAt);
       const pushPull = Number.parseInt(pushPullSelect.value, 10) || 0;
       const session: LibraryValue = {
@@ -511,12 +599,13 @@ export function openManualDevelopment(
         process: processSelect.value,
         steps,
         tankType: tankTypeSelect.value,
-        startedAt,
         finishedAt,
         notes: notesInput.value.trim() || undefined,
-        createdAt: value.createdAt || new Date().toISOString(),
+        createdAt: existing ? value.createdAt || new Date().toISOString() : new Date().toISOString(),
         provenance: value.provenance || { source: "manual", assertedAt: new Date().toISOString() },
       };
+      if (startedAt) session.startedAt = startedAt;
+      if (Array.isArray(value.fieldProvenance)) session.fieldProvenance = value.fieldProvenance;
       if (existing) session.updatedAt = new Date().toISOString();
       if (pushPull) session.pushPull = { unit: "stop", value: pushPull, scale: 1 };
 
@@ -615,7 +704,6 @@ export function openLabDevelopment(
         labService: labName,
         developmentLocation: "lab",
         filmRolls: rollUris.length ? rollUris : undefined,
-        startedAt: when,
         finishedAt: when,
         notes: notesInput.value.trim() || undefined,
         createdAt: value.createdAt || new Date().toISOString(),

@@ -45,8 +45,8 @@ try {
 
   run(["init"], sandbox);
   const addOutput = run(["add", ".", "--data", "fixtures/records"], sandbox);
-  if (!addOutput.includes("Staged 2 data file(s)")) {
-    throw new Error(`Panproto did not report the two staged fixtures:\n${addOutput}`);
+  if (!addOutput.includes("Staged 4 data file(s)")) {
+    throw new Error(`Panproto did not report the four staged fixtures:\n${addOutput}`);
   }
 
   const index = JSON.parse(readFileSync(join(sandbox, ".panproto", "index.json"), "utf8"));
@@ -58,8 +58,8 @@ try {
   if (notes.some((note) => note.includes("no protocol theory registered"))) {
     throw new Error(`ATProto equation checking was bypassed: ${notes.join("; ")}`);
   }
-  if (index.staged_data?.length !== 2) {
-    throw new Error(`expected 2 staged data sets, received ${index.staged_data?.length ?? 0}`);
+  if (index.staged_data?.length !== 4) {
+    throw new Error(`expected 4 staged data sets, received ${index.staged_data?.length ?? 0}`);
   }
 
   run(["compat", ".", ".", "--protocol", "atproto", "--format", "json"], sandbox);
@@ -88,7 +88,7 @@ if (validation.issues.length !== 0) {
 }
 
 const dataStatus = run(["status", "--data", "fixtures/records"]);
-if (!dataStatus.includes("2 data set(s) tracked at HEAD")) {
+if (!dataStatus.includes("4 data set(s) tracked at HEAD")) {
   throw new Error(`the checked-in sidecar does not track the complete corpus:\n${dataStatus}`);
 }
 
@@ -102,7 +102,7 @@ for (const chainPath of chainPaths) {
 
 console.log(
   `Panproto ${PANPROTO_VERSION}: ${documents.length} ${basename(join(root, "lexicons"))} documents, ` +
-    `ATProto equations checked, 2 data fixtures tracked, bundle compat and diff loaded, ` +
+    `ATProto equations checked, 4 data fixtures tracked, bundle compat and diff loaded, ` +
     `${chainPaths.length} chains checked, ` +
     "SDK validation clean.",
 );

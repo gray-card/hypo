@@ -20,6 +20,11 @@
           "location": { "type": "ref", "ref": "app.graycard.defs#geoLocation" },
           "projectMode": { "type": "ref", "ref": "app.graycard.defs#projectMode" },
           "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "fieldProvenance": {
+            "type": "array",
+            "maxLength": 256,
+            "items": { "type": "ref", "ref": "app.graycard.defs#fieldProvenance" }
+          },
           "notes": { "type": "string", "maxLength": 1000 },
           "createdAt": { "type": "string", "format": "datetime" },
           "updatedAt": { "type": "string", "format": "datetime" }

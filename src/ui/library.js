@@ -78,6 +78,7 @@ import {
 } from "../../apps/web/src/views/library/maintenance-selectors.ts";
 import {
   openManualDevelopment,
+  openLabDevelopment,
   openDevelopmentSession,
   renderDarkroomHeader as renderDarkroomHeaderView,
   saveCompletedDevelopmentRecords,
@@ -89,6 +90,11 @@ import {
 } from "../../apps/web/src/views/library/scanning-view.ts";
 import { renderInsightsView } from "../../apps/web/src/views/library/insights-view.ts";
 import { renderLibraryShell } from "../../apps/web/src/views/library/maintenance-shell.ts";
+import {
+  findSession,
+  renderSessionDetail,
+  renderSessionsView,
+} from "../../apps/web/src/views/sessions/session-view.ts";
 import { computeLintFindings } from "../lint.js";
 import cameraTypeLexicon from "../../lexicons/app/graycard/catalog/cameraType.json";
 import lensTypeLexicon from "../../lexicons/app/graycard/catalog/lensType.json";
@@ -511,6 +517,13 @@ function activityServices() {
     icon,
     isAdvanced,
     inspect: openInspector,
+    navigateSessions: (scope) => ctx?.navigateSessions?.(scope),
+    navigateSession: (kind, rkey) => ctx?.navigateSession?.({ kind, rkey }),
+    editSession: (kind, record, onDone) => {
+      if (kind === "develop") return openDevelopmentSession(record, onDone, activityServices());
+      if (kind === "digitize") return openScanSession(onDone, activityServices(), { existing: record });
+      return openInspector(record);
+    },
     activeDevelopment: () => activeDevRun(ctx.did),
     openDevelopmentTimer: (options) =>
       openDevTimerLazy(ctx, {
@@ -538,6 +551,38 @@ function activityServices() {
     computeLintFindings: () => computeLintFindings(ctx.store),
     reserveQuantity,
     filmStockLabel,
+  };
+}
+
+function sessionViewServices() {
+  const services = activityServices();
+  const refresh = async (onDone) => {
+    await services.reloadStore();
+    onDone?.();
+  };
+  return {
+    ...services,
+    navigateSessions: (scope) => ctx?.navigateSessions?.(scope),
+    navigateSession: (kind, rkey) => ctx?.navigateSession?.({ kind, rkey }),
+    editSession: (kind, record, onDone) => {
+      const done = () => refresh(onDone);
+      if (kind === "capture") return openShootEditor(record, done);
+      if (kind === "develop") return openDevelopmentSession(record, done, services);
+      if (kind === "digitize") return openScanSession(done, services, { existing: record });
+      return services.inspect(record);
+    },
+    duplicateSession: (kind, record, onDone) => {
+      const done = () => refresh(onDone);
+      if (kind === "develop") return openManualDevelopment(done, services, { initial: record.value });
+      if (kind === "digitize") return openScanSession(done, services, { initial: record.value });
+      return undefined;
+    },
+    createSession: (kind, onDone) => {
+      const done = () => refresh(onDone);
+      if (kind === "capture") return openShootEditor(null, done);
+      if (kind === "develop") return openManualDevelopment(done, services);
+      return openScanSession(done, services);
+    },
   };
 }
 
@@ -598,6 +643,41 @@ export async function openLibrary() {
   }
   ctx.store = null; // force a fresh load; renderLibrary shows the skeleton meanwhile
   await renderLibrary();
+}
+
+async function ensureSessionStore() {
+  if (!ctx?.agent || !ctx?.did) {
+    showView("login-view");
+    return false;
+  }
+  if (!ctx.store) ctx.store = await loadStore(ctx.agent, ctx.did);
+  return true;
+}
+
+export async function openSessions(scope = "all") {
+  if (!(await ensureSessionStore())) return;
+  const body = document.querySelector("#sessions-body");
+  if (body) renderSessionsView(body, sessionViewServices(), scope);
+}
+
+export async function openSessionRecordRoute(target) {
+  if (!(await ensureSessionStore())) return;
+  const entry = findSession(ctx.store, target.kind, target.rkey);
+  if (!entry) throw new Error(`Could not find ${target.kind} session “${target.rkey}”.`);
+  const body = document.querySelector("#sessions-body");
+  if (body) renderSessionDetail(body, entry, sessionViewServices());
+}
+
+export async function openSessionAction(action) {
+  if (!(await ensureSessionStore())) return;
+  const services = sessionViewServices();
+  const done = () => ctx?.navigateSessions?.();
+  if (action === "find") return ctx?.navigateSessions?.();
+  if (action === "capture") return services.createSession("capture", done);
+  if (action === "develop") return services.createSession("develop", done);
+  if (action === "lab-develop") return openLabDevelopment(done, services);
+  if (action === "digitize") return services.createSession("digitize", done);
+  if (action === "resume-development") return services.openDevelopmentTimer({ onDone: done });
 }
 
 export function instanceSelect(kind, value = "", onChange = () => {}) {

@@ -4,7 +4,7 @@
 // using swapRecord for optimistic concurrency on updates.
 
 import { PublicRepoClient } from "@hypo/pds";
-import { assertConsumableLifecycle } from "@hypo/domain";
+import { assertConsumableLifecycle, assertRecordTimeSpans } from "@hypo/domain";
 import { parseAtUri, listRecords, blobCid } from "./grain.js";
 import { NS } from "./graycard.js";
 import { repoClient } from "./pds.js";
@@ -141,6 +141,7 @@ export async function writeBundle(agent, did, plan, onProgress, sourceDid = null
       }
       let record = { ...item.value };
       assertConsumableLifecycle(item.collection, record);
+      assertRecordTimeSpans(item.collection, record);
       if (crossRepo && sourceClient) record = await rehydrateBlobs(agent, sourceClient, sourceDid, record);
       const validation = item.collection.startsWith("social.grain.") ? { validate: false } : {};
       if (item.rkey) {

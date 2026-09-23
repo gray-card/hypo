@@ -16,10 +16,14 @@ export function countUp(node: HTMLElement, target: number): void {
   requestAnimationFrame(tick);
 }
 
-function metric(label: string, value: number): HTMLDivElement {
+function metric(label: string, value: number, onOpen?: () => unknown): HTMLElement {
   const number = el("div", { class: "metric-num" }, "0");
   requestAnimationFrame(() => countUp(number, value));
-  return el("div", { class: "metric" }, [number, el("div", { class: "metric-label muted small" }, label)]);
+  return el(
+    onOpen ? "button" : "div",
+    { class: `metric${onOpen ? " metric-link" : ""}`, type: onOpen ? "button" : undefined, onclick: onOpen },
+    [number, el("div", { class: "metric-label muted small" }, label)],
+  );
 }
 
 export function renderChemistryStatus(body: HTMLElement, services: ActivityServices): void {
@@ -78,8 +82,8 @@ export function renderInsightsView(body: HTMLElement, services: ActivityServices
         metric("Cameras", instanceCount("camera")),
         metric("Lenses", instanceCount("lens")),
         metric("Film rolls", instanceCount("filmRoll")),
-        metric("Developments", (store.developSessions || []).length),
-        metric("Scans", (store.digitizeSessions || []).length),
+        metric("Developments", (store.developSessions || []).length, () => services.navigateSessions?.("develop")),
+        metric("Digitizations", (store.digitizeSessions || []).length, () => services.navigateSessions?.("digitize")),
         metric("Scanners", instanceCount("scanner")),
         metric("Film stocks", typeCount("filmStock")),
         metric("Chemistry", instanceCount("chemistry")),

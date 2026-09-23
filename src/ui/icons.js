@@ -31,6 +31,7 @@ const ICONS = {
   alert:
     '<path d="M10.3 3.8L2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r=".7" fill="currentColor" stroke="none"/>',
   refresh: '<path d="M20 11a8 8 0 1 0-1.6 5"/><polyline points="20 4 20 11 13 11"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>',
   code: '<polyline points="9 8 5 12 9 16"/><polyline points="15 8 19 12 15 16"/>',
   command: '<path d="M9 4a2 2 0 1 0 2 2v12a2 2 0 1 0-2-2h6a2 2 0 1 0-2 2V6a2 2 0 1 0 2 2H9z"/>',
   undo: '<polyline points="9 7 4 12 9 17"/><path d="M4 12h11a5 5 0 0 1 0 10h-2"/>',

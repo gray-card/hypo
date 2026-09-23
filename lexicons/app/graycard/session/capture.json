@@ -39,6 +39,11 @@
             "description": "Manually added locations for the shoot. The shoot's effective locations are these plus the locations of its exposures (inherited, not duplicated here)."
           },
           "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "fieldProvenance": {
+            "type": "array",
+            "maxLength": 256,
+            "items": { "type": "ref", "ref": "app.graycard.defs#fieldProvenance" }
+          },
           "notes": { "type": "string", "maxLength": 2000 },
           "createdAt": { "type": "string", "format": "datetime" },
           "updatedAt": { "type": "string", "format": "datetime" }

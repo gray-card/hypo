@@ -1,5 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { el, field, toast, openModal, confirmModal, isAdvanced, setAdvanced, autocomplete } from "../src/ui/dom.js";
+import {
+  el,
+  field,
+  toast,
+  openModal,
+  confirmModal,
+  isAdvanced,
+  setAdvanced,
+  autocomplete,
+  showView,
+} from "../src/ui/dom.js";
 import { icon, iconBtn } from "../src/ui/icons.js";
 
 beforeEach(() => {
@@ -47,6 +57,31 @@ describe("advanced-mode flag", () => {
     expect(isAdvanced()).toBe(true);
     setAdvanced(false);
     expect(isAdvanced()).toBe(false);
+  });
+});
+
+describe("showView", () => {
+  it("includes the sessions workspace in the mutually exclusive application views", () => {
+    const ids = [
+      "login-view",
+      "list-view",
+      "library-view",
+      "sessions-view",
+      "editor-view",
+      "profile-view",
+      "following-view",
+    ];
+    document.body.append(...ids.map((id) => el("section", { id })));
+    vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+
+    showView("sessions-view");
+
+    expect(document.querySelector("#sessions-view").classList.contains("hidden")).toBe(false);
+    expect(
+      ids
+        .filter((id) => id !== "sessions-view")
+        .every((id) => document.querySelector(`#${id}`).classList.contains("hidden")),
+    ).toBe(true);
   });
 });
 

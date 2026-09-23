@@ -89,6 +89,46 @@ beforeEach(() => {
 });
 
 describe("extracted library activity views", () => {
+  it("renders recent darkroom activity as neutral, wrapping ledger rows", () => {
+    const roll = item("at://roll/one", { label: "Roll with a deliberately long descriptive label" });
+    const chemistry = item("at://chemistry/developer", { nickname: "D-76 stock working bottle" });
+    const development = item("at://development/one", {
+      process: "bw",
+      filmRolls: [roll.uri],
+      steps: [
+        {
+          name: "Developer",
+          kind: "chemical-bath",
+          roles: ["film-developer"],
+          chemistries: [chemistry.uri],
+          actualTimeSeconds: 440,
+          agitationMethod: "inversion",
+          agitationScheme: { initialSec: 60, everySec: 60, forSec: 10 },
+        },
+      ],
+      finishedAt: "2026-09-20T16:20:00.000Z",
+      createdAt: "2026-09-20T16:00:00.000Z",
+    });
+    const store = emptyStore({
+      developSessions: [development],
+      byUri: new Map([
+        [roll.uri, { layer: "instance", kind: "filmRoll", item: roll }],
+        [chemistry.uri, { layer: "instance", kind: "chemistry", item: chemistry }],
+      ]),
+    });
+    const body = document.createElement("main");
+
+    renderDarkroomActivity(body, createServices(store));
+
+    const list = body.querySelector(".development-activity-list");
+    const row = list.querySelector("button.development-activity-row");
+    expect(row.classList).not.toContain("row");
+    expect(row.querySelector(".development-activity-main")).toBeInstanceOf(HTMLSpanElement);
+    expect(row.querySelector(".development-activity-subject").textContent).toContain("Roll with a deliberately long");
+    expect(row.querySelector(".development-activity-summary").textContent).toContain("D-76 stock working bottle");
+    expect(row.querySelector("time").dateTime).toBe(development.value.finishedAt);
+  });
+
   it("renders active workflow actions, including parallel logging and optional skipping", () => {
     const stage = item("at://stage/print", {
       $type: "app.graycard.workflow#printStage",
@@ -283,7 +323,9 @@ describe("extracted library activity views", () => {
       labService: "Praus",
       filmRolls: [roll.uri],
       pushPull: { unit: "stop", value: 1, scale: 1 },
+      finishedAt: expect.any(String),
     });
+    expect(services.saveRecord.mock.calls[0][1]).not.toHaveProperty("startedAt");
     expect(services.saveRecord.mock.calls[1]).toEqual([
       "film-roll",
       expect.objectContaining({
@@ -320,6 +362,8 @@ describe("extracted library activity views", () => {
       [...root.querySelectorAll("label.field")]
         .find((candidate) => candidate.querySelector(":scope > span")?.textContent === label)
         .querySelector("input,select,textarea");
+    expect(fieldControl(modal, "Session started (optional)").value).toBe("");
+    expect(fieldControl(modal, "Session finished").value).not.toBe("");
     const developerStage = modal.querySelector(".development-stage-card");
     developerStage.querySelector('[aria-label="Primary chemistry for stage"]').value = chemistry.uri;
     fieldControl(developerStage, "Actual minutes").value = "9";
@@ -367,6 +411,8 @@ describe("extracted library activity views", () => {
       }),
       null,
     ]);
+    const development = services.saveRecord.mock.calls[0][1];
+    expect(Date.parse(development.finishedAt)).toBeGreaterThan(Date.parse(development.startedAt));
     expect(services.saveRecord.mock.calls[1]).toEqual([
       "film-roll",
       expect.objectContaining({
@@ -570,11 +616,13 @@ describe("extracted library activity views", () => {
         label.querySelector("input,select"),
       ]),
     );
-    fields.Roll.value = roll.uri;
+    modal.querySelector('.scan-roll-list input[type="checkbox"]').click();
     fields.Scanner.value = scanner.uri;
     fields.Software.value = "VueScan";
     fields["Resolution (dpi)"].value = "3200";
     fields["File format"].value = "TIFF";
+    fields.Started.value = "2026-09-20T11:00";
+    fields.Finished.value = "2026-09-20T12:00";
     modal.querySelector(".modal-actions button:not(.ghost)").click();
     await vi.waitFor(() => expect(services.saveRecord).toHaveBeenCalledTimes(2));
     expect(services.saveRecord.mock.calls[0]).toEqual([
@@ -585,14 +633,61 @@ describe("extracted library activity views", () => {
         fileFormat: "TIFF",
         resolution: { unit: "dpi", value: 3200, scale: 1 },
         filmRolls: [roll.uri],
+        startedAt: new Date("2026-09-20T11:00").toISOString(),
+        finishedAt: new Date("2026-09-20T12:00").toISOString(),
       }),
       null,
     ]);
     expect(services.saveRecord.mock.calls[1]).toEqual([
       "film-roll",
-      expect.objectContaining({ status: "scanned", scannedAt: expect.any(String) }),
+      expect.objectContaining({ status: "scanned", scannedAt: new Date("2026-09-20T12:00").toISOString() }),
       roll,
     ]);
+  });
+
+  it.each([
+    ["reversed", "2026-09-20T11:59"],
+    ["equal", "2026-09-20T12:00"],
+  ])("keeps scan values and shows an inline error for a %s interval", async (_case, finished) => {
+    const services = createServices(emptyStore({ instance: { filmRoll: [], scanner: [] } }));
+    openScanSession(undefined, services);
+    const modal = document.querySelector(".modal");
+    const fields = Object.fromEntries(
+      [...modal.querySelectorAll("label.field")].map((label) => [
+        label.querySelector("span").textContent,
+        label.querySelector("input,select"),
+      ]),
+    );
+    fields.Started.value = "2026-09-20T12:00";
+    fields.Finished.value = finished;
+
+    modal.querySelector(".modal-actions button:not(.ghost)").click();
+    await vi.waitFor(() => expect(modal.querySelector(".field-error:not(.hidden)")?.textContent).toContain("later"));
+    expect(services.saveRecord).not.toHaveBeenCalled();
+    expect(fields.Started.value).toBe("2026-09-20T12:00");
+    expect(fields.Finished.value).toBe(finished);
+    expect(fields.Finished.getAttribute("aria-invalid")).toBe("true");
+  });
+
+  it("allows a finish-only scan without inventing a start time", async () => {
+    const services = createServices(emptyStore({ instance: { filmRoll: [], scanner: [] } }));
+    openScanSession(undefined, services);
+    const modal = document.querySelector(".modal");
+    const fields = Object.fromEntries(
+      [...modal.querySelectorAll("label.field")].map((label) => [
+        label.querySelector("span").textContent,
+        label.querySelector("input,select"),
+      ]),
+    );
+    fields.Started.value = "";
+    fields.Finished.value = "2026-09-20T12:00";
+
+    modal.querySelector(".modal-actions button:not(.ghost)").click();
+    await vi.waitFor(() => expect(services.saveRecord).toHaveBeenCalledOnce());
+    expect(services.saveRecord.mock.calls[0][1]).toMatchObject({
+      finishedAt: new Date("2026-09-20T12:00").toISOString(),
+    });
+    expect(services.saveRecord.mock.calls[0][1]).not.toHaveProperty("startedAt");
   });
 
   it("auto-links frame records to loaded photos through injected persistence", async () => {

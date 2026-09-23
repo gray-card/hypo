@@ -11,7 +11,10 @@ export interface PaletteGallery {
 }
 
 export interface PaletteActionServices {
-  navigateSection(section: "setup" | "galleries" | "following" | "discover"): unknown;
+  navigateSection(section: "setup" | "sessions" | "galleries" | "following" | "discover"): unknown;
+  openSessionAction(
+    action: "find" | "capture" | "develop" | "lab-develop" | "digitize" | "resume-development",
+  ): unknown;
   openMeter(): unknown;
   openBundle(): unknown;
   openVisionConnect(): unknown;
@@ -40,6 +43,12 @@ export function createPaletteCommands(services: PaletteActionServices) {
     };
 
     add("Setup: your gear", "camera", () => services.navigateSection("setup"));
+    add("Sessions: activity history", "clock", () => services.openSessionAction("find"));
+    add("New shoot", "camera", () => services.openSessionAction("capture"));
+    add("Log completed development", "film", () => services.openSessionAction("develop"));
+    add("Log lab development", "package", () => services.openSessionAction("lab-develop"));
+    add("Log digitization", "image", () => services.openSessionAction("digitize"));
+    add("Resume development", "clock", () => services.openSessionAction("resume-development"));
     add("Light meter", "camera", services.openMeter);
     add("Galleries", "image", () => services.navigateSection("galleries"));
     add("Following activity", "users", () => services.navigateSection("following"));

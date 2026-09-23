@@ -9,14 +9,14 @@ description: The pinned version, sidecar boundary, and activation criteria for s
 
 **Decision date:** 2026-08-12
 
-Hypo adopts Panproto `0.71.0` as the versioning and migration engine for the shared `app.graycard.*` lexicon suite. The repository pins both `@panproto/core` and the CI-installed `panproto-cli` exactly at `0.71.0`. Its `panproto.toml` declares one manifest-backed ATProto package, and the checked-in `.panproto/` sidecar records that package plus two conformance records.
+Hypo adopts Panproto `0.71.0` as the versioning and migration engine for the shared `app.graycard.*` lexicon suite. The repository pins both `@panproto/core` and the CI-installed `panproto-cli` exactly at `0.71.0`. Its `panproto.toml` declares one manifest-backed ATProto package, and the checked-in `.panproto/` sidecar records that package plus four conformance records.
 
 The suite is one package rather than one package per JSON file. This lets compatibility analysis account for shared definitions and cross-file references.
 
 The **Panproto integration gate** runs `npm run check:panproto`. It creates a temporary repository and runs four direct regression checks:
 
 1. Adding the repository root loads all 59 Lexicon documents as one ATProto bundle and returns successful equation diagnostics.
-2. Adding `fixtures/records` places both JSON records in `staged_data`.
+2. Adding `fixtures/records` places all four JSON records in `staged_data`.
 3. `schema compat` and `schema diff` load the manifest-backed directory; compatibility is full and the snapshots are identical.
 4. The TypeScript SDK parses the same bundle and validates it against the WASM registry's ATProto definition, including the `format`, `knownValues`, and `ref` constraint sorts.
 

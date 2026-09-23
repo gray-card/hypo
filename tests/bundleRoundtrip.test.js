@@ -58,6 +58,7 @@ const DID = "did:plc:test";
 const CAP = "app.graycard.photo.capture";
 const SHOOT = "app.graycard.session.capture";
 const ROLL = "app.graycard.instance.filmRoll";
+const DIGITIZE = "app.graycard.process.digitizeSession";
 const atUri = (collection, rkey) => `at://${DID}/${collection}/${rkey}`;
 
 function seed(agent) {
@@ -195,5 +196,26 @@ describe("import -> export is idempotent (round-trips into an empty repo)", () =
 
     expect(results).toMatchObject([{ result: "error", error: expect.stringMatching(/loadedAt.*developedAt/) }]);
     expect(dest.store.has(`${ROLL}|bad-dates`)).toBe(false);
+  });
+
+  it("rejects a reversed session interval before importing it", async () => {
+    const dest = memAgent();
+    const results = await writeBundle(dest, DID, [
+      {
+        collection: DIGITIZE,
+        rkey: "bad-interval",
+        status: "create",
+        value: {
+          $type: DIGITIZE,
+          method: "dedicated-film-scanner",
+          startedAt: "2026-09-20T12:00:00Z",
+          finishedAt: "2026-09-20T11:00:00Z",
+          createdAt: "2026-09-20T12:00:00Z",
+        },
+      },
+    ]);
+
+    expect(results).toMatchObject([{ result: "error", error: expect.stringMatching(/finishedAt.*startedAt/) }]);
+    expect(dest.store.has(`${DIGITIZE}|bad-interval`)).toBe(false);
   });
 });

@@ -173,6 +173,21 @@ h3 {
   color: var(--muted);
 }
 
+.field > .field-error {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.35;
+  text-transform: none;
+  color: var(--danger);
+}
+
+.field > :is(input, select, textarea)[aria-invalid="true"] {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--danger) 35%, transparent);
+}
+
 input,
 textarea,
 select {

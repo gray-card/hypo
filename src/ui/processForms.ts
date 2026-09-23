@@ -6,7 +6,7 @@ import { renderOn, type RecordStore } from "@hypo/store";
 import { c10ToC, cToC10, fmtMMSS, recipeRecommendationStatus, resolveTimeRecommendation } from "../devRecipes.js";
 import { STAGE_PROCESS_KIND } from "../workflow.js";
 import { enumLabel } from "./labels.js";
-import { el, field, inputField } from "./dom.js";
+import { dateTimeRange, el, field, inputField } from "./dom.js";
 import { chemistrySelect, instanceSelect, catalogSelect, shootSelect } from "./library.js";
 
 export { STAGE_PROCESS_KIND };
@@ -99,6 +99,8 @@ interface DevelopmentStep {
 }
 
 interface ProcessFormInitial {
+  startedAt?: string;
+  finishedAt?: string;
   chemistry?: string;
   process?: string;
   filmRolls?: readonly string[];
@@ -323,6 +325,24 @@ export function buildProcessSessionForm(
 ): ProcessSessionForm {
   const inputs: InputMap = {};
   const nodes: HTMLElement[] = [];
+  const timing = ["developSession", "digitizeSession", "printSession", "renderSession"].includes(processKind)
+    ? dateTimeRange({
+        startLabel: "Started (optional)",
+        endLabel: processKind === "developSession" ? "Finished *" : "Finished (optional)",
+        startValue: initial.startedAt || "",
+        endValue: initial.finishedAt || new Date().toISOString(),
+        requireEnd: processKind === "developSession",
+        missingEndMessage: "Finished time is required.",
+        chronologyMessage: "Finished time must be later than start time.",
+      })
+    : null;
+  const readTiming = (): JsonObject => {
+    const value = timing?.read();
+    return {
+      ...(value?.start ? { startedAt: value.start } : {}),
+      ...(value?.end ? { finishedAt: value.end } : {}),
+    };
+  };
 
   if (processKind === "developSession") {
     const workingUri = initial.chemistry || "";
@@ -654,6 +674,7 @@ export function buildProcessSessionForm(
         el("button", { class: "ghost small-btn", onclick: () => addStepRow() }, "+ Step"),
       ]),
     );
+    nodes.push(timing!.node);
 
     const notes = textareaField("Notes", "notes", initial.notes || "");
     inputs.notes = notes.input;
@@ -784,6 +805,7 @@ export function buildProcessSessionForm(
         addShortcutBath("stop", inputs.stopBathChemistry.value, inputs.stopBath.value.trim());
         addShortcutBath("fixer", inputs.fixerChemistry.value, inputs.fixer.value.trim());
         return {
+          ...readTiming(),
           process: inputs.process.value,
           filmRolls: inputs.filmRoll.value ? [inputs.filmRoll.value] : undefined,
           provenance: {
@@ -824,6 +846,7 @@ export function buildProcessSessionForm(
       enumSelect("Inversion", INVERSION_METHODS, "inversionMethod", initial.inversionMethod || "software-auto"),
     );
     inputs.inversionMethod = nodes[nodes.length - 1].querySelector("select") as HTMLSelectElement;
+    nodes.push(timing!.node);
     const notes = textareaField("Notes", "notes", initial.notes || "");
     inputs.notes = notes.input;
     nodes.push(notes.wrap);
@@ -833,6 +856,7 @@ export function buildProcessSessionForm(
       read() {
         if (!inputs.method.value) throw new Error("Digitize method is required");
         return {
+          ...readTiming(),
           method: inputs.method.value,
           scanner: inputs.scanner.value || undefined,
           camera: inputs.camera.value || undefined,
@@ -887,6 +911,7 @@ export function buildProcessSessionForm(
     const exp = inputField("Exposure (seconds)", "exposureTimeSeconds", initial.exposureTimeSeconds ?? "");
     inputs.exposureTimeSeconds = exp.input;
     nodes.push(exp.wrap);
+    nodes.push(timing!.node);
     const notes = textareaField("Notes", "notes", initial.notes || "");
     inputs.notes = notes.input;
     nodes.push(notes.wrap);
@@ -895,6 +920,7 @@ export function buildProcessSessionForm(
       nodes,
       read() {
         return {
+          ...readTiming(),
           enlarger: inputs.enlarger.value || undefined,
           paper: inputs.paper.value || undefined,
           paperInstance: inputs.paperInstance.value.trim() || undefined,
@@ -917,6 +943,7 @@ export function buildProcessSessionForm(
     const color = inputField("Color space", "colorSpace", initial.colorSpace || "");
     inputs.colorSpace = color.input;
     nodes.push(color.wrap);
+    nodes.push(timing!.node);
     const notes = textareaField("Notes", "notes", initial.notes || "");
     inputs.notes = notes.input;
     nodes.push(notes.wrap);
@@ -925,6 +952,7 @@ export function buildProcessSessionForm(
       nodes,
       read() {
         return {
+          ...readTiming(),
           software: inputs.software.value.trim() || undefined,
           outputFormat: inputs.outputFormat.value.trim() || undefined,
           colorSpace: inputs.colorSpace.value.trim() || undefined,

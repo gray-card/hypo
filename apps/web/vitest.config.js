@@ -7,6 +7,10 @@ export default defineConfig({
     // loading the package and requiring a WebGL context.
     alias: [
       {
+        find: "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url",
+        replacement: fileURLToPath(new URL("../../tests/stubs/maplibre-worker-url.js", import.meta.url)),
+      },
+      {
         find: "maplibre-gl/dist/maplibre-gl.css",
         replacement: fileURLToPath(new URL("../../tests/stubs/empty.js", import.meta.url)),
       },

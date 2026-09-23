@@ -160,6 +160,7 @@ export function createShell(options: ShellOptions) {
       el("div", { class: "menu-account" }, handle ? `@${handle}` : did || ""),
       menuItem("compass", "View my public setup", () => handle && options.actions.navigateProfile(handle)),
       menuItem("share", "Share my setup", options.actions.shareSetup),
+      menuItem("compass", "Discover setups", () => options.actions.navigateSection("discover")),
       el("div", { class: "menu-sep" }),
       menuItem("alert", "Needs attention", options.actions.openConflictTray),
       menuItem("refresh", "Refresh from PDS", options.actions.refreshAccountData),

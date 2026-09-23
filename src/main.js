@@ -94,23 +94,47 @@ async function loadViewModule(loader, { view, target, message }) {
 let libraryContextDid = null;
 function initializeLibrary(module) {
   if (agent && did && libraryContextDid !== did) {
-    module.initLibrary({ agent, did, ...libraryRecordHistory });
+    module.initLibrary({ agent, did, ...libraryRecordHistory, navigateSessions, navigateSession });
     libraryContextDid = did;
   }
   return module;
 }
 
-async function libraryFeature() {
+async function libraryFeature(load = {}) {
   const module = await loadViewModule(loadLibraryModule, {
-    view: "library-view",
-    target: "#library-body",
-    message: "Loading setup tools…",
+    view: load.view || "library-view",
+    target: load.target || "#library-body",
+    message: load.message || "Loading setup tools…",
   });
   return initializeLibrary(module);
 }
 
 async function openLibrary() {
   return (await libraryFeature()).openLibrary();
+}
+
+async function openSessions(scope) {
+  return (
+    await libraryFeature({
+      view: "sessions-view",
+      target: "#sessions-body",
+      message: "Loading session history…",
+    })
+  ).openSessions(scope);
+}
+
+async function openSessionRecord(target) {
+  return (
+    await libraryFeature({
+      view: "sessions-view",
+      target: "#sessions-body",
+      message: "Loading session…",
+    })
+  ).openSessionRecordRoute(target);
+}
+
+async function openSessionAction(action) {
+  return (await libraryFeature()).openSessionAction(action);
 }
 
 let editorContextDid = null;
@@ -295,6 +319,7 @@ const { shareSetup } = createShareActions({
 
 const paletteCommands = createPaletteCommands({
   navigateSection,
+  openSessionAction,
   openMeter: () => router.navigate("meter"),
   openBundle: () => openBundleModal(agent, did),
   openVisionConnect,
@@ -318,9 +343,10 @@ const paletteCommands = createPaletteCommands({
   matches: fuzzyMatches,
 });
 
-/* ---------- primary navigation (Setup / Galleries / Following / Discover) ---------- */
+/* ---------- primary navigation ---------- */
 const SECTIONS = {
   setup: { view: "library-view", icon: "camera", load: () => openLibrary() },
+  sessions: { view: "sessions-view", icon: "clock", load: () => openSessions() },
   galleries: { view: "list-view", icon: "image", load: () => loadGalleries() },
   following: { view: "following-view", icon: "users", load: () => openFollowing() },
   discover: { view: "profile-view", icon: "compass", load: () => openProfileSearch() },
@@ -386,6 +412,8 @@ const appBootstrap = createAppBootstrap({
   loadOnboarding: loadOnboardingModule,
   libraryFeature,
   openLibraryRecord: async (target) => (await libraryFeature()).openLibraryRecordRoute(target),
+  openSessions,
+  openSessionRecord,
   closeLibraryRecord: () => loadLibraryModule.peek()?.closeLibraryRecordRoute(),
   goSection,
   navigateSection,
@@ -447,10 +475,30 @@ async function showProfile(seg) {
 }
 
 function navigateSection(name) {
-  const routeName = { setup: "home", galleries: "galleries", following: "following", discover: "discover" }[name];
+  const routeName = {
+    setup: "home",
+    sessions: "sessions",
+    galleries: "galleries",
+    following: "following",
+    discover: "discover",
+  }[name];
   if (!routeName) return goSection(name);
   if (router.current().name === routeName) return goSection(name);
   router.navigate(routeName);
+}
+
+function navigateSessions(scope) {
+  if (scope && scope !== "all") {
+    if (router.current().name === "sessionsScope" && router.current().params.scope === scope)
+      return openSessions(scope);
+    return router.navigate("sessionsScope", { scope });
+  }
+  if (router.current().name === "sessions") return openSessions();
+  return router.navigate("sessions");
+}
+
+function navigateSession({ kind, rkey }) {
+  router.navigate("session", { kind, rkey });
 }
 
 function navigateGallery(uri) {

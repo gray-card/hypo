@@ -15,6 +15,10 @@ export interface LibraryStore {
   readonly workflowStages?: readonly LibraryRecord[];
   readonly developSessions?: readonly LibraryRecord[];
   readonly digitizeSessions?: readonly LibraryRecord[];
+  readonly editSessions?: readonly LibraryRecord[];
+  readonly printSessions?: readonly LibraryRecord[];
+  readonly renderSessions?: readonly LibraryRecord[];
+  readonly maintenanceSessions?: readonly LibraryRecord[];
   readonly processSessions?: readonly LibraryRecord[];
   readonly batchRules: readonly LibraryRecord[];
   readonly photoCaptureByPhoto: ReadonlyMap<string, LibraryRecord>;
@@ -54,6 +58,9 @@ export interface ActivityServices {
   icon(name: string, size?: number): Node;
   isAdvanced(): boolean;
   inspect(record: LibraryRecord): void;
+  navigateSessions?(scope?: string): unknown;
+  navigateSession?(kind: string, rkey: string): unknown;
+  editSession?(kind: string, record: LibraryRecord, onDone: () => void): unknown;
   activeDevelopment(): { readonly film?: string } | null;
   openDevelopmentTimer(options: LibraryValue): Promise<unknown>;
   advanceWorkflowStage?(kind: string, subjectUris: readonly string[], sessionUri: string): Promise<number>;
