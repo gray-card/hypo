@@ -1,36 +1,80 @@
 import { $, el, loadPhase } from "@hypo/ui";
+import type { LibraryNavigationGroup } from "./maintenance-types.ts";
 
 export interface LibraryShellServices {
-  readonly tabLabels: Readonly<Record<string, string>>;
+  readonly navigationGroups: readonly LibraryNavigationGroup[];
   readonly gearTabs: Readonly<Record<string, readonly string[]>>;
+  readonly defaultTab: string;
   hasStore(): boolean;
   loadStore(): Promise<void>;
   matches(query: string, text: string | null): boolean;
+  renderOverview(body: HTMLElement): void;
   renderFilm(body: HTMLElement): void;
-  renderDarkroomHeader(body: HTMLElement): void;
-  renderScanningHeader(body: HTMLElement): void;
   renderGear(body: HTMLElement, kinds: readonly string[]): void;
-  renderShoots(body: HTMLElement): void;
-  renderWorkflows(body: HTMLElement): void;
-  renderRules(body: HTMLElement): void;
-  renderInsights(body: HTMLElement): void;
+  renderWorkflowTemplates(body: HTMLElement): void;
+  renderBatchRules(body: HTMLElement): void;
+  renderDataQuality(body: HTMLElement): void;
 }
 
 export function librarySkeleton(): HTMLElement[] {
   return [
-    el(
-      "div",
-      { class: "tab-bar skeleton-tabs" },
-      Array.from({ length: 5 }, () => el("div", { class: "skeleton skeleton-tab" })),
-    ),
-    ...Array.from({ length: 3 }, () =>
-      el("div", { class: "card" }, [
-        el("div", { class: "skeleton skeleton-title" }),
-        el("div", { class: "skeleton skeleton-line" }),
-        el("div", { class: "skeleton skeleton-line" }),
+    el("div", { class: "library-shell library-shell-loading" }, [
+      el(
+        "div",
+        { class: "library-navigation skeleton-tabs" },
+        Array.from({ length: 7 }, () => el("div", { class: "skeleton skeleton-tab" })),
+      ),
+      el(
+        "div",
+        { class: "library-content" },
+        Array.from({ length: 3 }, () =>
+          el("div", { class: "card" }, [
+            el("div", { class: "skeleton skeleton-title" }),
+            el("div", { class: "skeleton skeleton-line" }),
+            el("div", { class: "skeleton skeleton-line" }),
+          ]),
+        ),
+      ),
+    ]),
+  ];
+}
+
+const LEGACY_TABS: Readonly<Record<string, string>> = {
+  shoots: "overview",
+  insights: "overview",
+};
+
+function navigationItems(groups: readonly LibraryNavigationGroup[]) {
+  return groups.flatMap((group) => group.items);
+}
+
+function libraryNavigation(
+  groups: readonly LibraryNavigationGroup[],
+  activeTab: string,
+  select: (tab: string) => void,
+  className: string,
+): HTMLElement {
+  return el(
+    "nav",
+    { class: className, "aria-label": "Library sections" },
+    groups.map((group) =>
+      el("section", { class: "library-navigation-group" }, [
+        el("h3", {}, group.label),
+        ...group.items.map((item) =>
+          el(
+            "button",
+            {
+              type: "button",
+              class: `library-navigation-item${activeTab === item.id ? " active" : ""}`,
+              "aria-current": activeTab === item.id ? "page" : undefined,
+              onclick: () => select(item.id),
+            },
+            item.label,
+          ),
+        ),
       ]),
     ),
-  ];
+  );
 }
 
 export async function renderLibraryShell(
@@ -39,7 +83,7 @@ export async function renderLibraryShell(
 ): Promise<void> {
   const body = bodyElement || ($("#library-body") as HTMLElement);
   if (!services.hasStore()) {
-    const phase = loadPhase("Loading your setup from your PDS…");
+    const phase = loadPhase("Loading your library from your PDS…");
     body.replaceChildren(...librarySkeleton(), phase.node);
     try {
       await services.loadStore();
@@ -48,52 +92,46 @@ export async function renderLibraryShell(
     }
   }
   body.replaceChildren();
-  let tab = body.dataset.tab || "cameras";
-  if (!services.tabLabels[tab]) tab = "cameras";
-  const tabs = el("div", { class: "tab-bar" });
-  for (const [id, label] of Object.entries(services.tabLabels)) {
-    tabs.append(
-      el(
-        "button",
-        {
-          class: `ghost tab-btn${tab === id ? " active" : ""}`,
-          onclick: () => {
-            body.dataset.tab = id;
-            void renderLibraryShell(body, services);
-          },
-        },
-        label,
-      ),
-    );
-  }
-  body.append(tabs);
+  const items = navigationItems(services.navigationGroups);
+  const knownTabs = new Set(items.map((item) => item.id));
+  let tab = LEGACY_TABS[body.dataset.tab || ""] || body.dataset.tab || services.defaultTab;
+  if (!knownTabs.has(tab)) tab = services.defaultTab;
+  body.dataset.tab = tab;
+
+  const select = (next: string) => {
+    body.dataset.tab = next;
+    void renderLibraryShell(body, services);
+  };
+  const currentLabel = items.find((item) => item.id === tab)?.label || "Library";
+  const desktopNavigation = libraryNavigation(services.navigationGroups, tab, select, "library-navigation");
+  const mobileNavigation = el("details", { class: "library-navigation-mobile" }, [
+    el("summary", {}, [el("span", { class: "muted small" }, "Library section"), el("strong", {}, currentLabel)]),
+    libraryNavigation(services.navigationGroups, tab, select, "library-navigation library-navigation-menu"),
+  ]);
+  const content = el("div", { class: "library-content" });
   const search = el("input", {
     type: "search",
     class: "search-input",
     placeholder: "Filter…",
-    "aria-label": "Filter setup",
+    "aria-label": "Filter library",
   });
   search.addEventListener("input", () => {
     const query = search.value.trim();
-    for (const row of body.querySelectorAll(".gear-row"))
+    for (const row of content.querySelectorAll(".gear-row"))
       row.classList.toggle("hidden", Boolean(query) && !services.matches(query, row.textContent));
   });
-  if (tab !== "film" && tab !== "shoots") body.append(search);
+  if (services.gearTabs[tab]) content.append(search);
 
-  if (tab === "film") services.renderFilm(body);
-  else if (tab === "darkroom") {
-    services.renderDarkroomHeader(body);
-    services.renderGear(body, services.gearTabs.darkroom);
-  } else if (tab === "scanning") {
-    services.renderScanningHeader(body);
-    services.renderGear(body, services.gearTabs.scanning);
-  } else if (services.gearTabs[tab]) services.renderGear(body, services.gearTabs[tab]);
-  else if (tab === "shoots") services.renderShoots(body);
-  else if (tab === "workflows") services.renderWorkflows(body);
-  else if (tab === "rules") services.renderRules(body);
-  else if (tab === "insights") services.renderInsights(body);
+  if (tab === "overview") services.renderOverview(content);
+  else if (tab === "film") services.renderFilm(content);
+  else if (services.gearTabs[tab]) services.renderGear(content, services.gearTabs[tab]);
+  else if (tab === "workflows") services.renderWorkflowTemplates(content);
+  else if (tab === "rules") services.renderBatchRules(content);
+  else if (tab === "quality") services.renderDataQuality(content);
 
-  const cards = [...body.querySelectorAll<HTMLElement>(":scope > .card")];
+  body.append(mobileNavigation, el("div", { class: "library-shell" }, [desktopNavigation, content]));
+
+  const cards = [...content.querySelectorAll<HTMLElement>(":scope > .card")];
   cards.forEach((card, index) => {
     card.classList.add("reveal");
     card.style.setProperty("--i", String(index));

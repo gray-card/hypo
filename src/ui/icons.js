@@ -20,6 +20,8 @@ const ICONS = {
   list: '<line x1="8" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
   layers: '<polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/>',
   book: '<path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4z"/><line x1="9" y1="8" x2="15" y2="8"/>',
+  library:
+    '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="8" y1="4" x2="8" y2="8"/><line x1="15" y1="10" x2="15" y2="14"/><line x1="10" y1="16" x2="10" y2="20"/>',
   package:
     '<polygon points="12 3 21 7.5 21 16.5 12 21 3 16.5 3 7.5 12 3"/><polyline points="3 7.5 12 12 21 7.5"/><line x1="12" y1="12" x2="12" y2="21"/>',
   wrench: '<path d="M15.5 6.5a4 4 0 0 0-5.3 5.3L4 18l2 2 6.2-6.2a4 4 0 0 0 5.3-5.3l-2.7 2.7-2-2 2.7-2.7z"/>',

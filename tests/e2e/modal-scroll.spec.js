@@ -6,7 +6,7 @@ async function login(page) {
   await page.goto("/");
   await page.getByRole("combobox").fill("alice.test");
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Your setup" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Library" })).toBeVisible();
 }
 
 test.beforeEach(async ({ request }) => {
@@ -18,8 +18,8 @@ test("a long modal remains scrollable after browser-owned UI returns focus", asy
   await page.setViewportSize({ width: 540, height: 852 });
   await login(page);
 
+  await page.goto("/library/chemistry");
   const library = page.locator("#library-body");
-  await library.getByRole("button", { name: "Darkroom", exact: true }).click();
   await library.getByRole("button", { name: "Add chemistry", exact: true }).click();
 
   const modal = page.getByRole("dialog", { name: "Add chemistry" });

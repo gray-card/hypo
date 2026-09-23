@@ -65,7 +65,6 @@ import { resolveGearTypeForSave } from "../../apps/web/src/views/library/gear-sa
 import { openGearMaintenance } from "../../apps/web/src/views/library/gear-maintenance.ts";
 import { createGearThumb, renderGearTabView } from "../../apps/web/src/views/library/gear-tab.ts";
 import { openShootEditor as openShootEditorView } from "../../apps/web/src/views/library/shoots-editor.ts";
-import { renderShootsView } from "../../apps/web/src/views/library/shoots-view.ts";
 import {
   effectiveShootGear as effectiveShootGearFromServices,
   openShootLogger,
@@ -80,15 +79,16 @@ import {
   openManualDevelopment,
   openLabDevelopment,
   openDevelopmentSession,
-  renderDarkroomHeader as renderDarkroomHeaderView,
   saveCompletedDevelopmentRecords,
 } from "../../apps/web/src/views/library/maintenance-darkroom.ts";
-import { renderRulesView, renderWorkflowsView } from "../../apps/web/src/views/library/workflows-view.ts";
 import {
-  openScanSession,
-  renderScanningHeader as renderScanningHeaderView,
-} from "../../apps/web/src/views/library/scanning-view.ts";
-import { renderInsightsView } from "../../apps/web/src/views/library/insights-view.ts";
+  renderBatchRulesView,
+  renderDataQualityView,
+  renderWorkflowTemplatesView,
+} from "../../apps/web/src/views/library/workflows-view.ts";
+import { openScanSession } from "../../apps/web/src/views/library/scanning-view.ts";
+import { openFrameLinker } from "../../apps/web/src/views/library/scanning-linker.ts";
+import { renderLibraryOverview } from "../../apps/web/src/views/library/insights-view.ts";
 import { renderLibraryShell } from "../../apps/web/src/views/library/maintenance-shell.ts";
 import {
   findSession,
@@ -131,21 +131,41 @@ async function openDevTimerLazy(ctx, opts) {
   }
 }
 
-// ordered to follow the flow of photography production:
-// gear (cameras -> lenses -> filters) -> film -> shoot -> develop -> scan,
-// then the activity tabs.
-const TAB_LABELS = {
-  cameras: "Cameras",
-  lenses: "Lenses",
-  filters: "Filters",
-  film: "Film",
-  shoots: "Shoots",
-  darkroom: "Darkroom",
-  scanning: "Scanning",
-  workflows: "Workflows",
-  rules: "Rules",
-  insights: "Insights",
-};
+const LIBRARY_NAVIGATION = [
+  { label: "Library", items: [{ id: "overview", label: "Overview" }] },
+  {
+    label: "Materials",
+    items: [
+      { id: "film", label: "Film and rolls" },
+      { id: "chemistry", label: "Chemistry" },
+    ],
+  },
+  {
+    label: "Equipment",
+    items: [
+      { id: "cameras", label: "Cameras" },
+      { id: "lenses", label: "Lenses" },
+      { id: "filters", label: "Filters" },
+      { id: "darkroom", label: "Darkroom" },
+      { id: "scanning", label: "Scanning" },
+    ],
+  },
+  {
+    label: "Services and places",
+    items: [
+      { id: "labs", label: "Labs" },
+      { id: "storage", label: "Storage" },
+    ],
+  },
+  {
+    label: "Presets",
+    items: [
+      { id: "workflows", label: "Workflows" },
+      { id: "rules", label: "Batch rules" },
+    ],
+  },
+  { label: "Maintenance", items: [{ id: "quality", label: "Data quality" }] },
+];
 
 let ctx = null;
 
@@ -265,7 +285,7 @@ function renderGearTab(body, kinds) {
     addGear: openAddGear,
     editGear: openEditGearRoute,
     maintain: openMaintenanceModal,
-    render: () => renderLibrary(body),
+    render: () => renderLibrary(),
   });
 }
 
@@ -295,7 +315,7 @@ async function advanceWorkflowStageForSubjects(kind, subjectUris, sessionUri) {
   return advanced;
 }
 
-function filmViewServices(body) {
+function filmViewServices(_body) {
   return {
     stageLabels: STAGE_LABELS,
     collections: {
@@ -308,7 +328,7 @@ function filmViewServices(body) {
     reloadStore: async () => {
       ctx.store = await loadStore(ctx.agent, ctx.did);
     },
-    renderLibrary: () => renderLibrary(body),
+    renderLibrary: () => renderLibrary(),
     saveRecord: (collection, value, existing) => saveRecord(ctx.agent, ctx.did, collection, value, existing),
     deleteRecord: (uri) => deleteRecord(ctx.agent, ctx.did, uri),
     splitRoll: (stockpile, options) => splitRollFromStockpile(ctx.agent, ctx.did, stockpile, options),
@@ -422,22 +442,12 @@ function openShootEditor(existing, onDone) {
   return openShootEditorView(existing, onDone, shootServices());
 }
 
-function renderShootsTab(body) {
-  const services = shootServices();
-  renderShootsView(body, services, {
-    startShoot: (onDone) => openShootEditor(null, onDone),
-    editShoot: openShootEditor,
-    openLogger: (shoot) => openShootLogger(shoot, services, () => renderLibrary(body)),
-    render: () => renderLibrary(body),
-  });
-}
-
 export function effectiveShootGear(shoot, kind) {
   return [...effectiveShootGearFromServices(shoot, kind, shootServices())];
 }
 
 export function openShotLogger(shoot, body) {
-  return openShootLogger(shoot, shootServices(), body ? () => renderLibrary(body) : undefined);
+  return openShootLogger(shoot, shootServices(), body ? () => renderLibrary() : undefined);
 }
 
 function activityServices() {
@@ -582,6 +592,13 @@ function sessionViewServices() {
       if (kind === "develop") return openManualDevelopment(done, services);
       return openScanSession(done, services);
     },
+    logFrames: (record, onDone) => openShootLogger(record, shootServices(), () => refresh(onDone)),
+    startDevelopment: (onDone) =>
+      services.openDevelopmentTimer({
+        ...(services.activeDevelopment() ? {} : { allowResume: false }),
+        onDone: () => refresh(onDone),
+      }),
+    linkFrames: (onDone) => openFrameLinker(() => refresh(onDone), services),
   };
 }
 
@@ -593,48 +610,43 @@ export function chemistrySelect(value = "", { roles } = {}) {
   return createChemistrySelect(value, roles, activityServices());
 }
 
-function renderWorkflowsTab(body) {
-  renderWorkflowsView(body, activityServices(), () => renderLibrary(body));
+function renderOverviewTab(body) {
+  renderLibraryOverview(body, activityServices());
 }
 
-function renderRulesTab(body) {
-  renderRulesView(body, activityServices());
+function renderWorkflowTemplatesTab(body) {
+  renderWorkflowTemplatesView(body, activityServices(), () => renderLibrary());
 }
 
-function renderDarkroomHeader(body) {
-  renderDarkroomHeaderView(body, activityServices(), () => renderLibrary(body));
+function renderBatchRulesTab(body) {
+  renderBatchRulesView(body, activityServices());
 }
 
-function renderScanningHeader(body) {
-  renderScanningHeaderView(body, activityServices(), () => renderLibrary(body));
-}
-
-function renderInsightsTab(body) {
-  renderInsightsView(body, activityServices());
+function renderDataQualityTab(body) {
+  renderDataQualityView(body, activityServices());
 }
 
 export function renderLibrary(bodyElement) {
   return renderLibraryShell(bodyElement, {
-    tabLabels: TAB_LABELS,
+    navigationGroups: LIBRARY_NAVIGATION,
     gearTabs: GEAR_TABS,
+    defaultTab: "overview",
     hasStore: () => Boolean(ctx?.store),
     loadStore: async () => {
       ctx.store = await loadStore(ctx.agent, ctx.did);
     },
     matches: fuzzyMatches,
+    renderOverview: renderOverviewTab,
     renderFilm: renderFilmTab,
-    renderDarkroomHeader,
-    renderScanningHeader,
     renderGear: renderGearTab,
-    renderShoots: renderShootsTab,
-    renderWorkflows: renderWorkflowsTab,
-    renderRules: renderRulesTab,
-    renderInsights: renderInsightsTab,
+    renderWorkflowTemplates: renderWorkflowTemplatesTab,
+    renderBatchRules: renderBatchRulesTab,
+    renderDataQuality: renderDataQualityTab,
   });
 }
 
 export async function openLibrary() {
-  // if the session was lost (or Setup is opened before login), bounce to login
+  // If the session was lost (or Library is opened before login), bounce to login
   // instead of throwing on a null context.
   if (!ctx?.agent || !ctx?.did) {
     showView("login-view");

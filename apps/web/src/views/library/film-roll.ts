@@ -95,7 +95,7 @@ export function openLoadRoll(stockpile: FilmRecord, services: FilmViewServices):
       field("Label", labelInput),
       (services.getStore().workflowTemplates || []).length
         ? field("Start a workflow", templateSelect)
-        : el("p", { class: "muted small" }, "You can create reusable workflows from Setup → Workflows."),
+        : el("p", { class: "muted small" }, "You can create reusable workflows from Library → Workflows."),
       occurrences.node,
     ],
     async () => {

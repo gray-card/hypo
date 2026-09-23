@@ -42,7 +42,7 @@ export function createPaletteCommands(services: PaletteActionServices) {
       commands.push({ label, iconName, run, hint });
     };
 
-    add("Setup: your gear", "camera", () => services.navigateSection("setup"));
+    add("Library: resources", "library", () => services.navigateSection("setup"));
     add("Sessions: activity history", "clock", () => services.openSessionAction("find"));
     add("New shoot", "camera", () => services.openSessionAction("capture"));
     add("Log completed development", "film", () => services.openSessionAction("develop"));

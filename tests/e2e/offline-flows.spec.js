@@ -90,8 +90,8 @@ async function login(page) {
   await page.goto("/");
   await page.getByRole("combobox").fill("alice.test");
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Your setup" })).toBeVisible();
-  await expect(page.locator("#library-body .tab-bar")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Library" })).toBeVisible();
+  await expect(page.locator("#library-body .library-shell")).toBeVisible();
 }
 
 function trackRepoWrites(page) {
@@ -145,11 +145,11 @@ test("a seeded roll and shoot keep one of three shots queued until reconnection"
   const writes = trackRepoWrites(page);
   await login(page);
 
-  const body = page.locator("#library-body");
-  await body.getByRole("button", { name: "Shoots", exact: true }).click();
-  const shoot = body.locator(".gear-row").filter({ hasText: "Fixture photo walk" });
+  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  const body = page.locator("#sessions-body");
+  const shoot = body.locator(".session-card[data-kind='capture']").filter({ hasText: "Fixture photo walk" });
   await expect(shoot).toBeVisible();
-  await shoot.getByRole("button", { name: "Add frames", exact: true }).click();
+  await shoot.getByRole("button", { name: "Log frames", exact: true }).click();
 
   const logger = page.locator(".logger-overlay");
   await expect(logger.locator(".logger-sticky-summary")).toContainText("Offline acceptance roll");
@@ -191,6 +191,7 @@ test("a seeded roll and shoot keep one of three shots queued until reconnection"
 test("offline gear add and edit flush one write for each user mutation", async ({ page, context, request }) => {
   const writes = trackRepoWrites(page);
   await login(page);
+  await page.goto("/library/cameras");
   const cameraRow = page.locator("#library-body .gear-row").filter({ hasText: "black body" });
   await expect(cameraRow).toBeVisible();
   await setBrowserOffline(page, context, true);
@@ -233,9 +234,8 @@ test("offline timer logging and its linked-roll milestone each flush once", asyn
   const writes = trackRepoWrites(page);
   await login(page);
 
-  const body = page.locator("#library-body");
-  await body.getByRole("button", { name: "Darkroom", exact: true }).click();
-  await body.getByRole("button", { name: "Start development", exact: true }).click();
+  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  await page.locator("#sessions-body").getByRole("button", { name: "Develop film", exact: true }).click();
   const timer = page.getByRole("dialog", { name: "Development timer" });
   await timer.getByLabel("Roll to develop").selectOption(ROLL);
   const recipeList = timer.locator(".devtimer-setup > .devtimer-list").last();

@@ -29,6 +29,9 @@ function bootstrapHarness({
     loadOnboarding: vi.fn(async () => onboarding),
     libraryFeature: vi.fn(async () => ({ getStore: () => ({ kind: "store" }) })),
     openLibraryRecord: vi.fn(async () => undefined),
+    openSessions: vi.fn(async () => undefined),
+    openSessionRecord: vi.fn(async () => undefined),
+    openSessionAction: vi.fn(async () => undefined),
     closeLibraryRecord: vi.fn(),
     goSection: vi.fn(async () => undefined),
     navigateSection: vi.fn(),
@@ -198,7 +201,7 @@ describe("web bootstrap boundary", () => {
 
   it.each([
     ["galleries", {}, "goSection", "galleries"],
-    ["timer", {}, "setLibraryTab", "darkroom"],
+    ["timer", {}, "openSessionAction", "resume-development"],
     ["meter", {}, "openMeter", undefined],
     ["following", {}, "goSection", "following"],
     ["discover", {}, "goSection", "discover"],
@@ -211,7 +214,7 @@ describe("web bootstrap boundary", () => {
     if (value === undefined) expect(harness.services[service]).toHaveBeenCalledOnce();
     else expect(harness.services[service]).toHaveBeenCalledWith(value);
     if (name === "timer") {
-      expect(harness.services.goSection).toHaveBeenCalledWith("setup");
+      expect(harness.services.goSection).toHaveBeenCalledWith("sessions");
     }
   });
 
