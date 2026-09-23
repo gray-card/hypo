@@ -2,7 +2,7 @@
 
 Notable changes to Hypo are recorded here.
 
-## [1.4.0] - 2026-09-20
+## [1.4.0] - 2026-09-23
 
 ### Added
 
@@ -20,6 +20,12 @@ Notable changes to Hypo are recorded here.
 
 ### Fixed
 
+- Upgrade MapLibre GL to its patched ESM release, bundle its worker correctly,
+  and render location labels as text instead of unsanitized popup HTML.
+- Fall back to accessible location-filter buttons when a browser cannot create
+  the WebGL 2 map required by MapLibre GL 6.
+- Keep provenance source values extensible and accept legacy evidence entries
+  without a kind, so the schema additions remain backward-compatible.
 - Present recent darkroom activity as neutral ledger rows, with long roll,
   equipment, software, and process descriptions wrapping inside the panel.
 - Show interval chronology errors beside the finish field without clearing the
