@@ -249,9 +249,9 @@ test("rolls show processing history and open preselected completed-session forms
   await developmentDialog.getByRole("button", { name: "Cancel", exact: true }).click();
 
   await rollDialog.getByRole("button", { name: "Log scan" }).click();
-  const scanDialog = page.getByRole("dialog", { name: "Log scan session" });
-  await expect(scanDialog.getByLabel("Roll")).toHaveValue(roll);
-  await expect(scanDialog.getByText(/Only the roll, scanner, method, and date are needed/)).toBeVisible();
+  const scanDialog = page.getByRole("dialog", { name: "Log digitization session" });
+  await expect(scanDialog.getByRole("checkbox", { name: /Processed fixture roll/ })).toBeChecked();
+  await expect(scanDialog.getByText(/Link every roll in the batch/)).toBeVisible();
   expect(await scanDialog.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
   await scanDialog.getByRole("button", { name: "Cancel", exact: true }).click();
 });

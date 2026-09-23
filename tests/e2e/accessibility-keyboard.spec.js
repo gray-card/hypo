@@ -252,6 +252,8 @@ test("setup view supports keyboard nav, modal focus restoration, and seeded gear
   await tabTo(page, setupNav);
   await expectVisibleKeyboardFocus(setupNav);
   await page.keyboard.press("Tab");
+  await expectVisibleKeyboardFocus(primaryNavButton(page, "sessions"));
+  await page.keyboard.press("Tab");
   await expectVisibleKeyboardFocus(primaryNavButton(page, "galleries"));
 
   const shortcuts = page.getByRole("button", { name: "Keyboard shortcuts" });
