@@ -1,8 +1,9 @@
-// mapView.js: MapLibre GL maps, loaded lazily so the ~230KB library never lands
+// mapView.js: MapLibre GL maps, loaded lazily so the library never lands
 // in the main bundle. Two entry points — a location picker (for the gallery and
 // photo editors) and a coarse density heatmap (for the public profile). Tiles
 // come from OpenFreeMap: tokenless, no usage limits, works on static hosting.
 
+import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { el, busyWait, toast } from "./dom.js";
 
 const POSITRON = "https://tiles.openfreemap.org/styles/positron";
@@ -12,7 +13,12 @@ let maplibrePromise = null;
 export function loadMaplibre() {
   if (!maplibrePromise) {
     maplibrePromise = Promise.all([import("maplibre-gl"), import("maplibre-gl/dist/maplibre-gl.css")])
-      .then(([mod]) => mod.default || mod)
+      .then(([maplibregl]) => {
+        // MapLibre 6 is ESM-only. Bundlers must supply the worker URL explicitly;
+        // Vite's worker pipeline keeps the worker and its shared module together.
+        maplibregl.setWorkerUrl(maplibreWorkerUrl);
+        return maplibregl;
+      })
       // Do NOT cache a rejection: a transient network blip (or a stale chunk that
       // a reload would fix) would otherwise pin every later map click to the same
       // failure for the life of the page. Clearing it lets a retry recover.
@@ -80,13 +86,14 @@ export async function openLocationPicker(initial = null) {
   return new Promise((resolve) => {
     let picked = initial ? { latitude: initial.latitude, longitude: initial.longitude } : null;
     let placemark = initial?.placemark || null;
+    let map = null;
     let settled = false;
     const result = () => (picked ? { ...picked, ...(placemark ? { placemark } : {}) } : picked);
     const finish = (val) => {
       if (settled) return;
       settled = true;
       try {
-        map.remove();
+        map?.remove();
       } catch {
         /* already gone */
       }
@@ -176,13 +183,19 @@ export async function openLocationPicker(initial = null) {
     document.addEventListener("keydown", onKey);
     document.body.append(overlay);
 
-    const map = new maplibregl.Map({
-      container: mapDiv,
-      style: POSITRON,
-      center: initial ? toLngLat(initial) : [0, 25],
-      zoom: initial ? 11 : 1.2,
-      attributionControl: true,
-    });
+    try {
+      map = new maplibregl.Map({
+        container: mapDiv,
+        style: POSITRON,
+        center: initial ? toLngLat(initial) : [0, 25],
+        zoom: initial ? 11 : 1.2,
+        attributionControl: true,
+      });
+    } catch {
+      toast("This browser can't display the map. You can continue without a mapped location.", "err", 5000);
+      finish(undefined);
+      return;
+    }
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
 
     let marker = null;
@@ -299,6 +312,10 @@ export function locationField(initial) {
 // `cells`: [{ key, lat, lon, count, label }]. `selected`: a Set of active keys.
 // `onToggle(key)` fires when a cell is clicked.
 export async function mountHeatmap(node, state, cells, selected, onToggle) {
+  if (state.mapUnavailable) {
+    renderHeatmapFallback(node, cells, selected, onToggle);
+    return;
+  }
   const accent = accentColor();
   const data = {
     type: "FeatureCollection",
@@ -324,15 +341,23 @@ export async function mountHeatmap(node, state, cells, selected, onToggle) {
     node.replaceChildren(el("p", { class: "muted small" }, "Couldn't load map."));
     throw new Error("maplibre load failed");
   }
+  node.classList.remove("map-fallback");
   node.replaceChildren();
 
-  const map = new maplibregl.Map({
-    container: node,
-    style: POSITRON,
-    center: [0, 25],
-    zoom: 1.1,
-    attributionControl: true,
-  });
+  let map;
+  try {
+    map = new maplibregl.Map({
+      container: node,
+      style: POSITRON,
+      center: [0, 25],
+      zoom: 1.1,
+      attributionControl: true,
+    });
+  } catch {
+    state.mapUnavailable = true;
+    renderHeatmapFallback(node, cells, selected, onToggle);
+    return;
+  }
   state.map = map;
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
   // the container may still be laying out; nudge the map to its real size so tile
@@ -392,10 +417,7 @@ export async function mountHeatmap(node, state, cells, selected, onToggle) {
     const popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 12 });
     map.on("mousemove", "cells-dot", (e) => {
       const p = e.features[0].properties;
-      popup
-        .setLngLat(e.lngLat)
-        .setHTML(`<strong>${p.label}</strong><br>${p.count} photo${p.count === "1" ? "" : "s"}`)
-        .addTo(map);
+      popup.setLngLat(e.lngLat).setDOMContent(heatmapPopupContent(p.label, p.count)).addTo(map);
     });
     map.on("mouseleave", "cells-dot", () => popup.remove());
   };
@@ -404,6 +426,37 @@ export async function mountHeatmap(node, state, cells, selected, onToggle) {
   // dropped as the style finishes applying.)
   if (map.isStyleLoaded()) build();
   else map.on("load", build);
+}
+
+export function heatmapPopupContent(label, count) {
+  const total = Number.isFinite(Number(count)) ? Number(count) : 0;
+  return el("span", {}, [
+    el("strong", {}, String(label || "Unknown location")),
+    el("br"),
+    `${total} photo${total === 1 ? "" : "s"}`,
+  ]);
+}
+
+function renderHeatmapFallback(node, cells, selected, onToggle) {
+  const options = el("div", { class: "filter-chip-row" });
+  for (const cell of cells) {
+    const button = el(
+      "button",
+      {
+        type: "button",
+        class: `filter-chip${selected.has(cell.key) ? " on" : ""}`,
+        "aria-pressed": selected.has(cell.key) ? "true" : "false",
+        onclick: () => onToggle(cell.key),
+      },
+      [el("span", {}, cell.label), el("span", { class: "chip-count" }, String(cell.count))],
+    );
+    options.append(button);
+  }
+  node.classList.add("map-fallback");
+  node.replaceChildren(
+    el("p", { class: "muted small", role: "status" }, "Map unavailable. Choose a location below."),
+    options,
+  );
 }
 
 function fit(map, cells, maplibregl) {

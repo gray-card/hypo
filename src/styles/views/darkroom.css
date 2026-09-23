@@ -11,6 +11,14 @@
   height: 300px;
   margin-top: 6px;
 }
+.map-canvas.map-fallback {
+  height: auto;
+  min-height: 0;
+  padding: 12px;
+}
+.map-canvas.map-fallback > p {
+  margin: 0 0 10px;
+}
 .map-modal {
   width: min(680px, 94vw);
 }

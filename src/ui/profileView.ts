@@ -119,6 +119,7 @@ interface HeatmapMap {
 
 interface HeatmapState {
   map?: HeatmapMap;
+  mapUnavailable?: boolean;
   node?: HTMLDivElement;
   mountHeat?: () => void;
   refineOpen?: boolean;
