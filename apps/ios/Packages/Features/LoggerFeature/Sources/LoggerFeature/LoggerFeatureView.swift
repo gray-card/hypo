@@ -39,7 +39,7 @@ public struct LoggerFeatureView: View {
             logFrameBar
         }
         .foregroundStyle(HypoTheme.ColorToken.text)
-        .navigationTitle("Log")
+        .navigationTitle("Log frames")
         .toolbar {
             ToolbarItem(placement: .automatic) { HypoToolbarWordmark() }
         }

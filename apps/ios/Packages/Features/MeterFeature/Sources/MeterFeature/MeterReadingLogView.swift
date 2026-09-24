@@ -119,7 +119,7 @@ struct MeterReadingLogView: View {
                 Task { await model.promoteSelectedReadingLog() }
             } label: {
                 Label(
-                    "Use \(model.selectedReadingLogIDs.count) in Logger",
+                    "Use \(model.selectedReadingLogIDs.count) for next frame",
                     systemImage: "square.and.arrow.down"
                 )
                 .frame(maxWidth: .infinity)
@@ -354,7 +354,7 @@ private struct StoredMeterReadingDetailView: View {
             Button {
                 Task { await model.promoteStoredReading(id: entry.id) }
             } label: {
-                Label("Use in Logger", systemImage: "square.and.arrow.down")
+                Label("Use for next frame", systemImage: "square.and.arrow.down")
                     .frame(maxWidth: .infinity)
             }
             .disabled(model.isPromoting)

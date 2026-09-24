@@ -201,8 +201,8 @@ public enum HypoErrorPresenter {
         case .meterPromotionUnavailable:
             presentation(
                 "METER-LOGGER",
-                "Reading wasn’t added to Logger",
-                "The meter reading remains available. Open Logger and try adding it again.",
+                "Reading wasn’t added to the next frame",
+                "The meter reading remains available. Open Log frames in Sessions and try again.",
                 "Try Again",
                 .retry
             )

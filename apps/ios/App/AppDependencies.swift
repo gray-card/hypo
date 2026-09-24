@@ -1477,7 +1477,7 @@ private actor QueuedLoggerMeterPromoter: LoggerExposureMeterPromoting {
             }
             guard reading.role != .average else {
                 throw MeterFeatureBoundaryError.promotion(
-                    "Save the averaged reading before sending it to Logger."
+                    "Save the averaged reading before using it for the next frame."
                 )
             }
             let receipt = try await readingWriter.storeMeterReadings(
@@ -1583,7 +1583,7 @@ private enum MeterReadingWireEncoder {
             flags: reading.flags.isEmpty ? nil : reading.flags.sorted().map(\.rawValue),
             takenAt: ATProtoDate(reading.takenAt),
             provenance: AppGraycardDefsProvenance(
-                source: .analysis,
+                source: "analysis",
                 confidence: reading.accuracyTier == .calibrated ? .certain : .likely,
                 assertedAt: ATProtoDate(reading.takenAt),
                 note: provenanceNote
@@ -1699,10 +1699,13 @@ final class AppModel {
 
     enum Tab: Hashable, Sendable {
         case meter
+        case sessions
+        case library
+    }
+
+    enum SessionDestination: Hashable, Sendable {
         case logger
         case timer
-        case library
-        case settings
     }
 
     let dependencies: AppDependencies
@@ -1720,6 +1723,8 @@ final class AppModel {
     private(set) var isLoadingAccountData = false
     private(set) var loggerUnavailableMessage = "Sign in to load your active rolls."
     var selectedTab: Tab = .meter
+    var sessionsPath: [SessionDestination] = []
+    var isSettingsPresented = false
     private(set) var requestedTimerRecipe: String?
     private var requestedLoggerAperture: String?
     private var requestedLoggerShutterSpeed: String?
@@ -2109,7 +2114,7 @@ final class AppModel {
         if url.scheme?.lowercased() == "app.graycard.hypo",
             url.path == "/oauth/callback"
         {
-            selectedTab = .settings
+            isSettingsPresented = true
             settingsModel.receiveExpiredCallback()
             return true
         }
@@ -2134,16 +2139,19 @@ final class AppModel {
 
         switch route {
         case "meter": selectedTab = .meter
-        case "log", "logger": selectedTab = .logger
+        case "log", "logger":
+            selectedTab = .sessions
+            sessionsPath = [.logger]
         case "timer":
-            selectedTab = .timer
+            selectedTab = .sessions
+            sessionsPath = [.timer]
             if url.scheme?.lowercased() == "hypo" {
                 requestedTimerRecipe = pathComponents.first
             } else if pathComponents.count >= 3 {
                 requestedTimerRecipe = pathComponents[2]
             }
         case "library": selectedTab = .library
-        case "settings", "account": selectedTab = .settings
+        case "settings", "account": isSettingsPresented = true
         default: return false
         }
         return true
@@ -2153,7 +2161,8 @@ final class AppModel {
     private func apply(_ route: HypoDeepLink) -> Bool {
         switch route {
         case let .log(aperture, shutterSpeed):
-            selectedTab = .logger
+            selectedTab = .sessions
+            sessionsPath = [.logger]
             requestedLoggerAperture = aperture
             requestedLoggerShutterSpeed = shutterSpeed
             applyRequestedLoggerValues()
@@ -2168,13 +2177,14 @@ final class AppModel {
                     }
             }
         case let .timer(recipe):
-            selectedTab = .timer
+            selectedTab = .sessions
+            sessionsPath = [.timer]
             requestedTimerRecipe = recipe
             Task { await applyRequestedTimerRecipe() }
         case .library:
             selectedTab = .library
         case .settings:
-            selectedTab = .settings
+            isSettingsPresented = true
         }
         return true
     }

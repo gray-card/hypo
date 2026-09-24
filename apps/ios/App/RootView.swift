@@ -1,4 +1,5 @@
 import DesignSystem
+import Foundation
 import HypoLexicon
 import LoggerFeature
 import LibraryFeature
@@ -18,9 +19,9 @@ struct RootView: View {
             NavigationStack {
                 MeterFeatureView(
                     model: model.meterModel,
-                    onOpenAccountSettings: { model.selectedTab = .settings }
+                    onOpenAccountSettings: { model.isSettingsPresented = true }
                 )
-                .toolbar { syncStatusToolbar }
+                .toolbar { appToolbar }
             }
             .tabItem {
                 Label("Meter", systemImage: "camera.metering.center.weighted")
@@ -28,69 +29,44 @@ struct RootView: View {
             }
             .tag(AppModel.Tab.meter)
 
-            NavigationStack {
-                Group {
-                    if let loggerModel = model.loggerModel {
-                        LoggerFeatureView(
-                            model: loggerModel,
-                            onOpenAccountSettings: { model.selectedTab = .settings }
+            NavigationStack(path: $model.sessionsPath) {
+                SessionsHomeView(
+                    model: model,
+                    onOpenAccountSettings: { model.isSettingsPresented = true }
+                )
+                .navigationDestination(for: AppModel.SessionDestination.self) { destination in
+                    switch destination {
+                    case .logger:
+                        loggerDestination
+                            .toolbar { appToolbar }
+                    case .timer:
+                        TimerFeatureView(
+                            model: model.timerModel,
+                            onOpenAccountSettings: { model.isSettingsPresented = true }
                         )
-                    } else if model.isLoadingAccountData {
-                        ProgressView("Loading active rolls")
-                    } else {
-                        ContentUnavailableView {
-                            Label("Log unavailable", systemImage: "camera.roll")
-                        } description: {
-                            Text(model.loggerUnavailableMessage)
-                        } actions: {
-                            Button("Open Settings") { model.selectedTab = .settings }
-                                .buttonStyle(.borderedProminent)
-                        }
+                        .toolbar { appToolbar }
                     }
                 }
-                .toolbar { syncStatusToolbar }
+                .toolbar { appToolbar }
             }
             .tabItem {
-                Label("Log", systemImage: "square.and.pencil")
-                    .accessibilityIdentifier("tab.log")
+                Label("Sessions", systemImage: "clock.arrow.circlepath")
+                    .accessibilityIdentifier("tab.sessions")
             }
-            .tag(AppModel.Tab.logger)
-
-            NavigationStack {
-                TimerFeatureView(
-                    model: model.timerModel,
-                    onOpenAccountSettings: { model.selectedTab = .settings }
-                )
-                .toolbar { syncStatusToolbar }
-            }
-            .tabItem {
-                Label("Timer", systemImage: "timer")
-                    .accessibilityIdentifier("tab.timer")
-            }
-            .tag(AppModel.Tab.timer)
+            .tag(AppModel.Tab.sessions)
 
             NavigationStack {
                 LibraryFeatureView(
                     model: model.libraryModel,
-                    onOpenAccountSettings: { model.selectedTab = .settings }
+                    onOpenAccountSettings: { model.isSettingsPresented = true }
                 )
-                .toolbar { syncStatusToolbar }
+                .toolbar { appToolbar }
             }
             .tabItem {
                 Label("Library", systemImage: "rectangle.stack")
                     .accessibilityIdentifier("tab.library")
             }
             .tag(AppModel.Tab.library)
-
-            NavigationStack {
-                SettingsFeatureView(model: model.settingsModel)
-                    .toolbar { syncStatusToolbar }
-            }
-            .tabItem {
-                Label("Settings", systemImage: "gearshape")
-                    .accessibilityIdentifier("tab.settings")
-            }
-            .tag(AppModel.Tab.settings)
         }
         .tint(HypoTheme.ColorToken.accent)
         .preferredColorScheme(.dark)
@@ -127,6 +103,18 @@ struct RootView: View {
             .hypoAppearance(.standard)
             .preferredColorScheme(.dark)
         }
+        .sheet(isPresented: $model.isSettingsPresented) {
+            NavigationStack {
+                SettingsFeatureView(model: model.settingsModel)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") { model.isSettingsPresented = false }
+                        }
+                    }
+            }
+            .hypoAppearance(.standard)
+            .preferredColorScheme(.dark)
+        }
         .safeAreaInset(edge: .top) {
             if !model.dependencies.persistenceIsDurable {
                 HypoErrorNotice(
@@ -139,8 +127,41 @@ struct RootView: View {
         }
     }
 
+    @ViewBuilder
+    private var loggerDestination: some View {
+        if let loggerModel = model.loggerModel {
+            LoggerFeatureView(
+                model: loggerModel,
+                onOpenAccountSettings: { model.isSettingsPresented = true }
+            )
+        } else if model.isLoadingAccountData {
+            ProgressView("Loading active rolls")
+                .navigationTitle("Log frames")
+        } else {
+            ContentUnavailableView {
+                Label("Frame logging unavailable", systemImage: "camera.roll")
+            } description: {
+                Text(model.loggerUnavailableMessage)
+            } actions: {
+                Button("Open Settings") { model.isSettingsPresented = true }
+                    .buttonStyle(.borderedProminent)
+            }
+            .navigationTitle("Log frames")
+        }
+    }
+
     @ToolbarContentBuilder
-    private var syncStatusToolbar: some ToolbarContent {
+    private var appToolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                model.isSettingsPresented = true
+            } label: {
+                Image(systemName: "gearshape")
+                    .frame(width: 30, height: 30)
+            }
+            .accessibilityLabel("Settings")
+            .accessibilityIdentifier("app.settings")
+        }
         ToolbarItem(placement: .topBarTrailing) {
             Button {
                 syncStatusIsPresented = true
@@ -180,6 +201,123 @@ struct RootView: View {
 
     private func compactCount(_ count: Int) -> String {
         count > 99 ? "99+" : String(count)
+    }
+}
+
+private struct SessionsHomeView: View {
+    @Bindable var model: AppModel
+    let onOpenAccountSettings: () -> Void
+
+    var body: some View {
+        ZStack {
+            HypoTheme.ColorToken.background.ignoresSafeArea()
+            ScrollView {
+                VStack(alignment: .leading, spacing: HypoTheme.Space.four) {
+                    if hasActiveDevelopment { activeDevelopmentPanel }
+                    Text("Start work")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    sessionAction(
+                        destination: .logger,
+                        title: "Log frames",
+                        detail: loggerDetail,
+                        systemImage: "camera.shutter.button"
+                    )
+                    sessionAction(
+                        destination: .timer,
+                        title: "Develop film",
+                        detail: model.timerModel.selectedRecipe.plan.name,
+                        systemImage: "timer"
+                    )
+                    if model.loggerModel == nil, !model.isLoadingAccountData {
+                        Button("Manage account access", action: onOpenAccountSettings)
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(HypoTheme.ColorToken.accent)
+                            .frame(minHeight: 44)
+                    }
+                }
+                .padding(HypoTheme.Space.four)
+            }
+        }
+        .foregroundStyle(HypoTheme.ColorToken.text)
+        .navigationTitle("Sessions")
+        .toolbar {
+            ToolbarItem(placement: .automatic) { HypoToolbarWordmark() }
+        }
+    }
+
+    private var hasActiveDevelopment: Bool {
+        model.timerModel.run.status == .running || model.timerModel.run.status == .paused
+    }
+
+    private var loggerDetail: String {
+        guard let loggerModel = model.loggerModel else {
+            return model.isLoadingAccountData ? "Loading active rolls…" : model.loggerUnavailableMessage
+        }
+        return "\(loggerModel.activeRoll.label) · frame \(loggerModel.draft.frameNumber)"
+    }
+
+    private var activeDevelopmentPanel: some View {
+        InstrumentPanel {
+            VStack(alignment: .leading, spacing: HypoTheme.Space.three) {
+                Label("Development in progress", systemImage: "timer")
+                    .font(.headline)
+                    .foregroundStyle(HypoTheme.ColorToken.accent)
+                Text(model.timerModel.selectedRecipe.plan.name)
+                    .font(.title3.weight(.semibold))
+                if let snapshot = model.timerModel.snapshot {
+                    Text("\(snapshot.stage.name) · \(duration(snapshot.remaining)) remaining")
+                        .font(.callout.monospacedDigit())
+                        .foregroundStyle(HypoTheme.ColorToken.muted)
+                }
+                NavigationLink(value: AppModel.SessionDestination.timer) {
+                    Label("Resume development", systemImage: "arrow.right")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(HypoPrimaryButtonStyle())
+                .accessibilityIdentifier("sessions.resume-development")
+            }
+        }
+    }
+
+    private func sessionAction(
+        destination: AppModel.SessionDestination,
+        title: String,
+        detail: String,
+        systemImage: String
+    ) -> some View {
+        NavigationLink(value: destination) {
+            InstrumentPanel {
+                HStack(spacing: HypoTheme.Space.three) {
+                    Image(systemName: systemImage)
+                        .font(.title2)
+                        .foregroundStyle(HypoTheme.ColorToken.accent)
+                        .frame(width: 36)
+                    VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
+                        Text(title)
+                            .font(.headline)
+                            .foregroundStyle(HypoTheme.ColorToken.text)
+                        Text(detail)
+                            .font(.footnote)
+                            .foregroundStyle(HypoTheme.ColorToken.muted)
+                            .lineLimit(2)
+                    }
+                    Spacer(minLength: HypoTheme.Space.two)
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(HypoTheme.ColorToken.muted)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier(
+            destination == .logger ? "sessions.log-frames" : "sessions.develop-film"
+        )
+    }
+
+    private func duration(_ seconds: TimeInterval) -> String {
+        let total = max(0, Int(seconds.rounded()))
+        return String(format: "%d:%02d", total / 60, total % 60)
     }
 }
 

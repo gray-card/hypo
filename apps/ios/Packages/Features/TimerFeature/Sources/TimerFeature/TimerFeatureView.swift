@@ -34,7 +34,7 @@ public struct TimerFeatureView: View {
             }
         }
         .darkroomTreatment()
-        .navigationTitle("Timer")
+        .navigationTitle("Develop film")
         .toolbar {
             ToolbarItem(placement: .automatic) {
                 HypoToolbarWordmark()

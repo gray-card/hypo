@@ -14,6 +14,7 @@ public struct AppGraycardArtifactMain: Codable, Hashable, Sendable {
     public var producedBy: ATURI?
     public var temporal: AppGraycardDefsTemporalRef?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
     public var recordType: String?
@@ -29,6 +30,7 @@ public struct AppGraycardArtifactMain: Codable, Hashable, Sendable {
         producedBy: ATURI? = nil,
         temporal: AppGraycardDefsTemporalRef? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.artifact"
     ) {
@@ -42,6 +44,7 @@ public struct AppGraycardArtifactMain: Codable, Hashable, Sendable {
         self.producedBy = producedBy
         self.temporal = temporal
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.updatedAt = updatedAt
         self.recordType = recordType
     }
@@ -56,6 +59,7 @@ public struct AppGraycardArtifactMain: Codable, Hashable, Sendable {
         case producedBy
         case temporal
         case provenance
+        case fieldProvenance
         case createdAt
         case updatedAt
         case recordType = "$type"
@@ -2004,6 +2008,7 @@ public struct AppGraycardCatalogMeterTypeMain: Codable, Hashable, Sendable {
     public var specSources: [AppGraycardDefsSpecSource]?
     public var links: AppGraycardDefsCatalogLinks?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var note: String?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
@@ -2036,6 +2041,7 @@ public struct AppGraycardCatalogMeterTypeMain: Codable, Hashable, Sendable {
         specSources: [AppGraycardDefsSpecSource]? = nil,
         links: AppGraycardDefsCatalogLinks? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         note: String? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.catalog.meterType"
@@ -2066,6 +2072,7 @@ public struct AppGraycardCatalogMeterTypeMain: Codable, Hashable, Sendable {
         self.specSources = specSources
         self.links = links
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.note = note
         self.updatedAt = updatedAt
         self.recordType = recordType
@@ -2097,6 +2104,7 @@ public struct AppGraycardCatalogMeterTypeMain: Codable, Hashable, Sendable {
         case specSources
         case links
         case provenance
+        case fieldProvenance
         case note
         case createdAt
         case updatedAt
@@ -2828,6 +2836,64 @@ public struct AppGraycardDefsDeveloperForm: RawRepresentable, Codable, Hashable,
     public static let other = Self("other")
 }
 
+public struct AppGraycardDefsEvidenceRef: Codable, Hashable, Sendable {
+    public var kind: AppGraycardDefsEvidenceRefKind?
+    public var record: ATURI?
+    public var uri: String?
+    public var digest: String?
+    public var label: String?
+    public var redacted: Bool?
+    public var note: String?
+
+    public init(
+        kind: AppGraycardDefsEvidenceRefKind? = nil,
+        record: ATURI? = nil,
+        uri: String? = nil,
+        digest: String? = nil,
+        label: String? = nil,
+        redacted: Bool? = nil,
+        note: String? = nil
+    ) {
+        self.kind = kind
+        self.record = record
+        self.uri = uri
+        self.digest = digest
+        self.label = label
+        self.redacted = redacted
+        self.note = note
+    }
+}
+
+/// An open AT Protocol known-value string. Unknown values remain decodable for forward compatibility.
+public struct AppGraycardDefsEvidenceRefKind: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(_ rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        rawValue = try container.decode(String.self)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
+    public static let record = Self("record")
+    public static let external = Self("external")
+    public static let file = Self("file")
+    public static let content = Self("content")
+    public static let withheld = Self("withheld")
+    public static let unavailable = Self("unavailable")
+}
+
 /// An open AT Protocol known-value string. Unknown values remain decodable for forward compatibility.
 public struct AppGraycardDefsExposureProgram: RawRepresentable, Codable, Hashable, Sendable {
     public let rawValue: String
@@ -2909,14 +2975,20 @@ public struct AppGraycardDefsExternalIdScheme: RawRepresentable, Codable, Hashab
 
 public struct AppGraycardDefsFieldProvenance: Codable, Hashable, Sendable {
     public var field: String
+    public var relationship: String?
+    public var valueDigest: String?
     public var provenance: AppGraycardDefsProvenance
 
     public init(
         field: String,
-        provenance: AppGraycardDefsProvenance
+        provenance: AppGraycardDefsProvenance,
+        relationship: String? = nil,
+        valueDigest: String? = nil
     ) {
         self.field = field
         self.provenance = provenance
+        self.relationship = relationship
+        self.valueDigest = valueDigest
     }
 }
 
@@ -3411,23 +3483,29 @@ public struct AppGraycardDefsProjectMode: RawRepresentable, Codable, Hashable, S
 }
 
 public struct AppGraycardDefsProvenance: Codable, Hashable, Sendable {
-    public var source: AppGraycardDefsProvenanceSource?
+    public var source: String?
     public var confidence: AppGraycardDefsProvenanceConfidence?
     public var assertedAt: ATProtoDate?
     public var assertedBy: String?
+    public var method: String?
+    public var evidence: [AppGraycardDefsEvidenceRef]?
     public var note: String?
 
     public init(
-        source: AppGraycardDefsProvenanceSource? = nil,
+        source: String? = nil,
         confidence: AppGraycardDefsProvenanceConfidence? = nil,
         assertedAt: ATProtoDate? = nil,
         assertedBy: String? = nil,
+        method: String? = nil,
+        evidence: [AppGraycardDefsEvidenceRef]? = nil,
         note: String? = nil
     ) {
         self.source = source
         self.confidence = confidence
         self.assertedAt = assertedAt
         self.assertedBy = assertedBy
+        self.method = method
+        self.evidence = evidence
         self.note = note
     }
 }
@@ -3457,36 +3535,6 @@ public struct AppGraycardDefsProvenanceConfidence: RawRepresentable, Codable, Ha
     public static let certain = Self("certain")
     public static let likely = Self("likely")
     public static let guess = Self("guess")
-}
-
-/// An open AT Protocol known-value string. Unknown values remain decodable for forward compatibility.
-public struct AppGraycardDefsProvenanceSource: RawRepresentable, Codable, Hashable, Sendable {
-    public let rawValue: String
-
-    public init(_ rawValue: String) {
-        self.rawValue = rawValue
-    }
-
-    public init(rawValue: String) {
-        self.rawValue = rawValue
-    }
-
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        rawValue = try container.decode(String.self)
-    }
-
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(rawValue)
-    }
-
-    public static let manual = Self("manual")
-    public static let importedExif = Self("imported-exif")
-    public static let inferred = Self("inferred")
-    public static let analysis = Self("analysis")
-    public static let batchRule = Self("batch-rule")
-    public static let workflowTemplate = Self("workflow-template")
 }
 
 /// An open AT Protocol known-value string. Unknown values remain decodable for forward compatibility.
@@ -3807,6 +3855,7 @@ public struct AppGraycardEditRecipeMain: Codable, Hashable, Sendable {
     public var paramsHash: String?
     public var preset: String?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
     public var recordType: String?
@@ -3822,6 +3871,7 @@ public struct AppGraycardEditRecipeMain: Codable, Hashable, Sendable {
         paramsHash: String? = nil,
         preset: String? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.edit.recipe"
     ) {
@@ -3835,6 +3885,7 @@ public struct AppGraycardEditRecipeMain: Codable, Hashable, Sendable {
         self.paramsHash = paramsHash
         self.preset = preset
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.updatedAt = updatedAt
         self.recordType = recordType
     }
@@ -3849,6 +3900,7 @@ public struct AppGraycardEditRecipeMain: Codable, Hashable, Sendable {
         case paramsHash
         case preset
         case provenance
+        case fieldProvenance
         case createdAt
         case updatedAt
         case recordType = "$type"
@@ -4243,6 +4295,7 @@ public struct AppGraycardInstanceExposureMain: Codable, Hashable, Sendable {
     public var timeZone: String?
     public var sourceIdentifier: String?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var note: String?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
@@ -4274,6 +4327,7 @@ public struct AppGraycardInstanceExposureMain: Codable, Hashable, Sendable {
         timeZone: String? = nil,
         sourceIdentifier: String? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         note: String? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.instance.exposure"
@@ -4303,6 +4357,7 @@ public struct AppGraycardInstanceExposureMain: Codable, Hashable, Sendable {
         self.timeZone = timeZone
         self.sourceIdentifier = sourceIdentifier
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.note = note
         self.updatedAt = updatedAt
         self.recordType = recordType
@@ -4333,6 +4388,7 @@ public struct AppGraycardInstanceExposureMain: Codable, Hashable, Sendable {
         case timeZone
         case sourceIdentifier
         case provenance
+        case fieldProvenance
         case note
         case createdAt
         case updatedAt
@@ -4374,6 +4430,8 @@ public struct AppGraycardInstanceFilmRollMain: Codable, Hashable, Sendable {
     public var finishedAt: ATProtoDate?
     public var labNotes: String?
     public var notes: String?
+    public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
     public var image: LexiconBlobRef?
@@ -4414,6 +4472,8 @@ public struct AppGraycardInstanceFilmRollMain: Codable, Hashable, Sendable {
         finishedAt: ATProtoDate? = nil,
         labNotes: String? = nil,
         notes: String? = nil,
+        provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         updatedAt: ATProtoDate? = nil,
         image: LexiconBlobRef? = nil,
         recordType: String? = "app.graycard.instance.filmRoll"
@@ -4452,6 +4512,8 @@ public struct AppGraycardInstanceFilmRollMain: Codable, Hashable, Sendable {
         self.finishedAt = finishedAt
         self.labNotes = labNotes
         self.notes = notes
+        self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.updatedAt = updatedAt
         self.image = image
         self.recordType = recordType
@@ -4491,6 +4553,8 @@ public struct AppGraycardInstanceFilmRollMain: Codable, Hashable, Sendable {
         case finishedAt
         case labNotes
         case notes
+        case provenance
+        case fieldProvenance
         case createdAt
         case updatedAt
         case image
@@ -4842,6 +4906,7 @@ public struct AppGraycardInstanceMeterMain: Codable, Hashable, Sendable {
     public var acquiredAt: ATProtoDate?
     public var status: AppGraycardInstanceMeterMainStatus?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var note: String?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
@@ -4858,6 +4923,7 @@ public struct AppGraycardInstanceMeterMain: Codable, Hashable, Sendable {
         acquiredAt: ATProtoDate? = nil,
         status: AppGraycardInstanceMeterMainStatus? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         note: String? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.instance.meter"
@@ -4872,6 +4938,7 @@ public struct AppGraycardInstanceMeterMain: Codable, Hashable, Sendable {
         self.acquiredAt = acquiredAt
         self.status = status
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.note = note
         self.updatedAt = updatedAt
         self.recordType = recordType
@@ -4887,6 +4954,7 @@ public struct AppGraycardInstanceMeterMain: Codable, Hashable, Sendable {
         case acquiredAt
         case status
         case provenance
+        case fieldProvenance
         case note
         case createdAt
         case updatedAt
@@ -5086,6 +5154,7 @@ public struct AppGraycardMeterCalibrationMain: Codable, Hashable, Sendable {
     public var deviceModel: String?
     public var osVersion: String?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var note: String?
     public var createdAt: ATProtoDate
     public var supersedes: ATURI?
@@ -5108,6 +5177,7 @@ public struct AppGraycardMeterCalibrationMain: Codable, Hashable, Sendable {
         deviceModel: String? = nil,
         osVersion: String? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         note: String? = nil,
         supersedes: ATURI? = nil,
         recordType: String? = "app.graycard.meter.calibration"
@@ -5128,6 +5198,7 @@ public struct AppGraycardMeterCalibrationMain: Codable, Hashable, Sendable {
         self.deviceModel = deviceModel
         self.osVersion = osVersion
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.note = note
         self.supersedes = supersedes
         self.recordType = recordType
@@ -5149,6 +5220,7 @@ public struct AppGraycardMeterCalibrationMain: Codable, Hashable, Sendable {
         case deviceModel
         case osVersion
         case provenance
+        case fieldProvenance
         case note
         case createdAt
         case supersedes
@@ -5437,6 +5509,7 @@ public struct AppGraycardMeterReadingMain: Codable, Hashable, Sendable {
     public var shoot: ATURI?
     public var takenAt: ATProtoDate?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var note: String?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
@@ -5483,6 +5556,7 @@ public struct AppGraycardMeterReadingMain: Codable, Hashable, Sendable {
         shoot: ATURI? = nil,
         takenAt: ATProtoDate? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         note: String? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.meter.reading"
@@ -5527,6 +5601,7 @@ public struct AppGraycardMeterReadingMain: Codable, Hashable, Sendable {
         self.shoot = shoot
         self.takenAt = takenAt
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.note = note
         self.updatedAt = updatedAt
         self.recordType = recordType
@@ -5572,6 +5647,7 @@ public struct AppGraycardMeterReadingMain: Codable, Hashable, Sendable {
         case shoot
         case takenAt
         case provenance
+        case fieldProvenance
         case note
         case createdAt
         case updatedAt
@@ -5644,6 +5720,7 @@ public struct AppGraycardPhotoCaptureMain: Codable, Hashable, Sendable {
     public var location: AppGraycardDefsGeoLocation?
     public var projectMode: AppGraycardDefsProjectMode?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var notes: String?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
@@ -5661,6 +5738,7 @@ public struct AppGraycardPhotoCaptureMain: Codable, Hashable, Sendable {
         location: AppGraycardDefsGeoLocation? = nil,
         projectMode: AppGraycardDefsProjectMode? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         notes: String? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.photo.capture"
@@ -5676,6 +5754,7 @@ public struct AppGraycardPhotoCaptureMain: Codable, Hashable, Sendable {
         self.location = location
         self.projectMode = projectMode
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.notes = notes
         self.updatedAt = updatedAt
         self.recordType = recordType
@@ -5692,6 +5771,7 @@ public struct AppGraycardPhotoCaptureMain: Codable, Hashable, Sendable {
         case location
         case projectMode
         case provenance
+        case fieldProvenance
         case notes
         case createdAt
         case updatedAt
@@ -5801,6 +5881,7 @@ public struct AppGraycardProcessDevelopSessionMain: Codable, Hashable, Sendable 
     public var steps: [AppGraycardProcessDevelopSessionStep]?
     public var tankType: AppGraycardDefsTankType?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var pushPull: AppGraycardDefsMeasure?
     public var startedAt: ATProtoDate?
     public var finishedAt: ATProtoDate?
@@ -5819,6 +5900,7 @@ public struct AppGraycardProcessDevelopSessionMain: Codable, Hashable, Sendable 
         steps: [AppGraycardProcessDevelopSessionStep]? = nil,
         tankType: AppGraycardDefsTankType? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         pushPull: AppGraycardDefsMeasure? = nil,
         startedAt: ATProtoDate? = nil,
         finishedAt: ATProtoDate? = nil,
@@ -5835,6 +5917,7 @@ public struct AppGraycardProcessDevelopSessionMain: Codable, Hashable, Sendable 
         self.steps = steps
         self.tankType = tankType
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.pushPull = pushPull
         self.startedAt = startedAt
         self.finishedAt = finishedAt
@@ -5852,6 +5935,7 @@ public struct AppGraycardProcessDevelopSessionMain: Codable, Hashable, Sendable 
         case steps
         case tankType
         case provenance
+        case fieldProvenance
         case pushPull
         case startedAt
         case finishedAt
@@ -6042,6 +6126,7 @@ public struct AppGraycardProcessDigitizeSessionMain: Codable, Hashable, Sendable
     public var inversionMethod: AppGraycardDefsInversionMethod?
     public var labService: String?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var startedAt: ATProtoDate?
     public var finishedAt: ATProtoDate?
     public var notes: String?
@@ -6067,6 +6152,7 @@ public struct AppGraycardProcessDigitizeSessionMain: Codable, Hashable, Sendable
         inversionMethod: AppGraycardDefsInversionMethod? = nil,
         labService: String? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         startedAt: ATProtoDate? = nil,
         finishedAt: ATProtoDate? = nil,
         notes: String? = nil,
@@ -6090,6 +6176,7 @@ public struct AppGraycardProcessDigitizeSessionMain: Codable, Hashable, Sendable
         self.inversionMethod = inversionMethod
         self.labService = labService
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.startedAt = startedAt
         self.finishedAt = finishedAt
         self.notes = notes
@@ -6114,6 +6201,7 @@ public struct AppGraycardProcessDigitizeSessionMain: Codable, Hashable, Sendable
         case inversionMethod
         case labService
         case provenance
+        case fieldProvenance
         case startedAt
         case finishedAt
         case notes
@@ -6130,6 +6218,7 @@ public struct AppGraycardProcessEditSessionMain: Codable, Hashable, Sendable {
     public var recipe: ATURI?
     public var paramsHash: String?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var notes: String?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
@@ -6143,6 +6232,7 @@ public struct AppGraycardProcessEditSessionMain: Codable, Hashable, Sendable {
         recipe: ATURI? = nil,
         paramsHash: String? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         notes: String? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.process.editSession"
@@ -6154,6 +6244,7 @@ public struct AppGraycardProcessEditSessionMain: Codable, Hashable, Sendable {
         self.recipe = recipe
         self.paramsHash = paramsHash
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.notes = notes
         self.updatedAt = updatedAt
         self.recordType = recordType
@@ -6166,6 +6257,7 @@ public struct AppGraycardProcessEditSessionMain: Codable, Hashable, Sendable {
         case recipe
         case paramsHash
         case provenance
+        case fieldProvenance
         case notes
         case createdAt
         case updatedAt
@@ -6182,6 +6274,7 @@ public struct AppGraycardProcessMaintenanceSessionMain: Codable, Hashable, Senda
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var recordType: String?
 
     public init(
@@ -6193,6 +6286,7 @@ public struct AppGraycardProcessMaintenanceSessionMain: Codable, Hashable, Senda
         notes: String? = nil,
         updatedAt: ATProtoDate? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         recordType: String? = "app.graycard.process.maintenanceSession"
     ) {
         self.subject = subject
@@ -6203,6 +6297,7 @@ public struct AppGraycardProcessMaintenanceSessionMain: Codable, Hashable, Senda
         self.notes = notes
         self.updatedAt = updatedAt
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.recordType = recordType
     }
 
@@ -6215,6 +6310,7 @@ public struct AppGraycardProcessMaintenanceSessionMain: Codable, Hashable, Senda
         case createdAt
         case updatedAt
         case provenance
+        case fieldProvenance
         case recordType = "$type"
     }
 }
@@ -6415,6 +6511,7 @@ public struct AppGraycardProcessPrintSessionMain: Codable, Hashable, Sendable {
     public var labService: String?
     public var lab: ATURI?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var startedAt: ATProtoDate?
     public var finishedAt: ATProtoDate?
     public var notes: String?
@@ -6456,6 +6553,7 @@ public struct AppGraycardProcessPrintSessionMain: Codable, Hashable, Sendable {
         labService: String? = nil,
         lab: ATURI? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         startedAt: ATProtoDate? = nil,
         finishedAt: ATProtoDate? = nil,
         notes: String? = nil,
@@ -6495,6 +6593,7 @@ public struct AppGraycardProcessPrintSessionMain: Codable, Hashable, Sendable {
         self.labService = labService
         self.lab = lab
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.startedAt = startedAt
         self.finishedAt = finishedAt
         self.notes = notes
@@ -6535,6 +6634,7 @@ public struct AppGraycardProcessPrintSessionMain: Codable, Hashable, Sendable {
         case labService
         case lab
         case provenance
+        case fieldProvenance
         case startedAt
         case finishedAt
         case notes
@@ -6687,6 +6787,7 @@ public struct AppGraycardProcessRenderSessionMain: Codable, Hashable, Sendable {
     public var bitDepth: Int?
     public var quality: Int?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var startedAt: ATProtoDate?
     public var finishedAt: ATProtoDate?
     public var notes: String?
@@ -6709,6 +6810,7 @@ public struct AppGraycardProcessRenderSessionMain: Codable, Hashable, Sendable {
         bitDepth: Int? = nil,
         quality: Int? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         startedAt: ATProtoDate? = nil,
         finishedAt: ATProtoDate? = nil,
         notes: String? = nil,
@@ -6729,6 +6831,7 @@ public struct AppGraycardProcessRenderSessionMain: Codable, Hashable, Sendable {
         self.bitDepth = bitDepth
         self.quality = quality
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.startedAt = startedAt
         self.finishedAt = finishedAt
         self.notes = notes
@@ -6750,6 +6853,7 @@ public struct AppGraycardProcessRenderSessionMain: Codable, Hashable, Sendable {
         case bitDepth
         case quality
         case provenance
+        case fieldProvenance
         case startedAt
         case finishedAt
         case notes
@@ -7115,6 +7219,7 @@ public struct AppGraycardSceneEdgeMain: Codable, Hashable, Sendable {
     public var to: ATURI
     public var attrs: JSONValue?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
     public var recordType: String?
@@ -7127,6 +7232,7 @@ public struct AppGraycardSceneEdgeMain: Codable, Hashable, Sendable {
         createdAt: ATProtoDate,
         attrs: JSONValue? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.scene.edge"
     ) {
@@ -7137,6 +7243,7 @@ public struct AppGraycardSceneEdgeMain: Codable, Hashable, Sendable {
         self.createdAt = createdAt
         self.attrs = attrs
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.updatedAt = updatedAt
         self.recordType = recordType
     }
@@ -7148,6 +7255,7 @@ public struct AppGraycardSceneEdgeMain: Codable, Hashable, Sendable {
         case to
         case attrs
         case provenance
+        case fieldProvenance
         case createdAt
         case updatedAt
         case recordType = "$type"
@@ -7161,6 +7269,7 @@ public struct AppGraycardSceneGraphMain: Codable, Hashable, Sendable {
     public var label: String?
     public var temporal: AppGraycardDefsTemporalRef?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
     public var recordType: String?
@@ -7173,6 +7282,7 @@ public struct AppGraycardSceneGraphMain: Codable, Hashable, Sendable {
         label: String? = nil,
         temporal: AppGraycardDefsTemporalRef? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.scene.graph"
     ) {
@@ -7183,6 +7293,7 @@ public struct AppGraycardSceneGraphMain: Codable, Hashable, Sendable {
         self.label = label
         self.temporal = temporal
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.updatedAt = updatedAt
         self.recordType = recordType
     }
@@ -7194,6 +7305,7 @@ public struct AppGraycardSceneGraphMain: Codable, Hashable, Sendable {
         case label
         case temporal
         case provenance
+        case fieldProvenance
         case createdAt
         case updatedAt
         case recordType = "$type"
@@ -7207,6 +7319,7 @@ public struct AppGraycardSceneNodeMain: Codable, Hashable, Sendable {
     public var region: ATURI?
     public var attrs: JSONValue?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
     public var recordType: String?
@@ -7219,6 +7332,7 @@ public struct AppGraycardSceneNodeMain: Codable, Hashable, Sendable {
         region: ATURI? = nil,
         attrs: JSONValue? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.scene.node"
     ) {
@@ -7229,6 +7343,7 @@ public struct AppGraycardSceneNodeMain: Codable, Hashable, Sendable {
         self.region = region
         self.attrs = attrs
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.updatedAt = updatedAt
         self.recordType = recordType
     }
@@ -7240,6 +7355,7 @@ public struct AppGraycardSceneNodeMain: Codable, Hashable, Sendable {
         case region
         case attrs
         case provenance
+        case fieldProvenance
         case createdAt
         case updatedAt
         case recordType = "$type"
@@ -7413,6 +7529,7 @@ public struct AppGraycardSessionCaptureMain: Codable, Hashable, Sendable {
     public var filters: [ATURI]?
     public var places: [AppGraycardDefsGeoLocation]?
     public var provenance: AppGraycardDefsProvenance?
+    public var fieldProvenance: [AppGraycardDefsFieldProvenance]?
     public var notes: String?
     public var createdAt: ATProtoDate
     public var updatedAt: ATProtoDate?
@@ -7429,6 +7546,7 @@ public struct AppGraycardSessionCaptureMain: Codable, Hashable, Sendable {
         filters: [ATURI]? = nil,
         places: [AppGraycardDefsGeoLocation]? = nil,
         provenance: AppGraycardDefsProvenance? = nil,
+        fieldProvenance: [AppGraycardDefsFieldProvenance]? = nil,
         notes: String? = nil,
         updatedAt: ATProtoDate? = nil,
         recordType: String? = "app.graycard.session.capture"
@@ -7443,6 +7561,7 @@ public struct AppGraycardSessionCaptureMain: Codable, Hashable, Sendable {
         self.filters = filters
         self.places = places
         self.provenance = provenance
+        self.fieldProvenance = fieldProvenance
         self.notes = notes
         self.updatedAt = updatedAt
         self.recordType = recordType
@@ -7458,6 +7577,7 @@ public struct AppGraycardSessionCaptureMain: Codable, Hashable, Sendable {
         case filters
         case places
         case provenance
+        case fieldProvenance
         case notes
         case createdAt
         case updatedAt

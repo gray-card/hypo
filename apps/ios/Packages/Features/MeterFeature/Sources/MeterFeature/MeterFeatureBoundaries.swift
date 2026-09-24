@@ -324,7 +324,7 @@ public enum MeterFeatureBoundaryError: Error, Equatable, Sendable {
         case .authenticationRequired: "Sign in before saving meter readings."
         case let .persistence(detail): "Could not save the meter reading: \(detail)"
         case let .statePersistence(detail): "Could not save meter history or settings: \(detail)"
-        case let .promotion(detail): "Could not send the reading to Logger: \(detail)"
+        case let .promotion(detail): "Could not use the reading for the next frame: \(detail)"
         case let .calibration(detail): "Could not update calibration: \(detail)"
         }
     }

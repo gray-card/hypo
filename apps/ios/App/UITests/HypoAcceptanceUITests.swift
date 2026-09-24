@@ -10,9 +10,10 @@ final class HypoAcceptanceUITests: XCTestCase {
         let app = makeApp(fixture: "synchronization", reset: true, network: "offline")
         app.launch()
 
-        let logTab = app.tabBars.buttons["Log"]
-        XCTAssertTrue(logTab.waitForExistence(timeout: 10))
-        logTab.tap()
+        let sessionsTab = app.tabBars.buttons["Sessions"]
+        XCTAssertTrue(sessionsTab.waitForExistence(timeout: 10))
+        sessionsTab.tap()
+        element("sessions.log-frames", in: app).tap()
         XCTAssertTrue(app.staticTexts["Acceptance roll"].waitForExistence(timeout: 10))
         element("logger.log-frame", in: app).tap()
         XCTAssertTrue(app.staticTexts["Frame 1 logged"].waitForExistence(timeout: 10))
@@ -104,13 +105,12 @@ final class HypoAcceptanceUITests: XCTestCase {
         XCTAssertEqual(element("acceptance.accessibility.result", in: app).label, "Frame logged")
     }
 
-    func testSettingsTabDoesNotTrapNavigation() {
+    func testSettingsSheetDismissesBackToTheCurrentWorkspace() {
         let app = makeApp(fixture: "synchronization", reset: true)
         app.launch()
 
-        let settingsTab = app.tabBars.buttons["Settings"]
-        XCTAssertTrue(settingsTab.waitForExistence(timeout: 10))
-        settingsTab.tap()
+        let settingsButton = element("app.settings", in: app)
+        settingsButton.tap()
         XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 10))
 
         app.buttons["Sign out"].tap()
@@ -120,6 +120,8 @@ final class HypoAcceptanceUITests: XCTestCase {
         accountField.typeText("alice.example")
 
         element("settings.dismiss-keyboard", in: app).tap()
+
+        app.buttons["Done"].tap()
 
         let meterTab = app.tabBars.buttons["Meter"]
         XCTAssertTrue(meterTab.waitForExistence(timeout: 10))

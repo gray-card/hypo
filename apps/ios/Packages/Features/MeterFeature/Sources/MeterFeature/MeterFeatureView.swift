@@ -388,13 +388,13 @@ public struct MeterFeatureView: View {
                 .buttonStyle(.bordered)
                 .disabled(model.reading == nil)
 
-            Button("Use in Logger") {
+            Button("Use for next frame") {
                 Task { await model.promoteToLogger() }
             }
             .frame(minHeight: 44)
             .buttonStyle(.bordered)
             .disabled(model.reading == nil || model.isPromoting)
-            .accessibilityHint("Makes this reading available to the exposure logger.")
+            .accessibilityHint("Attaches this reading to the next frame you log.")
         }
     }
 
@@ -481,7 +481,7 @@ public struct MeterFeatureView: View {
                                 Task { await model.promoteToLogger(reading) }
                             }
                             .frame(minWidth: 44, minHeight: 44)
-                            .accessibilityLabel("Use held reading \(index + 1) in Logger")
+                            .accessibilityLabel("Use held reading \(index + 1) for the next frame")
                             Button(role: .destructive) {
                                 model.removeHeldReading(id: reading.id)
                             } label: {
@@ -599,7 +599,7 @@ public struct MeterFeatureView: View {
                     } label: {
                         Label(
                             analysis.points.count == 1
-                                ? "Use spot in Logger" : "Use spot bank in Logger",
+                                ? "Use spot for next frame" : "Use spot bank for next frame",
                             systemImage: "square.and.arrow.down"
                         )
                         .frame(maxWidth: .infinity)
@@ -608,7 +608,7 @@ public struct MeterFeatureView: View {
                     .frame(minHeight: 44)
                     .disabled(model.isPromoting)
                     .accessibilityHint(
-                        "Sends every analyzed spot to Logger with the reference spot preferred."
+                        "Attaches every analyzed spot to the next frame, with the reference spot preferred."
                     )
                 }
             }

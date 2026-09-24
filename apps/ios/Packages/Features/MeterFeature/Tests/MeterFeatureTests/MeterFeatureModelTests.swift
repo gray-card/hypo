@@ -198,7 +198,7 @@ import Testing
             dark.id: dark.reference,
             bright.id: bright.reference,
         ])
-    #expect(model.confirmationMessage == "Reading ready in Logger")
+    #expect(model.confirmationMessage == "Reading ready for the next frame")
 }
 
 @Test func zoneLabelsDescribeInRangeAndClippedPlacementsWithoutHidingTheOffset() {

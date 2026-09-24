@@ -17,52 +17,25 @@ public struct LibraryFeatureView: View {
         ZStack {
             HypoTheme.ColorToken.background.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: HypoTheme.Space.four) {
-                    categoryPicker
-                    webLibraryLink
-                    if !model.dataWarnings.isEmpty {
-                        Label(
-                            "Some records could not be refreshed. Showing the last saved data.",
-                            systemImage: "arrow.triangle.2.circlepath"
-                        )
-                        .font(.footnote)
+                VStack(alignment: .leading, spacing: HypoTheme.Space.four) {
+                    Text("Film, equipment, chemistry, and reusable recipes.")
+                        .font(.callout)
                         .foregroundStyle(HypoTheme.ColorToken.muted)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    if model.isLoading {
-                        ProgressView("Loading library")
-                    } else if model.filteredItems.isEmpty {
-                        ContentUnavailableView.search(text: model.query)
-                    } else {
-                        LazyVStack(spacing: HypoTheme.Space.three) {
-                            ForEach(model.filteredItems) { item in
-                                itemView(item)
-                            }
-                        }
-                    }
-                    if let presentation = model.errorPresentation {
-                        HypoErrorNotice(
-                            presentation,
-                            onRecovery: { Task { await model.load() } },
-                            onDismiss: model.dismissLoadError
-                        )
-                    }
-                    if let successMessage = model.fieldSuccessMessage {
-                        Label(successMessage, systemImage: "checkmark.circle.fill")
-                            .font(.footnote)
-                            .foregroundStyle(HypoTheme.ColorToken.success)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .accessibilityAddTraits(.isStaticText)
-                    }
+                    categoryGroup("Materials", categories: [.rolls, .film, .chemistry])
+                    categoryGroup("Equipment", categories: [.cameras, .lenses])
+                    categoryGroup("Presets", categories: [.recipes])
+                    loadFeedback
                 }
                 .padding(HypoTheme.Space.four)
             }
         }
         .foregroundStyle(HypoTheme.ColorToken.text)
         .navigationTitle("Library")
-        .searchable(text: $model.query, prompt: "Search \(model.category.rawValue.lowercased())")
         .toolbar {
             ToolbarItem(placement: .automatic) { HypoToolbarWordmark() }
+        }
+        .navigationDestination(for: LibraryCategory.self) { category in
+            categoryDetail(category)
         }
         .task { await model.load() }
         .sheet(
@@ -77,50 +50,144 @@ public struct LibraryFeatureView: View {
         }
     }
 
-    private var categoryPicker: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: HypoTheme.Space.two) {
-                ForEach(LibraryCategory.allCases, id: \.self) { category in
-                    Button(category.rawValue) {
-                        model.category = category
+    private func categoryGroup(
+        _ title: String,
+        categories: [LibraryCategory]
+    ) -> some View {
+        VStack(alignment: .leading, spacing: HypoTheme.Space.two) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .textCase(.uppercase)
+                .tracking(0.6)
+                .foregroundStyle(HypoTheme.ColorToken.muted)
+            InstrumentPanel {
+                VStack(spacing: 0) {
+                    ForEach(Array(categories.enumerated()), id: \.element) { index, category in
+                        NavigationLink(value: category) {
+                            HStack(spacing: HypoTheme.Space.three) {
+                                Image(systemName: category.systemImage)
+                                    .foregroundStyle(HypoTheme.ColorToken.accent)
+                                    .frame(width: 30)
+                                VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
+                                    Text(category.displayName)
+                                        .font(.headline)
+                                        .foregroundStyle(HypoTheme.ColorToken.text)
+                                    Text(category.summary)
+                                        .font(.caption)
+                                        .foregroundStyle(HypoTheme.ColorToken.muted)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                Spacer(minLength: HypoTheme.Space.two)
+                                Text("\(itemCount(for: category))")
+                                    .font(.callout.monospacedDigit())
+                                    .foregroundStyle(HypoTheme.ColorToken.muted)
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(HypoTheme.ColorToken.muted)
+                            }
+                            .frame(minHeight: 56)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHint(category.summary)
+                        if index < categories.count - 1 {
+                            Divider().padding(.leading, 42)
+                        }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(
-                        model.category == category
-                            ? HypoTheme.ColorToken.accent
-                            : HypoTheme.ColorToken.surface
-                    )
-                    .foregroundStyle(
-                        model.category == category
-                            ? HypoTheme.ColorToken.background
-                            : HypoTheme.ColorToken.text
-                    )
                 }
             }
         }
-        .scrollIndicators(.hidden)
+    }
+
+    private func categoryDetail(_ category: LibraryCategory) -> some View {
+        ZStack {
+            HypoTheme.ColorToken.background.ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: HypoTheme.Space.four) {
+                    webLibraryLink(category)
+                    warningNotice
+                    if model.isLoading {
+                        ProgressView("Loading library")
+                    } else if model.filteredItems(for: category).isEmpty {
+                        ContentUnavailableView.search(text: model.query)
+                    } else {
+                        LazyVStack(spacing: HypoTheme.Space.three) {
+                            ForEach(model.filteredItems(for: category)) { item in
+                                itemView(item)
+                            }
+                        }
+                    }
+                    loadFeedback
+                }
+                .padding(HypoTheme.Space.four)
+            }
+        }
+        .foregroundStyle(HypoTheme.ColorToken.text)
+        .navigationTitle(category.displayName)
+        .searchable(text: $model.query, prompt: "Search \(category.displayName.lowercased())")
+        .onAppear {
+            model.category = category
+            model.query = ""
+        }
     }
 
     @ViewBuilder
-    private var webLibraryLink: some View {
-        if let url = model.categoryWebURL {
-            HStack {
-                Text(
-                    model.categorySupportsFieldActions
-                        ? "Use quick actions here. Open web Hypo for full editing."
-                        : "Open web Hypo to edit these records."
-                )
-                .font(.caption)
-                .foregroundStyle(HypoTheme.ColorToken.muted)
-                Spacer(minLength: HypoTheme.Space.two)
-                Link(destination: url) {
-                    Label("Full editor", systemImage: "arrow.up.right.square")
-                        .font(.subheadline.weight(.semibold))
-                        .frame(minHeight: 44)
-                }
-                .accessibilityHint("Opens the current library section in web Hypo")
-            }
+    private var warningNotice: some View {
+        if !model.dataWarnings.isEmpty {
+            Label(
+                "Some records could not be refreshed. Showing the last saved data.",
+                systemImage: "arrow.triangle.2.circlepath"
+            )
+            .font(.footnote)
+            .foregroundStyle(HypoTheme.ColorToken.muted)
             .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    @ViewBuilder
+    private var loadFeedback: some View {
+        if let presentation = model.errorPresentation {
+            HypoErrorNotice(
+                presentation,
+                onRecovery: { Task { await model.load() } },
+                onDismiss: model.dismissLoadError
+            )
+        }
+        if let successMessage = model.fieldSuccessMessage {
+            Label(successMessage, systemImage: "checkmark.circle.fill")
+                .font(.footnote)
+                .foregroundStyle(HypoTheme.ColorToken.success)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityAddTraits(.isStaticText)
+        }
+    }
+
+    private func itemCount(for category: LibraryCategory) -> Int {
+        model.items.lazy.filter { $0.category == category }.count
+    }
+
+    @ViewBuilder
+    private func webLibraryLink(_ category: LibraryCategory) -> some View {
+        Group {
+            if let url = model.categoryWebURL(for: category) {
+                HStack {
+                    Text(
+                        [.film, .cameras, .lenses].contains(category)
+                            ? "Use quick actions here. Open web Hypo for full editing."
+                            : "Open web Hypo to edit these records."
+                    )
+                    .font(.caption)
+                    .foregroundStyle(HypoTheme.ColorToken.muted)
+                    Spacer(minLength: HypoTheme.Space.two)
+                    Link(destination: url) {
+                        Label("Full editor", systemImage: "arrow.up.right.square")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(minHeight: 44)
+                    }
+                    .accessibilityHint("Opens the current library section in web Hypo")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
 
@@ -321,13 +388,6 @@ public struct LibraryFeatureView: View {
     }
 
     private func icon(_ category: LibraryCategory) -> String {
-        switch category {
-        case .rolls: "camera.roll"
-        case .film: "camera.roll"
-        case .cameras: "camera"
-        case .lenses: "camera.aperture"
-        case .chemistry: "flask"
-        case .recipes: "list.bullet.clipboard"
-        }
+        category.systemImage
     }
 }

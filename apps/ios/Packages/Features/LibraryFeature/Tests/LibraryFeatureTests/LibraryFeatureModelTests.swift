@@ -164,6 +164,14 @@ import Testing
 
     #expect(model.webURL(for: item)?.absoluteString == "https://hypo.graycard.app/roll/roll-12")
     #expect(model.categoryWebURL?.absoluteString == "https://hypo.graycard.app/library/film")
+    #expect(
+        model.categoryWebURL(for: .chemistry)?.absoluteString
+            == "https://hypo.graycard.app/library/chemistry"
+    )
+    #expect(
+        model.categoryWebURL(for: .recipes)?.absoluteString
+            == "https://hypo.graycard.app/library/workflows"
+    )
 }
 
 @MainActor

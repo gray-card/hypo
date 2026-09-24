@@ -39,6 +39,10 @@ public final class LibraryFeatureModel {
     }
 
     public var filteredItems: [LibraryItem] {
+        filteredItems(for: category)
+    }
+
+    public func filteredItems(for category: LibraryCategory) -> [LibraryItem] {
         let categoryItems = items.filter { $0.category == category }
         let normalized = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !normalized.isEmpty else { return categoryItems }
@@ -57,6 +61,10 @@ public final class LibraryFeatureModel {
     }
 
     public var categoryWebURL: URL? {
+        categoryWebURL(for: category)
+    }
+
+    public func categoryWebURL(for category: LibraryCategory) -> URL? {
         LibraryWebTarget.library(tab: webTab(category)).url(relativeTo: webBaseURL)
     }
 
@@ -177,7 +185,8 @@ public final class LibraryFeatureModel {
         case .rolls, .film: "film"
         case .cameras: "cameras"
         case .lenses: "lenses"
-        case .chemistry, .recipes: "darkroom"
+        case .chemistry: "chemistry"
+        case .recipes: "workflows"
         }
     }
 }

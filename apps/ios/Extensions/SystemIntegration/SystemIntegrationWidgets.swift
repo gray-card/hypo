@@ -155,7 +155,7 @@ private struct HypoQuickLogWidget: Widget {
             .containerBackground(.clear, for: .widget)
         }
         .configurationDisplayName("Quick log")
-        .description("Opens the field logger from the Lock Screen.")
+        .description("Opens Log frames in Sessions from the Lock Screen.")
         .supportedFamilies([.accessoryCircular, .accessoryRectangular])
     }
 
@@ -227,7 +227,7 @@ private struct HypoQuickLogControl: ControlWidget {
             }
         }
         .displayName("Log frame")
-        .description("Open Hypo's quick logger.")
+        .description("Open Hypo's Log frames action.")
     }
 }
 

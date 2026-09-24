@@ -761,7 +761,7 @@ public enum DevelopmentSessionRecordBuilder {
             filmRolls: session.linkedFilmRolls.isEmpty ? nil : session.linkedFilmRolls,
             steps: steps,
             provenance: AppGraycardDefsProvenance(
-                source: .manual,
+                source: "manual",
                 confidence: .certain,
                 assertedAt: ATProtoDate(finishedAt),
                 note: provenanceNote(session.recipe)

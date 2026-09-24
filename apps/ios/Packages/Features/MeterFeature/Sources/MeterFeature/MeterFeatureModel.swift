@@ -842,7 +842,7 @@ public final class MeterFeatureModel {
                     requestedAt: now()
                 )
             )
-            confirmationMessage = "Reading ready in Logger"
+            confirmationMessage = "Reading ready for the next frame"
             errorPresentation = nil
             selectedReadingLogIDs.subtract(ids)
             haptics.play(.actionSucceeded)

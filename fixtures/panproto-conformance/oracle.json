@@ -44,7 +44,7 @@
       "id": "instance-film-roll",
       "identityInputSha256": "9ef9e750ce35e4bf06985e90bb7053eca2041ebffa74a12a2398fe7cb6d1d2fe",
       "inputSha256": "9ef9e750ce35e4bf06985e90bb7053eca2041ebffa74a12a2398fe7cb6d1d2fe",
-      "lexiconSha256": "66aa6073fc5644fa375f6172b3b7740863f8cd548c40282b2b25eda77f522e42",
+      "lexiconSha256": "79a30deb1b50ef9405686f610a27c13eb70f8ceb6d8b93895dc2cb61c061deb7",
       "lift": {
         "$type": "app.graycard.instance.filmRoll",
         "createdAt": "2026-08-01T08:45:00.000Z",
@@ -103,7 +103,7 @@
       "id": "process-develop-session",
       "identityInputSha256": "0929ce5736c280416105ab92e29855c4f057327fda610fcf9b0de610a2333d9e",
       "inputSha256": "5658ff08939025b85c5ca2bcf582c161bc1fe8793d6fa4100971cabdfd65594b",
-      "lexiconSha256": "e9725ae484829908633e5bdb2de47134ed0ad5010a349b563861826aa65f972d",
+      "lexiconSha256": "73bbd0f22991b331d3b9cd168af3dbb0fd8d394640ca30bdd8785b8d13653e97",
       "lift": {
         "$type": "app.graycard.process.developSession",
         "createdAt": "2026-08-12T14:00:00.000Z",
@@ -150,7 +150,7 @@
       "id": "meter-reading",
       "identityInputSha256": "678c8082050e3bce007b4b1f6189cb68b752f130561bd16361d6cc100f882aa1",
       "inputSha256": "7fe2dfd2f150f087a19301f551e5678f74e6c3f9682e56e1d8a45f09bc86f48c",
-      "lexiconSha256": "217efc25e4cec677bf30e4d9150f8c634d07b2b1f15a35ba893b0608d2bf2c18",
+      "lexiconSha256": "862344fceeb99e32495b20640e310e125efcb837048e13e2e8ffeefec058f2a0",
       "lift": {
         "$type": "app.graycard.meter.reading",
         "aperture": "5.6",
@@ -196,7 +196,7 @@
       "id": "meter-calibration",
       "identityInputSha256": "0f1f5c945abfa50bfe2e3793e2571d4952a8466f240e9077c3df92b0a76e7b69",
       "inputSha256": "299b2cd0e2ecb0587fc79d566ef3551f3ad9666561c4d836a7ba2c2ab78d3ab0",
-      "lexiconSha256": "7b4d56ce2d8202262a7ba364b6c8153c386513a675067b61a993fbb9d3bbf7d4",
+      "lexiconSha256": "b7a70e637775f71869a72ea146935b6ab8b99215909f7b56118918b92aca9918",
       "lift": {
         "$type": "app.graycard.meter.calibration",
         "cameraModule": "wide",
@@ -261,7 +261,7 @@
         "takenAt": "2026-08-02T17:42:08.000Z"
       },
       "sourceLexiconSha256": "6acaf24f939148cf6197398da9c42ccf85e4b24406af7501de39de2a0d874063",
-      "targetLexiconSha256": "54e1a28db45fe9defea67ed3850f75dd55afe1fbae6daf90c7f6ea31ca6b976c"
+      "targetLexiconSha256": "076cf396b150858ab937dfe983c0f92ca26a221ea77c98e9e8a2fe94bb2e578d"
     }
   ]
 }

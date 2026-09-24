@@ -20,7 +20,7 @@
     public struct LogFrameIntent: AppIntent {
         public static let title: LocalizedStringResource = "Log Frame"
         public static let description = IntentDescription(
-            "Opens the field logger with optional aperture and shutter-speed values."
+            "Opens Log frames in Sessions with optional aperture and shutter-speed values."
         )
         public static let openAppWhenRun = true
 

@@ -8,6 +8,34 @@ public enum LibraryCategory: String, CaseIterable, Hashable, Sendable {
     case lenses = "Lenses"
     case chemistry = "Chemistry"
     case recipes = "Recipes"
+
+    public var displayName: String {
+        switch self {
+        case .recipes: "Development recipes"
+        default: rawValue
+        }
+    }
+
+    public var summary: String {
+        switch self {
+        case .rolls: "Loaded, exposed, and developed film"
+        case .film: "Stocks and available reserves"
+        case .cameras: "Camera bodies and catalog models"
+        case .lenses: "Owned lenses and catalog models"
+        case .chemistry: "Developers and working solutions"
+        case .recipes: "Reusable film-development plans"
+        }
+    }
+
+    public var systemImage: String {
+        switch self {
+        case .rolls, .film: "camera.roll"
+        case .cameras: "camera"
+        case .lenses: "camera.aperture"
+        case .chemistry: "flask"
+        case .recipes: "list.bullet.clipboard"
+        }
+    }
 }
 
 public struct LibraryItem: Identifiable, Hashable, Sendable {
@@ -189,7 +217,8 @@ public struct BundledCatalogLibraryProvider: LibraryProviding {
         case .rolls, .film: "film"
         case .cameras: "cameras"
         case .lenses: "lenses"
-        case .chemistry, .recipes: "darkroom"
+        case .chemistry: "chemistry"
+        case .recipes: "workflows"
         }
     }
 }
