@@ -2,6 +2,22 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.5.0] - 2026-09-25
+
+### Changed
+
+- Replace the mixed Setup workspace with a grouped Library for film, rolls,
+  equipment, chemistry, labs, storage, workflow presets, and data quality.
+- Move shooting, development, digitization, frame linking, and active workflow
+  tools into Sessions, while preserving existing records and routes.
+- Present session history as a neutral activity ledger with scoped views and
+  clear entry points for starting or resuming work.
+
+### Fixed
+
+- Share initial Library and Sessions data loading so switching workspaces during
+  startup cannot temporarily hide cached or remote session records.
+
 ## [1.4.0] - 2026-09-23
 
 ### Added
@@ -300,3 +316,4 @@ Notable changes to Hypo are recorded here.
 [1.3.2]: https://github.com/gray-card/hypo/compare/v1.3.1...v1.3.2
 [1.3.3]: https://github.com/gray-card/hypo/compare/v1.3.2...v1.3.3
 [1.4.0]: https://github.com/gray-card/hypo/compare/v1.3.3...v1.4.0
+[1.5.0]: https://github.com/gray-card/hypo/compare/v1.4.0...v1.5.0
