@@ -159,8 +159,7 @@ async function login(page) {
   await openLogin(page);
   await page.getByRole("combobox").fill(HANDLE);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Your setup" })).toBeVisible();
-  await expect(page.locator("#library-body").getByRole("listitem").filter({ hasText: "black body" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Library" })).toBeVisible();
 }
 
 function formatViolations(violations) {
@@ -244,7 +243,7 @@ test("login view has landmarks, visible keyboard focus, ordered controls, and no
   await expectAccessible(page, "#login-view");
 });
 
-test("setup view supports keyboard nav, modal focus restoration, and seeded gear/logger controls", async ({ page }) => {
+test("Library and Sessions support keyboard navigation, focus restoration, and logging", async ({ page }) => {
   await login(page);
   await expectLoggedInLandmarks(page, "setup");
 
@@ -265,6 +264,7 @@ test("setup view supports keyboard nav, modal focus restoration, and seeded gear
   await expect(shortcutsDialog).toBeHidden();
   await expect(shortcuts).toBeFocused();
 
+  await page.locator("#library-body").getByRole("button", { name: "Cameras", exact: true }).click();
   const camera = page.locator("#library-body .gear-row").filter({ hasText: "black body" });
   const edit = camera.getByRole("button", { name: "Edit", exact: true });
   await edit.focus();
@@ -277,11 +277,13 @@ test("setup view supports keyboard nav, modal focus restoration, and seeded gear
   await expect(dialog).toBeHidden();
   await expect(edit).toBeFocused();
 
-  const shoots = page.locator("#library-body").getByRole("button", { name: "Shoots", exact: true });
-  await shoots.focus();
+  const sessionsNav = primaryNavButton(page, "sessions");
+  await sessionsNav.focus();
   await page.keyboard.press("Enter");
-  const shoot = page.locator("#library-body .gear-row").filter({ hasText: "Fixture photo walk" });
-  const log = shoot.getByRole("button", { name: "Add frames", exact: true });
+  const shoot = page
+    .locator("#sessions-body .session-card[data-kind='capture']")
+    .filter({ hasText: "Fixture photo walk" });
+  const log = shoot.getByRole("button", { name: "Log frames", exact: true });
   await log.focus();
   await page.keyboard.press("Enter");
   const logger = page.locator(".logger-overlay");
@@ -303,7 +305,7 @@ test("setup view supports keyboard nav, modal focus restoration, and seeded gear
   await page.keyboard.press("Enter");
   await expect(logger).toBeHidden();
 
-  await expectAccessible(page, "#library-view");
+  await expectAccessible(page, "#sessions-view");
 });
 
 test("galleries view exposes the current nav landmark and ordered keyboard controls", async ({ page }) => {

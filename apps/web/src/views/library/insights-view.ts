@@ -71,6 +71,52 @@ export function renderChemistryStatus(body: HTMLElement, services: ActivityServi
   );
 }
 
+export function renderLibraryOverview(body: HTMLElement, services: ActivityServices): void {
+  const store = services.getStore();
+  const instanceCount = (kind: string) => (store.instance[kind] || []).length;
+  const typeCount = (kind: string) => (store.catalog[kind] || []).length;
+  body.append(
+    el("div", { class: "card" }, [
+      el("h2", {}, "Library at a glance"),
+      el("p", { class: "muted small" }, "The materials, equipment, and services available for your next session."),
+      el("div", { class: "metric-grid" }, [
+        metric("Film rolls", instanceCount("filmRoll")),
+        metric("Film stocks", typeCount("filmStock")),
+        metric("Cameras", instanceCount("camera")),
+        metric("Lenses", instanceCount("lens")),
+        metric("Chemistry", instanceCount("chemistry")),
+        metric("Scanners", instanceCount("scanner")),
+        metric("Labs", instanceCount("labAccount")),
+        metric("Storage locations", instanceCount("storageLocation")),
+      ]),
+    ]),
+  );
+  renderChemistryStatus(body, services);
+
+  const rolls = store.instance.filmRoll || [];
+  if (!rolls.length) return;
+  const byStatus = new Map<string, number>();
+  for (const roll of rolls) {
+    const status = roll.value.status || "unknown";
+    byStatus.set(status, (byStatus.get(status) || 0) + 1);
+  }
+  const rowData = [...byStatus].sort((left, right) => right[1] - left[1]);
+  const maximum = Math.max(...rowData.map(([, count]) => count));
+  const chart = el("div", { class: "bar-chart" });
+  for (const [label, count] of rowData) {
+    const fill = el("div", { class: "bar-fill", style: "width:0%" });
+    requestAnimationFrame(() => (fill.style.width = `${Math.round((count / maximum) * 100)}%`));
+    chart.append(
+      el("div", { class: "bar-row" }, [
+        el("span", { class: "bar-label mono small" }, services.enumLabel(label)),
+        el("div", { class: "bar-track" }, [fill]),
+        el("b", { class: "bar-val mono small" }, String(count)),
+      ]),
+    );
+  }
+  body.append(el("div", { class: "card" }, [el("h3", {}, "Film rolls by status"), chart]));
+}
+
 export function renderInsightsView(body: HTMLElement, services: ActivityServices): void {
   const store = services.getStore();
   const instanceCount = (kind: string) => (store.instance[kind] || []).length;

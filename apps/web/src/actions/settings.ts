@@ -65,6 +65,7 @@ export interface SettingsActionServices {
   setDensity(preference: string): void;
   isSetupActive(): boolean;
   openLibrary(): unknown;
+  openDataQuality(): unknown;
 }
 
 const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
@@ -119,6 +120,21 @@ export function createSettingsActions(services: SettingsActionServices) {
         config?.apiKey ? "Manage" : "Connect",
       ),
     ]);
+    const dataQualityRow = el("div", { class: "row between" }, [
+      el("span", { class: "muted small" }, "Review incomplete or inconsistent library records"),
+      el(
+        "button",
+        {
+          class: "ghost small-btn",
+          type: "button",
+          onclick: () => {
+            handle?.close();
+            services.openDataQuality();
+          },
+        },
+        "Review",
+      ),
+    ]);
 
     const indexInput = el("input", {
       type: "url",
@@ -140,6 +156,7 @@ export function createSettingsActions(services: SettingsActionServices) {
         el("label", { class: "field" }, [el("span", {}, "Theme"), theme]),
         el("label", { class: "field" }, [el("span", {}, "Density"), density]),
         el("div", { class: "field" }, [el("span", {}, "Image analysis"), visionRow]),
+        el("div", { class: "field" }, [el("span", {}, "Data quality"), dataQualityRow]),
         el("label", { class: "field" }, [
           el("span", {}, "Discovery index"),
           indexInput,

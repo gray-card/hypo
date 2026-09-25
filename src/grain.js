@@ -30,6 +30,7 @@ export const COLLECTIONS = {
 const SCALE = 1_000_000;
 const recordStores = new Map();
 const hydratedCollections = new WeakMap();
+const collectionHydrations = new WeakMap();
 
 export function recordStore(repo) {
   let store = recordStores.get(repo);
@@ -37,6 +38,7 @@ export function recordStore(repo) {
     store = new RecordStore({ repo });
     recordStores.set(repo, store);
     hydratedCollections.set(store, new Set());
+    collectionHydrations.set(store, new Map());
     outbox.subscribeAcknowledgements(repo, async (acknowledgement) => {
       store.acknowledge(acknowledgement);
       await (await openRepositoryRecordCache()).applyAcknowledgement(acknowledgement);
@@ -86,19 +88,37 @@ export async function listRecords(agent, repo, collection, { refresh = false } =
   const cache = await openRepositoryRecordCache();
   const store = recordStore(repo);
   const hydrated = hydratedCollections.get(store);
+  const hydrations = collectionHydrations.get(store);
+  const active = hydrations.get(collection);
+  if (active) {
+    await active.promise;
+    if (!refresh || active.refresh) refresh = false;
+  }
   if (refresh || !hydrated.has(collection)) {
-    let records = (await cache.read(repo, collection)).map(normalizeRecordView);
-    if (refresh || !(await cache.hasSnapshot(repo, collection))) {
-      try {
-        records = (await repoClient(agent).listAll({ repo, collection, limit: 100 })).map(normalizeRecordView);
-        await cache.replace(repo, collection, records);
-      } catch (error) {
-        if (!records.length && navigator.onLine !== false && error?.name !== "NetworkError") throw error;
+    const hydration = {
+      refresh,
+      promise: null,
+    };
+    hydration.promise = (async () => {
+      let records = (await cache.read(repo, collection)).map(normalizeRecordView);
+      if (refresh || !(await cache.hasSnapshot(repo, collection))) {
+        try {
+          records = (await repoClient(agent).listAll({ repo, collection, limit: 100 })).map(normalizeRecordView);
+          await cache.replace(repo, collection, records);
+        } catch (error) {
+          if (!records.length && navigator.onLine !== false && error?.name !== "NetworkError") throw error;
+        }
       }
+      records = await Promise.all(records.map((record) => decodeSchemaRecord(record, collection)));
+      store.replaceRemote(collection, records);
+      hydrated.add(collection);
+    })();
+    hydrations.set(collection, hydration);
+    try {
+      await hydration.promise;
+    } finally {
+      if (hydrations.get(collection) === hydration) hydrations.delete(collection);
     }
-    records = await Promise.all(records.map((record) => decodeSchemaRecord(record, collection)));
-    store.replaceRemote(collection, records);
-    hydrated.add(collection);
   }
   const operations = await outbox.list(repo);
   store.replaceOperations(operations);

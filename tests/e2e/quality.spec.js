@@ -49,8 +49,7 @@ async function login(page) {
   await openLogin(page);
   await page.getByRole("combobox").fill("alice.test");
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Your setup" })).toBeVisible();
-  await expect(page.locator("#library-body").getByRole("listitem").filter({ hasText: "black body" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Library" })).toBeVisible();
   await page.waitForLoadState("networkidle");
 }
 
@@ -105,6 +104,8 @@ test("logged-out entry visual and accessibility", async ({ page }) => {
 
 test("seeded camera library visual and accessibility", async ({ page }) => {
   await login(page);
+  await page.locator("#library-body").getByRole("button", { name: "Cameras", exact: true }).click();
+  await expect(page.locator("#library-body").getByRole("listitem").filter({ hasText: "black body" })).toBeVisible();
   await stabilize(page);
 
   await expect(page).toHaveScreenshot("setup-cameras.png");
@@ -113,21 +114,21 @@ test("seeded camera library visual and accessibility", async ({ page }) => {
 
 test("seeded shoots list visual and accessibility", async ({ page }) => {
   await login(page);
-  const body = page.locator("#library-body");
-  await body.getByRole("button", { name: "Shoots", exact: true }).click();
-  await expect(body.getByRole("listitem").filter({ hasText: "Fixture photo walk" })).toBeVisible();
+  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  const body = page.locator("#sessions-body");
+  await expect(body.locator(".session-card").filter({ hasText: "Fixture photo walk" })).toBeVisible();
   await stabilize(page);
 
   await expect(page).toHaveScreenshot("setup-shoots.png");
-  await expectAccessible(page, "#library-view");
+  await expectAccessible(page, "#sessions-view");
 });
 
 test("shot logger visual and accessibility", async ({ page }) => {
   await login(page);
-  const body = page.locator("#library-body");
-  await body.getByRole("button", { name: "Shoots", exact: true }).click();
-  const shoot = body.getByRole("listitem").filter({ hasText: "Fixture photo walk" });
-  await shoot.getByRole("button", { name: "Add frames", exact: true }).click();
+  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  const body = page.locator("#sessions-body");
+  const shoot = body.locator(".session-card[data-kind='capture']").filter({ hasText: "Fixture photo walk" });
+  await shoot.getByRole("button", { name: "Log frames", exact: true }).click();
   await expect(page.locator(".logger-overlay")).toBeVisible();
   await stabilize(page);
 

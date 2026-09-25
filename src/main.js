@@ -104,7 +104,7 @@ async function libraryFeature(load = {}) {
   const module = await loadViewModule(loadLibraryModule, {
     view: load.view || "library-view",
     target: load.target || "#library-body",
-    message: load.message || "Loading setup tools…",
+    message: load.message || "Loading library tools…",
   });
   return initializeLibrary(module);
 }
@@ -300,6 +300,11 @@ const { openSettings, openVisionConnect } = createSettingsActions({
   setDensity: (preference) => shell.setDensity(preference),
   isSetupActive: () => activeSection === "setup",
   openLibrary,
+  openDataQuality: () => {
+    const body = $("#library-body");
+    if (body) body.dataset.tab = "quality";
+    return navigateSection("setup");
+  },
 });
 
 const { openShortcuts } = createShortcutActions({ openModal });
@@ -345,7 +350,7 @@ const paletteCommands = createPaletteCommands({
 
 /* ---------- primary navigation ---------- */
 const SECTIONS = {
-  setup: { view: "library-view", icon: "camera", load: () => openLibrary() },
+  setup: { view: "library-view", icon: "library", load: () => openLibrary() },
   sessions: { view: "sessions-view", icon: "clock", load: () => openSessions() },
   galleries: { view: "list-view", icon: "image", load: () => loadGalleries() },
   following: { view: "following-view", icon: "users", load: () => openFollowing() },
@@ -414,6 +419,7 @@ const appBootstrap = createAppBootstrap({
   openLibraryRecord: async (target) => (await libraryFeature()).openLibraryRecordRoute(target),
   openSessions,
   openSessionRecord,
+  openSessionAction,
   closeLibraryRecord: () => loadLibraryModule.peek()?.closeLibraryRecordRoute(),
   goSection,
   navigateSection,

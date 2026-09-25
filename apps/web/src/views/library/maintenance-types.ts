@@ -74,3 +74,13 @@ export interface ActivityServices {
   reserveQuantity(value: LibraryValue): number;
   filmStockLabel(stockUri: string | undefined): string;
 }
+
+export interface LibraryNavigationItem {
+  readonly id: string;
+  readonly label: string;
+}
+
+export interface LibraryNavigationGroup {
+  readonly label: string;
+  readonly items: readonly LibraryNavigationItem[];
+}

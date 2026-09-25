@@ -23,6 +23,55 @@
   flex-wrap: wrap;
   gap: 7px;
 }
+.session-action-menu {
+  position: relative;
+}
+.session-action-menu > summary {
+  list-style: none;
+  cursor: pointer;
+}
+.session-action-menu > summary::-webkit-details-marker {
+  display: none;
+}
+.session-action-menu > summary::after {
+  content: " ▾";
+}
+.session-action-menu[open] > summary {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.session-action-popover {
+  position: absolute;
+  z-index: 8;
+  top: calc(100% + 6px);
+  right: 0;
+  display: grid;
+  width: 238px;
+  padding: 5px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow);
+}
+.session-action-popover button {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+.session-action-popover button:hover,
+.session-action-popover button:focus-visible {
+  background: var(--surface-2);
+}
+.session-active-work:empty {
+  display: none;
+}
+.session-active-work > .card {
+  margin-top: 14px;
+}
 .session-filter-panel {
   display: grid;
   grid-template-columns: minmax(16rem, 1fr) auto auto;
@@ -50,6 +99,10 @@
   flex-direction: column;
   gap: 24px;
   margin-top: 18px;
+}
+.session-scopes {
+  flex-wrap: wrap;
+  overflow: visible;
 }
 .session-day {
   display: grid;
@@ -218,6 +271,27 @@
 .session-detail-title > p:last-child {
   margin: 5px 0 0;
 }
+@media (max-width: 640px) {
+  .session-hero {
+    align-items: stretch;
+  }
+  .session-create-actions {
+    width: 100%;
+  }
+  .session-action-menu {
+    flex: 1 1 100%;
+  }
+  .session-action-menu > summary {
+    width: 100%;
+    text-align: center;
+  }
+  .session-action-popover {
+    position: static;
+    width: 100%;
+    margin-top: 6px;
+    box-shadow: none;
+  }
+}
 .session-review-callout {
   display: flex;
   flex-wrap: wrap;
@@ -305,6 +379,10 @@
   }
   .session-filter-panel {
     grid-template-columns: 1fr;
+  }
+  .session-scopes {
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
   .session-day {
     grid-template-columns: 1fr;
