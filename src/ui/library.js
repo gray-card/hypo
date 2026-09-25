@@ -168,10 +168,30 @@ const LIBRARY_NAVIGATION = [
 ];
 
 let ctx = null;
+let storeLoadPromise = null;
 
 export function initLibrary(context) {
   recordRouteController.close();
   ctx = context;
+  storeLoadPromise = null;
+}
+
+function ensureLibraryStore() {
+  if (ctx?.store) return Promise.resolve(ctx.store);
+  if (!ctx?.agent || !ctx?.did) return Promise.resolve(null);
+  if (!storeLoadPromise) {
+    const activeContext = ctx;
+    const pending = loadStore(activeContext.agent, activeContext.did)
+      .then((store) => {
+        if (ctx === activeContext) activeContext.store = store;
+        return store;
+      })
+      .finally(() => {
+        if (storeLoadPromise === pending) storeLoadPromise = null;
+      });
+    storeLoadPromise = pending;
+  }
+  return storeLoadPromise;
 }
 
 const TECH_SCHEMA_KEYS = Object.fromEntries(
@@ -633,7 +653,7 @@ export function renderLibrary(bodyElement) {
     defaultTab: "overview",
     hasStore: () => Boolean(ctx?.store),
     loadStore: async () => {
-      ctx.store = await loadStore(ctx.agent, ctx.did);
+      await ensureLibraryStore();
     },
     matches: fuzzyMatches,
     renderOverview: renderOverviewTab,
@@ -661,8 +681,8 @@ async function ensureSessionStore() {
     showView("login-view");
     return false;
   }
-  if (!ctx.store) ctx.store = await loadStore(ctx.agent, ctx.did);
-  return true;
+  const store = await ensureLibraryStore();
+  return Boolean(store && ctx?.store === store);
 }
 
 export async function openSessions(scope = "all") {
