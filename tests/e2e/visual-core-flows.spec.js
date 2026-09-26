@@ -306,8 +306,8 @@ async function login(page) {
   await expect(page.getByRole("heading", { name: "Log in with your atmosphere account" })).toBeVisible();
   await page.getByRole("combobox").fill(HANDLE);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Your setup" })).toBeVisible();
-  await expect(page.locator("#library-body .tab-bar")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Library" })).toBeVisible();
+  await expect(page.locator("#library-body .library-shell")).toBeVisible();
 }
 
 async function stabilize(page) {
@@ -326,10 +326,10 @@ test.beforeEach(async ({ page, request }) => {
 
 test("core flow 1/5 — log a shot", async ({ page }) => {
   await login(page);
-  const body = page.locator("#library-body");
-  await body.getByRole("button", { name: "Shoots", exact: true }).click();
-  const shoot = body.getByRole("listitem").filter({ hasText: "Fixture photo walk" });
-  await shoot.getByRole("button", { name: "Add frames", exact: true }).click();
+  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  const body = page.locator("#sessions-body");
+  const shoot = body.locator(".session-card[data-kind='capture']").filter({ hasText: "Fixture photo walk" });
+  await shoot.getByRole("button", { name: "Log frames", exact: true }).click();
   await expect(page.locator(".logger-sticky-summary")).toContainText("Visual fixture roll");
   await stabilize(page);
 
@@ -338,9 +338,8 @@ test("core flow 1/5 — log a shot", async ({ page }) => {
 
 test("core flow 2/5 — run the development timer", async ({ page }) => {
   await login(page);
-  const body = page.locator("#library-body");
-  await body.getByRole("button", { name: "Darkroom", exact: true }).click();
-  await body.getByRole("button", { name: "Start development", exact: true }).click();
+  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  await page.locator("#sessions-body").getByRole("button", { name: "Develop film", exact: true }).click();
   const timer = page.getByRole("dialog", { name: "Development timer" });
   await timer.getByRole("checkbox", { name: "Visual fixture roll" }).check();
   const recipes = timer.locator(".devtimer-setup > .devtimer-list").last();
@@ -375,7 +374,7 @@ test("core flow 3/5 — edit a gallery", async ({ page }) => {
 
 test("core flow 4/5 — onboard a photographer", async ({ page }) => {
   await login(page);
-  await page.getByRole("button", { name: "Guided setup", exact: true }).click();
+  await page.getByRole("button", { name: "Add resources", exact: true }).click();
   const wizard = page.locator(".wizard-overlay");
   await expect(wizard).toHaveAttribute("role", "dialog");
   await wizard.getByRole("button", { name: "Get started", exact: true }).click();

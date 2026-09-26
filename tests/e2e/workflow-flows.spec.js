@@ -30,7 +30,7 @@ async function login(page) {
   await expect(page.getByRole("heading", { name: "Log in with your atmosphere account" })).toBeVisible();
   await page.getByRole("combobox").fill("alice.test");
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.locator("#library-body .tab-bar")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Library" })).toBeVisible();
 }
 
 async function addStep(dialog, label) {
@@ -53,7 +53,7 @@ test("a rich workflow can be authored, launched, advanced, and used on mobile", 
   await login(page);
 
   const body = page.locator("#library-body");
-  await body.getByRole("button", { name: "Workflows", exact: true }).click();
+  await page.goto("/library/workflows");
   await body.getByRole("button", { name: "+ Template", exact: true }).click();
 
   const templateDialog = page.getByRole("dialog", { name: "New workflow template" });
@@ -95,9 +95,10 @@ test("a rich workflow can be authored, launched, advanced, and used on mobile", 
     cardinality: { min: 0, max: 2 },
   });
 
-  await body.getByRole("button", { name: "Shoots", exact: true }).click();
-  const shoot = body.locator(".gear-row").filter({ hasText: "Fixture photo walk" });
-  await shoot.getByRole("button", { name: "Edit details", exact: true }).click();
+  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  const sessions = page.locator("#sessions-body");
+  const shoot = sessions.locator(".session-card[data-kind='capture']").filter({ hasText: "Fixture photo walk" });
+  await shoot.getByRole("button", { name: "Edit", exact: true }).click();
 
   const shootDialog = page.getByRole("dialog", { name: "Edit shoot" });
   await shootDialog.getByLabel("Ended (optional)").fill("2026-08-13T12:00");
@@ -106,8 +107,7 @@ test("a rich workflow can be authored, launched, advanced, and used on mobile", 
   await shootDialog.getByRole("button", { name: "Save", exact: true }).click();
   await expect(shootDialog).toBeHidden();
 
-  await body.getByRole("button", { name: "Workflows", exact: true }).click();
-  const activeRun = body.locator(".workflow-run-row").filter({ hasText: "Branching film workflow" });
+  const activeRun = sessions.locator(".workflow-run-row").filter({ hasText: "Branching film workflow" });
   await expect(activeRun).toContainText("Fixture photo walk · 1/4 complete");
   await expect(activeRun.getByRole("button", { name: "Log Develop", exact: true })).toHaveCount(2);
   await expect(activeRun.getByRole("button", { name: "Skip Develop", exact: true })).toHaveCount(1);

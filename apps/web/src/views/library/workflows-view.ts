@@ -587,7 +587,7 @@ export function openWorkflowTemplate(
   );
 }
 
-export function renderWorkflowsView(body: HTMLElement, services: ActivityServices, render: () => void): void {
+export function renderWorkflowTemplatesView(body: HTMLElement, services: ActivityServices, render: () => void): void {
   const card = el("div", { class: "card" });
   card.append(
     el("div", { class: "row between" }, [
@@ -668,6 +668,9 @@ export function renderWorkflowsView(body: HTMLElement, services: ActivityService
   if (!services.getStore().workflowTemplates?.length) list.append(el("li", { class: "muted" }, "No templates yet."));
   card.append(list);
   body.append(card);
+}
+
+export function renderActiveWorkflowsView(body: HTMLElement, services: ActivityServices, render: () => void): void {
   const activeRuns = (services.getStore().workflowRuns || []).filter(
     (run) => !["completed", "failed", "cancelled"].includes(String(run.value.status || "planned")),
   );
@@ -763,7 +766,12 @@ export function renderWorkflowsView(body: HTMLElement, services: ActivityService
   renderRollBoard(body, services);
 }
 
-export function renderRulesView(body: HTMLElement, services: ActivityServices): void {
+export function renderWorkflowsView(body: HTMLElement, services: ActivityServices, render: () => void): void {
+  renderWorkflowTemplatesView(body, services, render);
+  renderActiveWorkflowsView(body, services, render);
+}
+
+export function renderDataQualityView(body: HTMLElement, services: ActivityServices): void {
   const findings = services.computeLintFindings();
   const checks = el("div", { class: "card" }, [
     el("div", { class: "row between" }, [
@@ -786,6 +794,9 @@ export function renderRulesView(body: HTMLElement, services: ActivityServices): 
     checks.append(list);
   }
   body.append(checks);
+}
+
+export function renderBatchRulesView(body: HTMLElement, services: ActivityServices): void {
   const rulesCard = el("div", { class: "card" }, [el("h3", {}, "Saved batch rules")]);
   const list = el("ul", { class: "gear-list" });
   for (const rule of services.getStore().batchRules) {
@@ -811,4 +822,9 @@ export function renderRulesView(body: HTMLElement, services: ActivityServices): 
     list.append(el("li", { class: "muted" }, "No batch rules yet — create them from a gallery's Batch edit panel."));
   rulesCard.append(list);
   body.append(rulesCard);
+}
+
+export function renderRulesView(body: HTMLElement, services: ActivityServices): void {
+  renderDataQualityView(body, services);
+  renderBatchRulesView(body, services);
 }

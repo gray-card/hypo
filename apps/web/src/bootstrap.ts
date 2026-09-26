@@ -86,6 +86,7 @@ export interface AppBootstrapServices {
   openLibraryRecord(target: LibraryRecordTarget): Promise<unknown>;
   openSessions(scope?: string): Promise<unknown>;
   openSessionRecord(target: { kind: string; rkey: string }): Promise<unknown>;
+  openSessionAction(action: "resume-development"): Promise<unknown>;
   closeLibraryRecord(): unknown;
   goSection(section: "setup" | "sessions" | "galleries" | "following" | "discover"): unknown;
   navigateSection(section: string): unknown;
@@ -200,7 +201,11 @@ export function createAppBootstrap(services: AppBootstrapServices) {
         kind: route.params.kind as string,
         rkey: route.params.rkey as string,
       }),
-    timer: () => setupRoute("darkroom"),
+    timer: async () => {
+      if (!services.session().agent) return services.showLoggedOut();
+      await services.goSection("sessions");
+      return services.openSessionAction("resume-development");
+    },
     meter: () => services.openMeter(),
     following: () => (services.session().agent ? services.goSection("following") : services.showLoggedOut()),
     discover: () => (services.session().agent ? services.goSection("discover") : services.showLoggedOut()),
@@ -239,6 +244,10 @@ export function createAppBootstrap(services: AppBootstrapServices) {
             if (destination.startsWith("setup-")) {
               services.setLibraryTab(destination.slice("setup-".length));
               services.navigateSection("setup");
+            } else if (destination === "sessions-develop") {
+              void Promise.resolve(services.goSection("sessions")).then(() =>
+                services.openSessionAction("resume-development"),
+              );
             } else {
               services.navigateSection(destination);
             }

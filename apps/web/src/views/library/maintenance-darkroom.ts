@@ -554,7 +554,7 @@ export function openManualDevelopment(
         : el(
             "p",
             { class: "muted small" },
-            "Add your working chemistry under Setup → Darkroom before logging this session.",
+            "Add your working chemistry under Library → Chemistry before logging this session.",
           ),
       el("h3", { class: "modal-sub" }, "Rolls and session"),
       batchSummary,
@@ -634,7 +634,7 @@ export function openLabDevelopment(
   const labNameInput = el("input", {
     type: "text",
     value: value.labService || "",
-    placeholder: "Only needed when the lab is not in your setup",
+    placeholder: "Only needed when the lab is not in your library",
     maxlength: "128",
   });
   const processSelect = el(
@@ -680,7 +680,7 @@ export function openLabDevelopment(
     [
       labs.length
         ? null
-        : el("p", { class: "muted small" }, "Tip: add the lab under Setup → Scanning first, or enter its name below."),
+        : el("p", { class: "muted small" }, "Tip: add the lab under Library → Labs first, or enter its name below."),
       field("Lab", labSelect),
       field("Lab name (if not listed)", labNameInput),
       field("Process", processSelect),

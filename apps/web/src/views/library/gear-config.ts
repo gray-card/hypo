@@ -80,8 +80,11 @@ export const GEAR_TABS: Readonly<Record<string, readonly string[]>> = {
   lenses: ["lens"],
   filters: ["filter"],
   film: ["filmRoll"],
-  darkroom: ["chemistry", "enlarger", "enlargingLens", "lightSource", "printer", "labAccount"],
-  scanning: ["scanner", "labAccount", "storageLocation"],
+  chemistry: ["chemistry"],
+  darkroom: ["enlarger", "enlargingLens", "lightSource", "printer"],
+  scanning: ["scanner"],
+  labs: ["labAccount"],
+  storage: ["storageLocation"],
 };
 
 export const MAINTAINABLE = new Set(["camera", "lens", "scanner", "enlarger"]);

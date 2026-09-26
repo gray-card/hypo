@@ -5,6 +5,7 @@ import {
   openAddGear,
   openEditGear,
   renderLibrary,
+  openSessions,
   effectiveShootGear,
 } from "../src/ui/library.js";
 import { NS } from "../src/graycard.js";
@@ -571,34 +572,36 @@ describe("filmRoll camera assignment in the gear form", () => {
   });
 });
 
-describe("renderLibrary — Setup with per-category gear tabs", () => {
-  it("splits cameras/lenses/film into their own tabs (plus activity tabs)", async () => {
+describe("renderLibrary — grouped resource library", () => {
+  it("groups durable resources without mixing in session activity", async () => {
     const body = document.createElement("div");
     document.body.append(body);
     await renderLibrary(body);
 
-    const tabs = [...body.querySelectorAll(".tab-btn")].map((b) => b.textContent);
-    expect(tabs).toEqual([
-      "Cameras",
-      "Lenses",
-      "Filters",
-      "Film",
-      "Shoots",
-      "Darkroom",
-      "Scanning",
-      "Workflows",
-      "Rules",
-      "Insights",
-    ]);
+    const navigation = body.querySelector(".library-shell > .library-navigation");
+    const groups = [...navigation.querySelectorAll(".library-navigation-group > h3")].map(
+      (heading) => heading.textContent,
+    );
+    const items = [...navigation.querySelectorAll(".library-navigation-item")].map((button) => button.textContent);
+    expect(groups).toEqual(["Library", "Materials", "Equipment", "Services and places", "Presets", "Maintenance"]);
+    expect(items).toContain("Film and rolls");
+    expect(items).toContain("Chemistry");
+    expect(items).toContain("Labs");
+    expect(items).toContain("Data quality");
+    expect(items).not.toContain("Shoots");
   });
 
-  it("defaults to the Cameras tab and shows only cameras, no camelCase", async () => {
+  it("defaults to the overview and opens resource sections without database vocabulary", async () => {
     const body = document.createElement("div");
     document.body.append(body);
     await renderLibrary(body);
 
-    const headings = [...body.querySelectorAll(".gear-section h2")].map((h) => h.textContent);
-    expect(headings).toEqual(["Cameras"]); // only the active tab's category
+    expect(body.querySelector(".library-content h2")?.textContent).toBe("Library at a glance");
+    const cameras = [...body.querySelectorAll(".library-shell > .library-navigation .library-navigation-item")].find(
+      (button) => button.textContent === "Cameras",
+    );
+    cameras.click();
+    await vi.waitFor(() => expect(body.querySelector(".gear-section h2")?.textContent).toBe("Cameras"));
     expect(body.querySelector(".add-gear").textContent).toMatch(/add camera/i);
     expect(body.textContent).not.toMatch(/cameraType|filmStock|chemistryType|filmRoll/);
   });
@@ -685,9 +688,9 @@ describe("photo picker accessibility", () => {
       },
     });
     const body = document.createElement("div");
-    body.dataset.tab = "scanning";
+    body.id = "sessions-body";
     document.body.append(body);
-    await renderLibrary(body);
+    await openSessions();
 
     [...body.querySelectorAll("button")].find((button) => button.textContent.includes("Link frames")).click();
     await vi.waitFor(() => expect(document.querySelector(".modal")).toBeTruthy());

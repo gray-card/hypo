@@ -83,7 +83,7 @@ export function openScanSession(
     {
       selected: selectedRolls,
       className: "check-list scan-roll-list",
-      emptyMessage: el("p", { class: "muted small" }, "No film rolls are in your setup yet."),
+      emptyMessage: el("p", { class: "muted small" }, "No film rolls are in your library yet."),
     },
   );
   const selectionSummary = el("p", { class: "muted small", role: "status", "aria-live": "polite" });

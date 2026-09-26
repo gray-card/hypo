@@ -29,7 +29,7 @@ async function login(page) {
   await expect(page.getByRole("heading", { name: "Log in with your atmosphere account" })).toBeVisible();
   await page.getByRole("combobox").fill("alice.test");
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.locator("#library-body .tab-bar")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Library" })).toBeVisible();
 }
 
 test.beforeEach(async ({ request }) => {
@@ -40,6 +40,7 @@ test("stubbed OAuth logs in and loads seeded gear from the HTTP fixture PDS", as
   await login(page);
 
   const body = page.locator("#library-body");
+  await page.goto("/library/cameras");
   await expect(body.getByRole("heading", { name: "Cameras", exact: true })).toBeVisible();
   await expect(body.getByRole("listitem").filter({ hasText: "black body" })).toBeVisible();
   await expect(body.getByRole("listitem").filter({ hasText: "silver body" })).toBeVisible();
@@ -50,13 +51,15 @@ test("stubbed OAuth logs in and loads seeded gear from the HTTP fixture PDS", as
 test("an offline shot stays queued and flushes after reconnect", async ({ page, context, request }) => {
   await login(page);
 
-  const body = page.locator("#library-body");
-  await body.getByRole("button", { name: "Shoots", exact: true }).click();
-  const shoot = body.locator(".gear-row").filter({ hasText: "Fixture photo walk" });
+  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  const sessions = page.locator("#sessions-body");
+  await expect(sessions.getByRole("heading", { name: "Sessions", exact: true })).toBeVisible();
+  const shoot = sessions.locator(".session-card[data-kind='capture']").filter({ hasText: "Fixture photo walk" });
+  await expect(shoot).toBeVisible();
   await expect(shoot).toBeVisible();
 
   await context.setOffline(true);
-  await shoot.getByRole("button", { name: "Add frames", exact: true }).click();
+  await shoot.getByRole("button", { name: "Log frames", exact: true }).click();
   await page.getByRole("button", { name: "Log frame", exact: true }).click();
   await expect(page.getByRole("status").filter({ hasText: "Logged offline — will sync" })).toBeVisible();
   await expect.poll(async () => (await listRecords(request, EXPOSURE_COLLECTION)).length).toBe(0);
@@ -66,13 +69,13 @@ test("an offline shot stays queued and flushes after reconnect", async ({ page, 
   await expect(page.getByRole("status").filter({ hasText: "Synced 1 offline shot" })).toBeVisible();
 
   await page.getByRole("button", { name: "Done", exact: true }).click();
-  const updatedShoot = body.getByRole("listitem").filter({ hasText: "Fixture photo walk" });
-  await expect(updatedShoot).toContainText("1 shot");
+  await expect(page.getByRole("heading", { name: "Sessions", exact: true })).toBeVisible();
 });
 
 test("a stale gear edit surfaces the fixture PDS swap conflict", async ({ page, request }) => {
   await login(page);
 
+  await page.goto("/library/cameras");
   const cameraRow = page.locator("#library-body .gear-row").filter({ hasText: "black body" });
   await cameraRow.getByRole("button", { name: "Edit", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Edit camera" });

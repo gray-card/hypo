@@ -60,6 +60,33 @@ describe("record-cache read policy", () => {
     expect(agent.com.atproto.repo.listRecords).toHaveBeenCalledTimes(2);
   });
 
+  it("coalesces concurrent initial reads without returning an empty stale snapshot", async () => {
+    const did = "did:plc:concurrent-cache-policy";
+    const collection = NS.session.capture;
+    const remoteRecord = {
+      uri: `at://${did}/${collection}/shoot-a`,
+      cid: "cid-shoot-a",
+      value: { label: "Shoot A", createdAt: "2026-09-20T12:00:00.000Z" },
+    };
+    let releaseRemote;
+    const remoteResponse = new Promise((resolve) => {
+      releaseRemote = resolve;
+    });
+    const agent = mockAgent();
+    agent.com.atproto.repo.listRecords = vi.fn(() => remoteResponse);
+
+    const first = listRecords(agent, did, collection);
+    const second = listRecords(agent, did, collection);
+    await vi.waitFor(() => expect(agent.com.atproto.repo.listRecords).toHaveBeenCalledTimes(1));
+    releaseRemote({ data: { records: [remoteRecord] } });
+
+    await expect(Promise.all([first, second])).resolves.toEqual([
+      [expect.objectContaining(remoteRecord)],
+      [expect.objectContaining(remoteRecord)],
+    ]);
+    expect(agent.com.atproto.repo.listRecords).toHaveBeenCalledTimes(1);
+  });
+
   it("keeps the legacy loadStore name cache-only unless refresh is explicit", async () => {
     const agent = mockAgent();
     agent.com.atproto.repo.listRecords = vi.fn(agent.com.atproto.repo.listRecords);

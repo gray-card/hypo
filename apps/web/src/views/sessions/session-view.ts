@@ -1,5 +1,6 @@
 import { el } from "@hypo/ui";
 import type { ActivityServices, LibraryRecord, LibraryStore, LibraryValue } from "../library/maintenance-types.ts";
+import { renderActiveWorkflowsView } from "../library/workflows-view.ts";
 
 export const SESSION_KINDS = [
   "all",
@@ -26,6 +27,9 @@ export interface SessionViewServices extends ActivityServices {
   editSession(kind: SessionKind, record: LibraryRecord, onDone: () => void): unknown;
   duplicateSession(kind: SessionKind, record: LibraryRecord, onDone: () => void): unknown;
   createSession(kind: "capture" | "develop" | "digitize", onDone: () => void): unknown;
+  logFrames(record: LibraryRecord, onDone: () => void): unknown;
+  startDevelopment(onDone: () => void): unknown;
+  linkFrames(onDone: () => void): unknown;
 }
 
 const KIND_LABELS: Readonly<Record<SessionKind, string>> = {
@@ -248,6 +252,17 @@ function sessionCard(entry: SessionEntry, services: SessionViewServices, rerende
       ]),
     ]),
     el("div", { class: "session-actions" }, [
+      entry.kind === "capture"
+        ? el(
+            "button",
+            {
+              type: "button",
+              class: "small-btn",
+              onclick: () => services.logFrames(entry.record, rerender),
+            },
+            "Log frames",
+          )
+        : null,
       el("button", { type: "button", class: "ghost small-btn", onclick: open }, "View"),
       ["capture", "develop", "digitize"].includes(entry.kind)
         ? el(
@@ -336,6 +351,7 @@ export function renderSessionsView(
   const to = el("input", { type: "date", "aria-label": "Sessions through date" });
   const reviewOnly = el("input", { type: "checkbox" });
   const scopes = el("div", { class: "library-scope-bar session-scopes", "aria-label": "Session type" });
+  const activeWork = el("div", { class: "session-active-work" });
   const results = el("div", { class: "session-results", "aria-live": "polite" });
   const summary = el("p", { class: "library-result-summary muted small" });
 
@@ -346,6 +362,8 @@ export function renderSessionsView(
   };
 
   const render = () => {
+    activeWork.replaceChildren();
+    renderActiveWorkflowsView(activeWork, services, render);
     scopes.replaceChildren(
       ...SESSION_KINDS.map((kind) => {
         const count = kind === "all" ? allEntries.length : allEntries.filter((entry) => entry.kind === kind).length;
@@ -431,6 +449,19 @@ export function renderSessionsView(
   };
 
   for (const input of [query, from, to, reviewOnly]) input.addEventListener("input", render);
+  const pastWork = el("details", { class: "session-action-menu" }, [
+    el("summary", { class: "ghost small-btn" }, "Log past work"),
+    el("div", { class: "session-action-popover" }, [
+      el(
+        "button",
+        { type: "button", onclick: () => services.createSession("develop", render) },
+        "Log completed development",
+      ),
+      el("button", { type: "button", onclick: () => services.createSession("digitize", render) }, "Log digitization"),
+      el("button", { type: "button", onclick: () => services.linkFrames(render) }, "Link frames to photos"),
+    ]),
+  ]);
+  const activeDevelopment = services.activeDevelopment();
   body.replaceChildren(
     el("div", { class: "session-hero" }, [
       el("div", { class: "session-hero-copy" }, [
@@ -438,27 +469,24 @@ export function renderSessionsView(
         el(
           "p",
           { class: "muted" },
-          "A complete record of what you shot, developed, digitized, edited, printed, and maintained.",
+          "Start work, resume what is active, or review what you shot, developed, digitized, edited, and printed.",
         ),
       ]),
       el("div", { class: "session-create-actions" }, [
         el(
           "button",
-          { type: "button", class: "ghost small-btn", onclick: () => services.createSession("capture", render) },
+          { type: "button", class: "small-btn", onclick: () => services.createSession("capture", render) },
           "New shoot",
         ),
         el(
           "button",
-          { type: "button", class: "ghost small-btn", onclick: () => services.createSession("develop", render) },
-          "Log development",
+          { type: "button", class: "ghost small-btn", onclick: () => services.startDevelopment(render) },
+          activeDevelopment ? `Resume development (${activeDevelopment.film || "active"})` : "Develop film",
         ),
-        el(
-          "button",
-          { type: "button", class: "small-btn", onclick: () => services.createSession("digitize", render) },
-          "Log digitization",
-        ),
+        pastWork,
       ]),
     ]),
+    activeWork,
     scopes,
     el("div", { class: "session-filter-panel" }, [
       query,
@@ -538,6 +566,17 @@ export function renderSessionDetail(body: HTMLElement, entry: SessionEntry, serv
           el("p", { class: "muted" }, subjectSummary(entry, services)),
         ]),
         el("div", { class: "session-actions" }, [
+          entry.kind === "capture"
+            ? el(
+                "button",
+                {
+                  type: "button",
+                  class: "small-btn",
+                  onclick: () => services.logFrames(entry.record, renderAgain),
+                },
+                "Log frames",
+              )
+            : null,
           ["capture", "develop", "digitize"].includes(entry.kind)
             ? el(
                 "button",

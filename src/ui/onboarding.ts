@@ -1013,7 +1013,7 @@ export async function openOnboarding({ agent, did, onDone, signals = recordStore
     const film = hasPractice(state, "film-home", "film-lab", "instant", "darkroom");
     const primary: [string, string] =
       hasPractice(state, "darkroom") && !hasPractice(state, "film-home", "film-lab", "instant")
-        ? ["Open the darkroom", "setup-darkroom"]
+        ? ["Open darkroom equipment", "setup-darkroom"]
         : film
           ? ["Open film reserve", "setup-film"]
           : ["Import or create a gallery", "galleries"];
@@ -1035,7 +1035,7 @@ export async function openOnboarding({ agent, did, onDone, signals = recordStore
             type: "button",
             onclick: () => close(state.workflowChoices.length ? "setup-workflows" : "setup", "completed"),
           },
-          state.workflowChoices.length ? "Review workflows" : "Review all setup",
+          state.workflowChoices.length ? "Review workflows" : "Review library",
         ),
       ]),
     );
