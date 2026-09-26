@@ -15,6 +15,7 @@ import {
 import { assertRecordTimeSpans } from "@hypo/domain";
 import { repoClient } from "./pds.js";
 import { canonicalizeAndValidateGrainRecord } from "./grainValidation.js";
+import { recoverKnownWriterRecord, validateSchemaRecordForWrite } from "./schemaRuntime.js";
 
 const runtimes = new Map();
 const acknowledgementListeners = new Map();
@@ -143,19 +144,27 @@ function clientDelegate(runtime) {
     create: (input) =>
       client().create({
         ...input,
-        record: canonicalizeAndValidateGrainRecord(input.collection, input.record),
+        record: canonicalizeQueuedRecord(input.collection, input.record, { repairLegacy: true }),
         validate: false,
       }),
     put: (input) =>
       withConflictRecord(input, () =>
         client().put({
           ...input,
-          record: canonicalizeAndValidateGrainRecord(input.collection, input.record),
+          record: canonicalizeQueuedRecord(input.collection, input.record, { repairLegacy: true }),
           validate: false,
         }),
       ),
     delete: (input) => withConflictRecord(input, () => client().delete(input)),
   };
+}
+
+function canonicalizeQueuedRecord(collection, record, { repairLegacy = false } = {}) {
+  let candidate = canonicalizeAndValidateGrainRecord(collection, record);
+  candidate = { ...candidate, $type: candidate.$type || collection };
+  assertRecordTimeSpans(collection, candidate);
+  if (repairLegacy) candidate = recoverKnownWriterRecord(collection, candidate)?.value || candidate;
+  return validateSchemaRecordForWrite(collection, candidate);
 }
 
 function memoryMarkerKey(repo) {
@@ -273,10 +282,9 @@ function remember(runtime, operation) {
 
 // Queue a create and return its optimistic operation immediately.
 export function enqueue(did, collection, record, options = {}) {
+  const preparedRecord = canonicalizeQueuedRecord(collection, record);
   const runtime = runtimeFor(did);
   const metadata = operationMetadata(runtime, collection, options);
-  const preparedRecord = { ...record, $type: record.$type || collection };
-  assertRecordTimeSpans(collection, preparedRecord);
   const operation = {
     ...metadata,
     kind: "create",
@@ -288,7 +296,7 @@ export function enqueue(did, collection, record, options = {}) {
   scheduleMutation(runtime, (outbox) =>
     outbox.enqueueCreate({
       collection,
-      record,
+      record: preparedRecord,
       rkey: options.rkey,
       id: metadata.id,
       createdAt: metadata.createdAt,
@@ -313,10 +321,9 @@ export function enqueuePut(did, uriOrInput, record, swapRecord, options = {}) {
   if (!collection || !rkey || typeof input.swapRecord !== "string") {
     throw new TypeError("A put needs an AT URI (or collection/rkey) and swapRecord");
   }
+  const preparedRecord = canonicalizeQueuedRecord(collection, input.record);
   const runtime = runtimeFor(did);
   const metadata = operationMetadata(runtime, collection, input);
-  const preparedRecord = { ...input.record, $type: input.record.$type || collection };
-  assertRecordTimeSpans(collection, preparedRecord);
   const operation = {
     ...metadata,
     kind: "put",
@@ -327,7 +334,14 @@ export function enqueuePut(did, uriOrInput, record, swapRecord, options = {}) {
   };
   remember(runtime, operation);
   scheduleMutation(runtime, (outbox) =>
-    outbox.enqueuePut({ ...input, collection, rkey, id: metadata.id, createdAt: metadata.createdAt }),
+    outbox.enqueuePut({
+      ...input,
+      collection,
+      rkey,
+      record: preparedRecord,
+      id: metadata.id,
+      createdAt: metadata.createdAt,
+    }),
   ).catch(() => runtime.operations.delete(operation.id));
   return compatibilityOperation(operation);
 }

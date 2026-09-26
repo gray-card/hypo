@@ -123,6 +123,16 @@ async function openSessions(scope) {
   ).openSessions(scope);
 }
 
+async function openRolls() {
+  return (
+    await libraryFeature({
+      view: "rolls-view",
+      target: "#rolls-body",
+      message: "Loading your rolls…",
+    })
+  ).openRolls();
+}
+
 async function openSessionRecord(target) {
   return (
     await libraryFeature({
@@ -259,6 +269,7 @@ async function refreshAccountData() {
     const library = await libraryFeature();
     await library.refreshStore();
     if (activeSection === "setup") await library.openLibrary();
+    if (activeSection === "rolls") await library.openRolls();
     if (activeSection === "galleries") await loadGalleries();
     if (activeSection === "following") await openFollowing();
     toast("Data refreshed from your PDS", "ok");
@@ -282,6 +293,12 @@ document.addEventListener("hypo:complement-conflict", async (event) => {
   } catch (error) {
     toast(`Schema conflict tools couldn't load: ${error?.message || error}`, "err");
   }
+});
+
+document.addEventListener("hypo:record-repaired", (event) => {
+  const fields = event.detail?.fields || [];
+  const label = fields.includes("maxRollsRecommended") ? "chemistry capacity" : "record data";
+  toast(`Recovered invalid ${label} without losing your other entries`, "ok", 8_000);
 });
 
 const { openSettings, openVisionConnect } = createSettingsActions({
@@ -351,6 +368,7 @@ const paletteCommands = createPaletteCommands({
 /* ---------- primary navigation ---------- */
 const SECTIONS = {
   setup: { view: "library-view", icon: "library", load: () => openLibrary() },
+  rolls: { view: "rolls-view", icon: "film", load: () => openRolls() },
   sessions: { view: "sessions-view", icon: "clock", load: () => openSessions() },
   galleries: { view: "list-view", icon: "image", load: () => loadGalleries() },
   following: { view: "following-view", icon: "users", load: () => openFollowing() },
@@ -417,6 +435,7 @@ const appBootstrap = createAppBootstrap({
   loadOnboarding: loadOnboardingModule,
   libraryFeature,
   openLibraryRecord: async (target) => (await libraryFeature()).openLibraryRecordRoute(target),
+  openRolls,
   openSessions,
   openSessionRecord,
   openSessionAction,
@@ -483,6 +502,7 @@ async function showProfile(seg) {
 function navigateSection(name) {
   const routeName = {
     setup: "home",
+    rolls: "rolls",
     sessions: "sessions",
     galleries: "galleries",
     following: "following",

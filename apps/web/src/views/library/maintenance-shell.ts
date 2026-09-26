@@ -9,7 +9,7 @@ export interface LibraryShellServices {
   loadStore(): Promise<void>;
   matches(query: string, text: string | null): boolean;
   renderOverview(body: HTMLElement): void;
-  renderFilm(body: HTMLElement): void;
+  renderFilmReserve(body: HTMLElement): void;
   renderGear(body: HTMLElement, kinds: readonly string[]): void;
   renderWorkflowTemplates(body: HTMLElement): void;
   renderBatchRules(body: HTMLElement): void;
@@ -123,7 +123,7 @@ export async function renderLibraryShell(
   if (services.gearTabs[tab]) content.append(search);
 
   if (tab === "overview") services.renderOverview(content);
-  else if (tab === "film") services.renderFilm(content);
+  else if (tab === "film") services.renderFilmReserve(content);
   else if (services.gearTabs[tab]) services.renderGear(content, services.gearTabs[tab]);
   else if (tab === "workflows") services.renderWorkflowTemplates(content);
   else if (tab === "rules") services.renderBatchRules(content);

@@ -50,6 +50,59 @@ export async function decodeSchemaRecord(record, collection) {
   };
 }
 
+// Hypo 1.5.0's generic resource form serialized one chemistry integer as a
+// string. Keep this recovery deliberately narrow: only coerce known integer
+// fields, and only accept the candidate when the complete current lexicon does.
+// The caller may then swap-write this value with the original CID, preserving
+// every unrelated field the user entered.
+const KNOWN_INTEGER_WRITER_FIELDS = Object.freeze({
+  "app.graycard.instance.chemistry": Object.freeze([
+    "volumeMl",
+    "volumeRemainingMl",
+    "rollsProcessed",
+    "sessionsUsed",
+    "maxRollsRecommended",
+  ]),
+});
+
+export function recoverKnownWriterRecord(collection, value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const fields = KNOWN_INTEGER_WRITER_FIELDS[collection];
+  if (!fields) return null;
+  const recovered = { ...value };
+  const changed = [];
+  for (const key of fields) {
+    const current = recovered[key];
+    if (typeof current !== "string" || !/^\s*\d+\s*$/.test(current)) continue;
+    recovered[key] = Number.parseInt(current, 10);
+    changed.push(key);
+  }
+  if (!changed.length || !validateRecord(collection, recovered).success) return null;
+  return { value: recovered, changed };
+}
+
+export class InvalidRecordInputError extends Error {
+  constructor(collection, issues) {
+    super(
+      "This record could not be saved because one or more fields has an invalid value. Review the form and try again.",
+    );
+    this.name = "InvalidRecordInputError";
+    this.collection = collection;
+    this.issues = issues;
+  }
+}
+
+export function validateSchemaRecordForWrite(collection, record) {
+  if (!collection.startsWith("app.graycard.")) return record;
+  const candidate = record?.$type ? record : { ...record, $type: collection };
+  const validation = validateRecord(collection, candidate);
+  if (!validation.success) {
+    console.error("Hypo refused an invalid record write", { collection, issues: validation.issues });
+    throw new InvalidRecordInputError(collection, validation.issues);
+  }
+  return candidate;
+}
+
 export async function prepareSchemaWrite(collection, record, existing) {
   if (!existing?.schemaRuntime || !collection.startsWith("app.graycard.")) return record;
   try {

@@ -463,7 +463,7 @@
 .development-stage-core,
 .development-stage-detail-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
   gap: 10px;
   margin-top: 12px;
 }
@@ -514,22 +514,28 @@
 }
 .development-role-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
   gap: 6px;
 }
 .development-role-option {
   display: flex;
   align-items: center;
   gap: 7px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
   padding: 7px 8px;
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text);
   font-size: 0.84rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 .development-role-option input {
   flex: 0 0 auto;
+  width: auto;
   margin: 0;
 }
 .development-activity-list {
@@ -683,9 +689,6 @@ button.development-activity-row:focus-visible {
   .development-stage-core .field:nth-child(1),
   .development-stage-core .field:nth-child(2) {
     grid-column: auto;
-  }
-  .development-role-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .development-stage-card {
     padding: 12px;
@@ -891,9 +894,9 @@ button.development-activity-row:focus-visible {
   }
   .primary-nav {
     display: grid;
-    grid-template-columns: repeat(5, minmax(70px, 1fr));
+    grid-template-columns: repeat(6, minmax(68px, 1fr));
     flex: 1 1 430px;
-    max-width: 580px;
+    max-width: 690px;
     gap: 2px;
     margin-left: 8px;
     padding: 3px;
@@ -920,7 +923,7 @@ button.development-activity-row:focus-visible {
 
   @media (max-width: 900px) {
     .primary-nav {
-      grid-template-columns: repeat(5, minmax(62px, 1fr));
+      grid-template-columns: repeat(6, minmax(58px, 1fr));
       margin-left: 0;
     }
     .primary-nav .nav-tab {

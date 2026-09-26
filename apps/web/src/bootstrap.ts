@@ -84,11 +84,12 @@ export interface AppBootstrapServices {
   loadOnboarding(): Promise<OnboardingModule>;
   libraryFeature(): Promise<LibraryFeature>;
   openLibraryRecord(target: LibraryRecordTarget): Promise<unknown>;
+  openRolls(): Promise<unknown>;
   openSessions(scope?: string): Promise<unknown>;
   openSessionRecord(target: { kind: string; rkey: string }): Promise<unknown>;
   openSessionAction(action: "resume-development"): Promise<unknown>;
   closeLibraryRecord(): unknown;
-  goSection(section: "setup" | "sessions" | "galleries" | "following" | "discover"): unknown;
+  goSection(section: "setup" | "rolls" | "sessions" | "galleries" | "following" | "discover"): unknown;
   navigateSection(section: string): unknown;
   setLibraryTab(tab: string): void;
   setActiveSection(section: string): void;
@@ -104,6 +105,7 @@ export interface AppBootstrapServices {
 
 const ONBOARDING_ROUTES = new Set([
   "home",
+  "rolls",
   "library",
   "roll",
   "gear",
@@ -126,6 +128,7 @@ export function isPublicProfileRoute(route: AppRoute): boolean {
 
 export function routeErrorTarget(route: AppRoute): string {
   if (route.name === "gallery") return "#editor-body";
+  if (route.name === "rolls" || route.name === "roll") return "#rolls-body";
   if (route.name === "sessions" || route.name === "sessionsScope" || route.name === "session") return "#sessions-body";
   if (route.name === "following") return "#following-body";
   if (route.name === "profile" || route.name === "profileSection" || route.name === "discover") {
@@ -162,12 +165,18 @@ export function createAppBootstrap(services: AppBootstrapServices) {
 
   const setupRecordRoute = async (target: LibraryRecordTarget): Promise<unknown> => {
     if (!services.session().agent) return services.showLoggedOut();
+    if (target.type === "roll") {
+      await services.goSection("rolls");
+      if (recordRouteMatches(target)) return services.openLibraryRecord(target);
+      return;
+    }
     await setupRoute(libraryTabForRecord(target));
     if (recordRouteMatches(target)) return services.openLibraryRecord(target);
   };
 
   const routeHandlers: Record<string, (route: AppRoute) => unknown> = {
     home: () => setupRoute(),
+    rolls: () => (services.session().agent ? services.goSection("rolls") : services.showLoggedOut()),
     galleries: () => (services.session().agent ? services.goSection("galleries") : services.showLoggedOut()),
     sessions: () => (services.session().agent ? services.goSection("sessions") : services.showLoggedOut()),
     sessionsScope: (route) => {

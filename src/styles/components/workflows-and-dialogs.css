@@ -343,12 +343,12 @@
 
 /* ---------- modal ---------- */
 .modal-sub {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--faint);
-  margin: 18px 0 8px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--text);
+  margin: 22px 0 10px;
 }
 
 .modal-overlay {

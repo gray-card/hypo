@@ -5,6 +5,7 @@ import {
   openAddGear,
   openEditGear,
   renderLibrary,
+  openRolls,
   openSessions,
   effectiveShootGear,
 } from "../src/ui/library.js";
@@ -583,8 +584,8 @@ describe("renderLibrary — grouped resource library", () => {
       (heading) => heading.textContent,
     );
     const items = [...navigation.querySelectorAll(".library-navigation-item")].map((button) => button.textContent);
-    expect(groups).toEqual(["Library", "Materials", "Equipment", "Services and places", "Presets", "Maintenance"]);
-    expect(items).toContain("Film and rolls");
+    expect(groups).toEqual(["Library", "Equipment", "Materials", "Services and places", "Presets", "Maintenance"]);
+    expect(items).toContain("Film reserve");
     expect(items).toContain("Chemistry");
     expect(items).toContain("Labs");
     expect(items).toContain("Data quality");
@@ -606,13 +607,18 @@ describe("renderLibrary — grouped resource library", () => {
     expect(body.textContent).not.toMatch(/cameraType|filmStock|chemistryType|filmRoll/);
   });
 
-  it("the Film tab splits reserve stockpile from physical rolls", async () => {
+  it("keeps reserve stock in Library and physical rolls in the Rolls workspace", async () => {
     const body = document.createElement("div");
     document.body.append(body);
     body.dataset.tab = "film";
     await renderLibrary(body);
-    const headings = [...body.querySelectorAll(".gear-section h2")].map((h) => h.textContent);
-    expect(headings).toEqual(["Film in reserve", "Roll library"]);
+    expect([...body.querySelectorAll(".gear-section h2")].map((h) => h.textContent)).toEqual(["Film in reserve"]);
+
+    const rollsBody = document.createElement("div");
+    rollsBody.id = "rolls-body";
+    document.body.append(rollsBody);
+    await openRolls();
+    expect([...rollsBody.querySelectorAll(".gear-section h2")].map((h) => h.textContent)).toEqual(["Roll library"]);
   });
 });
 
@@ -654,9 +660,9 @@ describe("photo picker accessibility", () => {
       },
     });
     const body = document.createElement("div");
-    body.dataset.tab = "film";
+    body.id = "rolls-body";
     document.body.append(body);
-    await renderLibrary(body);
+    await openRolls();
 
     [...body.querySelectorAll("button")].find((button) => button.textContent.includes("Manage")).click();
     [...document.querySelectorAll(".modal button")].find((button) => button.textContent.includes("Add frame")).click();

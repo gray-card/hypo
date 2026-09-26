@@ -68,6 +68,7 @@ export function showView(id) {
       "login-view",
       "list-view",
       "library-view",
+      "rolls-view",
       "sessions-view",
       "editor-view",
       "profile-view",

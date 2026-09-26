@@ -79,7 +79,14 @@ describe("reading-aware development suggestion", () => {
         ],
       },
       instance: {
-        filmRoll: [{ uri: roll, cid: "cid-roll", rkey: "roll", value: { label: "Observed roll", stock } }],
+        filmRoll: [
+          {
+            uri: roll,
+            cid: "cid-roll",
+            rkey: "roll",
+            value: { label: "Observed roll", stock, createdAt: "2026-08-11T12:00:00.000Z" },
+          },
+        ],
         exposure: [{ uri: exposure, value: { roll, meterReadings: [reading] } }],
         chemistry: [],
       },

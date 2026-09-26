@@ -4,6 +4,7 @@
 const ROUTES = [
   { name: "home", parts: [] },
   { name: "galleries", parts: ["galleries"] },
+  { name: "rolls", parts: ["rolls"] },
   { name: "sessions", parts: ["sessions"] },
   { name: "sessionsScope", parts: ["sessions", ":scope"] },
   { name: "session", parts: ["session", ":kind", ":rkey"] },

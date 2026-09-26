@@ -105,11 +105,7 @@ const ACTIVITY_EXCLUSIONS = new Set([
 
 export function isFollowingActivityCollection(collection: string): boolean {
   if (ACTIVITY_EXCLUSIONS.has(collection)) return false;
-  return (
-    collection === "social.grain.photo" ||
-    collection === "social.grain.gallery" ||
-    collection.startsWith("app.graycard.")
-  );
+  return collection.startsWith("app.graycard.");
 }
 
 export function mergeFollowSources(
@@ -219,6 +215,7 @@ function mergeActivity(
   const profilesByDid = new Map(profiles.map((profile) => [profile.did, profile]));
   const byUri = new Map<string, FollowingActivity>();
   for (const event of [...cachedEvents, ...incoming]) {
+    if (!isFollowingActivityCollection(event.collection)) continue;
     const actor = profilesByDid.get(event.actor.did);
     if (!actor) continue;
     byUri.set(event.uri, { ...event, actor });

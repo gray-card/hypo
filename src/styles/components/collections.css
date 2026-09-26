@@ -125,6 +125,59 @@
   border-bottom: none;
 }
 
+.chemistry-status-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, 38%);
+  gap: 18px;
+  align-items: center;
+  padding: 14px 0;
+}
+.chemistry-status-copy,
+.chemistry-capacity {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+.chemistry-status-copy strong {
+  overflow-wrap: anywhere;
+}
+.chemistry-capacity-label {
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+.chemistry-capacity-track {
+  display: block;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+.chemistry-capacity-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--muted);
+}
+.chemistry-capacity-track.healthy .chemistry-capacity-fill {
+  background: #4f755e;
+}
+.chemistry-capacity-track.caution .chemistry-capacity-fill {
+  background: #a96b23;
+}
+.chemistry-capacity-track.critical .chemistry-capacity-fill {
+  background: var(--danger);
+}
+.chemistry-capacity-untracked {
+  justify-self: start;
+}
+
+@media (max-width: 640px) {
+  .chemistry-status-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
 /* Row layout for gear / reserve / roll / workflow / scene-tag rows.
    Each is an identity (name + metadata) on the left and an action cluster on
    the right. On anything short of a wide desktop the fixed-width action cluster
@@ -164,6 +217,11 @@
   flex-wrap: wrap;
   row-gap: 4px;
 }
+.gear-row .reserve-id,
+.gear-row .type-label > span:not(.type-thumb) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 
 /* Film and shoot ledgers: dense enough for a large archive, with the status
    rail doing real navigation work instead of acting as decorative summary. */
@@ -192,14 +250,9 @@
 }
 .library-scope-bar {
   display: flex;
+  flex-wrap: wrap;
   gap: 7px;
   margin: 14px 0 12px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-.library-scope-bar::-webkit-scrollbar {
-  display: none;
 }
 .library-scope {
   display: inline-flex;
@@ -219,6 +272,7 @@
   border-color: color-mix(in oklab, var(--accent) 64%, var(--border));
   color: var(--text);
   background: color-mix(in oklab, var(--accent) 9%, transparent);
+  box-shadow: none;
 }
 .library-scope-count {
   min-width: 1.55em;
@@ -255,9 +309,8 @@
   .library-filter-bar {
     grid-template-columns: 1fr;
   }
-  .library-scope-bar {
-    margin-inline: -4px;
-    padding-inline: 4px;
+  .library-scope {
+    min-height: 42px;
   }
   .roll-library-list .gear-row > .row:last-child,
   .shoot-library-list .gear-row > .row:last-child {

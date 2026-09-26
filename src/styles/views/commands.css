@@ -13,10 +13,10 @@
 }
 button.primary-glow,
 .modal-actions button:not(.ghost):not(.danger-solid) {
-  box-shadow: 0 0 0 0 var(--accent);
+  box-shadow: none;
 }
 button:not(.ghost):not(.danger-solid):not(.tab-btn):hover {
-  box-shadow: 0 4px 18px -6px var(--accent);
+  box-shadow: none;
 }
 
 /* command palette */

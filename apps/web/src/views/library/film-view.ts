@@ -387,3 +387,11 @@ function rollsCard(services: FilmViewServices): HTMLDivElement {
 export function renderFilmView(body: HTMLElement, services: FilmViewServices): void {
   body.append(reserveCard(services), rollsCard(services));
 }
+
+export function renderFilmReserveView(body: HTMLElement, services: FilmViewServices): void {
+  body.append(reserveCard(services));
+}
+
+export function renderRollLibraryView(body: HTMLElement, services: FilmViewServices): void {
+  body.append(rollsCard(services));
+}

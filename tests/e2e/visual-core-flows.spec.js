@@ -372,14 +372,14 @@ test("core flow 3/5 — edit a gallery", async ({ page }) => {
   await expect(page).toHaveScreenshot("core-flow-edit-gallery.png");
 });
 
-test("core flow 4/5 — onboard a photographer", async ({ page }) => {
+test("core flow 4/5 — add a camera directly", async ({ page }) => {
   await login(page);
-  await page.getByRole("button", { name: "Add resources", exact: true }).click();
-  const wizard = page.locator(".wizard-overlay");
-  await expect(wizard).toHaveAttribute("role", "dialog");
-  await wizard.getByRole("button", { name: "Get started", exact: true }).click();
-  await wizard.locator("label.wizard-practice").filter({ hasText: "Film · process at home" }).click();
-  await expect(wizard.getByRole("progressbar", { name: "Setup progress" })).toHaveAttribute("aria-valuenow", "2");
+  await page.goto("/library/cameras");
+  await page.getByRole("button", { name: "Add camera", exact: true }).click();
+  const editor = page.getByRole("dialog", { name: "Add camera" });
+  await editor.getByLabel(/^Make/).fill("Nikon");
+  await editor.getByLabel(/^Model/).fill("F2");
+  await editor.getByLabel(/^Nickname/).fill("Everyday body");
   await stabilize(page);
 
   await expect(page).toHaveScreenshot("core-flow-onboard.png");

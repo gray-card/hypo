@@ -391,6 +391,120 @@
   flex: 1;
   min-width: 0;
 }
+
+/* Resource editors use the same content rhythm as the Library. Chemistry is
+   wider because a product definition and a physical working solution are two
+   different things; on phones they become one unambiguous reading column. */
+.resource-editor-intro {
+  max-width: 70ch;
+  margin: -4px 0 16px;
+}
+.resource-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+.resource-editor-section {
+  min-width: 0;
+}
+.resource-editor-section > .modal-sub:first-child {
+  margin-top: 0;
+}
+.resource-editor-more {
+  margin-top: 16px;
+  padding-top: 2px;
+  border-top: 1px solid var(--border);
+}
+.resource-editor-more > summary {
+  min-height: 42px;
+  padding: 12px 2px 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.resource-editor-more[open] > summary {
+  color: var(--accent);
+}
+.resource-editor-more > .modal-sub:first-of-type {
+  margin-top: 12px;
+}
+.resource-editor-section > .field,
+.resource-editor-section > .ac-field {
+  min-width: 0;
+}
+.resource-editor-section input:not([type="checkbox"]),
+.resource-editor-section select,
+.resource-editor-section textarea,
+.resource-editor-section .enum-control {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.rule-builder-intro {
+  max-width: 72ch;
+  margin: -4px 0 18px;
+}
+.rule-entry {
+  display: grid;
+  gap: 10px;
+  align-items: end;
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.rule-condition {
+  grid-template-columns: minmax(12rem, 1.4fr) minmax(10rem, 1fr) minmax(12rem, 1.4fr) auto;
+}
+.rule-action {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.rule-entry > .field {
+  min-width: 0;
+  margin: 0;
+}
+.rule-entry input,
+.rule-entry select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.rule-entry > button {
+  min-width: 42px;
+  min-height: 42px;
+}
+.rule-action > button {
+  grid-column: 2;
+  justify-self: end;
+}
+.chemistry-editor .enum-list-control {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 760px) {
+  .resource-editor-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .resource-editor-section + .resource-editor-section {
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .chemistry-editor .enum-list-control {
+    grid-template-columns: 1fr;
+  }
+  .rule-condition,
+  .rule-action {
+    grid-template-columns: 1fr;
+  }
+  .rule-entry > button {
+    justify-self: stretch;
+  }
+}
 .technical-specs {
   margin: 14px 0 4px;
   padding: 10px 12px;

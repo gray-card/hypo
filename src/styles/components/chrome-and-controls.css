@@ -166,10 +166,10 @@ h3 {
 
 .field > span,
 .exif-field > span {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
   color: var(--muted);
 }
 
@@ -191,6 +191,7 @@ h3 {
 input,
 textarea,
 select {
+  box-sizing: border-box;
   background: var(--surface-2);
   border: 1px solid var(--border);
   color: var(--text);
@@ -198,6 +199,7 @@ select {
   padding: 10px 12px;
   font-family: var(--font-sans);
   font-size: 14px;
+  line-height: 1.25;
   width: 100%;
   resize: vertical;
   transition:
@@ -205,8 +207,14 @@ select {
     box-shadow 0.12s ease;
 }
 
-/* numeric / id-ish inputs read as data */
-input[type="text"] {
+input:not([type="checkbox"]):not([type="radio"]),
+select {
+  min-height: 42px;
+}
+
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"] {
   font-variant-numeric: tabular-nums;
 }
 

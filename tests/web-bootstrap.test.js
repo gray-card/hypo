@@ -29,6 +29,7 @@ function bootstrapHarness({
     loadOnboarding: vi.fn(async () => onboarding),
     libraryFeature: vi.fn(async () => ({ getStore: () => ({ kind: "store" }) })),
     openLibraryRecord: vi.fn(async () => undefined),
+    openRolls: vi.fn(async () => undefined),
     openSessions: vi.fn(async () => undefined),
     openSessionRecord: vi.fn(async () => undefined),
     openSessionAction: vi.fn(async () => undefined),
@@ -218,20 +219,28 @@ describe("web bootstrap boundary", () => {
     }
   });
 
-  it.each([
-    [{ name: "roll", params: { rkey: "roll-1" } }, "film", { type: "roll", rkey: "roll-1" }],
-    [
-      { name: "gear", params: { kind: "scanner", rkey: "scan-1" } },
-      "scanning",
-      { type: "gear", kind: "scanner", rkey: "scan-1" },
-    ],
-  ])("cold-loads the $route.name record modal after its Library context", async (route, tab, target) => {
+  it("cold-loads a roll modal after its Rolls context", async () => {
+    const route = { name: "roll", params: { rkey: "roll-1" } };
+    const target = { type: "roll", rkey: "roll-1" };
     const harness = bootstrapHarness({ route, session: { agent: { kind: "agent" }, did: "did:plc:alice" } });
 
     await harness.bootstrap.renderRoute(route);
 
     expect(harness.services.closeLibraryRecord).toHaveBeenCalledOnce();
-    expect(harness.services.setLibraryTab).toHaveBeenCalledWith(tab);
+    expect(harness.services.setLibraryTab).not.toHaveBeenCalled();
+    expect(harness.services.goSection).toHaveBeenCalledWith("rolls");
+    expect(harness.services.openLibraryRecord).toHaveBeenCalledWith(target);
+  });
+
+  it("cold-loads a gear modal after its Library context", async () => {
+    const route = { name: "gear", params: { kind: "scanner", rkey: "scan-1" } };
+    const target = { type: "gear", kind: "scanner", rkey: "scan-1" };
+    const harness = bootstrapHarness({ route, session: { agent: { kind: "agent" }, did: "did:plc:alice" } });
+
+    await harness.bootstrap.renderRoute(route);
+
+    expect(harness.services.closeLibraryRecord).toHaveBeenCalledOnce();
+    expect(harness.services.setLibraryTab).toHaveBeenCalledWith("scanning");
     expect(harness.services.goSection).toHaveBeenCalledWith("setup");
     expect(harness.services.openLibraryRecord).toHaveBeenCalledWith(target);
   });

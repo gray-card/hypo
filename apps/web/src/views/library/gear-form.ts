@@ -84,7 +84,9 @@ export function openGearForm(
   const typeInputs: GearInputMap = {};
   const typeNodes: Record<string, HTMLElement> = {};
   const instanceInputs: GearInputMap = {};
+  const instanceNodes = new Map<string, Node>();
   const nodes: Node[] = [];
+  let instanceSectionHeading: HTMLElement | null = null;
   let labLocation: ReturnType<GearServices["locationField"]> | null = null;
   const currentTypeUri = typeKind ? existing?.value[TYPE_KEY[kind]] || null : null;
   const currentType = currentTypeUri
@@ -236,19 +238,25 @@ export function openGearForm(
         ? "This roll (optional)"
         : kind === "filmStockpile"
           ? "In reserve"
-          : kind === "labAccount"
-            ? "My account (optional)"
-            : "Your copy (optional)";
-    nodes.push(el("h3", { class: "modal-sub" }, title));
+          : kind === "chemistry"
+            ? "Bottle or mixed bath"
+            : kind === "labAccount"
+              ? "My account (optional)"
+              : "Your copy (optional)";
+    instanceSectionHeading = el("h3", { class: "modal-sub" }, title);
+    nodes.push(instanceSectionHeading);
   }
   for (const [key, label, required] of instanceFields) {
     if (label.startsWith("@")) {
       const select = services.instanceSelect(label.slice(1), "");
       instanceInputs[key] = select;
-      nodes.push(field(services.kindLabel(label.slice(1)), select));
+      const node = field(services.kindLabel(label.slice(1)), select);
+      instanceNodes.set(key, node);
+      nodes.push(node);
     } else {
       const control = instanceFieldControl(kind, key, label + (required ? " *" : ""), services);
       instanceInputs[key] = control.input;
+      instanceNodes.set(key, control.node);
       nodes.push(control.node);
     }
   }
@@ -269,9 +277,66 @@ export function openGearForm(
   const photoInput = guided || kind === "labAccount" ? null : el("input", { type: "file", accept: "image/*" });
   if (photoInput) nodes.push(field("Photo (optional, a stock image is used otherwise)", photoInput));
 
-  return openModal(
+  let modalNodes: Node[] = nodes;
+  if (kind === "chemistry" && instanceSectionHeading) {
+    const split = nodes.indexOf(instanceSectionHeading);
+    const productNodes = nodes.slice(0, split);
+    const productDetailsAt = productNodes.findIndex(
+      (node) =>
+        node instanceof HTMLElement && node.matches(".modal-sub") && node.textContent === "Picture and datasheet",
+    );
+    const productCore = productDetailsAt >= 0 ? productNodes.slice(0, productDetailsAt) : productNodes;
+    const productDetails = productDetailsAt >= 0 ? productNodes.slice(productDetailsAt) : [];
+    const primaryInstanceKeys = new Set([
+      "nickname",
+      "componentName",
+      "dilution",
+      "status",
+      "volumeMl",
+      "volumeRemainingMl",
+      "maxRollsRecommended",
+      "storageLocation",
+    ]);
+    const primaryInstanceNodes = instanceFields
+      .filter(([key]) => primaryInstanceKeys.has(key))
+      .map(([key]) => instanceNodes.get(key))
+      .filter((node): node is Node => Boolean(node));
+    const additionalInstanceNodes = instanceFields
+      .filter(([key]) => !primaryInstanceKeys.has(key))
+      .map(([key]) => instanceNodes.get(key))
+      .filter((node): node is Node => Boolean(node));
+    if (photoInput) additionalInstanceNodes.push(nodes.at(-1) as Node);
+    modalNodes = [
+      el(
+        "p",
+        { class: "resource-editor-intro muted small" },
+        "Describe the product on the left and this physical bottle or mixed bath on the right. Capacity and dates belong to the physical chemistry you actually use.",
+      ),
+      el("div", { class: "resource-editor-grid chemistry-editor-grid" }, [
+        el("section", { class: "resource-editor-section" }, [
+          ...productCore,
+          productDetails.length
+            ? el("details", { class: "resource-editor-more" }, [
+                el("summary", {}, "Image and technical details"),
+                ...productDetails,
+              ])
+            : null,
+        ]),
+        el("section", { class: "resource-editor-section" }, [
+          instanceSectionHeading,
+          ...primaryInstanceNodes,
+          el("details", { class: "resource-editor-more" }, [
+            el("summary", {}, "Dates, usage, and photo"),
+            ...additionalInstanceNodes,
+          ]),
+        ]),
+      ]),
+    ];
+  }
+
+  const modal = openModal(
     `${existing ? "Edit" : "Add"} ${services.kindLabel(kind).toLowerCase()}`,
-    nodes,
+    modalNodes,
     async () => {
       let typeUri: string | null = null;
       if (typeKind) {
@@ -333,8 +398,10 @@ export function openGearForm(
       await services.reloadStore();
       onDone?.();
     },
-    { onClose: options.onClose, restoreFocus: options.restoreFocus },
+    { wide: kind === "chemistry", onClose: options.onClose, restoreFocus: options.restoreFocus },
   );
+  modal.modal.classList.add("resource-editor", `${kind}-editor`);
+  return modal;
 }
 
 export function openGearEditor(

@@ -91,9 +91,16 @@
 }
 
 .modal-actions {
-  margin-top: 8px;
+  position: sticky;
+  z-index: 4;
+  bottom: -22px;
+  margin: 18px -22px -22px;
+  padding: 14px 22px;
   align-items: stretch;
   flex-wrap: wrap;
+  border-top: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 94%, transparent);
+  backdrop-filter: blur(10px);
 }
 .modal-actions > button {
   display: inline-flex;
@@ -188,6 +195,11 @@
     max-height: 92dvh;
     border-radius: 16px 16px 0 0;
     padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+  }
+  .modal-actions {
+    bottom: calc(-18px - env(safe-area-inset-bottom));
+    margin: 18px -16px calc(-18px - env(safe-area-inset-bottom));
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
   }
 
   .save-bar {

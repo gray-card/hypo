@@ -2,6 +2,43 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.6.0] - 2026-09-25
+
+### Added
+
+- Add a top-level Rolls workspace for managing physical rolls, frames, and
+  processing state without mixing that work into the resource Library or the
+  session ledger.
+- Add a complete Batch Rule editor in Library, with plain-language conditions,
+  contextual action fields, and direct reuse from gallery batch editing.
+
+### Changed
+
+- Put equipment before materials in Library and give each resource section its
+  own specific add action. Guided setup now remains a first-use experience.
+- Limit Following to public Hypo activity, such as adding equipment or logging
+  photographic work, instead of showing unrelated Grain gallery activity.
+- Rework chemistry status as a labeled remaining-capacity meter and reorganize
+  the chemistry and development editors into responsive, scannable sections.
+- Align controls, filters, dialogs, chips, navigation, and action areas across
+  desktop, tablet, and phone layouts, including mobile Chromium and WebKit.
+
+### Fixed
+
+- Write schema-declared integer fields as integers, including chemistry's
+  recommended roll capacity.
+- Validate application records before they enter the offline queue and again
+  before replay, preventing malformed writes from reaching a PDS.
+- Keep development role choices, Batch Rule rows, session filters, long names,
+  and modal controls inside their containers at narrow and wide viewport sizes.
+
+### Recovery
+
+- Detect the chemistry integer serialization fault introduced in 1.5.0 and
+  swap-repair affected records in place. The repair changes only numeric strings
+  in known chemistry integer fields after full schema validation, preserving the
+  record key and every other entered value.
+
 ## [1.5.0] - 2026-09-25
 
 ### Changed
@@ -317,3 +354,4 @@ Notable changes to Hypo are recorded here.
 [1.3.3]: https://github.com/gray-card/hypo/compare/v1.3.2...v1.3.3
 [1.4.0]: https://github.com/gray-card/hypo/compare/v1.3.3...v1.4.0
 [1.5.0]: https://github.com/gray-card/hypo/compare/v1.4.0...v1.5.0
+[1.6.0]: https://github.com/gray-card/hypo/compare/v1.5.0...v1.6.0

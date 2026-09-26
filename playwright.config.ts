@@ -9,6 +9,7 @@ const mobileReleaseTests = [
   "**/modal-scroll.spec.js",
   "**/library-record-routes.spec.js",
   "**/workflow-flows.spec.js",
+  "**/responsive-library.spec.js",
 ];
 
 export default defineConfig({
