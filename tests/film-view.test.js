@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { syncRollExposureCount } from "../apps/web/src/views/library/film-frame.ts";
-import { filmDating, framesForRoll, reserveQuantity } from "../apps/web/src/views/library/film-helpers.ts";
+import {
+  filmDating,
+  framesForRoll,
+  latestRollActivity,
+  reserveQuantity,
+} from "../apps/web/src/views/library/film-helpers.ts";
 import { renderFilmView } from "../apps/web/src/views/library/film-view.ts";
 import { openRollDetail } from "../apps/web/src/views/library/film-roll.ts";
 
@@ -56,6 +61,17 @@ describe("extracted Film view", () => {
       },
     };
     expect(framesForRoll(store, "roll-a").map((frame) => frame.uri)).toEqual(["frame-1", "frame-2"]);
+    expect(
+      latestRollActivity({ loadedAt: "2026-09-01T10:00:00Z", developedAt: "2026-09-04T10:00:00Z" }, [
+        { uri: "frame", value: { takenAt: "2026-09-03T10:00:00Z" } },
+      ]),
+    ).toEqual({ label: "Developed", at: "2026-09-04T10:00:00Z" });
+    expect(
+      latestRollActivity({ loadedAt: "2026-09-01T10:00:00Z" }, [
+        { uri: "frame-1", value: { takenAt: "2026-09-02T10:00:00Z" } },
+        { uri: "frame-2", value: { takenAt: "2026-09-03T10:00:00Z" } },
+      ]),
+    ).toEqual({ label: "Last frame", at: "2026-09-03T10:00:00Z" });
   });
 
   it("renders reserve and roll sections through injected services", () => {
@@ -115,6 +131,10 @@ describe("extracted Film view", () => {
     expect(body.querySelector(".roll-library-list").textContent).toContain("Camera roll");
     expect(body.querySelector(".roll-library-list").textContent).toContain("Finished roll");
     expect(body.querySelector(".roll-library-list").textContent).not.toContain("Lab queue");
+    expect([...body.querySelectorAll(".roll-stage-heading h3")].map((node) => node.textContent)).toEqual([
+      "In cameras",
+      "Processed",
+    ]);
   });
 
   it("derives roll usage and lifecycle through the injected record writer", async () => {

@@ -1,4 +1,4 @@
-import { el } from "@hypo/ui";
+import { el, field } from "@hypo/ui";
 import type { ActivityServices, LibraryRecord, LibraryStore, LibraryValue } from "../library/maintenance-types.ts";
 import { renderActiveWorkflowsView } from "../library/workflows-view.ts";
 
@@ -235,10 +235,7 @@ function sessionCard(entry: SessionEntry, services: SessionViewServices, rerende
         KIND_LABELS[entry.kind].slice(0, 3),
       ),
       el("span", { class: "session-card-copy" }, [
-        el("span", { class: "session-card-heading" }, [
-          el("strong", {}, KIND_LABELS[entry.kind]),
-          el("span", { class: "session-time mono" }, timeSummary(entry)),
-        ]),
+        el("span", { class: "session-card-heading" }, [el("strong", {}, KIND_LABELS[entry.kind])]),
         el(
           "span",
           { class: `session-subjects${sessionSubjects(entry).length ? "" : " missing"}` },
@@ -251,41 +248,44 @@ function sessionCard(entry: SessionEntry, services: SessionViewServices, rerende
         ]),
       ]),
     ]),
-    el("div", { class: "session-actions" }, [
-      entry.kind === "capture"
-        ? el(
-            "button",
-            {
-              type: "button",
-              class: "small-btn",
-              onclick: () => services.logFrames(entry.record, rerender),
-            },
-            "Log frames",
-          )
-        : null,
-      el("button", { type: "button", class: "ghost small-btn", onclick: open }, "View"),
-      ["capture", "develop", "digitize"].includes(entry.kind)
-        ? el(
-            "button",
-            {
-              type: "button",
-              class: "ghost small-btn",
-              onclick: () => services.editSession(entry.kind, entry.record, rerender),
-            },
-            "Edit",
-          )
-        : null,
-      ["develop", "digitize"].includes(entry.kind)
-        ? el(
-            "button",
-            {
-              type: "button",
-              class: "ghost small-btn",
-              onclick: () => services.duplicateSession(entry.kind, entry.record, rerender),
-            },
-            "Duplicate",
-          )
-        : null,
+    el("div", { class: "session-card-aside" }, [
+      el("span", { class: "session-time mono" }, timeSummary(entry)),
+      el("div", { class: "session-actions" }, [
+        entry.kind === "capture"
+          ? el(
+              "button",
+              {
+                type: "button",
+                class: "small-btn",
+                onclick: () => services.logFrames(entry.record, rerender),
+              },
+              "Log frames",
+            )
+          : null,
+        el("button", { type: "button", class: "ghost small-btn", onclick: open }, "View"),
+        ["capture", "develop", "digitize"].includes(entry.kind)
+          ? el(
+              "button",
+              {
+                type: "button",
+                class: "ghost small-btn",
+                onclick: () => services.editSession(entry.kind, entry.record, rerender),
+              },
+              "Edit",
+            )
+          : null,
+        ["develop", "digitize"].includes(entry.kind)
+          ? el(
+              "button",
+              {
+                type: "button",
+                class: "ghost small-btn",
+                onclick: () => services.duplicateSession(entry.kind, entry.record, rerender),
+              },
+              "Duplicate",
+            )
+          : null,
+      ]),
     ]),
   ]);
 }
@@ -489,7 +489,7 @@ export function renderSessionsView(
     activeWork,
     scopes,
     el("div", { class: "session-filter-panel" }, [
-      query,
+      field("Search", query),
       el("div", { class: "session-date-fields" }, [
         el("label", { class: "field" }, [el("span", {}, "From"), from]),
         el("label", { class: "field" }, [el("span", {}, "Through"), to]),

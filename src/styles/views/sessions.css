@@ -79,6 +79,13 @@
   align-items: end;
   margin: 10px 0 0;
 }
+.session-filter-panel > .field {
+  min-width: 0;
+  margin: 0;
+}
+.session-filter-panel .session-search {
+  margin: 0;
+}
 .session-date-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(8.5rem, 1fr));
@@ -202,15 +209,16 @@
   gap: 3px;
 }
 .session-card-heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  display: block;
 }
 .session-time {
-  flex: none;
+  display: block;
+  max-width: 100%;
+  align-self: flex-end;
   color: var(--muted);
   font-size: 11px;
+  text-align: right;
+  white-space: nowrap;
 }
 .session-subjects,
 .session-process {
@@ -239,9 +247,19 @@
   border-color: color-mix(in oklab, var(--danger) 42%, var(--border));
   color: color-mix(in oklab, var(--danger) 82%, var(--text));
 }
-.session-card > .session-actions {
+.session-card-aside {
+  display: flex;
+  min-width: 10rem;
+  flex-direction: column;
+  align-items: flex-end;
+  align-self: stretch;
+  justify-content: space-between;
+  gap: 10px;
+  margin-right: 12px;
+  padding: 13px 0 12px;
+}
+.session-card-aside > .session-actions {
   justify-content: flex-end;
-  padding: 10px 12px 10px 0;
 }
 .session-load-more {
   align-self: center;
@@ -397,14 +415,9 @@
   .session-card {
     grid-template-columns: 1fr;
   }
-  .session-card > .session-actions {
-    padding: 0 12px 12px 66px;
-    justify-content: flex-start;
-  }
-  .session-card-heading {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 2px;
+  .session-card-aside {
+    min-width: 0;
+    padding: 0 0 12px 66px;
   }
   .session-subjects,
   .session-process {
@@ -440,7 +453,15 @@
     justify-self: start;
     padding-inline: 7px;
   }
-  .session-card > .session-actions {
+  .session-card-aside {
     padding-left: 12px;
+  }
+  .session-card-aside > .session-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+  .session-card-aside > .session-actions .small-btn {
+    width: 100%;
   }
 }
