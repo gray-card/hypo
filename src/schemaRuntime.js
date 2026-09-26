@@ -81,6 +81,28 @@ export function recoverKnownWriterRecord(collection, value) {
   return { value: recovered, changed };
 }
 
+export class InvalidRecordInputError extends Error {
+  constructor(collection, issues) {
+    super(
+      "This record could not be saved because one or more fields has an invalid value. Review the form and try again.",
+    );
+    this.name = "InvalidRecordInputError";
+    this.collection = collection;
+    this.issues = issues;
+  }
+}
+
+export function validateSchemaRecordForWrite(collection, record) {
+  if (!collection.startsWith("app.graycard.")) return record;
+  const candidate = record?.$type ? record : { ...record, $type: collection };
+  const validation = validateRecord(collection, candidate);
+  if (!validation.success) {
+    console.error("Hypo refused an invalid record write", { collection, issues: validation.issues });
+    throw new InvalidRecordInputError(collection, validation.issues);
+  }
+  return candidate;
+}
+
 export async function prepareSchemaWrite(collection, record, existing) {
   if (!existing?.schemaRuntime || !collection.startsWith("app.graycard.")) return record;
   try {

@@ -36,8 +36,11 @@ export function readGearFormFields(
         .filter(Boolean);
       if (values.length) record[key] = [...new Set(values)];
     } else if (INTEGER_FIELDS.has(key)) {
-      const value = Number.parseInt(text, 10);
-      if (Number.isFinite(value)) record[key] = value;
+      const value = Number(text);
+      if (!Number.isSafeInteger(value) || value < 0) {
+        throw new Error("Use a non-negative whole number for counts, ISO values, and dimensions.");
+      }
+      record[key] = value;
     } else if (key.endsWith("At")) record[key] = new Date(text).toISOString();
     else record[key] = text;
   }
@@ -172,7 +175,7 @@ export function gearFieldControl(
     return { node: result.wrap, input: result.input as GearInput };
   }
   if (INTEGER_FIELDS.has(key)) {
-    const input = el("input", { type: "number", step: "1", inputmode: "numeric", value });
+    const input = el("input", { type: "number", min: "0", step: "1", inputmode: "numeric", value });
     return { node: field(label, input), input: input as GearInput };
   }
   const result = inputField(label, key, value);

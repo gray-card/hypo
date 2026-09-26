@@ -27,6 +27,8 @@ Notable changes to Hypo are recorded here.
 
 - Write schema-declared integer fields as integers, including chemistry's
   recommended roll capacity.
+- Validate application records before they enter the offline queue and again
+  before replay, preventing malformed writes from reaching a PDS.
 - Keep development role choices, Batch Rule rows, session filters, long names,
   and modal controls inside their containers at narrow and wide viewport sizes.
 
