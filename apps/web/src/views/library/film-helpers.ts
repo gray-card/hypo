@@ -12,6 +12,48 @@ export function framesForRoll(store: FilmStore, rollUri: string): FilmRecord[] {
     .sort((left, right) => (left.value.frameNumber ?? 0) - (right.value.frameNumber ?? 0));
 }
 
+export interface RollActivity {
+  readonly label: string;
+  readonly at: string;
+}
+
+const ROLL_ACTIVITY_FIELDS = [
+  ["loadedAt", "Loaded"],
+  ["partialAt", "First frame"],
+  ["exposedAt", "Fully exposed"],
+  ["unloadedAt", "Unloaded"],
+  ["sentToLabAt", "Sent to lab"],
+  ["developmentStartedAt", "Development started"],
+  ["developedAt", "Developed"],
+  ["receivedFromLabAt", "Received from lab"],
+  ["scannedAt", "Scanned"],
+  ["archivedAt", "Archived"],
+] as const;
+
+/** The latest named event in a roll's physical workflow, including logged frames. */
+export function latestRollActivity(value: FilmValue, frames: readonly FilmRecord[] = []): RollActivity | null {
+  const events: RollActivity[] = ROLL_ACTIVITY_FIELDS.flatMap(([key, label]) => {
+    const at = value[key];
+    return typeof at === "string" && Number.isFinite(Date.parse(at)) ? [{ label, at }] : [];
+  });
+  const timedFrames = frames
+    .map((frame) => String(frame.value.takenAt || frame.value.createdAt || ""))
+    .filter((at) => Number.isFinite(Date.parse(at)));
+  if (timedFrames.length) {
+    const at = timedFrames.reduce((latest, candidate) =>
+      Date.parse(candidate) > Date.parse(latest) ? candidate : latest,
+    );
+    events.push({ label: timedFrames.length === 1 ? "First frame" : "Last frame", at });
+  }
+  if (!events.length && typeof value.createdAt === "string" && Number.isFinite(Date.parse(value.createdAt))) {
+    events.push({ label: "Added", at: value.createdAt });
+  }
+  return events.reduce<RollActivity | null>(
+    (latest, event) => (!latest || Date.parse(event.at) >= Date.parse(latest.at) ? event : latest),
+    null,
+  );
+}
+
 export function filmStockLabel(
   store: FilmStore,
   stockUri: string | undefined,

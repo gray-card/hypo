@@ -289,11 +289,109 @@
   align-items: end;
 }
 .library-filter-bar .field,
-.library-filter-input {
+.library-filter-bar .library-filter-input {
   margin: 0;
+}
+.library-filter-bar .field {
+  min-width: 0;
 }
 .library-result-summary {
   margin: 10px 0 2px;
+}
+.roll-library-list {
+  margin-top: 12px;
+}
+.roll-stage-group + .roll-stage-group {
+  margin-top: 20px;
+}
+.roll-stage-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--border-strong);
+}
+.roll-stage-heading h3,
+.roll-stage-heading p {
+  margin: 0;
+}
+.roll-stage-heading h3 {
+  font-size: 13px;
+}
+.roll-stage-heading p {
+  margin-top: 2px;
+}
+.roll-stage-count {
+  min-width: 1.5em;
+  text-align: right;
+}
+.roll-stage-list {
+  margin: 0;
+}
+.roll-ledger-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, auto);
+  gap: 18px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.roll-stage-list .roll-ledger-row:last-child {
+  border-bottom: 0;
+}
+.roll-ledger-main {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 11px;
+  align-items: center;
+  min-width: 0;
+}
+.roll-ledger-main .type-thumb {
+  align-self: start;
+}
+.roll-ledger-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+.roll-ledger-title,
+.roll-ledger-context,
+.roll-ledger-detail {
+  overflow-wrap: anywhere;
+}
+.roll-ledger-aside {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 9px;
+}
+.roll-ledger-state,
+.roll-ledger-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.roll-ledger-actions {
+  flex-wrap: wrap;
+}
+.roll-ledger-activity {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+  text-align: right;
+}
+.roll-ledger-activity-label {
+  color: var(--muted);
+  font-size: 11px;
+}
+.roll-ledger-activity time {
+  white-space: nowrap;
 }
 .shoot-row-identity {
   display: inline-flex;
@@ -319,6 +417,30 @@
   .roll-library-list .gear-row > .row:last-child .primary-btn,
   .shoot-library-list .gear-row > .row:last-child .primary-btn {
     flex: 1 1 auto;
+  }
+  .roll-stage-heading {
+    align-items: start;
+  }
+  .roll-ledger-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .roll-ledger-aside {
+    align-items: stretch;
+  }
+  .roll-ledger-state {
+    justify-content: space-between;
+  }
+  .roll-ledger-activity {
+    flex-wrap: wrap;
+  }
+  .roll-ledger-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    width: 100%;
+  }
+  .roll-ledger-actions .primary-btn {
+    width: 100%;
   }
 }
 
