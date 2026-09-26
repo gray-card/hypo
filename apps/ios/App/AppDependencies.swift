@@ -1700,6 +1700,7 @@ final class AppModel {
     enum Tab: Hashable, Sendable {
         case meter
         case sessions
+        case rolls
         case library
     }
 
@@ -2150,6 +2151,7 @@ final class AppModel {
             } else if pathComponents.count >= 3 {
                 requestedTimerRecipe = pathComponents[2]
             }
+        case "rolls": selectedTab = .rolls
         case "library": selectedTab = .library
         case "settings", "account": isSettingsPresented = true
         default: return false
@@ -2181,6 +2183,8 @@ final class AppModel {
             sessionsPath = [.timer]
             requestedTimerRecipe = recipe
             Task { await applyRequestedTimerRecipe() }
+        case .rolls:
+            selectedTab = .rolls
         case .library:
             selectedTab = .library
         case .settings:

@@ -65,7 +65,9 @@ public final class LibraryFeatureModel {
     }
 
     public func categoryWebURL(for category: LibraryCategory) -> URL? {
-        LibraryWebTarget.library(tab: webTab(category)).url(relativeTo: webBaseURL)
+        let target: LibraryWebTarget =
+            category == .rolls ? .rolls : .library(tab: webTab(category))
+        return target.url(relativeTo: webBaseURL)
     }
 
     public var categorySupportsFieldActions: Bool {
@@ -182,7 +184,8 @@ public final class LibraryFeatureModel {
 
     private func webTab(_ category: LibraryCategory) -> String {
         switch category {
-        case .rolls, .film: "film"
+        case .rolls: "rolls"
+        case .film: "film"
         case .cameras: "cameras"
         case .lenses: "lenses"
         case .chemistry: "chemistry"

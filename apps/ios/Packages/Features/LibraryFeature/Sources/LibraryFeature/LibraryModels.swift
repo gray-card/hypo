@@ -11,6 +11,7 @@ public enum LibraryCategory: String, CaseIterable, Hashable, Sendable {
 
     public var displayName: String {
         switch self {
+        case .film: "Film reserve"
         case .recipes: "Development recipes"
         default: rawValue
         }
@@ -18,8 +19,8 @@ public enum LibraryCategory: String, CaseIterable, Hashable, Sendable {
 
     public var summary: String {
         switch self {
-        case .rolls: "Loaded, exposed, and developed film"
-        case .film: "Stocks and available reserves"
+        case .rolls: "Loaded, exposed, and processed rolls"
+        case .film: "Unexposed stocks and available reserves"
         case .cameras: "Camera bodies and catalog models"
         case .lenses: "Owned lenses and catalog models"
         case .chemistry: "Developers and working solutions"

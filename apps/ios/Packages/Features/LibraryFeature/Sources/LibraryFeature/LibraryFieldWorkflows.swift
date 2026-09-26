@@ -68,6 +68,7 @@ public enum LibraryFieldAction: Codable, Hashable, Sendable {
 
 public enum LibraryWebTarget: Codable, Hashable, Sendable {
     case library(tab: String)
+    case rolls
     case roll(recordKey: String)
     case gear(kind: String, recordKey: String)
 
@@ -75,6 +76,7 @@ public enum LibraryWebTarget: Codable, Hashable, Sendable {
         let path: String
         switch self {
         case .library(let tab): path = "library/\(tab)"
+        case .rolls: path = "rolls"
         case .roll(let recordKey): path = "roll/\(recordKey)"
         case .gear(let kind, let recordKey): path = "gear/\(kind)/\(recordKey)"
         }

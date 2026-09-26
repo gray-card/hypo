@@ -10,6 +10,7 @@ public enum HypoDeepLink: Hashable, Sendable {
     case log(aperture: String?, shutterSpeed: String?)
     case meter(mode: HypoMeterMode?)
     case timer(recipe: String?)
+    case rolls
     case library
     case settings
 
@@ -34,6 +35,8 @@ public enum HypoDeepLink: Hashable, Sendable {
             if let recipe {
                 components.path = "/\(recipe)"
             }
+        case .rolls:
+            components.host = "rolls"
         case .library:
             components.host = "library"
         case .settings:
@@ -81,6 +84,8 @@ public enum HypoDeepLink: Hashable, Sendable {
             self = .meter(mode: (query["mode"] ?? nil).flatMap(HypoMeterMode.init(rawValue:)))
         case "timer":
             self = .timer(recipe: routeArguments.first)
+        case "rolls":
+            self = .rolls
         case "library":
             self = .library
         case "settings", "account":

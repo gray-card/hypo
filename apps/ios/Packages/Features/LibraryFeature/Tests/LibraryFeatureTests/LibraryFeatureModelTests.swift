@@ -163,7 +163,11 @@ import Testing
     await model.load()
 
     #expect(model.webURL(for: item)?.absoluteString == "https://hypo.graycard.app/roll/roll-12")
-    #expect(model.categoryWebURL?.absoluteString == "https://hypo.graycard.app/library/film")
+    #expect(model.categoryWebURL?.absoluteString == "https://hypo.graycard.app/rolls")
+    #expect(
+        model.categoryWebURL(for: .film)?.absoluteString
+            == "https://hypo.graycard.app/library/film"
+    )
     #expect(
         model.categoryWebURL(for: .chemistry)?.absoluteString
             == "https://hypo.graycard.app/library/chemistry"

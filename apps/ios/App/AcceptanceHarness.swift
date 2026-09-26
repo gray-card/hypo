@@ -411,6 +411,8 @@
                 return "Meter · \(mode?.rawValue.capitalized ?? "Reflected")"
             case let .timer(recipe):
                 return "Timer · \(recipe ?? "Default")"
+            case .rolls:
+                return "Rolls"
             case .library:
                 return "Library"
             case .settings:

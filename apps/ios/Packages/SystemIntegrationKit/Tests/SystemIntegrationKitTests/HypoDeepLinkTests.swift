@@ -8,6 +8,7 @@ import Testing
         .log(aperture: "5.6", shutterSpeed: "1/125"),
         .meter(mode: .spot),
         .timer(recipe: "C-41 38 °C"),
+        .rolls,
         .library,
         .settings,
     ]
@@ -25,6 +26,10 @@ import Testing
     #expect(
         HypoDeepLink(url: try #require(URL(string: "https://hypo.graycard.app/app/timer/ECN-2")))
             == .timer(recipe: "ECN-2")
+    )
+    #expect(
+        HypoDeepLink(url: try #require(URL(string: "https://hypo.graycard.app/app/rolls")))
+            == .rolls
     )
 }
 

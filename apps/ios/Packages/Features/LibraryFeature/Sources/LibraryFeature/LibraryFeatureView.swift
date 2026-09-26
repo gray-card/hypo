@@ -4,6 +4,7 @@ import SwiftUI
 public struct LibraryFeatureView: View {
     @Bindable private var model: LibraryFeatureModel
     private let onOpenAccountSettings: () -> Void
+    private let rootCategory: LibraryCategory?
 
     public init(
         model: LibraryFeatureModel,
@@ -11,18 +12,63 @@ public struct LibraryFeatureView: View {
     ) {
         self.model = model
         self.onOpenAccountSettings = onOpenAccountSettings
+        rootCategory = nil
     }
 
+    fileprivate init(
+        model: LibraryFeatureModel,
+        rootCategory: LibraryCategory,
+        onOpenAccountSettings: @escaping () -> Void = {}
+    ) {
+        self.model = model
+        self.onOpenAccountSettings = onOpenAccountSettings
+        self.rootCategory = rootCategory
+    }
+
+    @ViewBuilder
     public var body: some View {
+        if let rootCategory {
+            categoryDetail(rootCategory)
+                .task { await model.load() }
+                .sheet(
+                    isPresented: Binding(
+                        get: { model.presentedFieldAction != nil },
+                        set: { if !$0 { model.cancelFieldAction() } }
+                    )
+                ) {
+                    fieldActionSheet
+                        .presentationDetents([.medium, .large])
+                        .presentationDragIndicator(.visible)
+                }
+        } else {
+            libraryHome
+                .navigationDestination(for: LibraryCategory.self) { category in
+                    categoryDetail(category)
+                }
+                .task { await model.load() }
+                .sheet(
+                    isPresented: Binding(
+                        get: { model.presentedFieldAction != nil },
+                        set: { if !$0 { model.cancelFieldAction() } }
+                    )
+                ) {
+                    fieldActionSheet
+                        .presentationDetents([.medium, .large])
+                        .presentationDragIndicator(.visible)
+                }
+        }
+    }
+
+    private var libraryHome: some View {
         ZStack {
             HypoTheme.ColorToken.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: HypoTheme.Space.four) {
-                    Text("Film, equipment, chemistry, and reusable recipes.")
+                    Text("Manage the equipment, materials, services, and presets you use in your work.")
                         .font(.callout)
                         .foregroundStyle(HypoTheme.ColorToken.muted)
-                    categoryGroup("Materials", categories: [.rolls, .film, .chemistry])
                     categoryGroup("Equipment", categories: [.cameras, .lenses])
+                    categoryGroup("Materials", categories: [.film, .chemistry])
                     categoryGroup("Presets", categories: [.recipes])
                     loadFeedback
                 }
@@ -33,20 +79,6 @@ public struct LibraryFeatureView: View {
         .navigationTitle("Library")
         .toolbar {
             ToolbarItem(placement: .automatic) { HypoToolbarWordmark() }
-        }
-        .navigationDestination(for: LibraryCategory.self) { category in
-            categoryDetail(category)
-        }
-        .task { await model.load() }
-        .sheet(
-            isPresented: Binding(
-                get: { model.presentedFieldAction != nil },
-                set: { if !$0 { model.cancelFieldAction() } }
-            )
-        ) {
-            fieldActionSheet
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.visible)
         }
     }
 
@@ -104,6 +136,10 @@ public struct LibraryFeatureView: View {
             HypoTheme.ColorToken.background.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: HypoTheme.Space.four) {
+                    Text(category.summary)
+                        .font(.callout)
+                        .foregroundStyle(HypoTheme.ColorToken.muted)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     webLibraryLink(category)
                     warningNotice
                     if model.isLoading {
@@ -389,5 +425,27 @@ public struct LibraryFeatureView: View {
 
     private func icon(_ category: LibraryCategory) -> String {
         category.systemImage
+    }
+}
+
+/// A direct, task-oriented view of physical rolls and their processing state.
+public struct RollsFeatureView: View {
+    @Bindable private var model: LibraryFeatureModel
+    private let onOpenAccountSettings: () -> Void
+
+    public init(
+        model: LibraryFeatureModel,
+        onOpenAccountSettings: @escaping () -> Void = {}
+    ) {
+        self.model = model
+        self.onOpenAccountSettings = onOpenAccountSettings
+    }
+
+    public var body: some View {
+        LibraryFeatureView(
+            model: model,
+            rootCategory: .rolls,
+            onOpenAccountSettings: onOpenAccountSettings
+        )
     }
 }

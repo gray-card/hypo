@@ -56,6 +56,19 @@ struct RootView: View {
             .tag(AppModel.Tab.sessions)
 
             NavigationStack {
+                RollsFeatureView(
+                    model: model.libraryModel,
+                    onOpenAccountSettings: { model.isSettingsPresented = true }
+                )
+                .toolbar { appToolbar }
+            }
+            .tabItem {
+                Label("Rolls", systemImage: "camera.roll")
+                    .accessibilityIdentifier("tab.rolls")
+            }
+            .tag(AppModel.Tab.rolls)
+
+            NavigationStack {
                 LibraryFeatureView(
                     model: model.libraryModel,
                     onOpenAccountSettings: { model.isSettingsPresented = true }
