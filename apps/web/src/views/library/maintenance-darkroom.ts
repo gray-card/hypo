@@ -475,7 +475,7 @@ export function openManualDevelopment(
     })),
     {
       selected: options.selectedRolls || (Array.isArray(value.filmRolls) ? value.filmRolls : []),
-      emptyMessage: el("p", { class: "muted small" }, "No rolls yet — add one in the Film tab first."),
+      emptyMessage: el("p", { class: "muted small" }, "No rolls yet. Add one in Rolls first."),
     },
   );
   const rollSearch = el("input", {
@@ -585,7 +585,7 @@ export function openManualDevelopment(
       );
       onDone?.();
     },
-    { saveLabel: existing ? "Save changes" : "Log development" },
+    { wide: true, saveLabel: existing ? "Save changes" : "Log development" },
   );
 }
 
@@ -638,7 +638,7 @@ export function openLabDevelopment(
     })),
     {
       selected: Array.isArray(value.filmRolls) ? value.filmRolls : [],
-      emptyMessage: el("p", { class: "muted small" }, "No rolls yet — add one in the Film tab first."),
+      emptyMessage: el("p", { class: "muted small" }, "No rolls yet. Add one in Rolls first."),
     },
   );
 

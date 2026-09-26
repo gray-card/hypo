@@ -43,6 +43,7 @@
       </a>
       <nav id="primary-nav" class="primary-nav hidden" aria-label="Primary">
         <button class="nav-tab" data-section="setup" type="button">Library</button>
+        <button class="nav-tab" data-section="rolls" type="button">Rolls</button>
         <button class="nav-tab" data-section="sessions" type="button">Sessions</button>
         <button class="nav-tab" data-section="galleries" type="button">Galleries</button>
         <button class="nav-tab" data-section="following" type="button">Following</button>
@@ -134,11 +135,21 @@
             <p class="view-sub muted small">Film, equipment, chemistry, services, and reusable presets.</p>
           </div>
           <div class="row">
-            <button id="guided-setup" class="small-btn" title="Add resources step by step">Add resources</button>
             <button id="library-reload" class="ghost small-btn" title="Reload from your PDS">Reload</button>
           </div>
         </div>
         <div id="library-body"></div>
+      </section>
+
+      <!-- rolls: physical film rolls and their processing state -->
+      <section id="rolls-view" class="hidden">
+        <div class="row between view-head">
+          <div>
+            <h2>Rolls</h2>
+            <p class="view-sub muted small">Find a roll, manage its frames, and move it through processing.</p>
+          </div>
+        </div>
+        <div id="rolls-body"></div>
       </section>
 
       <!-- sessions: chronological photographic work -->
@@ -152,8 +163,7 @@
           <div class="following-title">
             <h2>Following</h2>
             <p class="view-sub muted small">
-              Public photos and graycard activity from accounts you follow. Grain and Bluesky keep separate follow
-              graphs; Hypo combines both here and labels the source.
+              Public Hypo activity from accounts you follow, such as adding gear or logging photographic work.
             </p>
           </div>
           <button id="following-refresh" class="ghost small-btn" type="button">Refresh</button>
@@ -190,14 +200,14 @@
       <button class="nav-item" data-section="setup" type="button">
         <span class="nav-ico"></span><span class="nav-label">Library</span>
       </button>
+      <button class="nav-item" data-section="rolls" type="button">
+        <span class="nav-ico"></span><span class="nav-label">Rolls</span>
+      </button>
       <button class="nav-item" data-section="sessions" type="button">
         <span class="nav-ico"></span><span class="nav-label">Sessions</span>
       </button>
       <button class="nav-item" data-section="galleries" type="button">
         <span class="nav-ico"></span><span class="nav-label">Galleries</span>
-      </button>
-      <button class="nav-item" data-section="following" type="button">
-        <span class="nav-ico"></span><span class="nav-label">Following</span>
       </button>
       <button class="nav-item" id="bottom-account" type="button">
         <span class="nav-ico"></span><span class="nav-label">More</span>

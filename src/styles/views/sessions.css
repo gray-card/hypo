@@ -74,7 +74,7 @@
 }
 .session-filter-panel {
   display: grid;
-  grid-template-columns: minmax(16rem, 1fr) auto auto;
+  grid-template-columns: minmax(16rem, 1fr) minmax(18rem, auto) auto;
   gap: 12px;
   align-items: end;
   margin: 10px 0 0;
@@ -93,6 +93,7 @@
   min-height: 40px;
   gap: 8px;
   white-space: nowrap;
+  padding-bottom: 1px;
 }
 .session-results {
   display: flex;
@@ -379,10 +380,6 @@
   }
   .session-filter-panel {
     grid-template-columns: 1fr;
-  }
-  .session-scopes {
-    flex-wrap: nowrap;
-    overflow-x: auto;
   }
   .session-day {
     grid-template-columns: 1fr;

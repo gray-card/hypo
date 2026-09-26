@@ -49,8 +49,9 @@ import { captureGeolocation } from "../geo.js";
 import { repoClient } from "../pds.js";
 import * as outbox from "../outbox.js";
 import { activeDevRun } from "./devTimerState.js";
+import { openRuleBuilder } from "./ruleBuilder.js";
 import { loadShotLoggerState, saveShotLoggerState } from "./shotLoggerState.js";
-import { renderFilmView } from "../../apps/web/src/views/library/film-view.ts";
+import { renderFilmReserveView, renderRollLibraryView } from "../../apps/web/src/views/library/film-view.ts";
 import { maybeRemoveDepletedStockpile, openRollDetail } from "../../apps/web/src/views/library/film-roll.ts";
 import { createLibraryRecordRouteController } from "../../apps/web/src/views/library/library-record-route.ts";
 import { consumeGearRouteFocus, rememberGearRouteFocus } from "../../apps/web/src/routes/library-record-focus.ts";
@@ -134,13 +135,6 @@ async function openDevTimerLazy(ctx, opts) {
 const LIBRARY_NAVIGATION = [
   { label: "Library", items: [{ id: "overview", label: "Overview" }] },
   {
-    label: "Materials",
-    items: [
-      { id: "film", label: "Film and rolls" },
-      { id: "chemistry", label: "Chemistry" },
-    ],
-  },
-  {
     label: "Equipment",
     items: [
       { id: "cameras", label: "Cameras" },
@@ -148,6 +142,13 @@ const LIBRARY_NAVIGATION = [
       { id: "filters", label: "Filters" },
       { id: "darkroom", label: "Darkroom" },
       { id: "scanning", label: "Scanning" },
+    ],
+  },
+  {
+    label: "Materials",
+    items: [
+      { id: "film", label: "Film reserve" },
+      { id: "chemistry", label: "Chemistry" },
     ],
   },
   {
@@ -335,7 +336,7 @@ async function advanceWorkflowStageForSubjects(kind, subjectUris, sessionUri) {
   return advanced;
 }
 
-function filmViewServices(_body) {
+function filmViewServices(render = renderLibrary) {
   return {
     stageLabels: STAGE_LABELS,
     collections: {
@@ -348,7 +349,7 @@ function filmViewServices(_body) {
     reloadStore: async () => {
       ctx.store = await loadStore(ctx.agent, ctx.did);
     },
-    renderLibrary: () => renderLibrary(),
+    renderLibrary: () => render(),
     saveRecord: (collection, value, existing) => saveRecord(ctx.agent, ctx.did, collection, value, existing),
     deleteRecord: (uri) => deleteRecord(ctx.agent, ctx.did, uri),
     splitRoll: (stockpile, options) => splitRollFromStockpile(ctx.agent, ctx.did, stockpile, options),
@@ -388,7 +389,18 @@ function filmViewServices(_body) {
 }
 
 function renderFilmTab(body) {
-  renderFilmView(body, filmViewServices(body));
+  renderFilmReserveView(body, filmViewServices());
+}
+
+export async function openRolls() {
+  if (!(await ensureSessionStore())) return;
+  const body = document.querySelector("#rolls-body");
+  if (!body) return;
+  const render = () => {
+    body.replaceChildren();
+    renderRollLibraryView(body, filmViewServices(render));
+  };
+  render();
 }
 
 // -- Shoots: typed view + logger wiring behind application services ------------
@@ -546,6 +558,17 @@ function activityServices() {
     icon,
     isAdvanced,
     inspect: openInspector,
+    openBatchRule: (record, onDone) =>
+      openRuleBuilder(
+        { agent: ctx.agent, did: ctx.did, store: ctx.store, detail: null },
+        null,
+        record?.value || null,
+        async () => {
+          ctx.store = await loadStore(ctx.agent, ctx.did, { refresh: true });
+          onDone?.();
+        },
+        { existing: record },
+      ),
     navigateSessions: (scope) => ctx?.navigateSessions?.(scope),
     navigateSession: (kind, rkey) => ctx?.navigateSession?.({ kind, rkey }),
     editSession: (kind, record, onDone) => {
@@ -657,7 +680,7 @@ export function renderLibrary(bodyElement) {
     },
     matches: fuzzyMatches,
     renderOverview: renderOverviewTab,
-    renderFilm: renderFilmTab,
+    renderFilmReserve: renderFilmTab,
     renderGear: renderGearTab,
     renderWorkflowTemplates: renderWorkflowTemplatesTab,
     renderBatchRules: renderBatchRulesTab,

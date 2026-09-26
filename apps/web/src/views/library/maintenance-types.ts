@@ -58,6 +58,7 @@ export interface ActivityServices {
   icon(name: string, size?: number): Node;
   isAdvanced(): boolean;
   inspect(record: LibraryRecord): void;
+  openBatchRule?(record: LibraryRecord | null, onDone: () => void): void;
   navigateSessions?(scope?: string): unknown;
   navigateSession?(kind: string, rkey: string): unknown;
   editSession?(kind: string, record: LibraryRecord, onDone: () => void): unknown;

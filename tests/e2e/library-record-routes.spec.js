@@ -115,16 +115,16 @@ test("roll deep links target the requested roll and replay through browser histo
 
   const dialog = page.getByRole("dialog", { name: /Roll · Fixture Route 400/ });
   await expect(dialog).toBeVisible();
-  await expect(page.locator("#library-body")).toHaveAttribute("data-tab", "film");
+  await expect(page.locator("#rolls-body")).toContainText("Deep-link roll");
   await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
-  await expect(page).toHaveURL(/\/library\/film$/);
+  await expect(page).toHaveURL(/\/rolls$/);
 
-  const rollRow = page.locator("#library-body .gear-row").filter({ hasText: "Deep-link roll" });
+  const rollRow = page.locator("#rolls-body .gear-row").filter({ hasText: "Deep-link roll" });
   await rollRow.getByRole("button", { name: "Manage", exact: true }).click();
   await expect(page).toHaveURL(/\/roll\/roll-a$/);
   await page.goBack();
   await expect(dialog).toBeHidden();
-  await expect(page).toHaveURL(/\/library\/film$/);
+  await expect(page).toHaveURL(/\/rolls$/);
   await page.goForward();
   await expect(dialog).toBeVisible();
 });
@@ -308,7 +308,7 @@ test("batch .frames import links rolls, proposes shoots, and keeps coordinates p
   });
 
   await login(page);
-  await page.goto("/library/film");
+  await page.goto("/rolls");
   const chooseFiles = page.waitForEvent("filechooser");
   await page.getByRole("button", { name: "Import .frames" }).click();
   await (

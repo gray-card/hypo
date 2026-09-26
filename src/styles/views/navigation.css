@@ -252,11 +252,11 @@
   white-space: nowrap;
 }
 .filter-chip.on {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #1a1206;
+  background: color-mix(in oklab, var(--accent) 11%, var(--surface));
+  border-color: color-mix(in oklab, var(--accent) 58%, var(--border));
+  color: var(--accent);
   font-weight: 600;
-  box-shadow: 0 0 0 1px var(--accent);
+  box-shadow: none;
 }
 .chip-count {
   font-variant-numeric: tabular-nums;

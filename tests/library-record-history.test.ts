@@ -38,7 +38,7 @@ describe("Library record history", () => {
     );
   });
 
-  it("uses Back for UI-pushed modals and replaces cold deep links with their Library context", () => {
+  it("uses Back for UI-pushed modals and replaces cold roll links with their Rolls context", () => {
     const target = { type: "roll", rkey: "roll-1" } as const;
     const pushed = harness({ name: "roll", params: { rkey: "roll-1" } }, { libraryRecordModal: true });
     pushed.routes.closeRecordRoute(target);
@@ -47,7 +47,7 @@ describe("Library record history", () => {
 
     const cold = harness({ name: "roll", params: { rkey: "roll-1" } });
     cold.routes.closeRecordRoute(target);
-    expect(cold.router.replace).toHaveBeenCalledWith("library", { tab: "film" });
+    expect(cold.router.replace).toHaveBeenCalledWith("rolls");
   });
 
   it("ignores a stale modal close after history has moved to another record", () => {

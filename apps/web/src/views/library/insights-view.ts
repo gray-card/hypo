@@ -38,7 +38,15 @@ export function renderChemistryStatus(body: HTMLElement, services: ActivityServi
     const percent =
       capacity != null && remaining != null && capacity > 0
         ? Math.max(0, Math.min(100, Math.round((remaining / capacity) * 100)))
-        : null;
+        : value.maxRollsRecommended > 0 && value.rollsProcessed != null
+          ? Math.max(
+              0,
+              Math.min(
+                100,
+                Math.round(((value.maxRollsRecommended - value.rollsProcessed) / value.maxRollsRecommended) * 100),
+              ),
+            )
+          : null;
     const expired = value.expiresAt && Date.parse(value.expiresAt) < now;
     const ageDays = value.mixedAt ? Math.floor((now - Date.parse(value.mixedAt)) / 86_400_000) : null;
     const details: string[] = [];
@@ -46,15 +54,36 @@ export function renderChemistryStatus(body: HTMLElement, services: ActivityServi
       details.push(`${value.rollsProcessed} roll${value.rollsProcessed === 1 ? "" : "s"}`);
     if (ageDays != null) details.push(`${ageDays}d old`);
     if (expired) details.push("past use-by");
-    const fill = el("div", { class: "bar-fill", style: "width:0%" });
-    if (percent != null) requestAnimationFrame(() => (fill.style.width = `${percent}%`));
+    const capacityLabel =
+      capacity != null && remaining != null
+        ? `${remaining} of ${capacity} mL remaining`
+        : value.maxRollsRecommended > 0 && value.rollsProcessed != null
+          ? `${value.rollsProcessed} of ${value.maxRollsRecommended} recommended rolls used`
+          : null;
+    const level = percent == null ? "" : percent <= 15 ? " critical" : percent <= 35 ? " caution" : " healthy";
     rows.append(
-      el("div", { class: `gear-row${expired ? " warn-row" : ""}` }, [
-        el("div", { class: "row between", style: "width:100%" }, [
+      el("div", { class: `gear-row chemistry-status-row${expired ? " warn-row" : ""}` }, [
+        el("div", { class: "chemistry-status-copy" }, [
           el("strong", {}, services.instanceLabel("chemistry", value)),
-          el("span", { class: "muted small" }, details.join(" · ")),
+          details.length ? el("span", { class: "muted small" }, details.join(" · ")) : null,
         ]),
-        percent != null ? el("div", { class: "bar-track", style: "width:100%;margin-top:6px" }, [fill]) : null,
+        percent != null && capacityLabel
+          ? el("div", { class: "chemistry-capacity" }, [
+              el("span", { class: "chemistry-capacity-label muted small" }, capacityLabel),
+              el(
+                "span",
+                {
+                  class: `chemistry-capacity-track${level}`,
+                  role: "progressbar",
+                  "aria-label": capacityLabel,
+                  "aria-valuemin": "0",
+                  "aria-valuemax": "100",
+                  "aria-valuenow": String(percent),
+                },
+                [el("span", { class: "chemistry-capacity-fill", style: `width:${percent}%` })],
+              ),
+            ])
+          : el("span", { class: "muted small chemistry-capacity-untracked" }, "Capacity not tracked"),
       ]),
     );
   }
@@ -64,7 +93,7 @@ export function renderChemistryStatus(body: HTMLElement, services: ActivityServi
       el(
         "p",
         { class: "muted small" },
-        "Remaining capacity, age, and rolls processed. Linking a chemistry in the development timer bumps its rolls-processed count as you develop.",
+        "The meter uses remaining volume when it is recorded, then falls back to the manufacturer's recommended roll limit. Development sessions update the roll count.",
       ),
       rows,
     ]),

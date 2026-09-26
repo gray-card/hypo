@@ -56,7 +56,7 @@ export function openFrameLinker(onDone: (() => void) | undefined, services: Acti
         el(
           "p",
           { class: "muted small" },
-          "No frames logged for this roll yet — log them in the Film tab or the shot logger.",
+          "No frames are logged for this roll yet. Add them from Rolls or the shot logger.",
         ),
       );
       return;

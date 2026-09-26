@@ -9,7 +9,6 @@ import {
 } from "@hypo/domain";
 import { createCatalogSelect, createChemistrySelect, createInstanceSelect } from "./maintenance-selectors.ts";
 import type { ActivityServices, LibraryRecord, LibraryValue } from "./maintenance-types.ts";
-import { renderRollBoard } from "./workflows-board.ts";
 
 function templateSteps(value: LibraryValue): WorkflowStep[] {
   return applyTemplateDefaults(stepsFromTemplate({ value }), { value });
@@ -763,7 +762,6 @@ export function renderActiveWorkflowsView(body: HTMLElement, services: ActivityS
       ]),
     );
   }
-  renderRollBoard(body, services);
 }
 
 export function renderWorkflowsView(body: HTMLElement, services: ActivityServices, render: () => void): void {
@@ -780,7 +778,7 @@ export function renderDataQualityView(body: HTMLElement, services: ActivityServi
     ]),
     el("p", { class: "muted small" }, "A read-only pass over your library. Nothing changes until you act on it."),
   ]);
-  if (!findings.length) checks.append(el("p", { class: "muted" }, "No issues found — your metadata looks complete."));
+  if (!findings.length) checks.append(el("p", { class: "muted" }, "No issues found. Your metadata looks complete."));
   else {
     const list = el("ul", { class: "gear-list" });
     for (const finding of findings) {
@@ -797,29 +795,69 @@ export function renderDataQualityView(body: HTMLElement, services: ActivityServi
 }
 
 export function renderBatchRulesView(body: HTMLElement, services: ActivityServices): void {
-  const rulesCard = el("div", { class: "card" }, [el("h3", {}, "Saved batch rules")]);
+  const rerender = () => {
+    body.replaceChildren();
+    renderBatchRulesView(body, services);
+  };
+  const rulesCard = el("div", { class: "card" }, [
+    el("div", { class: "row between wrap" }, [
+      el("div", {}, [
+        el("h2", {}, "Batch rules"),
+        el(
+          "p",
+          { class: "muted small library-section-intro" },
+          "Save repeatable conditions and changes, then choose a rule from a gallery's Batch edit panel.",
+        ),
+      ]),
+      el(
+        "button",
+        {
+          type: "button",
+          class: "ghost small-btn",
+          onclick: () => services.openBatchRule?.(null, rerender),
+        },
+        [services.icon("plus", 15), el("span", {}, "Create batch rule")],
+      ),
+    ]),
+  ]);
   const list = el("ul", { class: "gear-list" });
   for (const rule of services.getStore().batchRules) {
     list.append(
       el("li", { class: "gear-row row between" }, [
         el("span", {}, rule.value.name),
-        services.isAdvanced()
-          ? el(
-              "button",
-              {
-                class: "ghost small-btn",
-                title: "Inspect record",
-                "aria-label": "Inspect record",
-                onclick: () => services.inspect(rule),
-              },
-              "{ }",
-            )
-          : null,
+        el("span", { class: "row wrap" }, [
+          el(
+            "button",
+            {
+              class: "ghost small-btn",
+              type: "button",
+              onclick: () => services.openBatchRule?.(rule, rerender),
+            },
+            "Edit",
+          ),
+          services.isAdvanced()
+            ? el(
+                "button",
+                {
+                  class: "ghost small-btn",
+                  title: "Inspect record",
+                  "aria-label": "Inspect record",
+                  onclick: () => services.inspect(rule),
+                },
+                "{ }",
+              )
+            : null,
+        ]),
       ]),
     );
   }
   if (!services.getStore().batchRules.length)
-    list.append(el("li", { class: "muted" }, "No batch rules yet — create them from a gallery's Batch edit panel."));
+    list.append(
+      el("li", { class: "empty-state compact" }, [
+        el("div", { class: "empty-title" }, "No batch rules yet"),
+        el("div", { class: "empty-hint muted small" }, "Create one here, then apply it from any gallery."),
+      ]),
+    );
   rulesCard.append(list);
   body.append(rulesCard);
 }

@@ -49,8 +49,34 @@ const ACTION_OPS = [
   "associateLens",
 ];
 const MODES = ["fill", "overwrite", "ifEmpty"];
+const OP_LABELS = {
+  empty: "is empty",
+  notEmpty: "is not empty",
+  exists: "exists",
+  notExists: "does not exist",
+  eq: "equals",
+  neq: "does not equal",
+  contains: "contains",
+  startsWith: "starts with",
+  endsWith: "ends with",
+  matches: "matches pattern",
+  gt: "is greater than",
+  gte: "is at least",
+  lt: "is less than",
+  lte: "is at most",
+  in: "is one of",
+  setAlt: "Set alt text",
+  setGalleryDescription: "Set gallery description",
+  setExif: "Set an EXIF field",
+  projectCaptureToExif: "Copy capture metadata to EXIF",
+  associateCamera: "Associate a camera",
+  associateLens: "Associate a lens",
+  fill: "Fill blank values",
+  overwrite: "Replace existing values",
+  ifEmpty: "Only when empty",
+};
 
-export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null) {
+export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, options = {}) {
   const condWrap = el("div", {});
   const actWrap = el("div", {});
   const combinator = el("select", {}, [
@@ -70,15 +96,16 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null) 
     const op = el(
       "select",
       {},
-      CMP_OPS.map((o) => el("option", { value: o }, o)),
+      CMP_OPS.map((o) => el("option", { value: o }, OP_LABELS[o] || o)),
     );
     op.value = init.op || "eq";
     const v = el("input", { type: "text", placeholder: "value", value: init.value ?? "" });
+    const valueField = field("Value", v);
     const rec = { f, op, v };
-    const row = el("div", { class: "row wrap rb-row" }, [
-      fWrap,
-      op,
-      v,
+    const row = el("div", { class: "rule-entry rule-condition" }, [
+      field("Field", fWrap),
+      field("Match", op),
+      valueField,
       el(
         "button",
         {
@@ -91,6 +118,10 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null) 
         "×",
       ),
     ]);
+    const refresh = () =>
+      valueField.classList.toggle("hidden", ["empty", "notEmpty", "exists", "notExists"].includes(op.value));
+    op.addEventListener("change", refresh);
+    refresh();
     condRows.push(rec);
     condWrap.append(row);
   }
@@ -98,25 +129,29 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null) 
     const op = el(
       "select",
       {},
-      ACTION_OPS.map((o) => el("option", { value: o }, o)),
+      ACTION_OPS.map((o) => el("option", { value: o }, OP_LABELS[o] || o)),
     );
     op.value = init.op || "setAlt";
-    const f = el("input", { type: "text", placeholder: "field (setExif)", value: init.field || "" });
-    const v = el("input", { type: "text", placeholder: "value / template", value: init.value ?? "" });
-    const ref = el("input", { type: "text", placeholder: "ref at-uri (associate)", value: init.ref || "" });
+    const f = el("input", { type: "text", placeholder: "EXIF field", value: init.field || "" });
+    const v = el("input", { type: "text", placeholder: "Text or template", value: init.value ?? "" });
+    const ref = el("select");
     const mode = el(
       "select",
       {},
-      MODES.map((m) => el("option", { value: m }, m)),
+      MODES.map((m) => el("option", { value: m }, OP_LABELS[m] || m)),
     );
     mode.value = init.mode || "fill";
     const rec = { op, f, v, ref, mode };
-    const row = el("div", { class: "row wrap rb-row" }, [
-      op,
-      f,
-      v,
-      ref,
-      mode,
+    const fieldField = field("EXIF field", f);
+    const valueField = field("Value or template", v);
+    const refField = field("Camera or lens", ref);
+    const modeField = field("Write mode", mode);
+    const row = el("div", { class: "rule-entry rule-action" }, [
+      field("Change", op),
+      modeField,
+      fieldField,
+      valueField,
+      refField,
       el(
         "button",
         {
@@ -129,6 +164,33 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null) 
         "×",
       ),
     ]);
+    const refreshResources = (kind) => {
+      const previous = init.ref || ref.value;
+      const records = ctx.store?.instance?.[kind] || [];
+      ref.replaceChildren(
+        el("option", { value: "" }, `Choose ${kind}`),
+        ...records.map((record) =>
+          el(
+            "option",
+            { value: record.uri },
+            record.value.nickname || record.value.label || record.value.serialNumber || record.rkey || record.uri,
+          ),
+        ),
+      );
+      if (previous && ![...ref.options].some((option) => option.value === previous))
+        ref.append(el("option", { value: previous }, previous));
+      ref.value = previous;
+    };
+    const refresh = () => {
+      const action = op.value;
+      const associates = action === "associateCamera" || action === "associateLens";
+      fieldField.classList.toggle("hidden", action !== "setExif");
+      valueField.classList.toggle("hidden", !["setAlt", "setGalleryDescription", "setExif"].includes(action));
+      refField.classList.toggle("hidden", !associates);
+      if (associates) refreshResources(action === "associateCamera" ? "camera" : "lens");
+    };
+    op.addEventListener("change", refresh);
+    refresh();
     actRows.push(rec);
     actWrap.append(row);
   }
@@ -167,7 +229,51 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null) 
     return { name: nameInput.value.trim() || "Untitled rule", when, actions };
   }
 
+  const galleryActions = Boolean(ctx.detail)
+    ? [
+        el(
+          "button",
+          {
+            class: "ghost",
+            onclick: () => {
+              const rule = buildRule();
+              const r = previewBatch(ctx.detail, ctx.store, rule);
+              preview.textContent = r.matched.length
+                ? r.matched.map((m) => `#${m.index}: ${m.changes.map((c) => c.kind).join(", ")}`).join("\n")
+                : "No matches.";
+            },
+          },
+          "Preview",
+        ),
+        el(
+          "button",
+          {
+            onclick: async (e) => {
+              if (
+                !(await confirmModal("Apply this rule to all matching photos?", {
+                  confirmLabel: "Apply",
+                  danger: false,
+                }))
+              )
+                return;
+              await withButton(e.target, status, async () => {
+                await applyBatch(ctx.agent, ctx.did, ctx.detail, ctx.store, buildRule(), (done, total) => {
+                  status.textContent = `Applying ${done} / ${total}…`;
+                });
+                onApplied?.();
+              });
+            },
+          },
+          "Apply",
+        ),
+      ]
+    : [];
   const body = [
+    el(
+      "p",
+      { class: "muted small rule-builder-intro" },
+      "A batch rule is a reusable instruction: when a photo or gallery matches the conditions, Hypo applies the changes you specify. Saving a rule does not change any photos until you choose it in a gallery's Batch edit panel.",
+    ),
     el("h3", { class: "modal-sub" }, "Conditions"),
     field("Combine", combinator),
     condWrap,
@@ -176,39 +282,8 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null) 
     actWrap,
     el("button", { class: "ghost small-btn", onclick: () => addAct() }, "+ Action"),
     field("Save as", nameInput),
-    el("div", { class: "row" }, [
-      el(
-        "button",
-        {
-          class: "ghost",
-          onclick: () => {
-            const rule = buildRule();
-            const r = previewBatch(ctx.detail, ctx.store, rule);
-            preview.textContent = r.matched.length
-              ? r.matched.map((m) => `#${m.index}: ${m.changes.map((c) => c.kind).join(", ")}`).join("\n")
-              : "No matches.";
-          },
-        },
-        "Preview",
-      ),
-      el(
-        "button",
-        {
-          onclick: async (e) => {
-            if (
-              !(await confirmModal("Apply this rule to all matching photos?", { confirmLabel: "Apply", danger: false }))
-            )
-              return;
-            await withButton(e.target, status, async () => {
-              await applyBatch(ctx.agent, ctx.did, ctx.detail, ctx.store, buildRule(), (done, total) => {
-                status.textContent = `Applying ${done} / ${total}…`;
-              });
-              onApplied?.();
-            });
-          },
-        },
-        "Apply",
-      ),
+    el("div", { class: "row wrap" }, [
+      ...galleryActions,
       el(
         "button",
         {
@@ -216,12 +291,19 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null) 
           onclick: async (e) => {
             await withButton(e.target, status, async () => {
               const rule = buildRule();
+              const now = new Date().toISOString();
               const uri = await saveRecord(
                 ctx.agent,
                 ctx.did,
                 NS.rule.batch,
-                { name: rule.name, when: rule.when, actions: rule.actions, createdAt: new Date().toISOString() },
-                null,
+                {
+                  name: rule.name,
+                  when: rule.when,
+                  actions: rule.actions,
+                  createdAt: options.existing?.value?.createdAt || now,
+                  ...(options.existing ? { updatedAt: now } : {}),
+                },
+                options.existing || null,
               );
               onSaved?.({ id: uri, name: rule.name, when: rule.when, actions: rule.actions });
               toast(`Saved rule "${rule.name}"`, "ok");
@@ -232,7 +314,11 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null) 
       ),
       status,
     ]),
-    preview,
+    ctx.detail ? preview : null,
   ];
-  openModal("Batch rule builder", body, null, { saveLabel: "Done", cancelLabel: "Close" });
+  openModal(options.existing ? "Edit batch rule" : "Create batch rule", body, null, {
+    wide: true,
+    hideSave: true,
+    cancelLabel: "Close",
+  });
 }

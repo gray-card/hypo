@@ -11,6 +11,53 @@ const BLOB_CID = "bafkreifqn5r4ki5vm4w55xd6qhot5gz6b3tvw7athjuwk4vkz6ppf5zo24";
 afterEach(() => setOnline(true));
 
 describe("record-cache read policy", () => {
+  it("repairs Hypo 1.5.0 chemistry integers with a swap-protected, lossless write", async () => {
+    const did = "did:plc:chemistry-writer-recovery";
+    const collection = NS.instance.chemistry;
+    const uri = `at://${did}/${collection}/working`;
+    const original = {
+      uri,
+      cid: "cid-invalid-chemistry",
+      value: {
+        $type: collection,
+        type: `at://${did}/${NS.catalog.chemistryType}/d76`,
+        nickname: "D-76 stock · working bottle",
+        notes: "Preserve this entered note exactly.",
+        status: "discarded",
+        mixedAt: "2026-08-12T21:30:00.000Z",
+        createdAt: "2026-08-13T10:31:12.084Z",
+        updatedAt: "2026-09-26T01:40:28.319Z",
+        rollsProcessed: 10,
+        maxRollsRecommended: "10",
+      },
+    };
+    const agent = statefulAgent(did, collection, [original]);
+    agent.com.atproto.repo.putRecord = vi.fn(agent.com.atproto.repo.putRecord);
+
+    const [repaired] = await listRecords(agent, did, collection);
+
+    expect(agent.com.atproto.repo.putRecord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        repo: did,
+        collection,
+        rkey: "working",
+        swapRecord: original.cid,
+        record: {
+          ...original.value,
+          maxRollsRecommended: 10,
+        },
+      }),
+      expect.objectContaining({ signal: undefined }),
+    );
+    expect(repaired).toMatchObject({
+      uri,
+      value: {
+        ...original.value,
+        maxRollsRecommended: 10,
+      },
+    });
+  });
+
   it("restores a Grain BlobRef after the cache structured-clones it", async () => {
     const did = "did:plc:structured-clone-cache";
     const collection = "social.grain.photo";

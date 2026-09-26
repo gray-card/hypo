@@ -1,22 +1,6 @@
 import { dateField, el, field, inputField } from "@hypo/ui";
-import { DATE_ONLY, ENUM_LIST, ENUM_SELECT, STRING_LIST, TYPE_IDENTITY } from "./gear-config.ts";
+import { DATE_ONLY, ENUM_LIST, ENUM_SELECT, INTEGER_FIELDS, STRING_LIST, TYPE_IDENTITY } from "./gear-config.ts";
 import type { GearInput, GearInputMap, GearServices, GearValue } from "./gear-types.ts";
-
-const INT_FORM_KEYS = new Set([
-  "rollsProcessed",
-  "sessionsUsed",
-  "exposuresTotal",
-  "exposuresUsed",
-  "frameIndex",
-  "iso",
-  "bitDepth",
-  "quantity",
-  "shotAtIso",
-  "threadDiameterMm",
-  "threadSize",
-  "frameNumber",
-  "focalLength",
-]);
 
 export function readGearFormFields(
   inputs: GearInputMap,
@@ -51,7 +35,7 @@ export function readGearFormFields(
         .map((value) => value.trim())
         .filter(Boolean);
       if (values.length) record[key] = [...new Set(values)];
-    } else if (INT_FORM_KEYS.has(key)) {
+    } else if (INTEGER_FIELDS.has(key)) {
       const value = Number.parseInt(text, 10);
       if (Number.isFinite(value)) record[key] = value;
     } else if (key.endsWith("At")) record[key] = new Date(text).toISOString();
@@ -186,6 +170,10 @@ export function gearFieldControl(
     const type = DATE_ONLY.has(key) ? "date" : "datetime-local";
     const result = dateField(cleanLabel, value, { type });
     return { node: result.wrap, input: result.input as GearInput };
+  }
+  if (INTEGER_FIELDS.has(key)) {
+    const input = el("input", { type: "number", step: "1", inputmode: "numeric", value });
+    return { node: field(label, input), input: input as GearInput };
   }
   const result = inputField(label, key, value);
   return { node: result.wrap, input: result.input as GearInput };

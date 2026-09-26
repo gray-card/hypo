@@ -243,13 +243,15 @@ test("login view has landmarks, visible keyboard focus, ordered controls, and no
   await expectAccessible(page, "#login-view");
 });
 
-test("Library and Sessions support keyboard navigation, focus restoration, and logging", async ({ page }) => {
+test("Library, Rolls, and Sessions support keyboard navigation, focus restoration, and logging", async ({ page }) => {
   await login(page);
   await expectLoggedInLandmarks(page, "setup");
 
   const setupNav = primaryNavButton(page, "setup");
   await tabTo(page, setupNav);
   await expectVisibleKeyboardFocus(setupNav);
+  await page.keyboard.press("Tab");
+  await expectVisibleKeyboardFocus(primaryNavButton(page, "rolls"));
   await page.keyboard.press("Tab");
   await expectVisibleKeyboardFocus(primaryNavButton(page, "sessions"));
   await page.keyboard.press("Tab");

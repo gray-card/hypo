@@ -47,6 +47,7 @@ export function createLibraryRecordHistory({ router, history }: { router: Router
       if (!routeMatches(router.current(), target)) return undefined;
       const state = history.state as { libraryRecordModal?: unknown } | null;
       if (state?.libraryRecordModal === true) return history.back();
+      if (target.type === "roll") return router.replace("rolls");
       return router.replace("library", { tab: libraryTabForRecord(target) });
     },
   };

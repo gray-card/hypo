@@ -46,9 +46,9 @@ describe("following graph provenance", () => {
     ]);
   });
 
-  it("keeps public photos and semantic graycard records while dropping implementation-level records", () => {
-    expect(isFollowingActivityCollection("social.grain.photo")).toBe(true);
-    expect(isFollowingActivityCollection("social.grain.gallery")).toBe(true);
+  it("keeps user-facing Hypo records while dropping plain Grain and implementation-level records", () => {
+    expect(isFollowingActivityCollection("social.grain.photo")).toBe(false);
+    expect(isFollowingActivityCollection("social.grain.gallery")).toBe(false);
     expect(isFollowingActivityCollection("app.graycard.instance.camera")).toBe(true);
     expect(isFollowingActivityCollection("app.graycard.process.developSession")).toBe(true);
     expect(isFollowingActivityCollection("app.graycard.scene.node")).toBe(false);
@@ -89,14 +89,8 @@ describe("following activity loading", () => {
       onProgress,
     });
 
-    expect(list.mock.calls.map(([input]) => input.collection).sort()).toEqual([
-      "app.graycard.instance.camera",
-      "social.grain.photo",
-    ]);
-    expect(feed.events.map((event) => event.collection)).toEqual([
-      "social.grain.photo",
-      "app.graycard.instance.camera",
-    ]);
+    expect(list.mock.calls.map(([input]) => input.collection)).toEqual(["app.graycard.instance.camera"]);
+    expect(feed.events.map((event) => event.collection)).toEqual(["app.graycard.instance.camera"]);
     expect(feed.events.every((event) => event.actor.sources.includes("grain"))).toBe(true);
     expect(onProgress).toHaveBeenCalledWith(
       expect.objectContaining({
