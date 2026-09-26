@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 const PDS_ORIGIN = "http://127.0.0.1:2584";
 const REPO = "did:plc:alice";
 const CHEMISTRY_TYPE = `at://${REPO}/app.graycard.catalog.chemistryType/d76`;
+const CAMERA = `at://${REPO}/app.graycard.instance.camera/camera-a`;
 
 async function createRecord(request, collection, rkey, record) {
   const response = await request.post(`${PDS_ORIGIN}/xrpc/com.atproto.repo.createRecord`, {
@@ -31,6 +32,51 @@ async function seedChemistry(request) {
     maxRollsRecommended: 10,
     createdAt: "2026-08-12T21:30:00.000Z",
   });
+}
+
+async function seedRollLedger(request) {
+  const stock = `at://${REPO}/app.graycard.catalog.filmStock/ledger-stock`;
+  await createRecord(request, "app.graycard.catalog.filmStock", "ledger-stock", {
+    $type: "app.graycard.catalog.filmStock",
+    brand: "Ilford",
+    name: "HP5 Plus",
+    iso: 400,
+    filmType: "bw-negative",
+    process: "bw",
+    format: "135",
+    createdAt: "2026-09-01T12:00:00.000Z",
+  });
+  const rolls = [
+    ["loaded", "Camera roll", { loadedAt: "2026-09-20T12:00:00.000Z" }],
+    ["partial", "Weekend walk", { loadedAt: "2026-09-18T12:00:00.000Z", partialAt: "2026-09-19T12:00:00.000Z" }],
+    ["exposed", "Ready for darkroom", { exposedAt: "2026-09-21T12:00:00.000Z" }],
+    ["developed", "Developed archive", { developedAt: "2026-09-22T12:00:00.000Z" }],
+    ["archived", "Sleeved negatives", { archivedAt: "2026-09-23T12:00:00.000Z" }],
+  ];
+  for (const [status, label, dates] of rolls) {
+    await createRecord(request, "app.graycard.instance.filmRoll", `ledger-${status}`, {
+      $type: "app.graycard.instance.filmRoll",
+      stock,
+      camera: ["loaded", "partial"].includes(status) ? CAMERA : undefined,
+      label,
+      status,
+      ...dates,
+      createdAt: "2026-09-01T12:00:00.000Z",
+    });
+  }
+  const partial = `at://${REPO}/app.graycard.instance.filmRoll/ledger-partial`;
+  for (const [rkey, frameNumber, takenAt] of [
+    ["ledger-frame-1", 1, "2026-09-19T12:00:00.000Z"],
+    ["ledger-frame-2", 2, "2026-09-20T15:30:00.000Z"],
+  ]) {
+    await createRecord(request, "app.graycard.instance.exposure", rkey, {
+      $type: "app.graycard.instance.exposure",
+      roll: partial,
+      frameNumber,
+      takenAt,
+      createdAt: takenAt,
+    });
+  }
 }
 
 async function login(page) {
@@ -70,6 +116,7 @@ test.beforeEach(async ({ request }) => {
   const reset = await request.post(`${PDS_ORIGIN}/__fixture__/reset`);
   expect(reset.ok()).toBe(true);
   await seedChemistry(request);
+  await seedRollLedger(request);
 });
 
 test("resource, roll, and session surfaces stay inside the viewport", async ({ page }) => {
@@ -83,6 +130,25 @@ test("resource, roll, and session surfaces stay inside the viewport", async ({ p
   await nav.getByRole("button", { name: "Rolls", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Rolls", exact: true })).toBeVisible();
   await expectNoHorizontalOverflow(page.locator("#rolls-view"));
+  await expect(page.locator(".roll-stage-heading h3")).toHaveText([
+    "In cameras",
+    "Needs processing",
+    "Processed",
+    "Archived",
+  ]);
+  await expect(page.locator(".roll-ledger-row").filter({ hasText: "Weekend walk" })).toContainText(
+    "Last frame Sep 20, 2026",
+  );
+  const overflowingRollRows = await page
+    .locator(".roll-ledger-row")
+    .evaluateAll((rows) => rows.filter((row) => row.scrollWidth > row.clientWidth + 1).map((row) => row.textContent));
+  expect(overflowingRollRows).toEqual([]);
+  if ((page.viewportSize()?.width ?? 0) > 760) {
+    const controlTops = await page
+      .locator(".library-filter-bar .field > :is(input, select)")
+      .evaluateAll((controls) => controls.map((control) => Math.round(control.getBoundingClientRect().top)));
+    expect(Math.max(...controlTops) - Math.min(...controlTops)).toBeLessThanOrEqual(0);
+  }
 
   await nav.getByRole("button", { name: "Library", exact: true }).click();
   await selectLibrarySection(page, "Chemistry");
@@ -101,6 +167,27 @@ test("resource, roll, and session surfaces stay inside the viewport", async ({ p
   await rule.getByRole("button", { name: "Close" }).click();
 
   await nav.getByRole("button", { name: "Sessions", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Sessions", exact: true })).toBeVisible();
+  const sessionCard = page.locator("#sessions-view:not(.hidden) .session-card").first();
+  await expect(sessionCard).toBeVisible();
+  const rightAlignment = await sessionCard.evaluate((card) => {
+    const cardRight = card.getBoundingClientRect().right;
+    const timeRight = card.querySelector(".session-time").getBoundingClientRect().right;
+    const actionsRight = card.querySelector(".session-actions").getBoundingClientRect().right;
+    return {
+      timeGap: Math.round(cardRight - timeRight),
+      actionsGap: Math.round(cardRight - actionsRight),
+    };
+  });
+  expect(rightAlignment.timeGap).toBeGreaterThanOrEqual(12);
+  expect(rightAlignment.timeGap).toBeLessThanOrEqual(14);
+  expect(rightAlignment.actionsGap).toBe(rightAlignment.timeGap);
+  if ((page.viewportSize()?.width ?? 0) > 760) {
+    const controlTops = await page
+      .locator(".session-filter-panel .field > input")
+      .evaluateAll((controls) => controls.map((control) => Math.round(control.getBoundingClientRect().top)));
+    expect(Math.max(...controlTops) - Math.min(...controlTops)).toBeLessThanOrEqual(0);
+  }
   await page.locator("#sessions-body summary").click();
   await page.getByRole("button", { name: "Log completed development" }).click();
   const development = page.getByRole("dialog", { name: "Log completed development" });

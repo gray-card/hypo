@@ -119,7 +119,7 @@ test("roll deep links target the requested roll and replay through browser histo
   await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
   await expect(page).toHaveURL(/\/rolls$/);
 
-  const rollRow = page.locator("#rolls-body .gear-row").filter({ hasText: "Deep-link roll" });
+  const rollRow = page.locator("#rolls-body .roll-ledger-row").filter({ hasText: "Deep-link roll" });
   await rollRow.getByRole("button", { name: "Manage", exact: true }).click();
   await expect(page).toHaveURL(/\/roll\/roll-a$/);
   await page.goBack();

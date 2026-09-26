@@ -152,6 +152,8 @@ describe("sessions workspace", () => {
     expect(body.textContent).toContain("36 sessions");
     expect(body.textContent).toContain("Roll A");
     expect(body.textContent).toContain("Missing completion time");
+    expect(body.querySelector(".session-filter-panel > .field")?.textContent).toContain("Search");
+    expect(body.querySelector(".session-card-aside .session-time")?.textContent).toBeTruthy();
 
     (body.querySelector(".session-search") as HTMLInputElement).value = "special archive";
     body.querySelector(".session-search")?.dispatchEvent(new Event("input"));

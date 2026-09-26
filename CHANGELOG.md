@@ -2,6 +2,25 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.6.1] - 2026-09-26
+
+### Changed
+
+- Group the roll library by workflow stage and show each roll's latest named
+  event, including logged frame dates, beside its exact status.
+- Give roll rows and session cards a shared ledger structure while preserving
+  the distinct meaning of roll stages and session dates.
+
+### Fixed
+
+- Align search, sort, and date controls to one field grid instead of inheriting
+  an extra search-input margin.
+- Anchor session times, durations, and actions to the card's right edge and keep
+  roll and session controls contained on desktop, Android-sized, and iPhone-sized
+  viewports.
+- Align wrapped development-field labels without adding empty label space on
+  phones, and show role-choice outlines only during keyboard focus.
+
 ## [1.6.0] - 2026-09-25
 
 ### Added
