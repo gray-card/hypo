@@ -21,7 +21,7 @@
   {
     "name": "lazy Panproto WASM (raw)",
     "path": "dist/assets/panproto_wasm_bg.wasm",
-    "limit": "9 MB",
+    "limit": "9.5 MB",
     "gzip": false,
     "brotli": false
   }

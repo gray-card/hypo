@@ -1,0 +1,14 @@
+{
+  "$type": "app.graycard.meter.calibration",
+  "meter": "at://did:plc:example/app.graycard.instance.meter/iphone-meter",
+  "cameraModule": "wide",
+  "sensorPath": "ae-metadata",
+  "reference": "reference-meter",
+  "offsetStops": {
+    "value": -125000,
+    "unit": "stop",
+    "scale": 1000000
+  },
+  "deviceModel": "iPhone17,2",
+  "createdAt": "2026-08-12T12:00:00.000Z"
+}

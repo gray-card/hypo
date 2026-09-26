@@ -285,6 +285,9 @@ function processingHistory(roll: FilmRecord, services: FilmViewServices): { node
       const detail =
         kind === "develop"
           ? [
+              Array.isArray(value.filmRolls) && value.filmRolls.length > 1
+                ? `${value.filmRolls.length}-roll batch`
+                : null,
               relatedLabel(
                 services,
                 "chemistry",
@@ -318,7 +321,15 @@ function processingHistory(roll: FilmRecord, services: FilmViewServices): { node
           [
             el("span", { class: `roll-processing-mark ${kind}` }, kind === "develop" ? "DEV" : "SCAN"),
             el("span", { class: "roll-processing-copy" }, [
-              el("strong", {}, kind === "develop" ? "Development" : "Scan"),
+              el(
+                "strong",
+                {},
+                kind === "develop" && Array.isArray(value.filmRolls) && value.filmRolls.length > 1
+                  ? "Development batch"
+                  : kind === "develop"
+                    ? "Development"
+                    : "Scan",
+              ),
               el("span", { class: "muted small" }, detail || "Session details not recorded"),
             ]),
             el("span", { class: "muted small mono roll-processing-date" }, when),

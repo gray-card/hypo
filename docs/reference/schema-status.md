@@ -67,6 +67,6 @@ These checks establish freshness and current-program conformance. The pull-reque
 
 ## Panproto checks
 
-The repository pins `@panproto/core` and `panproto-cli` at 0.70.1. CI runs `npm run check:panproto`, which loads the root manifest as an ATProto bundle, checks theory diagnostics, stages two record fixtures, exercises directory compatibility, and validates the parsed bundle with the TypeScript SDK.
+The repository pins `@panproto/core` and `panproto-cli` at 0.71.0. CI runs `npm run check:panproto`, which loads the root manifest as an ATProto bundle, checks theory diagnostics, stages two record fixtures, exercises directory compatibility, and validates the parsed bundle with the TypeScript SDK.
 
 The checked-in sidecar records the 59-document suite under protocol `atproto` and tracks both files in `fixtures/records`. The `lexicons-v1` tag identifies the 1.0 baseline; `lexicons-v2` identifies the ordered development-stage suite. Pull-request checks use the latest `v1+` Git release reachable from the target branch and verify every acknowledged breaking transition declared in `lenses/breaking-change.json`. [How schema versions work](../explanation/schema-versions.md) describes the repository migration boundary and the separate application/schema version policy.

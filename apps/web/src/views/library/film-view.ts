@@ -213,6 +213,13 @@ function rollsCard(services: FilmViewServices): HTMLDivElement {
           : null,
       ]),
       el("div", { class: "row wrap" }, [
+        rolls.length && services.openDevelopmentBatch
+          ? el(
+              "button",
+              { class: "ghost small-btn", onclick: () => services.openDevelopmentBatch?.(services.renderLibrary) },
+              [services.icon("check", 15), el("span", {}, "Log development batch")],
+            )
+          : null,
         el("button", { class: "ghost small-btn", onclick: () => openFramesFilePicker(services) }, [
           services.icon("upload", 15),
           el("span", {}, "Import .frames"),

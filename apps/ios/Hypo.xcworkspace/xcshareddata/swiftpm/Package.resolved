@@ -1,0 +1,15 @@
+{
+  "originHash" : "ae68a86e9ae7da7da1b55e697ff677be470fe598868046139d30144e92144a3f",
+  "pins" : [
+    {
+      "identity" : "panproto-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/panproto/panproto-swift.git",
+      "state" : {
+        "revision" : "a11c201605afee0179a0abf27ec6e07d91c1c316",
+        "version" : "0.71.0"
+      }
+    }
+  ],
+  "version" : 3
+}

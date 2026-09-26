@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" role="img" aria-labelledby="title desc">
+  <title id="title">Film-roll workflow</title>
+  <desc id="desc">A film canister connects to exposure and development record cards.</desc>
+  <rect width="960" height="480" rx="36" fill="#171513"/>
+  <g fill="none" stroke="#ff922e" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="88" y="138" width="196" height="204" rx="28"/>
+    <path d="M142 138v-34h88v34M284 240h104M572 240h104"/>
+    <rect x="388" y="108" width="184" height="264" rx="28"/>
+    <rect x="676" y="138" width="196" height="204" rx="28"/>
+    <circle cx="480" cy="240" r="52"/>
+    <path d="M730 206h88M730 250h88M730 294h56"/>
+  </g>
+  <g fill="#f2eee9" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="28" text-anchor="middle">
+    <text x="186" y="404">ROLL</text>
+    <text x="480" y="404">EXPOSURE</text>
+    <text x="774" y="404">DEVELOP</text>
+  </g>
+</svg>

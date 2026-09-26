@@ -237,7 +237,7 @@ test("offline timer logging and its linked-roll milestone each flush once", asyn
   await page.getByRole("button", { name: "Sessions", exact: true }).click();
   await page.locator("#sessions-body").getByRole("button", { name: "Develop film", exact: true }).click();
   const timer = page.getByRole("dialog", { name: "Development timer" });
-  await timer.getByLabel("Roll to develop").selectOption(ROLL);
+  await timer.getByRole("checkbox", { name: "Offline acceptance roll" }).check();
   const recipeList = timer.locator(".devtimer-setup > .devtimer-list").last();
   await expect(recipeList.locator("button").first()).toBeVisible();
   await recipeList.locator("button").first().click();

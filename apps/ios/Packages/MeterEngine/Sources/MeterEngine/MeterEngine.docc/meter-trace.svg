@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" role="img" aria-labelledby="title desc">
+  <title id="title">Deterministic meter trace</title>
+  <desc id="desc">A meter needle above a stepped orange measurement trace.</desc>
+  <rect width="960" height="480" rx="36" fill="#171513"/>
+  <path d="M176 274a304 304 0 0 1 608 0" fill="none" stroke="#5e5852" stroke-width="18"/>
+  <path d="M480 274l142-118" stroke="#ff922e" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="480" cy="274" r="28" fill="#f2eee9"/>
+  <path d="M120 388h168v-52h168v-68h168v-78h216" fill="none" stroke="#ff922e" stroke-width="12" stroke-linejoin="round"/>
+</svg>

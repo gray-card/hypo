@@ -5,23 +5,22 @@ description: Link chemistry and scanners to a film roll without starting a live 
 
 # Log completed development and scanning
 
-A **completed processing session** records work after it has occurred. Use this path when you need to associate chemistry or a scanner with a roll without running Hypo's live development timer or scan logger.
+A **development batch** records one or more rolls processed together in the same tank with the same chemistry. A one-roll development uses the same record. Use completed processing when you need to associate chemistry or a scanner with rolls without running Hypo's live development timer or scan logger.
 
 ## Record development
 
 1. Add the working chemistry under **Setup → Darkroom** if it is not already in your setup.
-2. Open **Setup → Film**, then open the roll.
-3. Under **Processing history**, select **Log development**.
-4. Select the roll or rolls. The roll you opened is selected by default.
-5. Record the process, tank or processor, push or pull, development location, and optional session start and finish.
-6. Build the ordered process under **Ordered process stages**. **Use sequence** supplies a starting sequence for black-and-white, monobath, C-41, E-6, ECN-2, or black-and-white reversal processing. Add, remove, and reorder stages to match the process you used.
-7. For every chemical bath, select its role or roles and link the tracked chemistry. A monobath may have both `film-developer` and `fixer`; a blix may have both `bleach` and `fixer`. Select additional chemistry when one bath combines multiple tracked parts.
-8. Record the actual duration and temperature. Expand **Dates, targets, agitation, and bath details** to add planned values, optional stage start and finish, dilution, working volume, disposition, agitation method, initial agitation, interval, cycle duration, inversions, continuous agitation, and notes.
-9. Select **Log development**.
+2. Open **Setup → Film**, then select **Log development batch** from the roll library. You can also open a roll and select **Log development** under **Processing history**; that roll is selected by default.
+3. Select every roll that shared the tank, process, and chemistry.
+4. Record the process, tank or processor, push or pull, development location, and optional session start and finish.
+5. Build the ordered process under **Ordered process stages**. **Use sequence** supplies a starting sequence for black-and-white, monobath, C-41, E-6, ECN-2, or black-and-white reversal processing. Add, remove, and reorder stages to match the process you used.
+6. For every chemical bath, select its role or roles and link the tracked chemistry. A monobath may have both `film-developer` and `fixer`; a blix may have both `bleach` and `fixer`. Select additional chemistry when one bath combines multiple tracked parts.
+7. Record the actual duration and temperature. Expand **Dates, targets, agitation, and bath details** to add planned values, optional stage start and finish, dilution, working volume, disposition, agitation method, initial agitation, interval, cycle duration, inversions, continuous agitation, and notes.
+8. Select **Log development batch**.
 
 Hypo creates an `app.graycard.process.developSession` and updates each selected roll's development status, lifecycle dates, and primary developer. Every linked chemistry instance receives one session use, the number of processed rolls, and its latest-use date. A chemistry linked more than once within the same session is counted once.
 
-Stage dates are optional. When supplied, they must follow the stage order, fall within the session interval, and place each finish after its start. Planned and observed values are separate: `temperatureSetpoint` and `publishedTimeSeconds` record the plan, while `actualTemperature` and `actualTimeSeconds` record what occurred.
+Stage dates are optional. When supplied, they must follow the stage order, fall within the session interval, and place each finish after its start. Published, planned, and observed values are separate: `publishedTimeSeconds` retains a source value; `plannedTimeSeconds`, `timeBasis`, and `temperatureSetpoint` record the selected plan; and `actualTemperature` and `actualTimeSeconds` record what occurred.
 
 ## Record scanning
 

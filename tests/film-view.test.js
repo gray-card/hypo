@@ -79,6 +79,26 @@ describe("extracted Film view", () => {
     expect(body.textContent).toContain("Roll 1");
   });
 
+  it("opens a development batch from the roll library", () => {
+    const stock = "at://stock";
+    const store = {
+      catalog: { filmStock: [{ uri: stock, value: { brand: "Kodak", name: "Tri-X" } }] },
+      instance: {
+        filmStockpile: [],
+        filmRoll: [{ uri: "at://roll", value: { stock, label: "Roll 1", status: "exposed" } }],
+        exposure: [],
+      },
+    };
+    const openDevelopmentBatch = vi.fn();
+    const api = services(store, { openDevelopmentBatch });
+    const body = document.createElement("div");
+
+    renderFilmView(body, api);
+    [...body.querySelectorAll("button")].find((button) => button.textContent.includes("Log development batch")).click();
+
+    expect(openDevelopmentBatch).toHaveBeenCalledWith(api.renderLibrary);
+  });
+
   it("filters and searches a mixed roll library without losing the full collection", () => {
     const triX = "at://stock/tri-x";
     const hp5 = "at://stock/hp5";

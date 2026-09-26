@@ -64,6 +64,17 @@
           "minimum": 0,
           "maximum": 604800
         },
+        "plannedTimeSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 604800,
+          "description": "Time selected before processing. Unlike publishedTimeSeconds, this may be a recipe interpolation, a general estimate, or a manually entered plan."
+        },
+        "timeBasis": {
+          "type": "ref",
+          "ref": "#timeBasis",
+          "description": "How plannedTimeSeconds was obtained."
+        },
         "actualTimeSeconds": {
           "type": "integer",
           "minimum": 0,
@@ -100,6 +111,10 @@
           "maxLength": 1000
         }
       }
+    },
+    "timeBasis": {
+      "type": "string",
+      "knownValues": ["published", "recipe-interpolation", "general-estimate", "manual"]
     },
     "stepKind": {
       "type": "string",

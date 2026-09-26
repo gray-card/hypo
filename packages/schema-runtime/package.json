@@ -8,6 +8,6 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@panproto/core": "0.70.1"
+    "@panproto/core": "0.71.0"
   }
 }

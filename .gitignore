@@ -5,7 +5,11 @@ public/catalog
 /playwright-report/
 /docs/site/.docusaurus/
 /docs/site/build/
+/docs/site/static/ios-api/
 /.lighthouseci/
 .DS_Store
 *.log
+.derived-data/
 data/research
+/apps/ios/App/build/
+/apps/ios/Packages/**/build/

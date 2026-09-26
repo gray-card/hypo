@@ -1,0 +1,10 @@
+{
+  "$type": "app.graycard.instance.filmRoll",
+  "stock": "at://did:plc:example/app.graycard.catalog.filmStock/tri-x-400",
+  "status": "developed",
+  "loadedAt": "2026-08-01T09:00:00.000Z",
+  "unloadedAt": "2026-08-01T18:00:00.000Z",
+  "developmentStartedAt": "2026-08-02T14:00:00.000Z",
+  "developedAt": "2026-08-02T14:15:00.000Z",
+  "createdAt": "2026-08-01T08:45:00.000Z"
+}

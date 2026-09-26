@@ -14,7 +14,7 @@ The **plan/observation split** prevents a push or pull label from being treated 
 5. If no exact or permitted derived value exists, enter a manual time and label its provenance as manual. Do not present it as published.
 6. After processing, record the observed duration and temperature separately from the selected values.
 
-Hypo's recipe resolver never extrapolates beyond published temperature rows. An exact source row is marked as published; an allowed interior interpolation is marked as derived. A manually chosen time remains manual even if it resembles a value found elsewhere.
+Hypo's recipe resolver never extrapolates beyond published temperature rows. An exact source row is marked as published, and an allowed interior interpolation is marked as `recipe-interpolation`. The optional general black-and-white calculator is marked as `general-estimate`. A manually chosen time remains manual even if it resembles a value found elsewhere.
 
 On the developer stage, `publishedTimeSeconds` means that the selected source supports that time and `actualTimeSeconds` records how long the bath ran. Session-level `pushPull` describes the intended deviation from box-speed processing; it does not establish that a particular time is authoritative.
 

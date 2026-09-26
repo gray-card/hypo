@@ -341,7 +341,7 @@ test("core flow 2/5 — run the development timer", async ({ page }) => {
   await page.getByRole("button", { name: "Sessions", exact: true }).click();
   await page.locator("#sessions-body").getByRole("button", { name: "Develop film", exact: true }).click();
   const timer = page.getByRole("dialog", { name: "Development timer" });
-  await timer.getByLabel("Roll to develop").selectOption(ROLL);
+  await timer.getByRole("checkbox", { name: "Visual fixture roll" }).check();
   const recipes = timer.locator(".devtimer-setup > .devtimer-list").last();
   await recipes.locator("button").first().click();
   await timer.getByRole("button", { name: "Start development", exact: true }).click();

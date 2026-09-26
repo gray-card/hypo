@@ -297,8 +297,19 @@ export function renderDarkroomActivity(
     const label =
       kind === "develop"
         ? labName
-          ? `${(record.value.process || "bw").toUpperCase()} · ${labName}`
+          ? [
+              Array.isArray(record.value.filmRolls) && record.value.filmRolls.length > 1
+                ? `${record.value.filmRolls.length} rolls`
+                : null,
+              (record.value.process || "bw").toUpperCase(),
+              labName,
+            ]
+              .filter(Boolean)
+              .join(" · ")
           : [
+              Array.isArray(record.value.filmRolls) && record.value.filmRolls.length > 1
+                ? `${record.value.filmRolls.length} rolls`
+                : null,
               (record.value.process || "bw").toUpperCase(),
               chemistryName,
               formatDevelopmentTime(primaryStep?.actualTimeSeconds),
@@ -335,7 +346,19 @@ export function renderDarkroomActivity(
           },
           [
             el("span", { class: "development-activity-main" }, [
-              el("strong", {}, kind === "develop" ? (labName ? "Lab developed" : "Developed") : "Scanned"),
+              el(
+                "strong",
+                {},
+                kind === "develop"
+                  ? Array.isArray(record.value.filmRolls) && record.value.filmRolls.length > 1
+                    ? labName
+                      ? "Lab development batch"
+                      : "Development batch"
+                    : labName
+                      ? "Lab developed"
+                      : "Developed"
+                  : "Scanned",
+              ),
               el("span", { class: "small development-activity-subject" }, subjectLabel),
               el("span", { class: "muted small development-activity-summary" }, label),
             ]),
@@ -389,7 +412,7 @@ export function renderDarkroomHeader(body: HTMLElement, services: ActivityServic
           ]),
           el("button", { class: "ghost small-btn", onclick: () => openManualDevelopment(render, services) }, [
             services.icon("check", 14),
-            el("span", {}, "Log completed development"),
+            el("span", {}, "Log development batch"),
           ]),
           el(
             "button",
@@ -478,6 +501,15 @@ export function openManualDevelopment(
       emptyMessage: el("p", { class: "muted small" }, "No rolls yet — add one in the Film tab first."),
     },
   );
+  const batchSummary = el("p", { class: "muted small", role: "status", "aria-live": "polite" });
+  const updateBatchSummary = () => {
+    const count = rollList.getSelected().length;
+    batchSummary.textContent = count
+      ? `${count} roll${count === 1 ? "" : "s"} will share this tank, process, and chemistry record.`
+      : "Select every roll developed together in this tank.";
+  };
+  for (const input of rollList.inputs) input.addEventListener("change", updateBatchSummary);
+  updateBatchSummary();
   const rollSearch = el("input", {
     type: "search",
     class: "search-input",
@@ -508,14 +540,14 @@ export function openManualDevelopment(
   const stageEditor = createDevelopmentStepEditor(services, Array.isArray(value.steps) ? value.steps : []);
 
   return openModal(
-    existing ? "Edit development" : options.initial ? "Repeat development setup" : "Log completed development",
+    existing ? "Edit development" : options.initial ? "Repeat development setup" : "Log development batch",
     [
       el(
         "p",
         { class: "muted small" },
         existing
           ? "Update the rolls, timing, chemistry, and ordered stages for this development. The existing record is replaced in place."
-          : "Record a development you already completed. This creates the same session record as the timer without starting a live timer.",
+          : "Record one or more rolls developed together with the same tank, process, and chemistry. A single roll is a one-roll batch.",
       ),
       chemistry.length
         ? null
@@ -525,6 +557,7 @@ export function openManualDevelopment(
             "Add your working chemistry under Library → Chemistry before logging this session.",
           ),
       el("h3", { class: "modal-sub" }, "Rolls and session"),
+      batchSummary,
       el("div", { class: "library-filter-bar" }, [rollSearch, field("Show", rollScope)]),
       rollList.node,
       field("Process", processSelect),
@@ -585,7 +618,7 @@ export function openManualDevelopment(
       );
       onDone?.();
     },
-    { saveLabel: existing ? "Save changes" : "Log development" },
+    { saveLabel: existing ? "Save changes" : "Log development batch" },
   );
 }
 

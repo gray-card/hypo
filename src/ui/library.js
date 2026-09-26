@@ -366,6 +366,7 @@ function filmViewServices(_body) {
     addGear: (kind, onDone, prefill) => openAddGear(kind, onDone, prefill),
     editGear: openEditGearRoute,
     openRoll: openRollRoute,
+    openDevelopmentBatch: (onDone) => openManualDevelopment(onDone, activityServices()),
     openCompletedDevelopment: (roll, onDone) =>
       openManualDevelopment(onDone, activityServices(), { selectedRolls: [roll.uri] }),
     editDevelopment: (session, onDone) => openDevelopmentSession(session, onDone, activityServices()),

@@ -95,7 +95,7 @@ function dispose(value: { [Symbol.dispose]?: () => void } | undefined): void {
 }
 
 /**
- * Compile the value-level part of the migration with Panproto 0.70.1.
+ * Compile the value-level part of the migration with Panproto 0.71.0.
  *
  * We intentionally project only fields needed by the lens and merge its patch
  * into the untouched source value. The full legacy records contain open and

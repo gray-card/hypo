@@ -43,6 +43,7 @@ export interface FilmViewServices {
   addGear(kind: "filmStockpile" | "filmRoll", onDone: () => void, prefill?: FilmValue): void;
   editGear(kind: "filmStockpile" | "filmRoll", item: FilmRecord, onDone: () => void): void;
   openRoll(roll: FilmRecord): void;
+  openDevelopmentBatch?(onDone: () => void): void;
   openCompletedDevelopment?(roll: FilmRecord, onDone: () => void): void;
   editDevelopment?(session: FilmRecord, onDone: () => void): void;
   openScanSession?(roll: FilmRecord, onDone: () => void): void;

@@ -1,0 +1,10 @@
+{
+  "indentation": {
+    "spaces": 4
+  },
+  "lineLength": 110,
+  "rules": {
+    "AllPublicDeclarationsHaveDocumentation": false
+  },
+  "version": 1
+}
