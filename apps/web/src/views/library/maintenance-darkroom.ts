@@ -540,7 +540,7 @@ export function openManualDevelopment(
   const stageEditor = createDevelopmentStepEditor(services, Array.isArray(value.steps) ? value.steps : []);
 
   return openModal(
-    existing ? "Edit development" : options.initial ? "Repeat development setup" : "Log completed development",
+    existing ? "Edit development" : options.initial ? "Repeat development setup" : "Log development batch",
     [
       el(
         "p",
