@@ -204,6 +204,11 @@ const TECH_SCHEMA_KEYS = Object.fromEntries(
   }).map(([kind, lexicon]) => [kind, new Set(Object.keys(lexicon.defs.main.record.properties))]),
 );
 
+async function uploadRecordBlob(file, fallbackMime) {
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  return repoClient(ctx.agent).uploadBlob({ bytes, mimeType: file.type || fallbackMime });
+}
+
 function gearServices() {
   return {
     collections: {
@@ -217,15 +222,8 @@ function gearServices() {
       ctx.store = await loadStore(ctx.agent, ctx.did);
     },
     saveRecord: (collection, value, existing) => saveRecord(ctx.agent, ctx.did, collection, value, existing),
-    uploadBlob: async (file, fallbackMime) => {
-      const bytes = new Uint8Array(await file.arrayBuffer());
-      return repoClient(ctx.agent).uploadBlob({ bytes, mimeType: file.type || fallbackMime });
-    },
+    uploadBlob: uploadRecordBlob,
     deleteRecord: (uri) => deleteRecord(ctx.agent, ctx.did, uri),
-    uploadBlob: async (file, fallbackMime) => {
-      const bytes = new Uint8Array(await file.arrayBuffer());
-      return repoClient(ctx.agent).uploadBlob({ bytes, mimeType: file.type || fallbackMime });
-    },
     catalogImageUrl: (kind, value) =>
       catalogImageUrl(kind, value, { blobUrl: (blob) => blobUrl(ctx.agent, ctx.did, blob) }),
     instanceImageUrl: (kind, value) => instanceImageUrl(ctx.agent, ctx.did, ctx.store, kind, value),
@@ -349,8 +347,9 @@ function filmViewServices(render = renderLibrary) {
     reloadStore: async () => {
       ctx.store = await loadStore(ctx.agent, ctx.did);
     },
-    renderLibrary: () => render(),
+    renderLibrary: () => render?.(),
     saveRecord: (collection, value, existing) => saveRecord(ctx.agent, ctx.did, collection, value, existing),
+    uploadBlob: uploadRecordBlob,
     deleteRecord: (uri) => deleteRecord(ctx.agent, ctx.did, uri),
     splitRoll: (stockpile, options) => splitRollFromStockpile(ctx.agent, ctx.did, stockpile, options),
     instantiateWorkflow: (template, subjects, processDefaults, occurrences) =>

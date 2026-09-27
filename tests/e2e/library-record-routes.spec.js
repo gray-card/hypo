@@ -129,6 +129,50 @@ test("roll deep links target the requested roll and replay through browser histo
   await expect(dialog).toBeVisible();
 });
 
+test("editing a film roll uploads its photo through the production record services", async ({ page, request }) => {
+  const stock = await createRecord(request, "app.graycard.catalog.filmStock", "stock-photo", {
+    $type: "app.graycard.catalog.filmStock",
+    brand: "Fixture",
+    name: "Photo 400",
+    iso: 400,
+    format: "135",
+    createdAt: "2026-01-08T00:00:00.000Z",
+  });
+  await createRecord(request, "app.graycard.instance.filmRoll", "roll-photo", {
+    $type: "app.graycard.instance.filmRoll",
+    stock,
+    label: "Photo upload roll",
+    status: "loaded",
+    createdAt: "2026-01-09T00:00:00.000Z",
+  });
+
+  await login(page);
+  await page.goto("/roll/roll-photo");
+
+  const dialog = page.getByRole("dialog", { name: /Roll · Fixture Photo 400/ });
+  await dialog.getByLabel("Photo (optional)").setInputFiles({
+    name: "roll.jpg",
+    mimeType: "image/jpeg",
+    buffer: Buffer.from([0xff, 0xd8, 0xff, 0xd9]),
+  });
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(dialog).toBeHidden();
+
+  await expect
+    .poll(async () => {
+      const records = await listRecords(request, "app.graycard.instance.filmRoll");
+      return records.find((record) => record.uri.endsWith("/roll-photo"))?.value.image;
+    })
+    .toEqual(
+      expect.objectContaining({
+        $type: "blob",
+        mimeType: "image/jpeg",
+        size: 4,
+        ref: expect.objectContaining({ $link: expect.stringMatching(/^baf/) }),
+      }),
+    );
+});
+
 test("rolls show processing history and open preselected completed-session forms", async ({ page, request }) => {
   const stock = await createRecord(request, "app.graycard.catalog.filmStock", "stock-processing", {
     $type: "app.graycard.catalog.filmStock",

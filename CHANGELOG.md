@@ -2,6 +2,18 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.6.2] - 2026-09-27
+
+### Fixed
+
+- Restore film-roll edits opened from record routes by treating the suppressed
+  background renderer as optional after a successful write.
+- Wire film-roll photos through the same blob-upload service as other resource
+  photos instead of calling a missing production service.
+- Exercise create, update, validation, and deletion for every current
+  `app.graycard.*` collection Hypo writes, plus the complete browser path for a
+  film-roll photo edit.
+
 ## [1.6.1] - 2026-09-26
 
 ### Changed
