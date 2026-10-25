@@ -176,7 +176,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Require zero known production dependency vulnerabilities
-        run: npm audit --omit=dev --audit-level=low
+        run: npm run audit:production
       - name: Report high-severity development-tool vulnerabilities
         id: development_audit
         continue-on-error: true

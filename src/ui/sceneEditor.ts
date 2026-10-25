@@ -252,9 +252,10 @@ const shapeTopLeft = (s: Shape): Point =>
         ? [s.x, s.y]
         : [s.box?.x ?? 0.02, s.box?.y ?? 0.02];
 
-let recentCache: RecentTerms | null = null;
+const recentCache = new Map<string, RecentTerms>();
 async function loadRecentTerms(agent: Agent, did: string): Promise<RecentTerms> {
-  if (recentCache) return recentCache;
+  const cached = recentCache.get(did);
+  if (cached) return cached;
   const tally = (recs: Array<RecordEnvelope<NodeValue | EdgeValue>>): Term[] => {
     const m = new Map<string, Term & { n: number }>();
     for (const r of recs) {
@@ -271,14 +272,14 @@ async function loadRecentTerms(agent: Agent, did: string): Promise<RecentTerms> 
   };
   try {
     const [nodes, edges] = await Promise.all([
-      listRecords(agent, did, NS.scene.node),
-      listRecords(agent, did, NS.scene.edge),
+      listRecords(agent, did, NS.scene.node, { refresh: true }),
+      listRecords(agent, did, NS.scene.edge, { refresh: true }),
     ]);
-    recentCache = { nodes: tally(nodes), edges: tally(edges) };
+    recentCache.set(did, { nodes: tally(nodes), edges: tally(edges) });
   } catch {
-    recentCache = { nodes: [], edges: [] };
+    recentCache.set(did, { nodes: [], edges: [] });
   }
-  return recentCache;
+  return recentCache.get(did)!;
 }
 
 function createTermInput({ placeholder, recent = [], seed = [], initial = null }: TermInputOptions) {
@@ -384,7 +385,7 @@ async function loadSceneCollection<Value extends JsonObject>(
   publicClient: () => Promise<PublicRepoClient>,
 ): Promise<Array<RecordEnvelope<Value>>> {
   try {
-    return (await listRecords(agent, did, collection)) as Array<RecordEnvelope<Value>>;
+    return (await listRecords(agent, did, collection, { refresh: true })) as Array<RecordEnvelope<Value>>;
   } catch (primaryError) {
     const cached = [...signals.collection(collection).value.values()] as unknown as Array<RecordEnvelope<Value>>;
     try {
@@ -603,7 +604,7 @@ async function persist(agent: Agent, did: string, photoUri: string, state: Scene
   }
   state.tags = state.tags.filter((t) => !t._deleted);
   state.edges = state.edges.filter((e) => !e._deleted);
-  recentCache = null;
+  recentCache.delete(did);
 }
 
 export async function openSceneEditor(
@@ -1328,7 +1329,7 @@ export async function openSceneEditor(
           onclick: async (e: MouseEvent) => {
             await withSave(e.target as HTMLButtonElement, status, async () => {
               await persist(ctx.agent, ctx.did, photoUri, state);
-              recentCache = null;
+              recentCache.delete(ctx.did);
               state = await loadScene(ctx.agent, ctx.did, photoUri, signals);
               selId = null;
               renderRegions();

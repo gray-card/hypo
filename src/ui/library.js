@@ -54,7 +54,11 @@ import { loadShotLoggerState, saveShotLoggerState } from "./shotLoggerState.js";
 import { renderFilmReserveView, renderRollLibraryView } from "../../apps/web/src/views/library/film-view.ts";
 import { maybeRemoveDepletedStockpile, openRollDetail } from "../../apps/web/src/views/library/film-roll.ts";
 import { createLibraryRecordRouteController } from "../../apps/web/src/views/library/library-record-route.ts";
-import { consumeGearRouteFocus, rememberGearRouteFocus } from "../../apps/web/src/routes/library-record-focus.ts";
+import {
+  consumeGearRouteFocus,
+  rememberGearRouteFocus,
+  restorePendingGearRouteFocus,
+} from "../../apps/web/src/routes/library-record-focus.ts";
 import {
   filmStockLabel as filmStockLabelForStore,
   framesForRoll as framesForRollInStore,
@@ -177,9 +181,16 @@ export function initLibrary(context) {
   storeLoadPromise = null;
 }
 
-function ensureLibraryStore() {
-  if (ctx?.store) return Promise.resolve(ctx.store);
+function ensureLibraryStore({ refresh = false } = {}) {
+  if (ctx?.store && !refresh) return Promise.resolve(ctx.store);
   if (!ctx?.agent || !ctx?.did) return Promise.resolve(null);
+  if (refresh) {
+    const activeContext = ctx;
+    return loadStore(activeContext.agent, activeContext.did, { refresh: true }).then((store) => {
+      if (ctx === activeContext) activeContext.store = store;
+      return store;
+    });
+  }
   if (!storeLoadPromise) {
     const activeContext = ctx;
     const pending = loadStore(activeContext.agent, activeContext.did)
@@ -392,7 +403,7 @@ function renderFilmTab(body) {
 }
 
 export async function openRolls() {
-  if (!(await ensureSessionStore())) return;
+  if (!(await ensureSessionStore({ refresh: true }))) return;
   const body = document.querySelector("#rolls-body");
   if (!body) return;
   const render = () => {
@@ -668,8 +679,8 @@ function renderDataQualityTab(body) {
   renderDataQualityView(body, activityServices());
 }
 
-export function renderLibrary(bodyElement) {
-  return renderLibraryShell(bodyElement, {
+export async function renderLibrary(bodyElement) {
+  await renderLibraryShell(bodyElement, {
     navigationGroups: LIBRARY_NAVIGATION,
     gearTabs: GEAR_TABS,
     defaultTab: "overview",
@@ -685,6 +696,7 @@ export function renderLibrary(bodyElement) {
     renderBatchRules: renderBatchRulesTab,
     renderDataQuality: renderDataQualityTab,
   });
+  restorePendingGearRouteFocus();
 }
 
 export async function openLibrary() {
@@ -694,21 +706,25 @@ export async function openLibrary() {
     showView("login-view");
     return;
   }
-  ctx.store = null; // force a fresh load; renderLibrary shows the skeleton meanwhile
+  // Reopening Library is an explicit synchronization boundary. A cache-only load
+  // can otherwise preserve a complete but stale snapshot indefinitely, hiding
+  // records written by another device or client. Refresh still falls back to the
+  // saved snapshot when the PDS is unavailable, so offline Library remains usable.
+  await ensureLibraryStore({ refresh: true });
   await renderLibrary();
 }
 
-async function ensureSessionStore() {
+async function ensureSessionStore(options = {}) {
   if (!ctx?.agent || !ctx?.did) {
     showView("login-view");
     return false;
   }
-  const store = await ensureLibraryStore();
+  const store = await ensureLibraryStore(options);
   return Boolean(store && ctx?.store === store);
 }
 
 export async function openSessions(scope = "all") {
-  if (!(await ensureSessionStore())) return;
+  if (!(await ensureSessionStore({ refresh: true }))) return;
   const body = document.querySelector("#sessions-body");
   if (body) renderSessionsView(body, sessionViewServices(), scope);
 }

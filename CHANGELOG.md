@@ -2,6 +2,24 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.6.3] - 2026-10-25
+
+### Changed
+
+- Populate the authenticated store from the generated inventory of every
+  `app.graycard.*` record collection, including development recipes and record
+  types whose editors live outside Library.
+
+### Fixed
+
+- Refresh Library, Rolls, Sessions, Meter, galleries, and scene data from the
+  PDS when their interfaces open, while retaining the saved snapshot for
+  offline fallback.
+- Keep bundle import, export, and prune operations synchronized with current
+  PDS records so an old device cache cannot hide, omit, or delete newer data.
+- Scope recent scene terms to the signed-in account and refresh imported
+  collections after direct repository writes.
+
 ## [1.6.2] - 2026-09-27
 
 ### Fixed
@@ -386,3 +404,6 @@ Notable changes to Hypo are recorded here.
 [1.4.0]: https://github.com/gray-card/hypo/compare/v1.3.3...v1.4.0
 [1.5.0]: https://github.com/gray-card/hypo/compare/v1.4.0...v1.5.0
 [1.6.0]: https://github.com/gray-card/hypo/compare/v1.5.0...v1.6.0
+[1.6.1]: https://github.com/gray-card/hypo/compare/v1.6.0...v1.6.1
+[1.6.2]: https://github.com/gray-card/hypo/compare/v1.6.1...v1.6.2
+[1.6.3]: https://github.com/gray-card/hypo/compare/v1.6.2...v1.6.3

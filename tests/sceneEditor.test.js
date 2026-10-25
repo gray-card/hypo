@@ -108,6 +108,9 @@ describe("scene editor TypeScript compatibility facade", () => {
     expect(modal.textContent).toContain("dog · Fido");
     expect(modal.textContent).toContain("Fido → left of → oak");
     expect(document.querySelector('svg rect[x="0.1"][y="0.2"]')).not.toBeNull();
+    for (const collection of Object.keys(records)) {
+      expect(mocks.listRecords).toHaveBeenCalledWith({}, "did:plc:test", collection, { refresh: true });
+    }
 
     document.querySelector('input[placeholder^="relation"]').dispatchEvent(new FocusEvent("focus"));
     expect([...document.querySelectorAll(".term-section")].map((section) => section.textContent)).toContain("Spatial");

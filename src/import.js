@@ -71,7 +71,7 @@ export async function pruneCandidates(agent, did, records) {
   }
   const out = [];
   for (const [collection, keep] of keepByCollection) {
-    for (const rec of await listRecords(agent, did, collection)) {
+    for (const rec of await listRecords(agent, did, collection, { refresh: true })) {
       const rkey = parseAtUri(rec.uri).rkey;
       if (!keep.has(rkey)) out.push({ collection, rkey, value: rec.value, status: "delete", existingCid: rec.cid });
     }
@@ -162,6 +162,16 @@ export async function writeBundle(agent, did, plan, onProgress, sourceDid = null
       results.push({ ...item, result: /swap|conflict/i.test(msg) ? "conflict" : "error", error: msg });
     }
   }
+  // Bundle writes use the direct repo client rather than the offline outbox, so
+  // they do not receive the acknowledgement projection that ordinary Hypo writes
+  // use. Rehydrate every successfully changed collection before returning or the
+  // interface can keep displaying its pre-import snapshot.
+  const changedCollections = new Set(
+    results.filter((item) => item.result === "written" || item.result === "deleted").map((item) => item.collection),
+  );
+  await Promise.all(
+    [...changedCollections].map((collection) => listRecords(agent, did, collection, { refresh: true }).catch(() => [])),
+  );
   return results;
 }
 
@@ -180,16 +190,18 @@ export function graycardCollections() {
 }
 
 export async function exportBundle(agent, did) {
-  const records = [];
-  for (const collection of graycardCollections()) {
-    try {
-      const recs = (await listRecords(agent, did, collection))
-        .map((r) => ({ collection, rkey: parseAtUri(r.uri).rkey, value: r.value }))
-        .sort((a, b) => a.rkey.localeCompare(b.rkey)); // deterministic order for stable round-trips
-      records.push(...recs);
-    } catch {
-      /* collection may not exist yet */
-    }
-  }
+  const records = (
+    await Promise.all(
+      graycardCollections().map(async (collection) => {
+        try {
+          return (await listRecords(agent, did, collection, { refresh: true }))
+            .map((r) => ({ collection, rkey: parseAtUri(r.uri).rkey, value: r.value }))
+            .sort((a, b) => a.rkey.localeCompare(b.rkey)); // deterministic order for stable round-trips
+        } catch {
+          return []; // collection may not exist yet
+        }
+      }),
+    )
+  ).flat();
   return { $type: "app.graycard.bundle", exportedAt: new Date().toISOString(), did, records };
 }
