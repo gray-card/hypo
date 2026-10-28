@@ -3,6 +3,7 @@ import { BlobRef as AtprotoBlobRef } from "@atproto/lexicon";
 import { CID } from "multiformats/cid";
 import { listRecords, recordStore } from "../src/grain.js";
 import { NS, deleteRecord, loadStore, readStoreSnapshot, saveRecord } from "../src/graycard.js";
+import { RECORD_NSID_LIST } from "@hypo/lexicon";
 import { openRepositoryRecordCache } from "@hypo/store";
 import { mockAgent } from "./setup.js";
 
@@ -143,13 +144,35 @@ describe("record-cache read policy", () => {
     await loadStore(agent, did);
     const firstLoadCollections = agent.com.atproto.repo.listRecords.mock.calls.map(([request]) => request.collection);
     const collectionsPerStore = firstLoadCollections.length;
-    expect(collectionsPerStore).toBeGreaterThan(0);
+    expect(new Set(firstLoadCollections)).toEqual(new Set(RECORD_NSID_LIST));
     expect(new Set(firstLoadCollections).size).toBe(collectionsPerStore);
     expect(agent.com.atproto.repo.listRecords).toHaveBeenCalledTimes(collectionsPerStore);
     await loadStore(agent, did);
     expect(agent.com.atproto.repo.listRecords).toHaveBeenCalledTimes(collectionsPerStore);
     await loadStore(agent, did, { refresh: true });
     expect(agent.com.atproto.repo.listRecords).toHaveBeenCalledTimes(collectionsPerStore * 2);
+  });
+
+  it("populates and indexes every generated record collection in the shared store", async () => {
+    const did = "did:plc:allrecordtypes000000000";
+    const collection = NS.artifact;
+    const artifact = {
+      uri: `at://${did}/${collection}/negative`,
+      cid: "cid-negative",
+      value: { kind: "film-negative", label: "Sheet 1", createdAt: "2026-10-25T12:00:00.000Z" },
+    };
+    const agent = statefulAgent(did, collection, [artifact]);
+
+    const store = await readStoreSnapshot(agent, did, { refresh: true });
+
+    expect(Object.keys(store.recordsByCollection)).toEqual(expect.arrayContaining(RECORD_NSID_LIST));
+    expect(Object.keys(store.recordsByCollection)).toHaveLength(RECORD_NSID_LIST.length);
+    expect(store.recordsByCollection[collection]).toEqual([expect.objectContaining(artifact)]);
+    expect(store.byUri.get(artifact.uri)).toMatchObject({
+      layer: "other",
+      collection,
+      item: expect.objectContaining(artifact),
+    });
   });
 
   it("returns remote plus pending operations without another network read", async () => {

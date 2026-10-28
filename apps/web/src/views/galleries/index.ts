@@ -23,7 +23,12 @@ interface GalleryCoverage {
 
 interface GalleryProviders {
   getGalleries(agent: unknown, did: string): Promise<GalleryRecord[]>;
-  listRecords(agent: unknown, did: string, collection: string): Promise<RepositoryRecord[]>;
+  listRecords(
+    agent: unknown,
+    did: string,
+    collection: string,
+    options?: { refresh?: boolean },
+  ): Promise<RepositoryRecord[]>;
   collections: { galleryItem: string; photo: string };
   ns: { photo: { capture: string; workflow: string }; scene: { graph: string } };
   lazyThumb(agent: unknown, did: string, blob: unknown, className: string): HTMLElement;
@@ -220,11 +225,11 @@ export function createGalleryListView(options: GalleryListOptions) {
       phase.set("Checking coverage from your PDS…");
       try {
         const [items, photos, captures, workflows, scenes] = await Promise.all([
-          providers.listRecords(session.agent, session.did, providers.collections.galleryItem),
-          providers.listRecords(session.agent, session.did, providers.collections.photo),
-          providers.listRecords(session.agent, session.did, providers.ns.photo.capture),
-          providers.listRecords(session.agent, session.did, providers.ns.photo.workflow),
-          providers.listRecords(session.agent, session.did, providers.ns.scene.graph),
+          providers.listRecords(session.agent, session.did, providers.collections.galleryItem, { refresh: true }),
+          providers.listRecords(session.agent, session.did, providers.collections.photo, { refresh: true }),
+          providers.listRecords(session.agent, session.did, providers.ns.photo.capture, { refresh: true }),
+          providers.listRecords(session.agent, session.did, providers.ns.photo.workflow, { refresh: true }),
+          providers.listRecords(session.agent, session.did, providers.ns.scene.graph, { refresh: true }),
         ]);
         ({ covers, coverage } = deriveGalleryPresentation(items, photos, captures, workflows, scenes));
       } catch {

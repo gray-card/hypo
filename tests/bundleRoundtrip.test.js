@@ -7,6 +7,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { exportBundle, diffBundle, writeBundle, graycardCollections } from "../src/import.js";
+import { listRecords } from "../src/grain.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -105,6 +106,29 @@ describe("bundle export covers every app.graycard record type", () => {
 });
 
 describe("export -> import is idempotent (a no-op)", () => {
+  it("refreshes every collection before exporting a second snapshot", async () => {
+    const did = "did:plc:bundlerefresh00000000000";
+    const agent = memAgent(did);
+    agent.store.set(`${CAP}|first`, {
+      $type: CAP,
+      photo: `at://${did}/social.grain.photo/first`,
+      createdAt: "2026-10-25T12:00:00.000Z",
+    });
+    await exportBundle(agent, did);
+    agent.store.set(`${CAP}|remote`, {
+      $type: CAP,
+      photo: `at://${did}/social.grain.photo/remote`,
+      createdAt: "2026-10-25T12:01:00.000Z",
+    });
+
+    const bundle = await exportBundle(agent, did);
+
+    expect(bundle.records.filter((record) => record.collection === CAP).map((record) => record.rkey)).toEqual([
+      "first",
+      "remote",
+    ]);
+  });
+
   it("importing a freshly exported bundle reports every record unchanged", async () => {
     const agent = memAgent();
     seed(agent);
@@ -155,6 +179,27 @@ describe("export -> import is idempotent (a no-op)", () => {
 });
 
 describe("import -> export is idempotent (round-trips into an empty repo)", () => {
+  it("projects direct bundle writes into an already-hydrated interface cache", async () => {
+    const did = "did:plc:bundlewriterefresh000000";
+    const dest = memAgent(did);
+    await listRecords(dest, did, CAP);
+
+    await writeBundle(dest, did, [
+      {
+        collection: CAP,
+        rkey: "imported",
+        status: "create",
+        value: {
+          $type: CAP,
+          photo: `at://${did}/social.grain.photo/imported`,
+          createdAt: "2026-10-25T12:00:00.000Z",
+        },
+      },
+    ]);
+
+    expect((await listRecords(dest, did, CAP)).map((record) => record.uri)).toEqual([`at://${did}/${CAP}/imported`]);
+  });
+
   it("writes at the same rkeys, and re-exporting matches", async () => {
     const src = memAgent();
     seed(src);

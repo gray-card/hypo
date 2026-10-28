@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   initLibrary,
+  getStore,
   refreshStore,
+  openLibrary,
   openAddGear,
   openEditGear,
   renderLibrary,
@@ -27,6 +29,117 @@ const labelInput = (root, prefix) => {
   );
   return lab?.querySelector("input, select, textarea");
 };
+
+describe("Library PDS refresh", () => {
+  it("rechecks remote collections when Library is reopened", async () => {
+    const did = "did:plc:library-reopen-refresh";
+    const stockUri = `at://${did}/${NS.catalog.filmStock}/trix`;
+    const stockpileUri = `at://${did}/${NS.instance.filmStockpile}/batch-2241`;
+    const remote = new Map();
+    agent.com.atproto.repo.listRecords = vi.fn(async ({ collection }) => ({
+      data: { records: remote.get(collection) || [] },
+    }));
+    initLibrary({ agent, did });
+    await refreshStore();
+
+    remote.set(NS.catalog.filmStock, [
+      {
+        uri: stockUri,
+        cid: "cid-stock",
+        value: {
+          $type: NS.catalog.filmStock,
+          brand: "Kodak",
+          name: "Tri-X 400",
+          createdAt: "2026-10-24T18:15:48.446Z",
+        },
+      },
+    ]);
+    remote.set(NS.instance.filmStockpile, [
+      {
+        uri: stockpileUri,
+        cid: "cid-stockpile",
+        value: {
+          $type: NS.instance.filmStockpile,
+          stock: stockUri,
+          quantity: 11,
+          createdAt: "2026-10-24T18:15:48.966Z",
+        },
+      },
+    ]);
+    remote.set(NS.catalog.devRecipe, [
+      {
+        uri: `at://${did}/${NS.catalog.devRecipe}/d76-trix`,
+        cid: "cid-recipe",
+        value: {
+          filmMake: "Kodak",
+          filmName: "Tri-X 400",
+          developerName: "D-76",
+          createdAt: "2026-10-24T18:15:49.000Z",
+        },
+      },
+    ]);
+    const body = document.createElement("div");
+    body.id = "library-body";
+    body.dataset.tab = "film";
+    document.body.append(body);
+
+    await openLibrary();
+
+    expect(body.textContent).toContain("Kodak Tri-X 400");
+    expect(body.textContent).toContain("×11");
+    expect(getStore().catalog.devRecipe).toHaveLength(1);
+  });
+
+  it("refreshes the shared store before opening Rolls", async () => {
+    const did = "did:plc:rollsreopenrefresh000001";
+    const collection = NS.instance.filmRoll;
+    const remote = new Map();
+    agent.com.atproto.repo.listRecords = vi.fn(async ({ collection: requested }) => ({
+      data: { records: remote.get(requested) || [] },
+    }));
+    initLibrary({ agent, did });
+    await refreshStore();
+    remote.set(collection, [
+      {
+        uri: `at://${did}/${collection}/new-roll`,
+        cid: "cid-new-roll",
+        value: { label: "New remote roll", createdAt: "2026-10-25T12:00:00.000Z" },
+      },
+    ]);
+    const body = document.createElement("div");
+    body.id = "rolls-body";
+    document.body.append(body);
+
+    await openRolls();
+
+    expect(getStore().instance.filmRoll.map((record) => record.value.label)).toContain("New remote roll");
+  });
+
+  it("refreshes the shared store before opening Sessions", async () => {
+    const did = "did:plc:sessionsreopenrefresh0001";
+    const collection = NS.session.capture;
+    const remote = new Map();
+    agent.com.atproto.repo.listRecords = vi.fn(async ({ collection: requested }) => ({
+      data: { records: remote.get(requested) || [] },
+    }));
+    initLibrary({ agent, did });
+    await refreshStore();
+    remote.set(collection, [
+      {
+        uri: `at://${did}/${collection}/new-session`,
+        cid: "cid-new-session",
+        value: { name: "New remote session", createdAt: "2026-10-25T12:00:00.000Z" },
+      },
+    ]);
+    const body = document.createElement("div");
+    body.id = "sessions-body";
+    document.body.append(body);
+
+    await openSessions();
+
+    expect(getStore().shoots.map((record) => record.value.name)).toContain("New remote session");
+  });
+});
 
 describe("openAddGear — the add-gear form (types hidden)", () => {
   it("splits camera into 'which camera' identity and 'your copy', never says 'type'", () => {
@@ -640,16 +753,19 @@ describe("photo picker accessibility", () => {
     },
   ];
 
-  function servePhotos() {
+  function servePhotos(recordsByCollection = {}) {
     agent.com.atproto.repo.listRecords = vi.fn(async ({ collection }) => ({
-      data: { records: collection === "social.grain.photo" ? photoRecords : [] },
+      data: { records: collection === "social.grain.photo" ? photoRecords : recordsByCollection[collection] || [] },
     }));
   }
 
   it("names the add-frame photo buttons from alt text with a numbered fallback", async () => {
-    servePhotos();
     const stockUri = "at://did:plc:test/app.graycard.catalog.filmStock/stock";
     const rollUri = "at://did:plc:test/app.graycard.instance.filmRoll/roll";
+    servePhotos({
+      [NS.catalog.filmStock]: [{ uri: stockUri, value: { brand: "Kodak", name: "Tri-X" } }],
+      [NS.instance.filmRoll]: [{ uri: rollUri, value: { stock: stockUri } }],
+    });
     initLibrary({
       agent,
       did: "did:plc:test",
@@ -678,8 +794,13 @@ describe("photo picker accessibility", () => {
   });
 
   it("names the frame-linker photo buttons and exposes selection state", async () => {
-    servePhotos();
     const rollUri = "at://did:plc:test/app.graycard.instance.filmRoll/roll";
+    servePhotos({
+      [NS.instance.filmRoll]: [{ uri: rollUri, value: { label: "Roll 1" } }],
+      [NS.instance.exposure]: [
+        { uri: "at://did:plc:test/app.graycard.instance.exposure/frame", value: { roll: rollUri, frameNumber: 1 } },
+      ],
+    });
     initLibrary({
       agent,
       did: "did:plc:test",

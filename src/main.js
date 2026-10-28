@@ -257,7 +257,10 @@ async function openPalette() {
 async function openMeter() {
   if (!agent) return shell.showLoggedOut();
   const library = await libraryFeature();
-  const store = library.getStore() || (await library.refreshStore());
+  // Meter choices depend on cameras, lenses, film, exposures, and owned meters.
+  // Refresh at this top-level boundary so a complete but stale Library snapshot
+  // cannot hide records written by another device or client.
+  const store = await library.refreshStore();
   showView("library-view");
   setActiveSection("setup");
   return (await loadMeterModule()).openMeter({ agent, did, store });
@@ -267,9 +270,10 @@ async function refreshAccountData() {
   if (!agent || !did) return shell.showLoggedOut();
   try {
     const library = await libraryFeature();
-    await library.refreshStore();
     if (activeSection === "setup") await library.openLibrary();
-    if (activeSection === "rolls") await library.openRolls();
+    else if (activeSection === "rolls") await library.openRolls();
+    else if (activeSection === "sessions") await library.openSessions();
+    else await library.refreshStore();
     if (activeSection === "galleries") await loadGalleries();
     if (activeSection === "following") await openFollowing();
     toast("Data refreshed from your PDS", "ok");

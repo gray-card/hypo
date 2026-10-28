@@ -159,6 +159,8 @@ describe("gallery-list boundary", () => {
 
     expect(document.querySelector(".g-title").textContent).toBe("Summer");
     expect(document.querySelector(".cov-row").textContent).toContain("gear 1/1");
+    expect(providers.listRecords).toHaveBeenCalledTimes(5);
+    for (const call of providers.listRecords.mock.calls) expect(call[3]).toEqual({ refresh: true });
     document.querySelector(".gallery-row").click();
     expect(activate).toHaveBeenCalledOnce();
     expect(showView).toHaveBeenLastCalledWith("editor-view");

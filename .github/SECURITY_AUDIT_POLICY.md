@@ -4,7 +4,7 @@ Hypo is a static application without a server-side runtime. Release CI separates
 
 ## Production dependencies
 
-`npm audit --omit=dev --audit-level=low` is a blocking release gate. A release must have no known production dependency vulnerabilities at any severity. An exception requires a documented risk assessment, an expiration date, and approval in the release pull request.
+`npm run audit:production` is a blocking release gate. It runs npm's production-only audit and requires no known production dependency vulnerabilities at any severity. An exception requires a documented risk assessment, an expiration date, and approval in the release pull request. Active exceptions are recorded in [`SECURITY_EXCEPTIONS.md`](./SECURITY_EXCEPTIONS.md); the audit wrapper fails closed for unlisted findings and expired exceptions.
 
 ## Development dependencies
 

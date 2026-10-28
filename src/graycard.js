@@ -3,7 +3,13 @@
 import { exifToForm, flushRecordOperation, formToExifValue, listRecords, parseAtUri, recordRkey } from "./grain.js";
 import * as outbox from "./outbox.js";
 import { prepareSchemaWrite } from "./schemaRuntime.js";
-import { NS, CATALOG_KINDS, INSTANCE_KINDS } from "../packages/lexicon/src/namespaces.ts";
+import {
+  NS,
+  ALL_CATALOG_KINDS,
+  CATALOG_KINDS,
+  INSTANCE_KINDS,
+  RECORD_NSID_LIST,
+} from "../packages/lexicon/src/namespaces.ts";
 import { assertConsumableLifecycle, assertRecordTimeSpans } from "@hypo/domain";
 import { migrateLegacyDeveloperRecords } from "./legacyDeveloperMigration.ts";
 import { migrateDevelopSessions } from "./developSessionMigration.ts";
@@ -89,9 +95,6 @@ function mapRecords(records) {
     .sort((a, b) => JSON.stringify(a.value).localeCompare(JSON.stringify(b.value)));
 }
 
-// build a per-kind fetcher for a namespace group (catalog/instance).
-const grabWith = (agent, did, ns, options) => (kind) => listRecords(agent, did, ns[kind], options);
-
 // A shoot's date for ordering: when it was shot (startedAt), else when the record
 // was created. Shoots are shown newest-first everywhere they appear.
 export const shootDateKey = (v) => v?.startedAt || v?.createdAt || "";
@@ -106,56 +109,49 @@ export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
   const instance = {};
   const byUri = new Map();
 
-  // every collection is an independent read, so fetch them all concurrently
-  // rather than serially — the round trips dominate the load time.
+  // RECORD_NSID_LIST is generated from the lexicon suite. Loading from that
+  // exhaustive list prevents a newly added or less-visible record type from
+  // falling outside the shared store merely because no feature-specific array
+  // was updated. Every collection is independent, so fetch them concurrently.
   const options = { refresh };
-  const grab = (nsid) => listRecords(agent, did, nsid, options);
-  const [
-    catalogLists,
-    instanceLists,
-    photoCaptureRecs,
-    photoWorkflowRecs,
-    sceneGraphRecs,
-    maintenanceRecs,
-    galleryDefaultsRecs,
-    workflowRuns,
-    workflowStages,
-    workflowTemplates,
-    shoots,
-    batchRules,
-    developSessions,
-    digitizeSessions,
-    editSessions,
-    printSessions,
-    renderSessions,
-  ] = await Promise.all([
-    Promise.all(CATALOG_KINDS.map(grabWith(agent, did, NS.catalog, options))),
-    Promise.all(INSTANCE_KINDS.map(grabWith(agent, did, NS.instance, options))),
-    grab(NS.photo.capture),
-    grab(NS.photo.workflow),
-    grab(NS.scene.graph),
-    grab(NS.process.maintenanceSession),
-    grab(NS.gallery.defaults),
-    grab(NS.workflow.run).then(mapRecords),
-    grab(NS.workflow.stage).then(mapRecords),
-    grab(NS.workflow.template).then(mapRecords),
-    grab(NS.session.capture).then(mapRecords),
-    grab(NS.rule.batch).then(mapRecords),
-    grab(NS.process.developSession).then(mapRecords),
-    grab(NS.process.digitizeSession).then(mapRecords),
-    grab(NS.process.editSession).then(mapRecords),
-    grab(NS.process.printSession).then(mapRecords),
-    grab(NS.process.renderSession).then(mapRecords),
-  ]);
+  const collectionLists = await Promise.all(
+    RECORD_NSID_LIST.map((collection) => listRecords(agent, did, collection, options)),
+  );
+  const recordsByCollection = Object.fromEntries(
+    RECORD_NSID_LIST.map((collection, index) => [collection, mapRecords(collectionLists[index])]),
+  );
 
-  CATALOG_KINDS.forEach((kind, i) => {
-    catalog[kind] = mapRecords(catalogLists[i]);
+  // Index every record, including types whose primary editor is outside the
+  // Library. Catalog and instance entries below replace this generic metadata
+  // with their more specific layer and kind.
+  for (const [collection, records] of Object.entries(recordsByCollection)) {
+    for (const item of records) byUri.set(item.uri, { layer: "other", collection, item });
+  }
+
+  ALL_CATALOG_KINDS.forEach((kind) => {
+    catalog[kind] = recordsByCollection[NS.catalog[kind]];
     for (const item of catalog[kind]) byUri.set(item.uri, { layer: "catalog", kind, item });
   });
-  INSTANCE_KINDS.forEach((kind, i) => {
-    instance[kind] = mapRecords(instanceLists[i]);
+  INSTANCE_KINDS.forEach((kind) => {
+    instance[kind] = recordsByCollection[NS.instance[kind]];
     for (const item of instance[kind]) byUri.set(item.uri, { layer: "instance", kind, item });
   });
+
+  const photoCaptureRecs = recordsByCollection[NS.photo.capture];
+  const photoWorkflowRecs = recordsByCollection[NS.photo.workflow];
+  const sceneGraphRecs = recordsByCollection[NS.scene.graph];
+  const maintenanceSessions = recordsByCollection[NS.process.maintenanceSession];
+  const galleryDefaultsRecs = recordsByCollection[NS.gallery.defaults];
+  const workflowRuns = recordsByCollection[NS.workflow.run];
+  const workflowStages = recordsByCollection[NS.workflow.stage];
+  const workflowTemplates = recordsByCollection[NS.workflow.template];
+  const shoots = recordsByCollection[NS.session.capture];
+  const batchRules = recordsByCollection[NS.rule.batch];
+  const developSessions = recordsByCollection[NS.process.developSession];
+  const digitizeSessions = recordsByCollection[NS.process.digitizeSession];
+  const editSessions = recordsByCollection[NS.process.editSession];
+  const printSessions = recordsByCollection[NS.process.printSession];
+  const renderSessions = recordsByCollection[NS.process.renderSession];
 
   const photoCaptureByPhoto = new Map();
   for (const r of photoCaptureRecs) {
@@ -186,7 +182,6 @@ export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
   }
 
   const maintenanceBySubject = new Map();
-  const maintenanceSessions = mapRecords(maintenanceRecs);
   for (const r of maintenanceSessions) {
     if (!r.value.subject) continue;
     const list = maintenanceBySubject.get(r.value.subject) || [];
@@ -207,26 +202,11 @@ export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
 
   shoots.sort(compareShootsByDate); // newest-first, inherited by every consumer of store.shoots
 
-  for (const item of [
-    ...workflowRuns,
-    ...workflowStages,
-    ...workflowTemplates,
-    ...shoots,
-    ...batchRules,
-    ...developSessions,
-    ...digitizeSessions,
-    ...editSessions,
-    ...printSessions,
-    ...renderSessions,
-    ...maintenanceSessions,
-  ]) {
-    byUri.set(item.uri, { layer: "other", item });
-  }
-
   return {
     catalog,
     instance,
     byUri,
+    recordsByCollection,
     photoCaptureByPhoto,
     photoWorkflowByPhoto,
     sceneGraphByPhoto,

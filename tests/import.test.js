@@ -61,4 +61,30 @@ describe("pruneCandidates", () => {
     expect(out).toHaveLength(1);
     expect(out[0]).toMatchObject({ collection: "x", rkey: "gone", status: "delete" });
   });
+
+  it("refreshes a previously cached collection before planning destructive pruning", async () => {
+    const did = "did:plc:prune-refresh";
+    let records = [{ uri: `at://${did}/x/keep`, value: {}, cid: "c1" }];
+    let reads = 0;
+    const changingAgent = {
+      com: {
+        atproto: {
+          repo: {
+            listRecords: async () => {
+              reads += 1;
+              return { data: { records } };
+            },
+          },
+        },
+      },
+    };
+    const bundle = [{ collection: "x", rkey: "keep", value: {} }];
+    await pruneCandidates(changingAgent, did, bundle);
+    records = [...records, { uri: `at://${did}/x/remote`, value: {}, cid: "c2" }];
+
+    const out = await pruneCandidates(changingAgent, did, bundle);
+
+    expect(reads).toBe(2);
+    expect(out).toEqual([expect.objectContaining({ rkey: "remote", status: "delete" })]);
+  });
 });
