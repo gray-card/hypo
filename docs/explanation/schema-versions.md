@@ -21,9 +21,9 @@ The repository pins `@panproto/core` and `panproto-cli` at 0.70.1. The `.panprot
 
 `npm run check:panproto` verifies the current package by:
 
-1. loading all 59 lexicon documents through the root manifest;
+1. loading all 61 lexicon documents through the root manifest;
 2. checking ATProto theory diagnostics;
-3. staging the two records under `fixtures/records`;
+3. staging the eight records under `fixtures/records`;
 4. exercising manifest-backed compatibility and diff loading; and
 5. parsing the bundle through the TypeScript SDK.
 

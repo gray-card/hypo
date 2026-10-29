@@ -10,6 +10,7 @@ export function openShootLogger(shoot: ShootRecord, services: ShootServices, onC
     store,
     gear: {
       camera: gearFor("camera"),
+      filmBack: gearFor("filmBack"),
       lens: gearFor("lens"),
       filter: gearFor("filter"),
       filmRoll: gearFor("filmRoll"),

@@ -34,7 +34,7 @@ export interface LoggerPendingWrite {
   readonly record: LoggerValue;
 }
 
-export type LoggerGearKind = "camera" | "lens" | "filter" | "filmRoll";
+export type LoggerGearKind = "camera" | "filmBack" | "lens" | "filter" | "filmRoll";
 export type LoggerGear = Readonly<Record<LoggerGearKind, readonly LoggerRecord[]>>;
 
 export interface LoggerStore {
@@ -45,6 +45,7 @@ export interface LoggerStore {
 export interface ShotLoggerState {
   quick: boolean;
   camera: string | null;
+  filmBack: string | null;
   lens: string | null;
   filter: string | null;
   roll: string | null;

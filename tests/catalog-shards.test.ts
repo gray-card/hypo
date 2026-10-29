@@ -61,6 +61,7 @@ describe("catalog shard build", () => {
       "cameras",
       "darkroom-products",
       "dev-times",
+      "film-backs",
       "film-stocks",
       "lenses",
     ]);

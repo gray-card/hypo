@@ -27,6 +27,7 @@ interface ArchiveImportState {
   readonly archive: FramesArchive;
   readonly rollSelect: HTMLSelectElement;
   readonly cameraSelect: HTMLSelectElement;
+  readonly filmBackSelect: HTMLSelectElement;
   readonly sensitivitySelect: HTMLSelectElement;
   readonly createShoots: HTMLInputElement;
   readonly useLocation: HTMLInputElement;
@@ -289,6 +290,7 @@ function exposureValue(
     readonly roll: string;
     readonly shoot?: string;
     readonly camera?: string;
+    readonly filmBack?: string;
     readonly includeLocation: boolean;
     readonly assertedAt: string;
   },
@@ -298,6 +300,7 @@ function exposureValue(
     roll: options.roll,
     shoot: options.shoot,
     camera: options.camera,
+    filmBack: options.filmBack,
     lens: uniqueGearMatch("lens", frame.lens, services),
     frameNumber: Number.isFinite(Number(frame.number)) ? Math.max(0, Math.round(Number(frame.number))) : undefined,
     aperture: Number.isFinite(Number(frame.aperture)) ? String(frame.aperture) : undefined,
@@ -353,6 +356,7 @@ function shootValue(
     startedAt: cluster.startedAt,
     ...(endedAt ? { endedAt } : {}),
     cameras: state.cameraSelect.value ? [state.cameraSelect.value] : undefined,
+    filmBacks: state.filmBackSelect.value ? [state.filmBackSelect.value] : undefined,
     lenses: lenses.length ? lenses : undefined,
     rolls: [roll],
     provenance: {
@@ -387,6 +391,15 @@ export function openFramesImportReview(archives: readonly FramesArchive[], servi
     rollSelect.value = preselectedRoll(archive, services);
     const cameraSelect = services.instanceSelect("camera", preselectedCamera(archive, services));
     cameraSelect.setAttribute("aria-label", `Camera for ${archive.name}`);
+    const selectedRoll = (services.getStore().instance.filmRoll || []).find((roll) => roll.uri === rollSelect.value);
+    const filmBackSelect = services.instanceSelect("filmBack", selectedRoll?.value.filmBack || "");
+    filmBackSelect.setAttribute("aria-label", `Film back for ${archive.name}`);
+    rollSelect.addEventListener("change", () => {
+      const roll = (services.getStore().instance.filmRoll || []).find(
+        (candidate) => candidate.uri === rollSelect.value,
+      );
+      filmBackSelect.value = roll?.value.filmBack || "";
+    });
     const sensitivitySelect = el(
       "select",
       { "aria-label": `Shoot sensitivity for ${archive.name}` },
@@ -404,6 +417,7 @@ export function openFramesImportReview(archives: readonly FramesArchive[], servi
       archive,
       rollSelect,
       cameraSelect,
+      filmBackSelect,
       sensitivitySelect,
       createShoots,
       useLocation,
@@ -486,6 +500,7 @@ export function openFramesImportReview(archives: readonly FramesArchive[], servi
           el("div", { class: "frames-import-assignment" }, [
             field("Film roll", state.rollSelect),
             field("Camera", state.cameraSelect),
+            (services.getStore().instance.filmBack || []).length ? field("Film back", state.filmBackSelect) : null,
             field("Shoot inference", state.sensitivitySelect),
           ]),
           el("label", { class: "check-row frames-shoot-choice" }, [
@@ -550,6 +565,7 @@ export function openFramesImportReview(archives: readonly FramesArchive[], servi
                   roll,
                   shoot,
                   camera: state.cameraSelect.value || undefined,
+                  filmBack: state.filmBackSelect.value || undefined,
                   includeLocation: includeLocations.checked,
                   assertedAt,
                 },

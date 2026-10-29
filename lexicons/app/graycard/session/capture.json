@@ -18,6 +18,11 @@
             "items": { "type": "string", "format": "at-uri" },
             "description": "app.graycard.instance.camera bodies used in this shoot."
           },
+          "filmBacks": {
+            "type": "array",
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "app.graycard.instance.filmBack backs available in this shoot."
+          },
           "lenses": {
             "type": "array",
             "items": { "type": "string", "format": "at-uri" },

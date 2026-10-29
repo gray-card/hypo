@@ -13,7 +13,8 @@ import { resolveGearTypeForSave } from "./gear-save.ts";
 import type { GearFormOptions, GearInput, GearInputMap, GearRecord, GearServices, GearValue } from "./gear-types.ts";
 
 const GUIDED_IDENTITY: Readonly<Record<string, readonly string[]>> = {
-  cameraType: ["make", "model", "mount", "format", "category"],
+  cameraType: ["make", "model", "mount", "format", "category", "backInterface"],
+  filmBackType: ["make", "model", "backInterface", "format", "exposuresTotal"],
   lensType: ["make", "model", "mount", "focalLengthMin", "focalLengthMax", "maxAperture"],
   filmStock: ["brand", "name", "iso", "filmType", "process"],
   chemistryType: ["brand", "name", "roles", "productKind", "process", "form", "defaultDilution", "defaultTemperature"],
@@ -28,6 +29,7 @@ const GUIDED_IDENTITY: Readonly<Record<string, readonly string[]>> = {
 
 const GUIDED_INSTANCE: Readonly<Record<string, readonly string[]>> = {
   camera: ["nickname"],
+  filmBack: ["nickname", "serialNumber"],
   lens: ["nickname"],
   filter: ["nickname", "threadSize"],
   chemistry: ["nickname", "componentName", "dilution"],

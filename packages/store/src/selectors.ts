@@ -7,6 +7,7 @@ export interface ExposureValue {
   readonly multipleExposure?: boolean;
   readonly frameExposureIndex?: number;
   readonly camera?: string;
+  readonly filmBack?: string;
   readonly lens?: string;
   readonly filter?: string;
   readonly takenAt?: string;
@@ -24,13 +25,14 @@ export interface FrameWithExposures<T extends ExposureValue = ExposureValue> {
 
 export interface ShootValue {
   readonly cameras?: readonly string[];
+  readonly filmBacks?: readonly string[];
   readonly lenses?: readonly string[];
   readonly rolls?: readonly string[];
   readonly filters?: readonly string[];
   readonly [field: string]: unknown;
 }
 
-export type ShootGearKind = "camera" | "lens" | "filmRoll" | "filter";
+export type ShootGearKind = "camera" | "filmBack" | "lens" | "filmRoll" | "filter";
 
 export interface GearInheritance {
   readonly explicit: readonly string[];
@@ -150,6 +152,10 @@ export function selectShootGearInheritance<S extends ShootValue, E extends Expos
     camera: inheritance(
       shoot.value.cameras ?? [],
       shootExposures.map((exposure) => exposure.value.camera),
+    ),
+    filmBack: inheritance(
+      shoot.value.filmBacks ?? [],
+      shootExposures.map((exposure) => exposure.value.filmBack),
     ),
     lens: inheritance(
       shoot.value.lenses ?? [],

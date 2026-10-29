@@ -31,7 +31,11 @@ export function createShootGearChecklist(
   });
   return checkList(items, {
     selected,
-    emptyMessage: el("p", { class: "muted small" }, `No ${services.kindLabelPlural(kind).toLowerCase()} yet.`),
+    emptyMessage: el(
+      "p",
+      { class: "muted small" },
+      `No ${String(services.kindLabelPlural(kind) || (kind === "filmBack" ? "Film backs" : kind)).toLowerCase()} yet.`,
+    ),
   });
 }
 
@@ -52,6 +56,7 @@ export function openShootEditor(
   });
   const locked = (kind: ShootGearKind) => (shootUri ? inheritedShootGear(shootUri, kind, services.getStore()) : []);
   const cameras = createShootGearChecklist("camera", value.cameras || [], locked("camera"), services);
+  const filmBacks = createShootGearChecklist("filmBack", value.filmBacks || [], locked("filmBack"), services);
   const lenses = createShootGearChecklist("lens", value.lenses || [], locked("lens"), services);
   const rolls = createShootGearChecklist("filmRoll", value.rolls || [], locked("filmRoll"), services);
   const filters = createShootGearChecklist("filter", value.filters || [], locked("filter"), services);
@@ -131,6 +136,10 @@ export function openShootEditor(
       timing.node,
       el("h3", { class: "modal-sub" }, "Cameras"),
       cameras.node,
+      (services.getStore().instance.filmBack || []).length || value.filmBacks?.length
+        ? el("h3", { class: "modal-sub" }, "Film backs")
+        : null,
+      (services.getStore().instance.filmBack || []).length || value.filmBacks?.length ? filmBacks.node : null,
       el("h3", { class: "modal-sub" }, "Lenses"),
       lenses.node,
       el("h3", { class: "modal-sub" }, "Rolls (film)"),
@@ -151,6 +160,7 @@ export function openShootEditor(
       const record: ShootValue = {
         label: labelInput.value.trim() || "Shoot",
         cameras: cameras.getSelected(),
+        filmBacks: filmBacks.getSelected(),
         lenses: lenses.getSelected(),
         rolls: rolls.getSelected(),
         filters: filters.getSelected(),
@@ -173,6 +183,7 @@ export function openShootEditor(
           {
             shoot: uri,
             camera: record.cameras?.[0],
+            filmBack: record.filmBacks?.[0],
             lens: record.lenses?.[0],
             filmRoll: record.rolls?.[0],
           },

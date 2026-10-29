@@ -1,0 +1,9 @@
+{
+  "$type": "app.graycard.catalog.filmBackType",
+  "make": "Bronica",
+  "model": "SQ 120 Film Back",
+  "backInterface": "Bronica SQ",
+  "format": "6x6",
+  "exposuresTotal": 12,
+  "createdAt": "2026-10-29T00:00:00.000Z"
+}

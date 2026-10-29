@@ -32,7 +32,10 @@ export interface FilmViewServices {
   saveRecord(collection: string, value: FilmValue, existing: FilmRecord | null): Promise<string>;
   uploadBlob(file: File, fallbackMime: string): Promise<unknown>;
   deleteRecord(uri: string): Promise<void>;
-  splitRoll(stockpile: FilmRecord, options: { camera: string | null; label: string | null }): Promise<string>;
+  splitRoll(
+    stockpile: FilmRecord,
+    options: { camera: string | null; filmBack: string | null; label: string | null },
+  ): Promise<string>;
   instantiateWorkflow?(
     template: FilmRecord,
     subjects: readonly FilmValue[],

@@ -76,6 +76,14 @@ export function openDuplicateReserve(stockpile: FilmRecord, services: FilmViewSe
 
 export function openLoadRoll(stockpile: FilmRecord, services: FilmViewServices): void {
   const cameraSelect = services.instanceSelect("camera", "");
+  const filmBackSelect = services.instanceSelect("filmBack", "");
+  const hasFilmBacks = Boolean((services.getStore().instance.filmBack || []).length);
+  cameraSelect.addEventListener("change", () => {
+    if (cameraSelect.value) filmBackSelect.value = "";
+  });
+  filmBackSelect.addEventListener("change", () => {
+    if (filmBackSelect.value) cameraSelect.value = "";
+  });
   const templateSelect = workflowSelect(services);
   const occurrences = createWorkflowOccurrenceEditor(
     templateSelect,
@@ -91,7 +99,8 @@ export function openLoadRoll(stockpile: FilmRecord, services: FilmViewServices):
         { class: "muted small" },
         "Splits one roll off your reserve and marks it loaded. Its format, batch, expiry and storage carry over.",
       ),
-      field("Into camera", cameraSelect),
+      hasFilmBacks ? field("Into detachable film back", filmBackSelect) : null,
+      field(hasFilmBacks ? "Into camera (without detachable back)" : "Into camera", cameraSelect),
       field("Label", labelInput),
       (services.getStore().workflowTemplates || []).length
         ? field("Start a workflow", templateSelect)
@@ -102,6 +111,7 @@ export function openLoadRoll(stockpile: FilmRecord, services: FilmViewServices):
       const previousQuantity = reserveQuantity(stockpile.value);
       const rollUri = await services.splitRoll(stockpile, {
         camera: cameraSelect.value || null,
+        filmBack: filmBackSelect.value || null,
         label: labelInput.value.trim() || null,
       });
       const template = (services.getStore().workflowTemplates || []).find((item) => item.uri === templateSelect.value);
@@ -109,7 +119,11 @@ export function openLoadRoll(stockpile: FilmRecord, services: FilmViewServices):
         await services.instantiateWorkflow(
           template,
           [{ kind: "film-roll-latent", ref: rollUri, label: labelInput.value.trim() || undefined }],
-          { filmRoll: rollUri, camera: cameraSelect.value || undefined },
+          {
+            filmRoll: rollUri,
+            camera: cameraSelect.value || undefined,
+            filmBack: filmBackSelect.value || undefined,
+          },
           occurrences.read(),
         );
       }
@@ -372,6 +386,14 @@ export function openRollDetail(
   );
   statusSelect.value = value.status || "loaded";
   const cameraSelect = services.instanceSelect("camera", value.camera || "");
+  const filmBackSelect = services.instanceSelect("filmBack", value.filmBack || "");
+  const hasFilmBacks = Boolean((services.getStore().instance.filmBack || []).length || value.filmBack);
+  cameraSelect.addEventListener("change", () => {
+    if (cameraSelect.value) filmBackSelect.value = "";
+  });
+  filmBackSelect.addEventListener("change", () => {
+    if (filmBackSelect.value) cameraSelect.value = "";
+  });
   const developerSelect = services.instanceSelect("chemistry", value.developedWith || "");
   const labSelect = services.instanceSelect("labAccount", value.lab || "");
   const cassetteSelect = el("select", {}, [
@@ -453,7 +475,8 @@ export function openRollDetail(
       expires.wrap,
       field("Photo (optional)", photoInput),
       field("Status", statusSelect),
-      field("Loaded in camera", cameraSelect),
+      hasFilmBacks ? field("Loaded in detachable film back", filmBackSelect) : null,
+      field(hasFilmBacks ? "Loaded in camera (without detachable back)" : "Loaded in camera", cameraSelect),
       field("Shot at ISO (push/pull)", isoInput),
       field("Developed with (home chemistry)", developerSelect),
       field("Developed at (lab)", labSelect),
@@ -495,6 +518,8 @@ export function openRollDetail(
       if (cameraSelect.value) {
         record.camera = cameraSelect.value;
       } else delete record.camera;
+      if (filmBackSelect.value) record.filmBack = filmBackSelect.value;
+      else delete record.filmBack;
       if (developerSelect.value) record.developedWith = developerSelect.value;
       else delete record.developedWith;
       if (labSelect.value) record.lab = labSelect.value;
@@ -523,7 +548,7 @@ export function openRollDetail(
               label: value.label,
             },
           ],
-          { filmRoll: roll.uri, camera: record.camera },
+          { filmRoll: roll.uri, camera: record.camera, filmBack: record.filmBack },
           occurrences.read(),
         );
       }

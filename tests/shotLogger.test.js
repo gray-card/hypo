@@ -154,21 +154,27 @@ describe("extracted shot logger view", () => {
 
   it("logs normal and multiple exposures through injected persistence", () => {
     const camera = "at://camera";
+    const filmBack = "at://film-back";
     const lens = "at://lens";
     const roll = "at://roll";
     const queued = [];
     const store = {
-      catalog: { cameraType: [], lensType: [] },
+      catalog: {
+        cameraType: [{ uri: "at://camera-type", value: { backInterface: "Bronica SQ" } }],
+        filmBackType: [{ uri: "at://back-type", value: { backInterface: "Bronica SQ" } }],
+        lensType: [],
+      },
       instance: { exposure: [] },
     };
     const controller = openShotLoggerView({
       shoot: { uri: "at://shoot", value: { label: "Field test" } },
       store,
       gear: {
-        camera: [{ uri: camera, value: { nickname: "Camera" } }],
+        camera: [{ uri: camera, value: { type: "at://camera-type", nickname: "Camera" } }],
+        filmBack: [{ uri: filmBack, value: { type: "at://back-type", nickname: "Back A" } }],
         lens: [{ uri: lens, value: { nickname: "Lens" } }],
         filter: [],
-        filmRoll: [{ uri: roll, value: { label: "Roll A", camera } }],
+        filmRoll: [{ uri: roll, value: { label: "Roll A", filmBack } }],
       },
       persistSticky: () => {},
       framesForRoll: () => [],
@@ -194,7 +200,15 @@ describe("extracted shot logger view", () => {
 
     const first = controller.logExposure();
     const second = controller.logExposure(true);
-    expect(first).toMatchObject({ shoot: "at://shoot", roll, frameNumber: 1, frameExposureIndex: 1 });
+    expect(first).toMatchObject({
+      shoot: "at://shoot",
+      camera,
+      filmBack,
+      lens,
+      roll,
+      frameNumber: 1,
+      frameExposureIndex: 1,
+    });
     expect(second).toMatchObject({
       shoot: "at://shoot",
       roll,
@@ -203,6 +217,52 @@ describe("extracted shot logger view", () => {
       multipleExposure: true,
     });
     expect(queued).toHaveLength(2);
+  });
+
+  it("blocks logging when a detachable back and body declare different interfaces", () => {
+    const store = {
+      catalog: {
+        cameraType: [{ uri: "at://camera-type", value: { backInterface: "Bronica SQ" } }],
+        filmBackType: [{ uri: "at://back-type", value: { backInterface: "Bronica ETR" } }],
+        lensType: [],
+      },
+      instance: { exposure: [] },
+    };
+    const controller = openShotLoggerView({
+      shoot: { uri: "at://shoot", value: { label: "Compatibility test" } },
+      store,
+      gear: {
+        camera: [{ uri: "at://camera", value: { type: "at://camera-type", nickname: "SQ-Ai" } }],
+        filmBack: [{ uri: "at://back", value: { type: "at://back-type", nickname: "ETR back" } }],
+        lens: [],
+        filter: [],
+        filmRoll: [{ uri: "at://roll", value: { filmBack: "at://back", label: "Roll" } }],
+      },
+      persistSticky: () => {},
+      framesForRoll: () => [],
+      pendingExposures: () => [],
+      pendingMeterReadingCount: () => 0,
+      enqueueExposure: vi.fn(),
+      flush: async () => ({ sent: 0 }),
+      isOnline: () => false,
+      reloadStore: async () => store,
+      onStoreReloaded: () => {},
+      loadMeterReadings: async () => [],
+      instanceLabel: (_kind, value) => value.nickname || value.label || "Item",
+      filmStockLabel: () => "Film",
+      enumLabel: (value) => value,
+      meteringModes: ["center-weighted"],
+      icon: () => document.createElement("span"),
+      stopFractions: ["1/3"],
+      buildApertureOptions: () => ["5.6"],
+      buildShutterOptions: () => ["1/125"],
+      usesExactApertureSteps: () => false,
+      usesExactShutterSteps: () => false,
+    });
+
+    expect(controller.overlay.querySelector(".logger-compatibility")?.textContent).toContain("not compatible");
+    expect(controller.overlay.querySelector(".log-btn:not(.secondary)")?.disabled).toBe(true);
+    controller.close();
   });
 
   it("repaints an acknowledged pending exposure from cache and disposes its listener", async () => {

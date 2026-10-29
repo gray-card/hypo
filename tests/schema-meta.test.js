@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  CURATED_BACK_INTERFACE_NAMES,
   CURATED_MOUNT_NAMES,
   GEAR_CATALOG_FORM_META,
   GEAR_FIELD_ENUM_OPTIONS,
@@ -63,6 +64,7 @@ describe("typed schema metadata", () => {
       "alternativeNames",
       "mount",
       "format",
+      "backInterface",
       "category",
       "minShutterSpeed",
       "maxShutterSpeed",
@@ -72,6 +74,10 @@ describe("typed schema metadata", () => {
     expect(GEAR_CATALOG_FORM_META.cameraType.fields.find((field) => field.key === "mount")).toMatchObject({
       control: "enum",
       options: CURATED_MOUNT_NAMES,
+    });
+    expect(GEAR_CATALOG_FORM_META.filmBackType.fields.find((field) => field.key === "backInterface")).toMatchObject({
+      control: "enum",
+      options: CURATED_BACK_INTERFACE_NAMES,
     });
     expect(GEAR_CATALOG_FORM_META.lensType.fields.find((field) => field.key === "alternativeNames")).toMatchObject({
       control: "string-list",
@@ -85,6 +91,10 @@ describe("typed schema metadata", () => {
     expect(GEAR_INSTANCE_FORM_META.filmRoll.fields.find((field) => field.key === "camera")).toMatchObject({
       control: "at-uri",
       targetKind: "camera",
+    });
+    expect(GEAR_INSTANCE_FORM_META.filmRoll.fields.find((field) => field.key === "filmBack")).toMatchObject({
+      control: "at-uri",
+      targetKind: "filmBack",
     });
     expect(GEAR_INSTANCE_FORM_META.filmRoll.fields.find((field) => field.key === "expiresAt")).toMatchObject({
       control: "date",

@@ -91,6 +91,7 @@
       "description": "Typed defaults used to create or populate the process session associated with a stage.",
       "properties": {
         "camera": { "type": "string", "format": "at-uri" },
+        "filmBack": { "type": "string", "format": "at-uri" },
         "lens": { "type": "string", "format": "at-uri" },
         "filmRoll": { "type": "string", "format": "at-uri" },
         "chemistry": { "type": "string", "format": "at-uri" },

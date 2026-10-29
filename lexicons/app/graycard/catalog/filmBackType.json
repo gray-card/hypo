@@ -1,0 +1,55 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.filmBackType",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Film-back model/type for a camera system with detachable film carriers. Instances reference this record.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["make", "model", "backInterface", "createdAt"],
+        "properties": {
+          "make": { "type": "string", "maxLength": 128 },
+          "model": { "type": "string", "maxLength": 128 },
+          "alternativeNames": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "maxLength": 256 }
+          },
+          "backInterface": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Open name of the physical camera-back interface, e.g. Bronica SQ. A back is compatible with camera types carrying the same value."
+          },
+          "format": { "type": "ref", "ref": "app.graycard.defs#captureFormat" },
+          "exposuresTotal": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Nominal number of frames carried by this back."
+          },
+          "image": {
+            "type": "ref",
+            "ref": "app.graycard.defs#assetRef",
+            "description": "Product photo for this type."
+          },
+          "datasheet": { "type": "ref", "ref": "app.graycard.defs#assetRef" },
+          "documents": {
+            "type": "array",
+            "maxLength": 16,
+            "items": { "type": "ref", "ref": "app.graycard.defs#productDocument" }
+          },
+          "specSources": {
+            "type": "array",
+            "maxLength": 64,
+            "items": { "type": "ref", "ref": "app.graycard.defs#specSource" }
+          },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

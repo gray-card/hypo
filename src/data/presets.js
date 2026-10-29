@@ -719,6 +719,11 @@ export const PRESETS = {
     label: (i) => `${i.make} ${i.model}`,
     items: ALL_CAMERAS,
   },
+  filmBackType: {
+    primary: "model",
+    label: (i) => `${i.make} ${i.model}`,
+    items: [],
+  },
   scannerType: {
     primary: "model",
     label: (i) => `${i.make} ${i.model}`,
@@ -874,6 +879,7 @@ function mergeDarkroomProducts(products) {
 
 const PRESET_DOMAINS = {
   cameraType: "cameras",
+  filmBackType: "film-backs",
   lensType: "lenses",
   filmStock: "film-stocks",
   chemistryType: "darkroom-products",
@@ -902,6 +908,10 @@ function applyCatalogDomain(domain, items) {
         : {}),
     }));
     replaceUnique(PRESETS.cameraType.items, cameras, (item) => cameraNorm(item.make, item.model));
+  } else if (domain === "film-backs") {
+    replaceUnique(PRESETS.filmBackType.items, items, (item) =>
+      `${item.make || ""}\0${item.model || ""}`.trim().toLowerCase(),
+    );
   } else if (domain === "lenses") {
     replaceUnique(PRESETS.lensType.items, items, (item) =>
       `${item.make || ""}\0${item.model || ""}`.trim().toLowerCase(),
@@ -960,9 +970,10 @@ export async function loadCatalogPresets(kinds = Object.keys(PRESET_DOMAINS), op
 // replace MODE and remove this fixture-only branch, so none of these JSON files
 // are emitted into the application graph.
 if (import.meta.env.MODE === "test") {
-  const [cameras, lensfunCameras, lenses, lensfunLenses, filmStocks, darkroomProducts] = await Promise.all([
+  const [cameras, lensfunCameras, filmBacks, lenses, lensfunLenses, filmStocks, darkroomProducts] = await Promise.all([
     import("./curated-cameras.json"),
     import("./lensfun-cameras.json"),
+    import("./curated-film-backs.json"),
     import("./curated-lenses.json"),
     import("./lensfun-lenses.json"),
     import("./curated-film-stocks.json"),
@@ -970,6 +981,7 @@ if (import.meta.env.MODE === "test") {
   ]);
   const fixtures = {
     cameras: [...(cameras.default.cameras || []), ...(lensfunCameras.default.cameras || [])],
+    "film-backs": filmBacks.default.filmBacks || [],
     lenses: [...(lenses.default.lenses || []), ...(lensfunLenses.default.lenses || [])],
     "film-stocks": filmStocks.default.stocks || [],
     "darkroom-products": [

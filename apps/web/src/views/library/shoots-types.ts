@@ -70,4 +70,4 @@ export interface ShootServices {
   usesExactShutterSteps(cameraType: ShootValue | undefined): boolean;
 }
 
-export type ShootGearKind = "camera" | "lens" | "filter" | "filmRoll";
+export type ShootGearKind = "camera" | "filmBack" | "lens" | "filter" | "filmRoll";

@@ -15,6 +15,7 @@ const jsonl = (path) =>
 
 const lexicons = {
   cameraType: load("lexicons/app/graycard/catalog/cameraType.json"),
+  filmBackType: load("lexicons/app/graycard/catalog/filmBackType.json"),
   lensType: load("lexicons/app/graycard/catalog/lensType.json"),
   filmStock: load("lexicons/app/graycard/catalog/filmStock.json"),
   chemistryType: load("lexicons/app/graycard/catalog/chemistryType.json"),
@@ -64,6 +65,7 @@ const chemistrySource = (record, sourceKind) => {
 
 const generated = {
   cameraType: [...load("src/data/curated-cameras.json").cameras, ...load("src/data/lensfun-cameras.json").cameras],
+  filmBackType: load("src/data/curated-film-backs.json").filmBacks,
   lensType: [...load("src/data/curated-lenses.json").lenses, ...load("src/data/lensfun-lenses.json").lenses],
   filmStock: load("src/data/curated-film-stocks.json").stocks,
   chemistryType: [
@@ -75,6 +77,7 @@ const generated = {
 
 const SEED_ONLY = {
   cameraType: new Set(["datasheetUrl", "exifModel", "image", "source", "wikidata"]),
+  filmBackType: new Set(),
   lensType: new Set(["datasheetUrl", "image", "source", "wikidata"]),
   filmStock: new Set(["image", "productUrl", "resolvingPower"]),
   chemistryType: new Set(),
@@ -190,6 +193,7 @@ describe("catalog technical data is schema-native", () => {
       ]),
     );
     expect(sourced.cameraType).toBeGreaterThanOrEqual(5);
+    expect(sourced.filmBackType).toBeGreaterThanOrEqual(90);
     expect(sourced.lensType).toBeGreaterThanOrEqual(26);
     expect(sourced.filmStock).toBe(103);
     expect(sourced.chemistryType).toBe(37);
@@ -254,6 +258,7 @@ describe("datasheet enrichment contracts", () => {
 describe("preset round trips", () => {
   for (const [kind, makeKey, primaryKey] of [
     ["cameraType", "make", "model"],
+    ["filmBackType", "make", "model"],
     ["lensType", "make", "model"],
     ["filmStock", "brand", "name"],
     ["chemistryType", "brand", "name"],

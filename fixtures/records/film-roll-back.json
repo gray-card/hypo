@@ -1,0 +1,10 @@
+{
+  "$type": "app.graycard.instance.filmRoll",
+  "stock": "at://did:plc:graycard-record-fixtures/app.graycard.catalog.filmStock/portra-400",
+  "label": "Roll in SQ back 1",
+  "filmBack": "at://did:plc:graycard-record-fixtures/app.graycard.instance.filmBack/film-back",
+  "status": "loaded",
+  "format": "6x6",
+  "loadedAt": "2026-10-29T00:00:00.000Z",
+  "createdAt": "2026-10-29T00:00:00.000Z"
+}

@@ -91,12 +91,17 @@
           "camera": {
             "type": "string",
             "format": "at-uri",
-            "description": "app.graycard.instance.camera when loaded."
+            "description": "Optional app.graycard.instance.camera when loaded directly in a fixed-back camera. Legacy records may use this for any loaded camera. New detachable-back records use filmBack instead."
+          },
+          "filmBack": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.instance.filmBack containing this roll. Clients should normally write either filmBack or camera, not both."
           },
           "loadedAt": {
             "type": "string",
             "format": "datetime",
-            "description": "When this roll was loaded into a camera."
+            "description": "When this roll was loaded into its camera or detachable film back."
           },
           "partialAt": {
             "type": "string",
@@ -111,7 +116,7 @@
           "unloadedAt": {
             "type": "string",
             "format": "datetime",
-            "description": "When this roll was unloaded from its camera."
+            "description": "When this roll was unloaded from its camera or detachable film back."
           },
           "sentToLabAt": {
             "type": "string",

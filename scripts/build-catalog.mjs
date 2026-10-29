@@ -25,6 +25,7 @@ const OUT = join(ROOT, "src", "data");
 const LOCAL_DB = join(ROOT, "data", "lensfun-db");
 const CURATED_DIR = join(ROOT, "data", "curated-lenses");
 const CURATED_CAM_DIR = join(ROOT, "data", "curated-cameras");
+const CURATED_FILM_BACK_DIR = join(ROOT, "data", "curated-film-backs");
 const CURATED_DEV_DIR = join(ROOT, "data", "curated-dev-times");
 const CURATED_FILM_DIR = join(ROOT, "data", "curated-film-stocks");
 const DATASHEET_DIR = join(ROOT, "data", "datasheets");
@@ -212,6 +213,87 @@ if (curatedCameras.length) {
   );
 }
 
+// -- curated detachable film backs ------------------------------------------
+// One row represents a manufacturer-named magazine/back variant, not merely a
+// film size. This matters because two 120 backs can expose different frame
+// formats and because physical compatibility follows `backInterface`.
+function loadCuratedFilmBacks() {
+  if (!existsSync(CURATED_FILM_BACK_DIR)) return [];
+  const out = [];
+  const seen = new Set();
+  for (const f of readdirSync(CURATED_FILM_BACK_DIR)
+    .filter((name) => name.endsWith(".jsonl"))
+    .sort()) {
+    const lines = readFileSync(join(CURATED_FILM_BACK_DIR, f), "utf8")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    lines.forEach((line, i) => {
+      let source;
+      try {
+        source = JSON.parse(line);
+      } catch (error) {
+        throw new Error(`${f}:${i + 1}: invalid JSON: ${error.message}`);
+      }
+      for (const field of ["make", "model", "backInterface", "datasheetUrl", "verifiedFields"]) {
+        if (source[field] == null) throw new Error(`${f}:${i + 1}: missing required field '${field}'`);
+      }
+      if (!/^https:\/\//.test(source.datasheetUrl)) {
+        throw new Error(`${f}:${i + 1}: datasheetUrl must use https`);
+      }
+      if (!Array.isArray(source.verifiedFields) || !source.verifiedFields.length) {
+        throw new Error(`${f}:${i + 1}: verifiedFields must be a non-empty array`);
+      }
+      const identity = `${source.make}\0${source.model}`.toLowerCase();
+      if (seen.has(identity)) throw new Error(`${f}:${i + 1}: duplicate ${source.make} ${source.model}`);
+      seen.add(identity);
+
+      const {
+        datasheetUrl,
+        verifiedFields,
+        sourceKind = "product-page",
+        sourceTitle,
+        sourcePublisher,
+        sourcePage,
+        sourceNote,
+        sourceLanguage = "en",
+        ...record
+      } = source;
+      const document = {
+        kind: sourceKind,
+        asset: {
+          url: datasheetUrl,
+          ...(sourceTitle ? { title: sourceTitle } : {}),
+          ...(sourcePublisher ? { source: sourcePublisher } : {}),
+        },
+        ...(sourcePublisher ? { publisher: sourcePublisher } : {}),
+        language: sourceLanguage,
+        retrievedAt: "2026-10-29T00:00:00.000Z",
+      };
+      record.documents = [...(record.documents || []), document];
+      record.specSources = [
+        ...(record.specSources || []),
+        {
+          document,
+          fields: verifiedFields,
+          ...(sourcePage ? { page: sourcePage } : {}),
+          method: "manual-transcription",
+          ...(sourceNote ? { note: sourceNote } : {}),
+        },
+      ];
+      out.push(record);
+    });
+  }
+  return out;
+}
+
+const filmBacks = loadCuratedFilmBacks();
+if (filmBacks.length) {
+  console.log(
+    `curated film backs: ${filmBacks.length} from ${readdirSync(CURATED_FILM_BACK_DIR).filter((f) => f.endsWith(".jsonl")).length} source file(s)`,
+  );
+}
+
 // -- curated development recipes (from manufacturer datasheets) ---------------
 // data/curated-dev-times/<maker>.jsonl holds development times transcribed from
 // official manufacturer datasheets. Individual times are facts (not copyrightable);
@@ -321,44 +403,11 @@ function loadDarkroomProducts(kind, requiredFields) {
   return out;
 }
 
-const developerProducts = loadDarkroomProducts("developers", ["brand", "name", "process", "form"]).map((item) => ({
-  ...item,
-  roles:
-    item.process === "monobath"
-      ? ["film-developer", "fixer"]
-      : item.form !== "kit"
-        ? ["film-developer"]
-        : item.process === "e6"
-          ? ["first-developer", "color-developer", "bleach", "fixer", "stabilizer"]
-          : item.process === "c41"
-            ? ["color-developer", "bleach", "fixer", "stabilizer"]
-            : item.process === "ecn2"
-              ? ["color-developer", "bleach", "fixer"]
-              : ["film-developer"],
-  productKind: item.form === "kit" ? "process-kit" : "single-chemical",
-}));
-const chemistryProducts = loadDarkroomProducts("chemistries", ["brand", "name", "role", "form"]).map((item) => {
-  const roles =
-    item.role === "blix"
-      ? ["bleach", "fixer"]
-      : item.role === "monobath"
-        ? ["film-developer", "fixer"]
-        : item.role === "developer"
-          ? ["film-developer"]
-          : item.role === "other" && item.name === "Hypo Clearing Agent"
-            ? ["clearing-agent"]
-            : [item.role];
-  const { role: _legacyRole, ...rest } = item;
-  return {
-    ...rest,
-    roles,
-    specSources: rest.specSources?.map((source) => ({
-      ...source,
-      fields: source.fields?.map((field) => (field === "role" ? "roles" : field)),
-    })),
-    productKind: item.form === "kit" ? "multi-part-chemical" : "single-chemical",
-  };
-});
+// Keep the generated source artifact faithful to the authored JSONL. Runtime
+// schema projection (roles/productKind and legacy role migration) happens once
+// in build-catalog-shards.mjs, where every consumer receives the same shape.
+const developerProducts = loadDarkroomProducts("developers", ["brand", "name", "process", "form"]);
+const chemistryProducts = loadDarkroomProducts("chemistries", ["brand", "name", "role", "form"]);
 
 // -- manufacturer datasheet links --------------------------------------------
 //
@@ -521,6 +570,14 @@ writeFileSync(
     2,
   ),
 );
+const filmBackHeader = {
+  _source:
+    "film-back models and compatibility transcribed from manufacturer manuals, catalogs, and product pages in data/curated-film-backs/*.jsonl",
+  _license:
+    "Hypo's original compilation: CC-BY-SA 4.0; individual product specifications may be non-copyrightable facts. See data/LICENSE.md",
+  _generated: new Date().toISOString(),
+};
+writeFileSync(join(OUT, "curated-film-backs.json"), JSON.stringify({ ...filmBackHeader, filmBacks }, null, 2));
 const devHeader = {
   _source:
     "development times transcribed from official manufacturer datasheets, authored in data/curated-dev-times/*.jsonl; each recipe carries its own source URL",
@@ -549,12 +606,13 @@ writeFileSync(
   JSON.stringify(
     {
       ...darkroomHeader,
-      chemistries: [...developerProducts, ...chemistryProducts],
+      developers: developerProducts,
+      chemistries: chemistryProducts,
     },
     null,
     2,
   ),
 );
 console.log(
-  `wrote ${lenses.length} lensfun lenses, ${cameras.length} cameras, ${curated.length} curated lenses, ${curatedCameras.length} curated cameras, ${devTimes.length} dev recipes, ${filmStocks.length} film stocks, ${developerProducts.length + chemistryProducts.length} chemistry specs${RESOLVE_WIKIDATA ? " (+ Wikidata QIDs)" : ""}`,
+  `wrote ${lenses.length} lensfun lenses, ${cameras.length} cameras, ${curated.length} curated lenses, ${curatedCameras.length} curated cameras, ${filmBacks.length} film backs, ${devTimes.length} dev recipes, ${filmStocks.length} film stocks, ${developerProducts.length + chemistryProducts.length} chemistry specs${RESOLVE_WIKIDATA ? " (+ Wikidata QIDs)" : ""}`,
 );

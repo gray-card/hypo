@@ -24,6 +24,7 @@ export type AppGraycardCatalogCameraTypeMain = {
   "category"?: AppGraycardDefsCameraCategory;
   "mount"?: AppGraycardDefsMount;
   "format"?: AppGraycardDefsCaptureFormat;
+  "backInterface"?: string;
   "shutterType"?: AppGraycardDefsShutterType;
   "minShutterSpeed"?: AppGraycardDefsScaledInteger;
   "maxShutterSpeed"?: AppGraycardDefsScaledInteger;
@@ -250,6 +251,24 @@ export type AppGraycardCatalogEnlargingLensTypeMain = {
   "createdAt": string;
   "updatedAt"?: string;
   $type?: "app.graycard.catalog.enlargingLensType";
+};
+
+export type AppGraycardCatalogFilmBackTypeMain = {
+  "make": string;
+  "model": string;
+  "alternativeNames"?: Array<string>;
+  "backInterface": string;
+  "format"?: AppGraycardDefsCaptureFormat;
+  "exposuresTotal"?: number;
+  "image"?: AppGraycardDefsAssetRef;
+  "datasheet"?: AppGraycardDefsAssetRef;
+  "documents"?: Array<AppGraycardDefsProductDocument>;
+  "specSources"?: Array<AppGraycardDefsSpecSource>;
+  "links"?: AppGraycardDefsCatalogLinks;
+  "notes"?: string;
+  "createdAt": string;
+  "updatedAt"?: string;
+  $type?: "app.graycard.catalog.filmBackType";
 };
 
 export type AppGraycardCatalogFilmStockFormatVariant = {
@@ -727,6 +746,7 @@ export type AppGraycardEditRecipeMain = {
 export type AppGraycardGalleryDefaultsMain = {
   "gallery": string;
   "camera"?: string;
+  "filmBack"?: string;
   "lens"?: string;
   "filmRoll"?: string;
   "shoot"?: string;
@@ -810,6 +830,7 @@ export type AppGraycardInstanceExposureMain = {
   "multipleExposure"?: boolean;
   "frameExposureIndex"?: number;
   "camera"?: string;
+  "filmBack"?: string;
   "lens"?: string;
   "filter"?: string;
   "aperture"?: string;
@@ -835,6 +856,17 @@ export type AppGraycardInstanceExposureMain = {
   $type?: "app.graycard.instance.exposure";
 };
 
+export type AppGraycardInstanceFilmBackMain = {
+  "type": string;
+  "nickname"?: string;
+  "serialNumber"?: string;
+  "notes"?: string;
+  "createdAt": string;
+  "updatedAt"?: string;
+  "image"?: BlobRef;
+  $type?: "app.graycard.instance.filmBack";
+};
+
 export type AppGraycardInstanceFilmRollMain = {
   "stock": string;
   "label"?: string;
@@ -855,6 +887,7 @@ export type AppGraycardInstanceFilmRollMain = {
   "stockpile"?: string;
   "cassetteType"?: KnownValue<"factory" | "plastic-reload" | "metal-reload" | "sheet-holder" | "other">;
   "camera"?: string;
+  "filmBack"?: string;
   "loadedAt"?: string;
   "partialAt"?: string;
   "exposedAt"?: string;
@@ -1105,6 +1138,7 @@ export type AppGraycardPhotoCaptureMain = {
   "medium"?: AppGraycardWorkflowDefsMedium;
   "shoot"?: string;
   "camera"?: string;
+  "filmBack"?: string;
   "lens"?: string;
   "filmRoll"?: string;
   "frameIndex"?: number;
@@ -1481,6 +1515,7 @@ export type AppGraycardSessionCaptureMain = {
   "startedAt"?: string;
   "endedAt"?: string;
   "cameras"?: Array<string>;
+  "filmBacks"?: Array<string>;
   "lenses"?: Array<string>;
   "rolls"?: Array<string>;
   "filters"?: Array<string>;
@@ -1533,6 +1568,7 @@ export type AppGraycardWorkflowDefsPort = {
 
 export type AppGraycardWorkflowDefsProcessDefaults = {
   "camera"?: string;
+  "filmBack"?: string;
   "lens"?: string;
   "filmRoll"?: string;
   "chemistry"?: string;
@@ -1664,6 +1700,7 @@ export type AppGraycardWorkflowStageCaptureStage = {
   "session"?: string;
   "shoot"?: string;
   "camera"?: string;
+  "filmBack"?: string;
   "lens"?: string;
   "filmRoll"?: string;
   "frameIndex"?: number;
@@ -1875,6 +1912,7 @@ export type AppGraycardWorkflowTemplateMain = {
   "steps"?: Array<AppGraycardWorkflowDefsTemplateStep>;
   "connections"?: Array<AppGraycardWorkflowDefsTemplateConnection>;
   "defaultCamera"?: string;
+  "defaultFilmBack"?: string;
   "defaultLens"?: string;
   "defaultFilmRoll"?: string;
   "defaultChemistry"?: string;
@@ -1900,6 +1938,7 @@ export interface RecordTypeMap {
   "app.graycard.catalog.devRecipe": AppGraycardCatalogDevRecipeMain;
   "app.graycard.catalog.enlargerType": AppGraycardCatalogEnlargerTypeMain;
   "app.graycard.catalog.enlargingLensType": AppGraycardCatalogEnlargingLensTypeMain;
+  "app.graycard.catalog.filmBackType": AppGraycardCatalogFilmBackTypeMain;
   "app.graycard.catalog.filmStock": AppGraycardCatalogFilmStockMain;
   "app.graycard.catalog.filterType": AppGraycardCatalogFilterTypeMain;
   "app.graycard.catalog.lab": AppGraycardCatalogLabMain;
@@ -1917,6 +1956,7 @@ export interface RecordTypeMap {
   "app.graycard.instance.enlarger": AppGraycardInstanceEnlargerMain;
   "app.graycard.instance.enlargingLens": AppGraycardInstanceEnlargingLensMain;
   "app.graycard.instance.exposure": AppGraycardInstanceExposureMain;
+  "app.graycard.instance.filmBack": AppGraycardInstanceFilmBackMain;
   "app.graycard.instance.filmRoll": AppGraycardInstanceFilmRollMain;
   "app.graycard.instance.filmStockpile": AppGraycardInstanceFilmStockpileMain;
   "app.graycard.instance.filter": AppGraycardInstanceFilterMain;
@@ -2905,6 +2945,11 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "format": {
               "type": "ref",
               "ref": "app.graycard.defs#captureFormat"
+            },
+            "backInterface": {
+              "type": "string",
+              "maxLength": 128,
+              "description": "Open name of the detachable film-back interface supported by this camera body, e.g. Bronica SQ. Omit for cameras without detachable backs."
             },
             "shutterType": {
               "type": "ref",
@@ -4014,6 +4059,99 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#assetRef",
               "description": "Official datasheet: a link (preferred), an uploaded file, or another record."
+            },
+            "links": {
+              "type": "ref",
+              "ref": "app.graycard.defs#catalogLinks"
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "datetime"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "datetime"
+            }
+          }
+        }
+      }
+    }
+  },
+  "app.graycard.catalog.filmBackType": {
+    "lexicon": 1,
+    "id": "app.graycard.catalog.filmBackType",
+    "defs": {
+      "main": {
+        "type": "record",
+        "description": "Film-back model/type for a camera system with detachable film carriers. Instances reference this record.",
+        "key": "tid",
+        "record": {
+          "type": "object",
+          "required": [
+            "make",
+            "model",
+            "backInterface",
+            "createdAt"
+          ],
+          "properties": {
+            "make": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "model": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "alternativeNames": {
+              "type": "array",
+              "maxLength": 32,
+              "items": {
+                "type": "string",
+                "maxLength": 256
+              }
+            },
+            "backInterface": {
+              "type": "string",
+              "maxLength": 128,
+              "description": "Open name of the physical camera-back interface, e.g. Bronica SQ. A back is compatible with camera types carrying the same value."
+            },
+            "format": {
+              "type": "ref",
+              "ref": "app.graycard.defs#captureFormat"
+            },
+            "exposuresTotal": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Nominal number of frames carried by this back."
+            },
+            "image": {
+              "type": "ref",
+              "ref": "app.graycard.defs#assetRef",
+              "description": "Product photo for this type."
+            },
+            "datasheet": {
+              "type": "ref",
+              "ref": "app.graycard.defs#assetRef"
+            },
+            "documents": {
+              "type": "array",
+              "maxLength": 16,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#productDocument"
+              }
+            },
+            "specSources": {
+              "type": "array",
+              "maxLength": 64,
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#specSource"
+              }
             },
             "links": {
               "type": "ref",
@@ -6439,6 +6577,10 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "string",
               "format": "at-uri"
             },
+            "filmBack": {
+              "type": "string",
+              "format": "at-uri"
+            },
             "lens": {
               "type": "string",
               "format": "at-uri"
@@ -6830,7 +6972,12 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "camera": {
               "type": "string",
               "format": "at-uri",
-              "description": "Optional app.graycard.instance.camera used."
+              "description": "Optional app.graycard.instance.camera body used."
+            },
+            "filmBack": {
+              "type": "string",
+              "format": "at-uri",
+              "description": "Optional app.graycard.instance.filmBack mounted for this exposure. Omit for cameras without detachable backs."
             },
             "lens": {
               "type": "string",
@@ -6947,6 +7094,61 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
       }
     }
   },
+  "app.graycard.instance.filmBack": {
+    "lexicon": 1,
+    "id": "app.graycard.instance.filmBack",
+    "defs": {
+      "main": {
+        "type": "record",
+        "description": "A specific detachable film back. References app.graycard.catalog.filmBackType.",
+        "key": "tid",
+        "record": {
+          "type": "object",
+          "required": [
+            "type",
+            "createdAt"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "format": "at-uri",
+              "description": "app.graycard.catalog.filmBackType"
+            },
+            "nickname": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "serialNumber": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "datetime"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "datetime"
+            },
+            "image": {
+              "type": "blob",
+              "accept": [
+                "image/png",
+                "image/jpeg",
+                "image/webp"
+              ],
+              "maxSize": 3000000,
+              "description": "Optional user photo of this specific back; falls back to the catalog type's stock image."
+            }
+          }
+        }
+      }
+    }
+  },
   "app.graycard.instance.filmRoll": {
     "lexicon": 1,
     "id": "app.graycard.instance.filmRoll",
@@ -7049,12 +7251,17 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "camera": {
               "type": "string",
               "format": "at-uri",
-              "description": "app.graycard.instance.camera when loaded."
+              "description": "Optional app.graycard.instance.camera when loaded directly in a fixed-back camera. Legacy records may use this for any loaded camera. New detachable-back records use filmBack instead."
+            },
+            "filmBack": {
+              "type": "string",
+              "format": "at-uri",
+              "description": "Optional app.graycard.instance.filmBack containing this roll. Clients should normally write either filmBack or camera, not both."
             },
             "loadedAt": {
               "type": "string",
               "format": "datetime",
-              "description": "When this roll was loaded into a camera."
+              "description": "When this roll was loaded into its camera or detachable film back."
             },
             "partialAt": {
               "type": "string",
@@ -7069,7 +7276,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "unloadedAt": {
               "type": "string",
               "format": "datetime",
-              "description": "When this roll was unloaded from its camera."
+              "description": "When this roll was unloaded from its camera or detachable film back."
             },
             "sentToLabAt": {
               "type": "string",
@@ -8292,6 +8499,10 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "format": "at-uri"
             },
             "camera": {
+              "type": "string",
+              "format": "at-uri"
+            },
+            "filmBack": {
               "type": "string",
               "format": "at-uri"
             },
@@ -10138,6 +10349,14 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               },
               "description": "app.graycard.instance.camera bodies used in this shoot."
             },
+            "filmBacks": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "at-uri"
+              },
+              "description": "app.graycard.instance.filmBack backs available in this shoot."
+            },
             "lenses": {
               "type": "array",
               "items": {
@@ -10415,6 +10634,10 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "description": "Typed defaults used to create or populate the process session associated with a stage.",
         "properties": {
           "camera": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "filmBack": {
             "type": "string",
             "format": "at-uri"
           },
@@ -11021,6 +11244,10 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "description": "app.graycard.session.capture for the shoot represented by this stage."
           },
           "camera": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "filmBack": {
             "type": "string",
             "format": "at-uri"
           },
@@ -11994,6 +12221,10 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               }
             },
             "defaultCamera": {
+              "type": "string",
+              "format": "at-uri"
+            },
+            "defaultFilmBack": {
               "type": "string",
               "format": "at-uri"
             },

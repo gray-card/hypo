@@ -1,0 +1,7 @@
+{
+  "$type": "app.graycard.instance.filmBack",
+  "type": "at://did:plc:graycard-record-fixtures/app.graycard.catalog.filmBackType/film-back-type",
+  "nickname": "SQ back 1",
+  "serialNumber": "SQ120-001",
+  "createdAt": "2026-10-29T00:00:00.000Z"
+}

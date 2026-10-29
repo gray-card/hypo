@@ -53,7 +53,7 @@ const SUBJECT_FIELDS: Readonly<Record<SessionKind, readonly string[]>> = {
 };
 
 const EQUIPMENT_FIELDS: Readonly<Record<SessionKind, readonly string[]>> = {
-  capture: ["cameras", "lenses", "filters"],
+  capture: ["cameras", "filmBacks", "lenses", "filters"],
   develop: ["lab", "labService"],
   digitize: ["scanner", "camera", "lens", "scanProfile", "labService"],
   edit: ["software", "preset", "recipe"],

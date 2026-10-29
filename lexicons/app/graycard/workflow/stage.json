@@ -46,6 +46,7 @@
           "description": "app.graycard.session.capture for the shoot represented by this stage."
         },
         "camera": { "type": "string", "format": "at-uri" },
+        "filmBack": { "type": "string", "format": "at-uri" },
         "lens": { "type": "string", "format": "at-uri" },
         "filmRoll": { "type": "string", "format": "at-uri" },
         "frameIndex": { "type": "integer", "minimum": 1 },

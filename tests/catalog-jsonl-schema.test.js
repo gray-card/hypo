@@ -121,6 +121,20 @@ const SOURCE_GROUPS = [
     seedOnly: new Set(["datasheetUrl", "exifModel", "image", "source", "wikidata"]),
   },
   {
+    directory: "data/curated-film-backs",
+    nsid: NS.catalog.filmBackType,
+    seedOnly: new Set([
+      "datasheetUrl",
+      "verifiedFields",
+      "sourceKind",
+      "sourceTitle",
+      "sourcePublisher",
+      "sourcePage",
+      "sourceNote",
+      "sourceLanguage",
+    ]),
+  },
+  {
     directory: "data/curated-lenses",
     nsid: NS.catalog.lensType,
     seedOnly: new Set(["datasheetUrl", "image", "source", "wikidata"]),

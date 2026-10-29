@@ -2,6 +2,30 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.7.0] - 2026-10-29
+
+### Added
+
+- Add catalog and physical-instance records for detachable film backs, with an
+  open back-interface identifier shared by compatible camera-body and back
+  types.
+- Seed 92 manufacturer-sourced film magazines and roll-film holders across
+  Bronica, Hasselblad, Mamiya, Fujifilm, Contax, Rollei, Horseman, Linhof,
+  Toyo, Sinar, and Cambo systems, including medium-format, panoramic 35 mm,
+  instant, and view-camera variants.
+- Track the containing film back on a roll and snapshot the camera body, film
+  back, lens, and roll together on each exposure.
+- Include film backs in shoots, photo and gallery capture metadata, workflow
+  defaults, `.frames` imports, and manual frame entry.
+
+### Changed
+
+- Keep the fixed-back camera workflow unchanged while showing film-back
+  controls only when a detachable back exists in the library.
+- Prevent incompatible body/back pairs in the shot logger and reject film-roll
+  records that claim to be loaded directly in a body and in a detachable back
+  at the same time.
+
 ## [1.6.3] - 2026-10-25
 
 ### Changed
@@ -407,3 +431,4 @@ Notable changes to Hypo are recorded here.
 [1.6.1]: https://github.com/gray-card/hypo/compare/v1.6.0...v1.6.1
 [1.6.2]: https://github.com/gray-card/hypo/compare/v1.6.1...v1.6.2
 [1.6.3]: https://github.com/gray-card/hypo/compare/v1.6.2...v1.6.3
+[1.7.0]: https://github.com/gray-card/hypo/compare/v1.6.3...v1.7.0

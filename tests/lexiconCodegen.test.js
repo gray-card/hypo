@@ -12,14 +12,16 @@ describe("generated lexicon package", () => {
   it("derives record namespaces and collection kinds from the schema tree", () => {
     expect(NS.instance.camera).toBe("app.graycard.instance.camera");
     expect(NS.catalog.devRecipe).toBe("app.graycard.catalog.devRecipe");
+    expect(NS.catalog.filmBackType).toBe("app.graycard.catalog.filmBackType");
+    expect(NS.instance.filmBack).toBe("app.graycard.instance.filmBack");
     expect(CATALOG_KINDS).toContain("cameraType");
     expect(INSTANCE_KINDS).toContain("filmRoll");
     expect(new Set(RECORD_NSID_LIST).size).toBe(RECORD_NSID_LIST.length);
-    expect(RECORD_NSID_LIST).toHaveLength(55);
+    expect(RECORD_NSID_LIST).toHaveLength(57);
   });
 
   it("ships every source schema for runtime validation", () => {
-    expect(Object.keys(SCHEMAS)).toHaveLength(59);
+    expect(Object.keys(SCHEMAS)).toHaveLength(61);
     expect(SCHEMAS["app.graycard.defs"].defs.measure.type).toBe("object");
   });
 

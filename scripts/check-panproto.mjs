@@ -8,6 +8,7 @@ import { Panproto } from "@panproto/core";
 const PANPROTO_VERSION = "0.70.1";
 const root = resolve(import.meta.dirname, "..");
 const schemaBin = process.env.PANPROTO_SCHEMA_BIN || "schema";
+const fixtureCount = jsonFiles(join(root, "fixtures", "records")).length;
 
 function run(args, cwd = root) {
   const result = spawnSync(schemaBin, args, {
@@ -45,8 +46,8 @@ try {
 
   run(["init"], sandbox);
   const addOutput = run(["add", ".", "--data", "fixtures/records"], sandbox);
-  if (!addOutput.includes("Staged 4 data file(s)")) {
-    throw new Error(`Panproto did not report the four staged fixtures:\n${addOutput}`);
+  if (!addOutput.includes(`Staged ${fixtureCount} data file(s)`)) {
+    throw new Error(`Panproto did not report all ${fixtureCount} staged fixtures:\n${addOutput}`);
   }
 
   const index = JSON.parse(readFileSync(join(sandbox, ".panproto", "index.json"), "utf8"));
@@ -58,8 +59,8 @@ try {
   if (notes.some((note) => note.includes("no protocol theory registered"))) {
     throw new Error(`ATProto equation checking was bypassed: ${notes.join("; ")}`);
   }
-  if (index.staged_data?.length !== 4) {
-    throw new Error(`expected 4 staged data sets, received ${index.staged_data?.length ?? 0}`);
+  if (index.staged_data?.length !== fixtureCount) {
+    throw new Error(`expected ${fixtureCount} staged data sets, received ${index.staged_data?.length ?? 0}`);
   }
 
   run(["compat", ".", ".", "--protocol", "atproto", "--format", "json"], sandbox);
@@ -88,7 +89,7 @@ if (validation.issues.length !== 0) {
 }
 
 const dataStatus = run(["status", "--data", "fixtures/records"]);
-if (!dataStatus.includes("4 data set(s) tracked at HEAD")) {
+if (!dataStatus.includes(`${fixtureCount} data set(s) tracked at HEAD`)) {
   throw new Error(`the checked-in sidecar does not track the complete corpus:\n${dataStatus}`);
 }
 
@@ -102,7 +103,7 @@ for (const chainPath of chainPaths) {
 
 console.log(
   `Panproto ${PANPROTO_VERSION}: ${documents.length} ${basename(join(root, "lexicons"))} documents, ` +
-    `ATProto equations checked, 4 data fixtures tracked, bundle compat and diff loaded, ` +
+    `ATProto equations checked, ${fixtureCount} data fixtures tracked, bundle compat and diff loaded, ` +
     `${chainPaths.length} chains checked, ` +
     "SDK validation clean.",
 );

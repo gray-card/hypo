@@ -144,10 +144,11 @@ describe("record selectors", () => {
   const shoot = `at://${repo}/app.graycard.session.capture/shoot`;
   const cameraA = `at://${repo}/app.graycard.instance.camera/a`;
   const cameraB = `at://${repo}/app.graycard.instance.camera/b`;
+  const filmBack = `at://${repo}/app.graycard.instance.filmBack/a`;
   const lens = `at://${repo}/app.graycard.instance.lens/a`;
   const exposures: StoredRecord<ExposureValue>[] = [
     { uri: "at://exposure/2b", value: { roll: rollA, shoot, frameNumber: 2, frameExposureIndex: 2, camera: cameraB } },
-    { uri: "at://exposure/1", value: { roll: rollA, shoot, frameNumber: 1, camera: cameraA, lens } },
+    { uri: "at://exposure/1", value: { roll: rollA, shoot, frameNumber: 1, camera: cameraA, filmBack, lens } },
     { uri: "at://exposure/2a", value: { roll: rollA, shoot, frameNumber: 2, frameExposureIndex: 1, camera: cameraB } },
     { uri: "at://exposure/b", value: { roll: rollB, frameNumber: 1 } },
   ];
@@ -178,13 +179,17 @@ describe("record selectors", () => {
   });
 
   it("combines explicit shoot gear with deduplicated exposure inheritance", () => {
-    const result = selectShootGearInheritance({ uri: shoot, value: { cameras: [cameraA], rolls: [rollA] } }, exposures);
+    const result = selectShootGearInheritance(
+      { uri: shoot, value: { cameras: [cameraA], filmBacks: [filmBack], rolls: [rollA] } },
+      exposures,
+    );
     expect(result.camera).toEqual({
       explicit: [cameraA],
       inherited: [cameraB, cameraA],
       effective: [cameraA, cameraB],
     });
     expect(result.lens.effective).toEqual([lens]);
+    expect(result.filmBack).toEqual({ explicit: [filmBack], inherited: [filmBack], effective: [filmBack] });
     expect(result.filmRoll.effective).toEqual([rollA]);
     expect(result.filter).toEqual({ explicit: [], inherited: [], effective: [] });
   });

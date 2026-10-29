@@ -100,6 +100,11 @@ function openTemplateStepConfig(
   };
   if (step.kind === "capture") {
     addSelect("Camera", "camera", createInstanceSelect("camera", String(step.processFields.camera || ""), services));
+    addSelect(
+      "Film back",
+      "filmBack",
+      createInstanceSelect("filmBack", String(step.processFields.filmBack || ""), services),
+    );
     addSelect("Lens", "lens", createInstanceSelect("lens", String(step.processFields.lens || ""), services));
     addSelect(
       "Film roll",
@@ -567,6 +572,7 @@ export function openWorkflowTemplate(
         connections:
           connections.length || topologyTouched || Array.isArray(value.connections) ? connections : undefined,
         defaultCamera: firstStepField(steps, "capture", "camera"),
+        defaultFilmBack: firstStepField(steps, "capture", "filmBack"),
         defaultLens: firstStepField(steps, "capture", "lens"),
         defaultFilmRoll: firstStepField(steps, "capture", "filmRoll"),
         defaultChemistry: firstStepField(steps, "develop", "chemistry"),

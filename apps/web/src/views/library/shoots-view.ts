@@ -58,7 +58,7 @@ export function renderShootsView(body: HTMLElement, services: ShootServices, act
     const search = el("input", {
       type: "search",
       class: "search-input library-filter-input",
-      placeholder: "Search shoots, rolls, cameras, lenses, places…",
+      placeholder: "Search shoots, rolls, cameras, film backs, lenses, places…",
       "aria-label": "Search shoots",
     });
     const sort = el(
@@ -94,7 +94,7 @@ export function renderShootsView(body: HTMLElement, services: ShootServices, act
       return true;
     };
     const dateKey = (shoot: ShootRecord) => shoot.value.startedAt || shoot.value.createdAt || "";
-    const relatedLabels = (shoot: ShootRecord, kind: "camera" | "lens" | "filmRoll") =>
+    const relatedLabels = (shoot: ShootRecord, kind: "camera" | "filmBack" | "lens" | "filmRoll") =>
       effectiveShootGearUris(shoot, kind, services.getStore())
         .map((uri) => (services.getStore().instance[kind] || []).find((record) => record.uri === uri))
         .filter(Boolean)
@@ -104,6 +104,7 @@ export function renderShootsView(body: HTMLElement, services: ShootServices, act
         shoot.value.label,
         shoot.value.notes,
         ...relatedLabels(shoot, "camera"),
+        ...relatedLabels(shoot, "filmBack"),
         ...relatedLabels(shoot, "lens"),
         ...relatedLabels(shoot, "filmRoll"),
         ...(shoot.value.places || []).flatMap((place: Record<string, any>) =>
@@ -122,6 +123,7 @@ export function renderShootsView(body: HTMLElement, services: ShootServices, act
     const renderShootRow = (shoot: ShootRecord) => {
       const shotCount = shootExposures(shoot.uri, services.getStore()).length;
       const cameraCount = effectiveShootGearUris(shoot, "camera", services.getStore()).length;
+      const backCount = effectiveShootGearUris(shoot, "filmBack", services.getStore()).length;
       const rollCount = effectiveShootGearUris(shoot, "filmRoll", services.getStore()).length;
       const started = shoot.value.startedAt || shoot.value.createdAt;
       const date = started
@@ -136,6 +138,9 @@ export function renderShootsView(body: HTMLElement, services: ShootServices, act
           !shoot.value.endedAt ? el("span", { class: "status-chip active" }, "in progress") : null,
           cameraCount
             ? el("span", { class: "muted small" }, `· ${cameraCount} camera${cameraCount === 1 ? "" : "s"}`)
+            : null,
+          backCount
+            ? el("span", { class: "muted small" }, `· ${backCount} film back${backCount === 1 ? "" : "s"}`)
             : null,
           rollCount ? el("span", { class: "muted small" }, `· ${rollCount} roll${rollCount === 1 ? "" : "s"}`) : null,
           shotCount ? el("span", { class: "muted small" }, `· ${shotCount} shot${shotCount === 1 ? "" : "s"}`) : null,
