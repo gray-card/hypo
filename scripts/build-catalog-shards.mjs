@@ -20,6 +20,7 @@ const DOMAIN_SOURCES = {
   ],
   "dev-times": [["curated-dev-times.json", "recipes", "devRecipe"]],
   "film-stocks": [["curated-film-stocks.json", "stocks", "filmStock"]],
+  "film-backs": [["curated-film-backs.json", "filmBacks", "filmBackType"]],
   "darkroom-products": [
     ["curated-darkroom-products.json", "developers", "chemistryType", "developer"],
     ["curated-darkroom-products.json", "chemistries", "chemistryType"],

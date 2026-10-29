@@ -9,6 +9,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 export const CATALOG_COLLECTIONS = [
   { file: "src/data/curated-cameras.json", field: "cameras", keys: ["make", "model"] },
+  { file: "src/data/curated-film-backs.json", field: "filmBacks", keys: ["make", "model"] },
   { file: "src/data/curated-lenses.json", field: "lenses", keys: ["make", "model", "mount"] },
   {
     file: "src/data/curated-dev-times.json",

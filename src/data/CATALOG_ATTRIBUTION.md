@@ -32,6 +32,19 @@ on each record as `exifModel`. Per CC-BY-SA 3.0 these files are redistributed un
 the **same license**, with attribution to the lensfun project and an indication that
 changes were made. lensfun is the single source of truth for digital camera bodies.
 
+## Detachable film backs and magazines
+
+`data/curated-film-backs/*.jsonl` is Hypo's original compilation of detachable
+film magazines, instant backs, and view-camera roll-film holders across eleven
+manufacturers. Model names, physical interfaces, film formats, and nominal frame
+counts are transcribed from linked manufacturer manuals, catalogs, support pages,
+and product pages. The
+build converts each row's exact document metadata and `verifiedFields` into
+schema-native `documents` and field-level `specSources`; no linked manual or
+catalog is copied into the repository. Compatible rows in
+`data/curated-cameras/` carry the same open `backInterface` value, while cameras
+whose film chamber is integral remain unannotated.
+
 ## Wikidata: canonical identifiers + images
 
 When present, `wikidata` QIDs are resolved from **Wikidata** (<https://www.wikidata.org>),

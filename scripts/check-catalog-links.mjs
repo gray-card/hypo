@@ -5,7 +5,13 @@ import { dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const DATA_ROOTS = ["curated-cameras", "curated-dev-times", "curated-film-stocks", "curated-lenses"];
+const DATA_ROOTS = [
+  "curated-cameras",
+  "curated-dev-times",
+  "curated-film-backs",
+  "curated-film-stocks",
+  "curated-lenses",
+];
 
 function visit(value, key, found, source) {
   if (Array.isArray(value)) {

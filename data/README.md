@@ -1,7 +1,7 @@
 # Hypo catalog data
 
-This directory contains the human-editable sources for Hypo's camera, lens, film,
-and darkroom catalogs, plus a vendored snapshot of the Lensfun correction
+This directory contains the human-editable sources for Hypo's camera, film-back,
+lens, film, and darkroom catalogs, plus a vendored snapshot of the Lensfun correction
 database. The build pipeline turns these sources into the generated catalog files
 under `src/data/`.
 
@@ -10,6 +10,7 @@ under `src/data/`.
 | Path                   | Contents                                                                     |
 | ---------------------- | ---------------------------------------------------------------------------- |
 | `curated-cameras/`     | Camera bodies not supplied by Lensfun                                        |
+| `curated-film-backs/`  | Detachable film magazines and roll-film backs from primary sources           |
 | `curated-lenses/`      | Lenses not supplied by Lensfun                                               |
 | `curated-film-stocks/` | Film specifications compiled from primary sources                            |
 | `curated-dev-times/`   | Development recipes transcribed from manufacturer technical sheets           |

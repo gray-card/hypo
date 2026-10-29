@@ -9,6 +9,10 @@ Notable changes to Hypo are recorded here.
 - Add catalog and physical-instance records for detachable film backs, with an
   open back-interface identifier shared by compatible camera-body and back
   types.
+- Seed 92 manufacturer-sourced film magazines and roll-film holders across
+  Bronica, Hasselblad, Mamiya, Fujifilm, Contax, Rollei, Horseman, Linhof,
+  Toyo, Sinar, and Cambo systems, including medium-format, panoramic 35 mm,
+  instant, and view-camera variants.
 - Track the containing film back on a roll and snapshot the camera body, film
   back, lens, and roll together on each exposure.
 - Include film backs in shoots, photo and gallery capture metadata, workflow

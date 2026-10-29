@@ -1,0 +1,3951 @@
+{
+  "_source": "film-back models and compatibility transcribed from manufacturer manuals, catalogs, and product pages in data/curated-film-backs/*.jsonl",
+  "_license": "Hypo's original compilation: CC-BY-SA 4.0; individual product specifications may be non-copyrightable facts. See data/LICENSE.md",
+  "_generated": "2026-10-29T19:38:53.646Z",
+  "filmBacks": [
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ 120",
+      "alternativeNames": [
+        "SQ120"
+      ],
+      "backInterface": "Bronica SQ",
+      "format": "120",
+      "exposuresTotal": 12,
+      "notes": "6×6 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_a.htm",
+            "title": "Bronica SQ-A specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_a.htm",
+              "title": "Bronica SQ-A specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ 220",
+      "alternativeNames": [
+        "SQ220"
+      ],
+      "backInterface": "Bronica SQ",
+      "format": "220",
+      "exposuresTotal": 24,
+      "notes": "6×6 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_a.htm",
+            "title": "Bronica SQ-A specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_a.htm",
+              "title": "Bronica SQ-A specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ J120",
+      "alternativeNames": [
+        "J120"
+      ],
+      "backInterface": "Bronica SQ",
+      "format": "120",
+      "notes": "Japanese-market SQ-series 120 magazine named in Tamron's compatibility table.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+            "title": "Bronica SQ-Basic specifications and compatibility",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+              "title": "Bronica SQ-Basic specifications and compatibility",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ J220",
+      "alternativeNames": [
+        "J220"
+      ],
+      "backInterface": "Bronica SQ",
+      "format": "220",
+      "notes": "Japanese-market SQ-series 220 magazine named in Tamron's compatibility table.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+            "title": "Bronica SQ-Basic specifications and compatibility",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+              "title": "Bronica SQ-Basic specifications and compatibility",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ 135N",
+      "alternativeNames": [
+        "SQ 135N"
+      ],
+      "backInterface": "Bronica SQ",
+      "format": "135",
+      "notes": "Normal 35 mm frame magazine.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+            "title": "Bronica SQ-Basic specifications and compatibility",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+              "title": "Bronica SQ-Basic specifications and compatibility",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ 135W",
+      "alternativeNames": [
+        "SQ 135W"
+      ],
+      "backInterface": "Bronica SQ",
+      "format": "135",
+      "notes": "Wide panoramic 35 mm frame magazine.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+            "title": "Bronica SQ-Basic specifications and compatibility",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+              "title": "Bronica SQ-Basic specifications and compatibility",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Polaroid Film Back S",
+      "backInterface": "Bronica SQ",
+      "format": "peel-apart",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+            "title": "Bronica SQ-Basic specifications and compatibility",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+              "title": "Bronica SQ-Basic specifications and compatibility",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ-i 120",
+      "alternativeNames": [
+        "SQ-i120"
+      ],
+      "backInterface": "Bronica SQ",
+      "format": "120",
+      "exposuresTotal": 12,
+      "notes": "6×6 cm frame format; later SQ-i generation.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_ai.htm",
+            "title": "Bronica SQ-Ai specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_ai.htm",
+              "title": "Bronica SQ-Ai specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ-i 220",
+      "alternativeNames": [
+        "SQ-i220"
+      ],
+      "backInterface": "Bronica SQ",
+      "format": "220",
+      "exposuresTotal": 24,
+      "notes": "6×6 cm frame format; later SQ-i generation.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_ai.htm",
+            "title": "Bronica SQ-Ai specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_ai.htm",
+              "title": "Bronica SQ-Ai specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ-i 120J",
+      "alternativeNames": [
+        "SQ-i120J"
+      ],
+      "backInterface": "Bronica SQ",
+      "format": "120",
+      "notes": "Japanese-market later-generation SQ-series magazine.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+            "title": "Bronica SQ-Basic specifications and compatibility",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+              "title": "Bronica SQ-Basic specifications and compatibility",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ-i 220J",
+      "alternativeNames": [
+        "SQ-i220J"
+      ],
+      "backInterface": "Bronica SQ",
+      "format": "220",
+      "notes": "Japanese-market later-generation SQ-series magazine.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+            "title": "Bronica SQ-Basic specifications and compatibility",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+              "title": "Bronica SQ-Basic specifications and compatibility",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ-i 135N",
+      "backInterface": "Bronica SQ",
+      "format": "135",
+      "notes": "Normal 35 mm frame magazine; later SQ-i generation.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+            "title": "Bronica SQ-Basic specifications and compatibility",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+              "title": "Bronica SQ-Basic specifications and compatibility",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ-i 135W",
+      "backInterface": "Bronica SQ",
+      "format": "135",
+      "notes": "Wide panoramic 35 mm frame magazine; later SQ-i generation.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+            "title": "Bronica SQ-Basic specifications and compatibility",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+              "title": "Bronica SQ-Basic specifications and compatibility",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Polaroid Film Back SQ-i",
+      "backInterface": "Bronica SQ",
+      "format": "peel-apart",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+            "title": "Bronica SQ-Basic specifications and compatibility",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+              "title": "Bronica SQ-Basic specifications and compatibility",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back SQ/B 120",
+      "alternativeNames": [
+        "SQ/B120"
+      ],
+      "backInterface": "Bronica SQ",
+      "format": "120",
+      "exposuresTotal": 12,
+      "notes": "Standard magazine supplied with the SQ-Basic.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+            "title": "Bronica SQ-Basic specifications and compatibility",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/sq_basic.htm",
+              "title": "Bronica SQ-Basic specifications and compatibility",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back Ei 120",
+      "alternativeNames": [
+        "Ei120"
+      ],
+      "backInterface": "Bronica ETR",
+      "format": "120",
+      "exposuresTotal": 15,
+      "notes": "6×4.5 cm frame format; standard ETRSi magazine.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/etrsi.htm",
+            "title": "Bronica ETRSi specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/etrsi.htm",
+              "title": "Bronica ETRSi specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back Ei 220",
+      "alternativeNames": [
+        "Ei220"
+      ],
+      "backInterface": "Bronica ETR",
+      "format": "220",
+      "notes": "6×4.5 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/etrsi.htm",
+            "title": "Bronica ETRSi specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/etrsi.htm",
+              "title": "Bronica ETRSi specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back ETR 135N",
+      "backInterface": "Bronica ETR",
+      "format": "135",
+      "notes": "Normal 35 mm frame magazine.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/etrsi.htm",
+            "title": "Bronica ETRSi specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/etrsi.htm",
+              "title": "Bronica ETRSi specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back ETR 135W",
+      "backInterface": "Bronica ETR",
+      "format": "135",
+      "notes": "Wide panoramic 35 mm frame magazine.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/etrsi.htm",
+            "title": "Bronica ETRSi specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/etrsi.htm",
+              "title": "Bronica ETRSi specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Polaroid Film Back E",
+      "backInterface": "Bronica ETR",
+      "format": "peel-apart",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/etrsi.htm",
+            "title": "Bronica ETRSi specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/etrsi.htm",
+              "title": "Bronica ETRSi specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back GS 120 6×7",
+      "alternativeNames": [
+        "GS120 (6×7)"
+      ],
+      "backInterface": "Bronica GS",
+      "format": "120",
+      "exposuresTotal": 10,
+      "notes": "6×7 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/gs1.htm",
+            "title": "Bronica GS-1 specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/gs1.htm",
+              "title": "Bronica GS-1 specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Film Back GS 220 6×7",
+      "alternativeNames": [
+        "GS220 (6×7)"
+      ],
+      "backInterface": "Bronica GS",
+      "format": "220",
+      "notes": "6×7 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/gs1.htm",
+            "title": "Bronica GS-1 specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/gs1.htm",
+              "title": "Bronica GS-1 specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "Polaroid Film Back G",
+      "backInterface": "Bronica GS",
+      "format": "peel-apart",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/gs1.htm",
+            "title": "Bronica GS-1 specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/gs1.htm",
+              "title": "Bronica GS-1 specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "EC Film Back 120/220",
+      "backInterface": "Bronica EC",
+      "notes": "Switchable 12/24-exposure 6×6 magazine for 120 or 220 film.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/ec.htm",
+            "title": "Bronica EC specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/ec.htm",
+              "title": "Bronica EC specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Bronica",
+      "model": "S2 Film Back 120/220",
+      "backInterface": "Bronica S2",
+      "notes": "Interchangeable 6×6 magazine for 120 or 220 film.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/s2.htm",
+            "title": "Bronica S2 specifications",
+            "source": "Tamron Co., Ltd."
+          },
+          "publisher": "Tamron Co., Ltd.",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.tamron.com/jp/consumer/lenses/data/bronica/s2.htm",
+              "title": "Bronica S2 specifications",
+              "source": "Tamron Co., Ltd."
+            },
+            "publisher": "Tamron Co., Ltd.",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Roll Film Holder III 6×8cm N",
+      "alternativeNames": [
+        "Roll Film Holder III N",
+        "IIIN"
+      ],
+      "backInterface": "Fujifilm GX680",
+      "notes": "Revolving multi-format holder; accepts separate 120 and 220 inner frames and 6×7, 6×6, and 6×4.5 masks in addition to its native 6×8 format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://fujifilm.jp/personal/filmandcamera/filmcamera/mediumformat/gx680iii/accessories.html",
+            "title": "GX680III/IIIS Professional accessories",
+            "source": "Fujifilm Corporation"
+          },
+          "publisher": "Fujifilm Corporation",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://fujifilm.jp/personal/filmandcamera/filmcamera/mediumformat/gx680iii/accessories.html",
+              "title": "GX680III/IIIS Professional accessories",
+              "source": "Fujifilm Corporation"
+            },
+            "publisher": "Fujifilm Corporation",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Fujifilm",
+      "model": "Instant Film Holder II",
+      "backInterface": "Fujifilm GX680",
+      "format": "peel-apart",
+      "notes": "Revolving instant holder with a manual portrait/landscape mask; accepts Fujifilm FP-100C, FP-100B, and equivalent pack film.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://fujifilm.jp/personal/filmandcamera/filmcamera/mediumformat/gx680iii/accessories.html",
+            "title": "GX680III/IIIS Professional accessories",
+            "source": "Fujifilm Corporation"
+          },
+          "publisher": "Fujifilm Corporation",
+          "language": "ja",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://fujifilm.jp/personal/filmandcamera/filmcamera/mediumformat/gx680iii/accessories.html",
+              "title": "GX680III/IIIS Professional accessories",
+              "source": "Fujifilm Corporation"
+            },
+            "publisher": "Fujifilm Corporation",
+            "language": "ja",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Contax",
+      "model": "Film Back Holder MFB-1",
+      "alternativeNames": [
+        "MFB-1"
+      ],
+      "backInterface": "Contax 645",
+      "notes": "Detachable 6×4.5 cm film back accepting the reversible MFB-1A 120/220 insert and the MFB-1B 220 vacuum insert.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.instructionsmanuals.com/sites/default/files/2019-06/Contax-645-en.pdf",
+            "title": "Contax 645 Instruction Manual",
+            "source": "Kyocera Corporation"
+          },
+          "publisher": "Kyocera Corporation",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.instructionsmanuals.com/sites/default/files/2019-06/Contax-645-en.pdf",
+              "title": "Contax 645 Instruction Manual",
+              "source": "Kyocera Corporation"
+            },
+            "publisher": "Kyocera Corporation",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "page": "25, 84",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Contax",
+      "model": "Polaroid Back MFB-2",
+      "alternativeNames": [
+        "MFB-2"
+      ],
+      "backInterface": "Contax 645",
+      "format": "peel-apart",
+      "notes": "Instant-proofing back for the Contax 645 system.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.instructionsmanuals.com/sites/default/files/2019-06/Contax-645-en.pdf",
+            "title": "Contax 645 Instruction Manual",
+            "source": "Kyocera Corporation"
+          },
+          "publisher": "Kyocera Corporation",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.instructionsmanuals.com/sites/default/files/2019-06/Contax-645-en.pdf",
+              "title": "Contax 645 Instruction Manual",
+              "source": "Kyocera Corporation"
+            },
+            "publisher": "Kyocera Corporation",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "page": "84",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Hasselblad",
+      "model": "Magazine A12",
+      "alternativeNames": [
+        "A12"
+      ],
+      "backInterface": "Hasselblad V",
+      "format": "120",
+      "exposuresTotal": 12,
+      "notes": "6×6 cm frame format.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cdn.hasselblad.com/manuals/503CWD-User-Manual/1.0.0.0/503CWD%2BUser%2BManual%2B%28EN%29%2B.PDF",
+            "title": "503CWD User Manual",
+            "source": "Hasselblad"
+          },
+          "publisher": "Hasselblad",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cdn.hasselblad.com/manuals/503CWD-User-Manual/1.0.0.0/503CWD%2BUser%2BManual%2B%28EN%29%2B.PDF",
+              "title": "503CWD User Manual",
+              "source": "Hasselblad"
+            },
+            "publisher": "Hasselblad",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "79",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Hasselblad",
+      "model": "Magazine A16",
+      "alternativeNames": [
+        "A16"
+      ],
+      "backInterface": "Hasselblad V",
+      "format": "120",
+      "exposuresTotal": 16,
+      "notes": "6×4.5 cm frame format.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+            "title": "501CM & 503CW User Manual",
+            "source": "Hasselblad"
+          },
+          "publisher": "Hasselblad",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+              "title": "501CM & 503CW User Manual",
+              "source": "Hasselblad"
+            },
+            "publisher": "Hasselblad",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "63",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Hasselblad",
+      "model": "Magazine A24",
+      "alternativeNames": [
+        "A24"
+      ],
+      "backInterface": "Hasselblad V",
+      "format": "220",
+      "exposuresTotal": 24,
+      "notes": "6×6 cm frame format.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+            "title": "501CM & 503CW User Manual",
+            "source": "Hasselblad"
+          },
+          "publisher": "Hasselblad",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+              "title": "501CM & 503CW User Manual",
+              "source": "Hasselblad"
+            },
+            "publisher": "Hasselblad",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "63",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Hasselblad",
+      "model": "Magazine E12",
+      "alternativeNames": [
+        "E12"
+      ],
+      "backInterface": "Hasselblad V",
+      "format": "120",
+      "exposuresTotal": 12,
+      "notes": "Electronic 6×6 cm magazine for metered V-system bodies.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+            "title": "501CM & 503CW User Manual",
+            "source": "Hasselblad"
+          },
+          "publisher": "Hasselblad",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+              "title": "501CM & 503CW User Manual",
+              "source": "Hasselblad"
+            },
+            "publisher": "Hasselblad",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "63",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Hasselblad",
+      "model": "Magazine E12CC",
+      "alternativeNames": [
+        "E12CC"
+      ],
+      "backInterface": "Hasselblad V",
+      "format": "120",
+      "exposuresTotal": 12,
+      "notes": "Electronic 6×6 cm magazine variant.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+            "title": "501CM & 503CW User Manual",
+            "source": "Hasselblad"
+          },
+          "publisher": "Hasselblad",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+              "title": "501CM & 503CW User Manual",
+              "source": "Hasselblad"
+            },
+            "publisher": "Hasselblad",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "63",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Hasselblad",
+      "model": "Magazine E16",
+      "alternativeNames": [
+        "E16"
+      ],
+      "backInterface": "Hasselblad V",
+      "format": "120",
+      "exposuresTotal": 16,
+      "notes": "Electronic 6×4.5 cm magazine.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+            "title": "501CM & 503CW User Manual",
+            "source": "Hasselblad"
+          },
+          "publisher": "Hasselblad",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+              "title": "501CM & 503CW User Manual",
+              "source": "Hasselblad"
+            },
+            "publisher": "Hasselblad",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "63",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Hasselblad",
+      "model": "Magazine E24",
+      "alternativeNames": [
+        "E24"
+      ],
+      "backInterface": "Hasselblad V",
+      "format": "220",
+      "exposuresTotal": 24,
+      "notes": "Electronic 6×6 cm magazine.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+            "title": "501CM & 503CW User Manual",
+            "source": "Hasselblad"
+          },
+          "publisher": "Hasselblad",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+              "title": "501CM & 503CW User Manual",
+              "source": "Hasselblad"
+            },
+            "publisher": "Hasselblad",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "63",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Hasselblad",
+      "model": "Polaroid Magazine",
+      "alternativeNames": [
+        "Pola"
+      ],
+      "backInterface": "Hasselblad V",
+      "format": "peel-apart",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+            "title": "501CM & 503CW User Manual",
+            "source": "Hasselblad"
+          },
+          "publisher": "Hasselblad",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cdn.hasselblad.com/manuals/501CM_%26_503CW_Manual/1.0.0.0/501CM--503CW.pdf",
+              "title": "501CM & 503CW User Manual",
+              "source": "Hasselblad"
+            },
+            "publisher": "Hasselblad",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "page": "63",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Hasselblad",
+      "model": "HM 16-32 Film Magazine",
+      "alternativeNames": [
+        "HM 16-32"
+      ],
+      "backInterface": "Hasselblad H",
+      "notes": "Automatically supports 120 (16 frames) and 220 (32 frames) film in the H system.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cdn.hasselblad.com/archive/2016/01/uk_h3d_manual_v4.pdf",
+            "title": "H3D User Manual",
+            "source": "Hasselblad"
+          },
+          "publisher": "Hasselblad",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cdn.hasselblad.com/archive/2016/01/uk_h3d_manual_v4.pdf",
+              "title": "H3D User Manual",
+              "source": "Hasselblad"
+            },
+            "publisher": "Hasselblad",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "page": "115",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Pro-SD 120 Roll Film Holder HA701",
+      "alternativeNames": [
+        "HA701"
+      ],
+      "backInterface": "Mamiya RB67",
+      "format": "120",
+      "exposuresTotal": 10,
+      "notes": "6×7 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+            "title": "Mamiya RB67 Pro SD system overview",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+              "title": "Mamiya RB67 Pro SD system overview",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Pro-SD 220 Roll Film Holder HB701",
+      "alternativeNames": [
+        "HB701"
+      ],
+      "backInterface": "Mamiya RB67",
+      "format": "220",
+      "exposuresTotal": 20,
+      "notes": "6×7 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+            "title": "Mamiya RB67 Pro SD system overview",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+              "title": "Mamiya RB67 Pro SD system overview",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Pro-S 120 Roll Film Holder",
+      "backInterface": "Mamiya RB67",
+      "format": "120",
+      "exposuresTotal": 10,
+      "notes": "6×7 cm frame format; compatible with Pro-SD bodies.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.mamiya.uk/downloads",
+            "title": "Mamiya RB67 Pro-S brochure and Pro-SD manual downloads",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.mamiya.uk/downloads",
+              "title": "Mamiya RB67 Pro-S brochure and Pro-SD manual downloads",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Pro-S 220 Roll Film Holder",
+      "backInterface": "Mamiya RB67",
+      "format": "220",
+      "exposuresTotal": 20,
+      "notes": "6×7 cm frame format; compatible with Pro-SD bodies.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.mamiya.uk/downloads",
+            "title": "Mamiya RB67 Pro-S brochure and Pro-SD manual downloads",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.mamiya.uk/downloads",
+              "title": "Mamiya RB67 Pro-S brochure and Pro-SD manual downloads",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Roll Film Holder 6×4.5 HA702",
+      "alternativeNames": [
+        "HA702"
+      ],
+      "backInterface": "Mamiya RB67",
+      "format": "120",
+      "exposuresTotal": 15,
+      "notes": "6×4.5 cm frame format; supplied with a finder mask.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+            "title": "Mamiya RB67 Pro SD system overview",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+              "title": "Mamiya RB67 Pro SD system overview",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Power Drive Roll Film Holder 6×7",
+      "backInterface": "Mamiya RB67",
+      "notes": "Motorized 6×7 cm holder accepting 120 or 220 film.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+            "title": "Mamiya RB67 Pro SD system overview",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+              "title": "Mamiya RB67 Pro SD system overview",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Power Drive Roll Film Holder 6×8",
+      "backInterface": "Mamiya RB67",
+      "notes": "Motorized 6×8 cm holder accepting 120 or 220 film.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+            "title": "Mamiya RB67 Pro SD system overview",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+              "title": "Mamiya RB67 Pro SD system overview",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "70mm Roll Film Holder",
+      "backInterface": "Mamiya RB67",
+      "format": "70mm",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+            "title": "Mamiya RB67 Pro SD system overview",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+              "title": "Mamiya RB67 Pro SD system overview",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Polaroid Pack Film Holder HP701",
+      "alternativeNames": [
+        "HP701"
+      ],
+      "backInterface": "Mamiya RB67",
+      "format": "peel-apart",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+            "title": "Mamiya RB67 Pro SD system overview",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/cameras/rb67prosd/index.html",
+              "title": "Mamiya RB67 Pro SD system overview",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "RZ 120 Roll Film Holder HA703",
+      "alternativeNames": [
+        "HA703"
+      ],
+      "backInterface": "Mamiya RZ67",
+      "format": "120",
+      "exposuresTotal": 10,
+      "notes": "6×7 cm frame format for the RZ67 Pro IID system.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.mamiya.uk/downloads",
+            "title": "Mamiya RZ67 Pro IID brochure download",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.mamiya.uk/downloads",
+              "title": "Mamiya RZ67 Pro IID brochure download",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "RZ 220 Roll Film Holder HB702",
+      "alternativeNames": [
+        "HB702"
+      ],
+      "backInterface": "Mamiya RZ67",
+      "format": "220",
+      "exposuresTotal": 20,
+      "notes": "6×7 cm frame format for the RZ67 Pro IID system.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.mamiya.uk/downloads",
+            "title": "Mamiya RZ67 Pro IID brochure download",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.mamiya.uk/downloads",
+              "title": "Mamiya RZ67 Pro IID brochure download",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "RZ 6×4.5 120 Roll Film Holder HA704",
+      "alternativeNames": [
+        "HA704"
+      ],
+      "backInterface": "Mamiya RZ67",
+      "format": "120",
+      "exposuresTotal": 15,
+      "notes": "6×4.5 cm frame format; supplied with a finder mask.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.mamiya.uk/downloads",
+            "title": "Mamiya RZ67 Pro IID brochure download",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.mamiya.uk/downloads",
+              "title": "Mamiya RZ67 Pro IID brochure download",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "RZ Polaroid Land Pack Film Back HP702",
+      "alternativeNames": [
+        "HP702"
+      ],
+      "backInterface": "Mamiya RZ67",
+      "format": "peel-apart",
+      "notes": "69.5×69.5 mm image area.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.mamiya.uk/downloads",
+            "title": "Mamiya RZ67 Pro IID brochure download",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.mamiya.uk/downloads",
+              "title": "Mamiya RZ67 Pro IID brochure download",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "645 120 Roll Film Holder HA401",
+      "alternativeNames": [
+        "HA401"
+      ],
+      "backInterface": "Mamiya 645 manual-focus",
+      "format": "120",
+      "exposuresTotal": 15,
+      "notes": "6×4.5 cm frame format for 645 Super, Pro, and Pro TL bodies.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/cameras/645/index.html",
+            "title": "Mamiya 645 Pro system overview",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/cameras/645/index.html",
+              "title": "Mamiya 645 Pro system overview",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "645 220 Roll Film Holder",
+      "backInterface": "Mamiya 645 manual-focus",
+      "format": "220",
+      "exposuresTotal": 30,
+      "notes": "6×4.5 cm frame format for 645 Super, Pro, and Pro TL bodies.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/cameras/645/index.html",
+            "title": "Mamiya 645 Pro system overview",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/cameras/645/index.html",
+              "title": "Mamiya 645 Pro system overview",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "645 35mm Magazine",
+      "backInterface": "Mamiya 645 manual-focus",
+      "format": "135",
+      "notes": "Includes standard 35 mm and 13×36 mm panoramic masks.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/cameras/645/index.html",
+            "title": "Mamiya 645 Pro system overview",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/cameras/645/index.html",
+              "title": "Mamiya 645 Pro system overview",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "645 Polaroid Back",
+      "backInterface": "Mamiya 645 manual-focus",
+      "format": "peel-apart",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/cameras/645/index.html",
+            "title": "Mamiya 645 Pro system overview",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/cameras/645/index.html",
+              "title": "Mamiya 645 Pro system overview",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "645 AF 120/220 Roll Film Back",
+      "backInterface": "Mamiya 645 AF",
+      "notes": "Switchable 6×4.5 cm back: 16 frames on 120 or 32 frames on 220 film.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://mamiya.co.uk/popup_page-afd2_spec.html",
+            "title": "Mamiya 645 AFDII body specifications",
+            "source": "Mamiya UK"
+          },
+          "publisher": "Mamiya UK",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://mamiya.co.uk/popup_page-afd2_spec.html",
+              "title": "Mamiya 645 AFDII body specifications",
+              "source": "Mamiya UK"
+            },
+            "publisher": "Mamiya UK",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Press Roll Film Holder Model 2 6×9",
+      "alternativeNames": [
+        "656180"
+      ],
+      "backInterface": "Mamiya Press M",
+      "notes": "6×9 cm holder accepting 120 (8 frames) or 220 (16 frames) film.",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/02624/02624.pdf",
+            "title": "Mamiya Universal Press Compact Multi-Format Camera",
+            "source": "Bell & Howell/Mamiya Company"
+          },
+          "publisher": "Bell & Howell/Mamiya Company",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/02624/02624.pdf",
+              "title": "Mamiya Universal Press Compact Multi-Format Camera",
+              "source": "Bell & Howell/Mamiya Company"
+            },
+            "publisher": "Bell & Howell/Mamiya Company",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "page": "accessories",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Press Roll Film Holder Model 2 6×7",
+      "alternativeNames": [
+        "656181"
+      ],
+      "backInterface": "Mamiya Press M",
+      "notes": "6×7 cm holder accepting 120 (10 frames) or 220 (20 frames) film.",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/02624/02624.pdf",
+            "title": "Mamiya Universal Press Compact Multi-Format Camera",
+            "source": "Bell & Howell/Mamiya Company"
+          },
+          "publisher": "Bell & Howell/Mamiya Company",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/02624/02624.pdf",
+              "title": "Mamiya Universal Press Compact Multi-Format Camera",
+              "source": "Bell & Howell/Mamiya Company"
+            },
+            "publisher": "Bell & Howell/Mamiya Company",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "page": "accessories",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Press Roll Film Holder Model K",
+      "alternativeNames": [
+        "656182"
+      ],
+      "backInterface": "Mamiya Press M",
+      "format": "120",
+      "notes": "Multi-format holder for 6×9 (8 frames), 6×6 (12 frames), or 6×4.5 cm (16 frames) images on 120 film.",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/02624/02624.pdf",
+            "title": "Mamiya Universal Press Compact Multi-Format Camera",
+            "source": "Bell & Howell/Mamiya Company"
+          },
+          "publisher": "Bell & Howell/Mamiya Company",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/02624/02624.pdf",
+              "title": "Mamiya Universal Press Compact Multi-Format Camera",
+              "source": "Bell & Howell/Mamiya Company"
+            },
+            "publisher": "Bell & Howell/Mamiya Company",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "page": "accessories",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Polaroid Film Holder Model 2",
+      "alternativeNames": [
+        "655321"
+      ],
+      "backInterface": "Mamiya Press M",
+      "format": "peel-apart",
+      "notes": "Instant-film holder listed for the Universal Press system.",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/02624/02624.pdf",
+            "title": "Mamiya Universal Press Compact Multi-Format Camera",
+            "source": "Bell & Howell/Mamiya Company"
+          },
+          "publisher": "Bell & Howell/Mamiya Company",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/02624/02624.pdf",
+              "title": "Mamiya Universal Press Compact Multi-Format Camera",
+              "source": "Bell & Howell/Mamiya Company"
+            },
+            "publisher": "Bell & Howell/Mamiya Company",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "page": "accessories",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Mamiya",
+      "model": "Polaroid Film Holder M80",
+      "alternativeNames": [
+        "655322"
+      ],
+      "backInterface": "Mamiya Press M",
+      "format": "peel-apart",
+      "notes": "Instant-film holder listed for the Universal Press system.",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/02624/02624.pdf",
+            "title": "Mamiya Universal Press Compact Multi-Format Camera",
+            "source": "Bell & Howell/Mamiya Company"
+          },
+          "publisher": "Bell & Howell/Mamiya Company",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/02624/02624.pdf",
+              "title": "Mamiya Universal Press Compact Multi-Format Camera",
+              "source": "Bell & Howell/Mamiya Company"
+            },
+            "publisher": "Bell & Howell/Mamiya Company",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "page": "accessories",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Horseman",
+      "model": "Roll Film Holder Model 1",
+      "backInterface": "Horseman 6×9",
+      "format": "120",
+      "exposuresTotal": 8,
+      "notes": "6×9 cm holder for Horseman 6×9 cameras and rotary backs.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+            "title": "Horseman Roll Film Holder Owner's Manual",
+            "source": "Kenko Professional Imaging Co., Ltd."
+          },
+          "publisher": "Kenko Professional Imaging Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+              "title": "Horseman Roll Film Holder Owner's Manual",
+              "source": "Kenko Professional Imaging Co., Ltd."
+            },
+            "publisher": "Kenko Professional Imaging Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "10",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Horseman",
+      "model": "Roll Film Holder Model 2",
+      "backInterface": "Horseman 6×9",
+      "format": "120",
+      "exposuresTotal": 10,
+      "notes": "6×7 cm holder for Horseman 6×9 cameras and rotary backs.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+            "title": "Horseman Roll Film Holder Owner's Manual",
+            "source": "Kenko Professional Imaging Co., Ltd."
+          },
+          "publisher": "Kenko Professional Imaging Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+              "title": "Horseman Roll Film Holder Owner's Manual",
+              "source": "Kenko Professional Imaging Co., Ltd."
+            },
+            "publisher": "Kenko Professional Imaging Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "10",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Horseman",
+      "model": "Roll Film Holder Model 3",
+      "backInterface": "Horseman 6×9",
+      "format": "220",
+      "exposuresTotal": 16,
+      "notes": "6×9 cm holder for Horseman 6×9 cameras and rotary backs.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+            "title": "Horseman Roll Film Holder Owner's Manual",
+            "source": "Kenko Professional Imaging Co., Ltd."
+          },
+          "publisher": "Kenko Professional Imaging Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+              "title": "Horseman Roll Film Holder Owner's Manual",
+              "source": "Kenko Professional Imaging Co., Ltd."
+            },
+            "publisher": "Kenko Professional Imaging Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "10",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Horseman",
+      "model": "Roll Film Holder Model 4",
+      "backInterface": "Horseman 6×9",
+      "format": "220",
+      "exposuresTotal": 20,
+      "notes": "6×7 cm holder for Horseman 6×9 cameras and rotary backs.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+            "title": "Horseman Roll Film Holder Owner's Manual",
+            "source": "Kenko Professional Imaging Co., Ltd."
+          },
+          "publisher": "Kenko Professional Imaging Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+              "title": "Horseman Roll Film Holder Owner's Manual",
+              "source": "Kenko Professional Imaging Co., Ltd."
+            },
+            "publisher": "Kenko Professional Imaging Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "10",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Horseman",
+      "model": "Roll Film Holder 451",
+      "backInterface": "International/Graflok 4×5",
+      "format": "120",
+      "exposuresTotal": 8,
+      "notes": "6×9 cm holder for 4×5 camera backs.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+            "title": "Horseman Roll Film Holder Owner's Manual",
+            "source": "Kenko Professional Imaging Co., Ltd."
+          },
+          "publisher": "Kenko Professional Imaging Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+              "title": "Horseman Roll Film Holder Owner's Manual",
+              "source": "Kenko Professional Imaging Co., Ltd."
+            },
+            "publisher": "Kenko Professional Imaging Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "10",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Horseman",
+      "model": "Roll Film Holder 452",
+      "backInterface": "International/Graflok 4×5",
+      "format": "120",
+      "exposuresTotal": 10,
+      "notes": "6×7 cm holder for 4×5 camera backs.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+            "title": "Horseman Roll Film Holder Owner's Manual",
+            "source": "Kenko Professional Imaging Co., Ltd."
+          },
+          "publisher": "Kenko Professional Imaging Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+              "title": "Horseman Roll Film Holder Owner's Manual",
+              "source": "Kenko Professional Imaging Co., Ltd."
+            },
+            "publisher": "Kenko Professional Imaging Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "10",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Horseman",
+      "model": "Roll Film Holder 453",
+      "backInterface": "International/Graflok 4×5",
+      "format": "220",
+      "exposuresTotal": 16,
+      "notes": "6×9 cm holder for 4×5 camera backs.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+            "title": "Horseman Roll Film Holder Owner's Manual",
+            "source": "Kenko Professional Imaging Co., Ltd."
+          },
+          "publisher": "Kenko Professional Imaging Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+              "title": "Horseman Roll Film Holder Owner's Manual",
+              "source": "Kenko Professional Imaging Co., Ltd."
+            },
+            "publisher": "Kenko Professional Imaging Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "10",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Horseman",
+      "model": "Roll Film Holder 454",
+      "backInterface": "International/Graflok 4×5",
+      "format": "220",
+      "exposuresTotal": 20,
+      "notes": "6×7 cm holder for 4×5 camera backs.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+            "title": "Horseman Roll Film Holder Owner's Manual",
+            "source": "Kenko Professional Imaging Co., Ltd."
+          },
+          "publisher": "Kenko Professional Imaging Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+              "title": "Horseman Roll Film Holder Owner's Manual",
+              "source": "Kenko Professional Imaging Co., Ltd."
+            },
+            "publisher": "Kenko Professional Imaging Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "10",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Horseman",
+      "model": "Roll Film Holder 612",
+      "backInterface": "International/Graflok 4×5",
+      "format": "120",
+      "exposuresTotal": 6,
+      "notes": "6×12 cm panoramic holder for 4×5 camera backs.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+            "title": "Horseman Roll Film Holder Owner's Manual",
+            "source": "Kenko Professional Imaging Co., Ltd."
+          },
+          "publisher": "Kenko Professional Imaging Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.kenko-pi.co.jp/horseman/manual/HORSEMAN_manu2015/HSN_Roll_Film_Holder_manual.pdf",
+              "title": "Horseman Roll Film Holder Owner's Manual",
+              "source": "Kenko Professional Imaging Co., Ltd."
+            },
+            "publisher": "Kenko Professional Imaging Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "10",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Toyo",
+      "model": "Roll Film Holder 67/45 (8031)",
+      "alternativeNames": [
+        "8031",
+        "180-725"
+      ],
+      "backInterface": "International/Graflok 4×5",
+      "format": "120",
+      "exposuresTotal": 10,
+      "notes": "6×7 cm holder with a 4×5 adapter plate; slides into an International-standard 4×5 back.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://toyoview.com/content/45C_instructions.pdf",
+            "title": "Toyo-View 45C Instructions",
+            "source": "Sakai Special Camera Mfg. Co., Ltd."
+          },
+          "publisher": "Sakai Special Camera Mfg. Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://toyoview.com/content/45C_instructions.pdf",
+              "title": "Toyo-View 45C Instructions",
+              "source": "Sakai Special Camera Mfg. Co., Ltd."
+            },
+            "publisher": "Sakai Special Camera Mfg. Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "23",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Toyo",
+      "model": "Roll Film Holder 69/45 (8033)",
+      "alternativeNames": [
+        "8033",
+        "180-726"
+      ],
+      "backInterface": "International/Graflok 4×5",
+      "format": "120",
+      "exposuresTotal": 8,
+      "notes": "6×9 cm holder with a 4×5 adapter plate; slides into an International-standard 4×5 back.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://toyoview.com/content/45C_instructions.pdf",
+            "title": "Toyo-View 45C Instructions",
+            "source": "Sakai Special Camera Mfg. Co., Ltd."
+          },
+          "publisher": "Sakai Special Camera Mfg. Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://toyoview.com/content/45C_instructions.pdf",
+              "title": "Toyo-View 45C Instructions",
+              "source": "Sakai Special Camera Mfg. Co., Ltd."
+            },
+            "publisher": "Sakai Special Camera Mfg. Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "23",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Toyo",
+      "model": "Roll Film Holder 67 (8032)",
+      "alternativeNames": [
+        "8032",
+        "180-727"
+      ],
+      "backInterface": "6×9 International/Quick Roll Slider",
+      "format": "120",
+      "exposuresTotal": 10,
+      "notes": "6×7 cm holder for 6×9 International backs or Toyo Quick Roll Sliders.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://toyoview.com/content/45C_instructions.pdf",
+            "title": "Toyo-View 45C Instructions",
+            "source": "Sakai Special Camera Mfg. Co., Ltd."
+          },
+          "publisher": "Sakai Special Camera Mfg. Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://toyoview.com/content/45C_instructions.pdf",
+              "title": "Toyo-View 45C Instructions",
+              "source": "Sakai Special Camera Mfg. Co., Ltd."
+            },
+            "publisher": "Sakai Special Camera Mfg. Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "23",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Toyo",
+      "model": "Roll Film Holder 69 (8034)",
+      "alternativeNames": [
+        "8034",
+        "180-728"
+      ],
+      "backInterface": "6×9 International/Quick Roll Slider",
+      "format": "120",
+      "exposuresTotal": 8,
+      "notes": "6×9 cm holder for 6×9 International backs or Toyo Quick Roll Sliders.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://toyoview.com/content/45C_instructions.pdf",
+            "title": "Toyo-View 45C Instructions",
+            "source": "Sakai Special Camera Mfg. Co., Ltd."
+          },
+          "publisher": "Sakai Special Camera Mfg. Co., Ltd.",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://toyoview.com/content/45C_instructions.pdf",
+              "title": "Toyo-View 45C Instructions",
+              "source": "Sakai Special Camera Mfg. Co., Ltd."
+            },
+            "publisher": "Sakai Special Camera Mfg. Co., Ltd.",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "page": "23",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Sinar",
+      "model": "Rollfilm Holder Zoom 2 (567.32)",
+      "alternativeNames": [
+        "567.32"
+      ],
+      "backInterface": "4×5 spring back",
+      "notes": "Variable 120/220 holder selectable from 4.5×6 through 6×12 cm without removing loaded film.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://galerie-photo.com/manuels/mode-emploi-sinar-zoom-001.pdf",
+            "title": "Sinar Rollfilm Holders Instruction Manual",
+            "source": "Sinar AG"
+          },
+          "publisher": "Sinar AG",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://galerie-photo.com/manuels/mode-emploi-sinar-zoom-001.pdf",
+              "title": "Sinar Rollfilm Holders Instruction Manual",
+              "source": "Sinar AG"
+            },
+            "publisher": "Sinar AG",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "page": "8, 13, 25",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Sinar",
+      "model": "Rollfilm Holder 6×9 (567.45)",
+      "alternativeNames": [
+        "567.45"
+      ],
+      "backInterface": "4×5 spring back",
+      "notes": "Fixed 6×9 cm holder for 120 or 220 film.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://galerie-photo.com/manuels/mode-emploi-sinar-zoom-001.pdf",
+            "title": "Sinar Rollfilm Holders Instruction Manual",
+            "source": "Sinar AG"
+          },
+          "publisher": "Sinar AG",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://galerie-photo.com/manuels/mode-emploi-sinar-zoom-001.pdf",
+              "title": "Sinar Rollfilm Holders Instruction Manual",
+              "source": "Sinar AG"
+            },
+            "publisher": "Sinar AG",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "page": "8, 13, 25",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Sinar",
+      "model": "Rollfilm Holder 6×7 (567.54)",
+      "alternativeNames": [
+        "567.54"
+      ],
+      "backInterface": "4×5 spring back",
+      "notes": "Fixed 6×7 cm holder for 120 or 220 film.",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://galerie-photo.com/manuels/mode-emploi-sinar-zoom-001.pdf",
+            "title": "Sinar Rollfilm Holders Instruction Manual",
+            "source": "Sinar AG"
+          },
+          "publisher": "Sinar AG",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://galerie-photo.com/manuels/mode-emploi-sinar-zoom-001.pdf",
+              "title": "Sinar Rollfilm Holders Instruction Manual",
+              "source": "Sinar AG"
+            },
+            "publisher": "Sinar AG",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "page": "8, 13, 25",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rollei",
+      "model": "6000 Series 6×6 Film Magazine",
+      "backInterface": "Rollei 6000",
+      "format": "120",
+      "exposuresTotal": 12,
+      "notes": "Standard 6×6 cm magazine and insert for Rolleiflex 6000-series bodies.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://rolleiflex.us/products/rolleiflex-6008-integral-body-with-wlf-6x6-film-back-used",
+            "title": "Rolleiflex 6008 Integral body with 6×6 film back",
+            "source": "Rolleiflex USA"
+          },
+          "publisher": "Rolleiflex USA",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://rolleiflex.us/products/rolleiflex-6008-integral-body-with-wlf-6x6-film-back-used",
+              "title": "Rolleiflex 6008 Integral body with 6×6 film back",
+              "source": "Rolleiflex USA"
+            },
+            "publisher": "Rolleiflex USA",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rollei",
+      "model": "4560 Turnable Film Back",
+      "alternativeNames": [
+        "4560"
+      ],
+      "backInterface": "Rollei 4560 adapter",
+      "format": "120",
+      "notes": "Rotatable 6×4.5 cm magazine for later 6008 and Hy6 bodies through the appropriate adapter plate.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://rolleiflex.us/products/4560-turnable-film-back-for-6008-and-hy6-cameras-used-with-no-adapter-plate-1",
+            "title": "4560 Turnable film back for 6008 and Hy6 cameras",
+            "source": "Rolleiflex USA"
+          },
+          "publisher": "Rolleiflex USA",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://rolleiflex.us/products/4560-turnable-film-back-for-6008-and-hy6-cameras-used-with-no-adapter-plate-1",
+              "title": "4560 Turnable film back for 6008 and Hy6 cameras",
+              "source": "Rolleiflex USA"
+            },
+            "publisher": "Rolleiflex USA",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rollei",
+      "model": "Magazine 6000 4.5×6 120",
+      "backInterface": "Rollei 6000",
+      "format": "120",
+      "notes": "6×4.5 cm 120-film magazine for Rolleiflex 6000-series bodies.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://rolleiflex.us/products/4-5-x-6-cm-film-back-for-rolleiflex-6000-camera-bodies-new-old-stock",
+            "title": "4.5 × 6 cm film back for Rolleiflex 6000 camera bodies",
+            "source": "Rolleiflex USA"
+          },
+          "publisher": "Rolleiflex USA",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://rolleiflex.us/products/4-5-x-6-cm-film-back-for-rolleiflex-6000-camera-bodies-new-old-stock",
+              "title": "4.5 × 6 cm film back for Rolleiflex 6000 camera bodies",
+              "source": "Rolleiflex USA"
+            },
+            "publisher": "Rolleiflex USA",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rollei",
+      "model": "Magazine 6000 6×6 220",
+      "backInterface": "Rollei 6000",
+      "format": "220",
+      "notes": "6×6 cm 220-film magazine for Rolleiflex 6000-series bodies.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://rolleiflex.us/products/used-220-film-back-for-rollei-6000-series-cameras-1?_fid=84ffa6d80&_pos=97&_ss=c",
+            "title": "220 film back for Rollei 6000 series cameras",
+            "source": "Rolleiflex USA"
+          },
+          "publisher": "Rolleiflex USA",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://rolleiflex.us/products/used-220-film-back-for-rollei-6000-series-cameras-1?_fid=84ffa6d80&_pos=97&_ss=c",
+              "title": "220 film back for Rollei 6000 series cameras",
+              "source": "Rolleiflex USA"
+            },
+            "publisher": "Rolleiflex USA",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rollei",
+      "model": "SLX 4.5×6 120/220 Film Back",
+      "alternativeNames": [
+        "977310"
+      ],
+      "backInterface": "Rollei 6000",
+      "notes": "6×4.5 cm film back supplied with separate 120/220 rollers and a finder mask for SLX-system bodies.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://rolleiflex.us/products/4-5x6-film-back-for-rolleiflex-slx-cameras-120-220-new-old-stock-rare",
+            "title": "4.5×6 film back for Rolleiflex SLX cameras 120/220",
+            "source": "Rolleiflex USA"
+          },
+          "publisher": "Rolleiflex USA",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://rolleiflex.us/products/4-5x6-film-back-for-rolleiflex-slx-cameras-120-220-new-old-stock-rare",
+              "title": "4.5×6 film back for Rolleiflex SLX cameras 120/220",
+              "source": "Rolleiflex USA"
+            },
+            "publisher": "Rolleiflex USA",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rollei",
+      "model": "6000 Series 135 Magazine",
+      "backInterface": "Rollei 6000",
+      "format": "135",
+      "notes": "35 mm film magazine for the Rolleiflex 6000 system.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://rolleiflex.us/blogs/news-tech-tips-updates/did-you-know-rollei-made-a-135-magazine-for-the-6000-series",
+            "title": "Did you know Rollei made a 135 magazine for the 6000 series?",
+            "source": "Rolleiflex USA"
+          },
+          "publisher": "Rolleiflex USA",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://rolleiflex.us/blogs/news-tech-tips-updates/did-you-know-rollei-made-a-135-magazine-for-the-6000-series",
+              "title": "Did you know Rollei made a 135 magazine for the 6000 series?",
+              "source": "Rolleiflex USA"
+            },
+            "publisher": "Rolleiflex USA",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Linhof",
+      "model": "Super Rollex 45 6×7 (001459)",
+      "alternativeNames": [
+        "001459"
+      ],
+      "backInterface": "International/Graflok 4×5",
+      "format": "120",
+      "exposuresTotal": 10,
+      "notes": "6×7 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://linhof.com/en/super-rollex-kassetten/",
+            "title": "Super Rollex Rollfilm backs",
+            "source": "Linhof Präzisions-Systemtechnik GmbH"
+          },
+          "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://linhof.com/en/super-rollex-kassetten/",
+              "title": "Super Rollex Rollfilm backs",
+              "source": "Linhof Präzisions-Systemtechnik GmbH"
+            },
+            "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Linhof",
+      "model": "Super Rollex 45 6×9 (001523)",
+      "alternativeNames": [
+        "001523"
+      ],
+      "backInterface": "International/Graflok 4×5",
+      "format": "120",
+      "exposuresTotal": 8,
+      "notes": "6×9 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://linhof.com/en/super-rollex-kassetten/",
+            "title": "Super Rollex Rollfilm backs",
+            "source": "Linhof Präzisions-Systemtechnik GmbH"
+          },
+          "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://linhof.com/en/super-rollex-kassetten/",
+              "title": "Super Rollex Rollfilm backs",
+              "source": "Linhof Präzisions-Systemtechnik GmbH"
+            },
+            "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Linhof",
+      "model": "Super Rollex 23 6×7 (001460)",
+      "alternativeNames": [
+        "001460"
+      ],
+      "backInterface": "Linhof 6×9",
+      "format": "120",
+      "exposuresTotal": 10,
+      "notes": "6×7 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://linhof.com/en/super-rollex-kassetten/",
+            "title": "Super Rollex Rollfilm backs",
+            "source": "Linhof Präzisions-Systemtechnik GmbH"
+          },
+          "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://linhof.com/en/super-rollex-kassetten/",
+              "title": "Super Rollex Rollfilm backs",
+              "source": "Linhof Präzisions-Systemtechnik GmbH"
+            },
+            "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Linhof",
+      "model": "Super Rollex 23 6×9 (001524)",
+      "alternativeNames": [
+        "001524"
+      ],
+      "backInterface": "Linhof 6×9",
+      "format": "120",
+      "exposuresTotal": 8,
+      "notes": "6×9 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://linhof.com/en/super-rollex-kassetten/",
+            "title": "Super Rollex Rollfilm backs",
+            "source": "Linhof Präzisions-Systemtechnik GmbH"
+          },
+          "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://linhof.com/en/super-rollex-kassetten/",
+              "title": "Super Rollex Rollfilm backs",
+              "source": "Linhof Präzisions-Systemtechnik GmbH"
+            },
+            "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Linhof",
+      "model": "Super Rollex M 679/Techno 6×9 (001520)",
+      "alternativeNames": [
+        "001520"
+      ],
+      "backInterface": "Linhof M 679/Techno",
+      "format": "120",
+      "exposuresTotal": 8,
+      "notes": "6×9 cm frame format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://linhof.com/en/super-rollex-kassetten/",
+            "title": "Super Rollex Rollfilm backs",
+            "source": "Linhof Präzisions-Systemtechnik GmbH"
+          },
+          "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://linhof.com/en/super-rollex-kassetten/",
+              "title": "Super Rollex Rollfilm backs",
+              "source": "Linhof Präzisions-Systemtechnik GmbH"
+            },
+            "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Linhof",
+      "model": "Techno Rollex 45 6×12 (001560)",
+      "alternativeNames": [
+        "001560"
+      ],
+      "backInterface": "International/Graflok 4×5",
+      "notes": "6×12 cm panoramic holder: 6 frames on 120 or 12 frames on 220 film.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://linhof.com/en/linhof-kardan-re/",
+            "title": "Linhof Kardan re 45 accessories",
+            "source": "Linhof Präzisions-Systemtechnik GmbH"
+          },
+          "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://linhof.com/en/linhof-kardan-re/",
+              "title": "Linhof Kardan re 45 accessories",
+              "source": "Linhof Präzisions-Systemtechnik GmbH"
+            },
+            "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Linhof",
+      "model": "Rapid Rollex 45 6×7 (001567)",
+      "alternativeNames": [
+        "001567"
+      ],
+      "backInterface": "4×5 spring back",
+      "format": "120",
+      "exposuresTotal": 10,
+      "notes": "Slide-in 6×7 cm roll-film holder.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://linhof.com/en/linhof-kardan-re/",
+            "title": "Linhof Kardan re 45 accessories",
+            "source": "Linhof Präzisions-Systemtechnik GmbH"
+          },
+          "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://linhof.com/en/linhof-kardan-re/",
+              "title": "Linhof Kardan re 45 accessories",
+              "source": "Linhof Präzisions-Systemtechnik GmbH"
+            },
+            "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Linhof",
+      "model": "Rapid Rollex 23 6×9 (001566)",
+      "alternativeNames": [
+        "001566"
+      ],
+      "backInterface": "Linhof 6×9 spring back",
+      "format": "120",
+      "exposuresTotal": 8,
+      "notes": "Slide-in 6×9 cm roll-film holder.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://linhof.com/en/technikardan-6x9/",
+            "title": "Technikardan S 23 accessories",
+            "source": "Linhof Präzisions-Systemtechnik GmbH"
+          },
+          "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://linhof.com/en/technikardan-6x9/",
+              "title": "Technikardan S 23 accessories",
+              "source": "Linhof Präzisions-Systemtechnik GmbH"
+            },
+            "publisher": "Linhof Präzisions-Systemtechnik GmbH",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface",
+            "format",
+            "exposuresTotal"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Cambo",
+      "model": "C-240 Roll Film Holder 6×7",
+      "alternativeNames": [
+        "C-240"
+      ],
+      "backInterface": "4×5 spring back",
+      "notes": "6×7 cm holder accepting 120 (10 frames) or 220 (20 frames) film; slides under a spring-loaded or Graflok ground-glass frame.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.cambo.com/en/products/technical-view-cameras/analogue-cameras/traditional-large-format/general-accessories/c-240",
+            "title": "C-240 Roll Film Holder 6×7 cm on 4×5",
+            "source": "Cambo Fotografische Industrie BV"
+          },
+          "publisher": "Cambo Fotografische Industrie BV",
+          "language": "en",
+          "retrievedAt": "2026-10-29T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.cambo.com/en/products/technical-view-cameras/analogue-cameras/traditional-large-format/general-accessories/c-240",
+              "title": "C-240 Roll Film Holder 6×7 cm on 4×5",
+              "source": "Cambo Fotografische Industrie BV"
+            },
+            "publisher": "Cambo Fotografische Industrie BV",
+            "language": "en",
+            "retrievedAt": "2026-10-29T00:00:00.000Z"
+          },
+          "fields": [
+            "backInterface"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    }
+  ]
+}
