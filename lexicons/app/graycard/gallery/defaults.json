@@ -12,6 +12,7 @@
         "properties": {
           "gallery": { "type": "string", "format": "at-uri" },
           "camera": { "type": "string", "format": "at-uri" },
+          "filmBack": { "type": "string", "format": "at-uri" },
           "lens": { "type": "string", "format": "at-uri" },
           "filmRoll": { "type": "string", "format": "at-uri" },
           "shoot": { "type": "string", "format": "at-uri" },

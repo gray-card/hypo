@@ -293,6 +293,7 @@ export interface WorkflowTemplateValue {
   stageKinds?: readonly string[];
   stageDefaults?: readonly WorkflowStageDefault[];
   defaultCamera?: unknown;
+  defaultFilmBack?: unknown;
   defaultLens?: unknown;
   defaultFilmRoll?: unknown;
   defaultChemistry?: unknown;
@@ -445,6 +446,7 @@ export function applyTemplateDefaults(
     }
     if (step.kind === "capture") {
       if (!processFields.camera && value.defaultCamera) processFields.camera = value.defaultCamera;
+      if (!processFields.filmBack && value.defaultFilmBack) processFields.filmBack = value.defaultFilmBack;
       if (!processFields.lens && value.defaultLens) processFields.lens = value.defaultLens;
       if (!processFields.filmRoll && value.defaultFilmRoll) processFields.filmRoll = value.defaultFilmRoll;
     }
@@ -500,6 +502,7 @@ export function normalizeWorkflowTemplate(template: WorkflowTemplateRecord): Nor
 export interface WorkflowTemplateExtra {
   connections?: readonly WorkflowTemplateConnection[];
   defaultCamera?: unknown;
+  defaultFilmBack?: unknown;
   defaultLens?: unknown;
   defaultFilmRoll?: unknown;
   defaultChemistry?: unknown;
@@ -562,6 +565,7 @@ export function templateFromSteps(
     // legacy shape identifies occurrences only by stable array order.
     stageDefaults: editableSteps.map((step) => ({ kind: step.kind, fields: { ...step.processFields } })),
     defaultCamera: extra.defaultCamera,
+    defaultFilmBack: extra.defaultFilmBack,
     defaultLens: extra.defaultLens,
     defaultFilmRoll: extra.defaultFilmRoll,
     defaultChemistry: extra.defaultChemistry,

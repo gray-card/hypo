@@ -264,14 +264,16 @@ function ensureSelectBar(): void {
 }
 function openBulkGear(): void {
   const camSel = instanceSelect("camera", "");
+  const backSel = instanceSelect("filmBack", "");
   const lensSel = instanceSelect("lens", "");
   const rollSel = instanceSelect("filmRoll", "");
   openModal(
     `Set gear on ${selected.size} photo${selected.size > 1 ? "s" : ""}`,
-    [field("Camera", camSel), field("Lens", lensSel), field("Film roll", rollSel)],
+    [field("Camera", camSel), field("Film back", backSel), field("Lens", lensSel), field("Film roll", rollSel)],
     async () => {
-      const patch: { camera?: string; lens?: string; filmRoll?: string } = {};
+      const patch: { camera?: string; filmBack?: string; lens?: string; filmRoll?: string } = {};
       if (camSel.value) patch.camera = camSel.value;
+      if (backSel.value) patch.filmBack = backSel.value;
       if (lensSel.value) patch.lens = lensSel.value;
       if (rollSel.value) patch.filmRoll = rollSel.value;
       if (!Object.keys(patch).length) throw new Error("Pick at least one");
@@ -556,7 +558,14 @@ function coverageBadges(p: GalleryPhoto, capture: CaptureRecord | undefined, wf:
     ["exif", !!p.exif],
     [
       "capture",
-      !!(capture && (capture.value.camera || capture.value.lens || capture.value.filmRoll || capture.value.shoot)),
+      !!(
+        capture &&
+        (capture.value.camera ||
+          capture.value.filmBack ||
+          capture.value.lens ||
+          capture.value.filmRoll ||
+          capture.value.shoot)
+      ),
     ],
     ["workflow", !!wf?.run],
     ["scene", !!ctx.store.sceneGraphByPhoto?.has(p.photo.uri)],
@@ -780,6 +789,7 @@ function buildGalleryHeader(): HTMLDivElement {
 function buildDefaultsCard(): HTMLDetailsElement {
   const defs = ctx.store.galleryDefaultsByGallery.get(ctx.galleryUri);
   const camSel = instanceSelect("camera", defs?.value?.camera);
+  const backSel = instanceSelect("filmBack", defs?.value?.filmBack);
   const lensSel = instanceSelect("lens", defs?.value?.lens);
   const rollSel = instanceSelect("filmRoll", defs?.value?.filmRoll);
   const shootSel = shootSelect(defs?.value?.shoot);
@@ -788,6 +798,7 @@ function buildDefaultsCard(): HTMLDetailsElement {
   return collapseCard("Gallery defaults", [
     el("p", { class: "muted small" }, "Applied when a photo has no explicit capture set."),
     field("Camera", camSel),
+    field("Film back", backSel),
     field("Lens", lensSel),
     field("Film roll", rollSel),
     field("Shoot", shootSel),
@@ -804,6 +815,7 @@ function buildDefaultsCard(): HTMLDetailsElement {
               ctx.galleryUri,
               {
                 camera: camSel.value || undefined,
+                filmBack: backSel.value || undefined,
                 lens: lensSel.value || undefined,
                 filmRoll: rollSel.value || undefined,
                 shoot: shootSel.value || undefined,
@@ -1524,7 +1536,7 @@ function sameGearAsAbove(btn: HTMLButtonElement): void {
       .find((l) => l.querySelector("span")?.textContent === label)
       ?.querySelector<HTMLSelectElement>("select") ?? null;
   let copied = 0;
-  for (const label of ["Camera", "Lens", "Film roll", "Shoot"]) {
+  for (const label of ["Camera", "Film back", "Lens", "Film roll", "Shoot"]) {
     const from = sel(prev, label),
       to = sel(card, label);
     if (from && to && from.value) {
@@ -1562,6 +1574,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
   const wf = getRunForPhoto(ctx.store, p.photo.uri);
 
   const camSel = instanceSelect("camera", refs.camera);
+  const backSel = instanceSelect("filmBack", refs.filmBack);
   const lensSel = instanceSelect("lens", refs.lens);
   const rollSel = instanceSelect("filmRoll", refs.filmRoll);
   const shootSel = shootSelect(refs.shoot);
@@ -1583,7 +1596,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
       refreshSaveBar();
     }
   };
-  for (const sel of [camSel, lensSel, rollSel, shootSel]) sel.addEventListener("change", markDirty);
+  for (const sel of [camSel, backSel, lensSel, rollSel, shootSel]) sel.addEventListener("change", markDirty);
   frameInput.addEventListener("input", markDirty);
   locF.node.querySelector("button")?.addEventListener("click", () => setTimeout(markDirty, 0));
 
@@ -1701,6 +1714,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
       p.photo.uri,
       {
         camera: camSel.value || undefined,
+        filmBack: backSel.value || undefined,
         lens: lensSel.value || undefined,
         filmRoll: rollSel.value || undefined,
         frameIndex: frameInput.value ? parseInt(frameInput.value, 10) : undefined,
@@ -1744,6 +1758,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
       el("summary", {}, "Gear"),
       gearSuggestion("camera", gearMatch.camera, camSel, markDirty),
       gearField("Camera", "camera", camSel),
+      gearField("Film back", "filmBack", backSel),
       gearSuggestion("lens", gearMatch.lens, lensSel, markDirty),
       gearField("Lens", "lens", lensSel),
       gearField("Film roll", "filmRoll", rollSel),
@@ -1766,6 +1781,11 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
           "button",
           { class: "ghost small-btn", onclick: () => openAddGear("camera", () => openGallery(ctx.galleryUri)) },
           "+ Camera",
+        ),
+        el(
+          "button",
+          { class: "ghost small-btn", onclick: () => openAddGear("filmBack", () => openGallery(ctx.galleryUri)) },
+          "+ Film back",
         ),
         el(
           "button",

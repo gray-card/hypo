@@ -1,0 +1,10 @@
+{
+  "$type": "app.graycard.instance.exposure",
+  "roll": "at://did:plc:graycard-record-fixtures/app.graycard.instance.filmRoll/film-roll-back",
+  "frameNumber": 1,
+  "camera": "at://did:plc:graycard-record-fixtures/app.graycard.instance.camera/bronica-sq-ai",
+  "filmBack": "at://did:plc:graycard-record-fixtures/app.graycard.instance.filmBack/film-back",
+  "lens": "at://did:plc:graycard-record-fixtures/app.graycard.instance.lens/zenzanon-80",
+  "takenAt": "2026-10-29T12:00:00.000Z",
+  "createdAt": "2026-10-29T12:00:00.000Z"
+}

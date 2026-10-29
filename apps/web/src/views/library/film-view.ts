@@ -155,6 +155,10 @@ function rollRow(roll: FilmRecord, services: FilmViewServices): HTMLLIElement {
     ? (services.getStore().instance.camera || []).find((record) => record.uri === value.camera)
     : null;
   const cameraLabel = camera ? services.instanceLabel("camera", camera.value) : null;
+  const filmBack = value.filmBack
+    ? (services.getStore().instance.filmBack || []).find((record) => record.uri === value.filmBack)
+    : null;
+  const filmBackLabel = filmBack ? services.instanceLabel("filmBack", filmBack.value) : null;
   const frames = framesForRoll(services.getStore(), roll.uri);
   const frameCount = frames.length;
   const dating = filmDating(value, services.enumLabel);
@@ -168,9 +172,13 @@ function rollRow(roll: FilmRecord, services: FilmViewServices): HTMLLIElement {
           { class: "roll-ledger-title" },
           value.label ? `${value.label} · ${stockLabel(services, value.stock)}` : stockLabel(services, value.stock),
         ),
-        cameraLabel || frameCount
+        cameraLabel || filmBackLabel || frameCount
           ? el("span", { class: "roll-ledger-context muted small" }, [
-              cameraLabel ? `Camera: ${cameraLabel}` : "Camera not recorded",
+              filmBackLabel
+                ? `Film back: ${filmBackLabel}`
+                : cameraLabel
+                  ? `Camera: ${cameraLabel}`
+                  : "Carrier not recorded",
               frameCount ? ` · ${frameCount} frame${frameCount === 1 ? "" : "s"}` : "",
             ])
           : null,
@@ -284,7 +292,7 @@ function rollsCard(services: FilmViewServices): HTMLDivElement {
   const search = el("input", {
     type: "search",
     class: "search-input library-filter-input",
-    placeholder: "Search labels, film stocks, cameras, batches…",
+    placeholder: "Search labels, film stocks, cameras, film backs, batches…",
     "aria-label": "Search film rolls",
   });
   const sort = el(
@@ -315,6 +323,9 @@ function rollsCard(services: FilmViewServices): HTMLDivElement {
     const camera = value.camera
       ? (services.getStore().instance.camera || []).find((record) => record.uri === value.camera)
       : undefined;
+    const filmBack = value.filmBack
+      ? (services.getStore().instance.filmBack || []).find((record) => record.uri === value.filmBack)
+      : undefined;
     return [
       value.label,
       value.rollNumber,
@@ -323,6 +334,7 @@ function rollsCard(services: FilmViewServices): HTMLDivElement {
       value.status,
       stockLabel(services, value.stock),
       camera ? services.instanceLabel("camera", camera.value) : "",
+      filmBack ? services.instanceLabel("filmBack", filmBack.value) : "",
       services.enumLabel(String(value.status || "")),
     ]
       .filter(Boolean)
@@ -332,7 +344,7 @@ function rollsCard(services: FilmViewServices): HTMLDivElement {
   const scopeButtons = new Map<string, HTMLButtonElement>();
   const scopes = [
     ["all", "All", scopeCounts.all],
-    ["active", "In cameras", scopeCounts.active],
+    ["active", "In cameras / backs", scopeCounts.active],
     ["waiting", "Needs processing", scopeCounts.waiting],
     ["processed", "Processed", scopeCounts.processed],
     ["archived", "Archived", scopeCounts.archived],

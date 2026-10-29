@@ -37,7 +37,12 @@
           "camera": {
             "type": "string",
             "format": "at-uri",
-            "description": "Optional app.graycard.instance.camera used."
+            "description": "Optional app.graycard.instance.camera body used."
+          },
+          "filmBack": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.instance.filmBack mounted for this exposure. Omit for cameras without detachable backs."
           },
           "lens": { "type": "string", "format": "at-uri", "description": "Optional app.graycard.instance.lens used." },
           "filter": {

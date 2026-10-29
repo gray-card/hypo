@@ -131,7 +131,7 @@ test("resource, roll, and session surfaces stay inside the viewport", async ({ p
   await expect(page.getByRole("heading", { name: "Rolls", exact: true })).toBeVisible();
   await expectNoHorizontalOverflow(page.locator("#rolls-view"));
   await expect(page.locator(".roll-stage-heading h3")).toHaveText([
-    "In cameras",
+    "In cameras / backs",
     "Needs processing",
     "Processed",
     "Archived",

@@ -9,6 +9,7 @@ export const NS = {
     "devRecipe": "app.graycard.catalog.devRecipe",
     "enlargerType": "app.graycard.catalog.enlargerType",
     "enlargingLensType": "app.graycard.catalog.enlargingLensType",
+    "filmBackType": "app.graycard.catalog.filmBackType",
     "filmStock": "app.graycard.catalog.filmStock",
     "filterType": "app.graycard.catalog.filterType",
     "lab": "app.graycard.catalog.lab",
@@ -32,6 +33,7 @@ export const NS = {
     "enlarger": "app.graycard.instance.enlarger",
     "enlargingLens": "app.graycard.instance.enlargingLens",
     "exposure": "app.graycard.instance.exposure",
+    "filmBack": "app.graycard.instance.filmBack",
     "filmRoll": "app.graycard.instance.filmRoll",
     "filmStockpile": "app.graycard.instance.filmStockpile",
     "filter": "app.graycard.instance.filter",
@@ -87,6 +89,7 @@ export const RECORD_NSID_LIST = [
   "app.graycard.catalog.devRecipe",
   "app.graycard.catalog.enlargerType",
   "app.graycard.catalog.enlargingLensType",
+  "app.graycard.catalog.filmBackType",
   "app.graycard.catalog.filmStock",
   "app.graycard.catalog.filterType",
   "app.graycard.catalog.lab",
@@ -104,6 +107,7 @@ export const RECORD_NSID_LIST = [
   "app.graycard.instance.enlarger",
   "app.graycard.instance.enlargingLens",
   "app.graycard.instance.exposure",
+  "app.graycard.instance.filmBack",
   "app.graycard.instance.filmRoll",
   "app.graycard.instance.filmStockpile",
   "app.graycard.instance.filter",
@@ -137,6 +141,6 @@ export const RECORD_NSID_LIST = [
   "app.graycard.workflow.stage",
   "app.graycard.workflow.template"
 ] as const;
-export const CATALOG_KINDS = Object.freeze(["cameraType","chemistryType","enlargerType","enlargingLensType","filmStock","filterType","lab","lensType","lightSourceType","meterType","paperType","printerType","scannerType","scanProfile"]);
+export const CATALOG_KINDS = Object.freeze(["cameraType","chemistryType","enlargerType","enlargingLensType","filmBackType","filmStock","filterType","lab","lensType","lightSourceType","meterType","paperType","printerType","scannerType","scanProfile"]);
 export const ALL_CATALOG_KINDS = Object.freeze(Object.keys(NS.catalog));
 export const INSTANCE_KINDS = Object.freeze(Object.keys(NS.instance));

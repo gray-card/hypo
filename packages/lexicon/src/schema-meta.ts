@@ -114,9 +114,29 @@ export const CURATED_MOUNT_NAMES = Object.freeze([
   "other",
 ] as const);
 
+// Back interfaces are open text in the lexicon for the same reason as lens
+// mounts: clients can suggest common systems without making the vocabulary a
+// closed compatibility registry.
+export const CURATED_BACK_INTERFACE_NAMES = Object.freeze([
+  "Bronica SQ",
+  "Bronica ETR",
+  "Bronica GS-1",
+  "Hasselblad V",
+  "Mamiya RB67",
+  "Mamiya RZ67",
+  "Mamiya 645",
+  "Rollei 6000",
+  "Contax 645",
+  "Horseman 6x7",
+  "Graflok 2x3",
+  "Graflok 4x5",
+  "other",
+] as const);
+
 export const GEAR_FIELD_ENUM_OPTIONS = Object.freeze({
   apertureStopIncrement: LEXICON_ENUM_OPTIONS.stopFraction,
   base: LEXICON_ENUM_OPTIONS.paperBase,
+  backInterface: CURATED_BACK_INTERFACE_NAMES,
   cassetteType: LEXICON_ENUM_OPTIONS.cassetteType,
   category: LEXICON_ENUM_OPTIONS.cameraCategory,
   contrast: LEXICON_ENUM_OPTIONS.paperContrast,
@@ -153,6 +173,7 @@ export type GearCatalogKind =
   | "enlargerType"
   | "enlargingLensType"
   | "filmStock"
+  | "filmBackType"
   | "filterType"
   | "lab"
   | "lensType"
@@ -168,6 +189,7 @@ export type GearInstanceKind =
   | "enlarger"
   | "enlargingLens"
   | "filmRoll"
+  | "filmBack"
   | "filmStockpile"
   | "filter"
   | "intermediate"
@@ -243,6 +265,12 @@ export const GEAR_CATALOG_FORM_META = {
     { key: "alternativeNames", label: "Alternative names", control: "string-list" },
     { key: "mount", label: "Mount", control: "enum", options: GEAR_FIELD_ENUM_OPTIONS.mount },
     { key: "format", label: "Format", control: "enum", options: GEAR_FIELD_ENUM_OPTIONS.format },
+    {
+      key: "backInterface",
+      label: "Detachable back interface",
+      control: "enum",
+      options: GEAR_FIELD_ENUM_OPTIONS.backInterface,
+    },
     { key: "category", label: "Category", control: "enum", options: GEAR_FIELD_ENUM_OPTIONS.category },
     { key: "minShutterSpeed", label: "Fastest shutter (e.g. 1/8000)", control: "scaled" },
     { key: "maxShutterSpeed", label: "Slowest shutter (e.g. 30s)", control: "scaled" },
@@ -285,6 +313,20 @@ export const GEAR_CATALOG_FORM_META = {
     { key: "iso", label: "ISO", control: "integer" },
     { key: "filmType", label: "Film type", control: "enum", options: GEAR_FIELD_ENUM_OPTIONS.filmType },
     { key: "process", label: "Process", control: "enum", options: GEAR_FIELD_ENUM_OPTIONS.process },
+  ]),
+  filmBackType: gearForm("app.graycard.catalog.filmBackType", [
+    { key: "make", label: "Make", required: true },
+    { key: "model", label: "Model", required: true },
+    { key: "alternativeNames", label: "Alternative names", control: "string-list" },
+    {
+      key: "backInterface",
+      label: "Back interface",
+      required: true,
+      control: "enum",
+      options: GEAR_FIELD_ENUM_OPTIONS.backInterface,
+    },
+    { key: "format", label: "Format", control: "enum", options: GEAR_FIELD_ENUM_OPTIONS.format },
+    { key: "exposuresTotal", label: "Nominal frames", control: "integer" },
   ]),
   filterType: gearForm("app.graycard.catalog.filterType", [
     { key: "make", label: "Make" },
@@ -418,6 +460,7 @@ export const GEAR_INSTANCE_FORM_META = {
       { key: "format", label: "Format", control: "enum", options: GEAR_FIELD_ENUM_OPTIONS.format },
       { key: "status", label: "Status", control: "enum", options: GEAR_FIELD_ENUM_OPTIONS.status },
       { key: "camera", label: "Camera", control: "at-uri", targetKind: "camera" },
+      { key: "filmBack", label: "Film back", control: "at-uri", targetKind: "filmBack" },
       { key: "shotAtIso", label: "Shot at ISO (push/pull)", control: "integer" },
       { key: "exposuresTotal", label: "Total frames", control: "integer" },
       { key: "emulsionBatch", label: "Emulsion batch" },
@@ -442,6 +485,14 @@ export const GEAR_INSTANCE_FORM_META = {
       { key: "archivedAt", label: "Archived", control: "datetime" },
     ],
     { catalogKind: "filmStock", field: "stock" },
+  ),
+  filmBack: gearForm(
+    "app.graycard.instance.filmBack",
+    [
+      { key: "nickname", label: "Nickname (e.g. “SQ back 1”)" },
+      { key: "serialNumber", label: "Serial number" },
+    ],
+    { catalogKind: "filmBackType", field: "type" },
   ),
   filmStockpile: gearForm(
     "app.graycard.instance.filmStockpile",
@@ -593,6 +644,7 @@ export const RECORD_SCHEMA_META = {
     "Enlarging lens",
     "Enlarging lenses",
   ),
+  "app.graycard.catalog.filmBackType": meta("app.graycard.catalog.filmBackType", "Film back", "Film backs"),
   "app.graycard.catalog.filmStock": meta("app.graycard.catalog.filmStock", "Film stock", "Film stocks", {
     fields: FILM_TECHNICAL_FIELDS,
   }),
@@ -620,6 +672,7 @@ export const RECORD_SCHEMA_META = {
     "Enlarging lenses",
   ),
   "app.graycard.instance.exposure": meta("app.graycard.instance.exposure", "Exposure", "Exposures"),
+  "app.graycard.instance.filmBack": meta("app.graycard.instance.filmBack", "Film back", "Film backs"),
   "app.graycard.instance.filmRoll": meta("app.graycard.instance.filmRoll", "Roll", "Rolls"),
   "app.graycard.instance.filmStockpile": meta(
     "app.graycard.instance.filmStockpile",
@@ -736,6 +789,7 @@ export const EXTERNAL_COLLECTION_LABELS = Object.freeze({
 
 export const GEAR_GROUPS = [
   { kind: "camera", icon: "camera" },
+  { kind: "filmBack", icon: "film" },
   { kind: "lens", icon: "camera" },
   { kind: "filmRoll", icon: "film" },
   { kind: "chemistry", icon: "package" },

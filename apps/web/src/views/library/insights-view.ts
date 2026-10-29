@@ -193,7 +193,7 @@ export function renderInsightsView(body: HTMLElement, services: ActivityServices
 
   const usage = new Map<string, number>();
   for (const capture of store.photoCaptureByPhoto.values()) {
-    for (const key of ["camera", "lens", "filmRoll"]) {
+    for (const key of ["camera", "filmBack", "lens", "filmRoll"]) {
       const uri = capture.value[key];
       if (uri) usage.set(uri, (usage.get(uri) || 0) + 1);
     }

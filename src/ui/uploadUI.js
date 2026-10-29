@@ -212,6 +212,7 @@ export async function openUploadModal(agent, did, onDone) {
   });
 
   const camSel = instanceSelect("camera", "");
+  const backSel = instanceSelect("filmBack", "");
   const lensSel = instanceSelect("lens", "");
   const rollSel = instanceSelect("filmRoll", "");
 
@@ -257,6 +258,7 @@ export async function openUploadModal(agent, did, onDone) {
       }
       const defaults = {};
       if (camSel.value) defaults.camera = camSel.value;
+      if (backSel.value) defaults.filmBack = backSel.value;
       if (lensSel.value) defaults.lens = lensSel.value;
       if (rollSel.value) defaults.filmRoll = rollSel.value;
       if (Object.keys(defaults).length) await saveGalleryDefaults(agent, did, gallery, defaults);
@@ -281,6 +283,7 @@ export async function openUploadModal(agent, did, onDone) {
     field("Photos", el("div", {}, [fileIn, fileInfo])),
     el("h3", { class: "modal-sub" }, "Link gear (optional)"),
     field("Camera", camSel),
+    field("Film back", backSel),
     field("Lens", lensSel),
     field("Film", rollSel),
     barWrap,

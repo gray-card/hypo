@@ -56,6 +56,7 @@ export function createInitialShotLoggerState(gear: LoggerGear, sticky: StickySho
   return {
     quick: sticky.quick !== false,
     camera: availableUri(gear.camera, sticky.camera, gear.camera[0]?.uri || null),
+    filmBack: availableUri(gear.filmBack || [], sticky.filmBack),
     lens: availableUri(gear.lens, sticky.lens, gear.lens[0]?.uri || null),
     filter: availableUri(gear.filter, sticky.filter),
     roll: availableUri(gear.filmRoll, sticky.roll),

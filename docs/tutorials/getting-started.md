@@ -15,15 +15,15 @@ The stockpile is an `app.graycard.instance.filmStockpile` record. Its `stock` fi
 
 ## 2. Load one roll
 
-Find the new reserve row and select **Load**. Give the roll a label and, if appropriate, choose the camera that now contains it.
+Find the new reserve row and select **Load**. Give the roll a label and choose its physical carrier when appropriate. For a fixed-back camera, choose the camera. For a modular camera such as a Bronica SQ-Ai, first add the detachable back under **Library → Cameras**, then choose that back when loading the roll.
 
-Hypo creates an `app.graycard.instance.filmRoll`, links it back through `stockpile`, and decrements the reserve quantity. A selected camera and `loadedAt` distinguish the physical roll from the stock type.
+Hypo creates an `app.graycard.instance.filmRoll`, links it back through `stockpile`, and decrements the reserve quantity. The roll records either `camera` for direct loading or `filmBack` for a detachable carrier, together with `loadedAt`. It never needs both carrier fields.
 
 If you are documenting a roll that was loaded elsewhere, use the option to add an existing roll instead. Do not create a second stockpile merely to represent that history.
 
 ## 3. Start a shoot
 
-Open the **Shoots** section and add a shoot. Select the camera, lens, and loaded roll, then save it. This produces an `app.graycard.session.capture` record that can group many exposures and, later, photos.
+Open the **Shoots** section and add a shoot. Select the camera, lens, and loaded roll. If the camera uses detachable backs, also select the back. This produces an `app.graycard.session.capture` record that can group many exposures and, later, photos.
 
 Open the shoot and select **Add frames**. The shot logger keeps the selected gear and advances the frame number between entries, which makes repeated logging quick.
 
@@ -31,7 +31,7 @@ Open the shoot and select **Add frames**. The shot logger keeps the selected gea
 
 Enter the exposure details you know and select **Log frame**. Aperture, shutter duration, filter, meter reading, and notes are optional; `createdAt` is the only required exposure field. Use the multiple-exposure control when another exposure belongs to the same physical frame.
 
-The result is an `app.graycard.instance.exposure` linked to the shoot and roll. Its `frame` identifies the frame within that roll.
+The result is an `app.graycard.instance.exposure` linked to the shoot and roll. Its `frameNumber` identifies the frame within that roll. Each exposure snapshots the camera, lens, and, when present, detachable film back, so changing backs later does not rewrite the frame's history.
 
 ## 5. Check offline behavior
 

@@ -10,7 +10,7 @@ import {
   INSTANCE_KINDS,
   RECORD_NSID_LIST,
 } from "../packages/lexicon/src/namespaces.ts";
-import { assertConsumableLifecycle, assertRecordTimeSpans } from "@hypo/domain";
+import { assertConsumableLifecycle, assertFilmRollCarrier, assertRecordTimeSpans } from "@hypo/domain";
 import { migrateLegacyDeveloperRecords } from "./legacyDeveloperMigration.ts";
 import { migrateDevelopSessions } from "./developSessionMigration.ts";
 
@@ -18,6 +18,7 @@ export { NS, CATALOG_KINDS, INSTANCE_KINDS };
 
 const TYPE_REF = {
   camera: "cameraType",
+  filmBack: "filmBackType",
   lens: "lensType",
   filter: "filterType",
   scanner: "scannerType",
@@ -300,6 +301,7 @@ export async function saveRecord(agent, did, collection, record, existing) {
   // survive the generic record writer. Other records default to the collection.
   const value = { ...prepared, $type: prepared.$type || collection };
   assertConsumableLifecycle(collection, value);
+  assertFilmRollCarrier(collection, value);
   assertRecordTimeSpans(collection, value);
   if (existing) {
     const operation = outbox.enqueuePut(did, {
@@ -323,14 +325,15 @@ export async function deleteRecord(agent, did, uri) {
 }
 
 // split one physical roll off a reserve stockpile: decrement its quantity and
-// create a filmRoll (loaded into a camera when one is given). Returns the new
+// create a filmRoll (loaded into a camera or detachable back when one is
+// given). Returns the new
 // roll's at-uri. `stockpile` is a loaded {uri, cid, rkey, value} record.
-export async function splitRollFromStockpile(agent, did, stockpile, { camera, label } = {}) {
+export async function splitRollFromStockpile(agent, did, stockpile, { camera, filmBack, label } = {}) {
   const sv = stockpile.value;
   const now = new Date().toISOString();
   // We consider splitting a roll off the reserve to involve loading it,
-  // so the roll starts as `loaded`. The camera is
-  // optional: you can load without recording which body.
+  // so the roll starts as `loaded`. The carrier is optional: you can load
+  // without recording a fixed-back camera or detachable back.
   const roll = {
     stock: sv.stock,
     stockpile: stockpile.uri,
@@ -345,7 +348,8 @@ export async function splitRollFromStockpile(agent, did, stockpile, { camera, la
   if (sv.emulsionBatch) roll.emulsionBatch = sv.emulsionBatch;
   if (sv.storage) roll.storage = sv.storage;
   if (label) roll.label = label;
-  if (camera) roll.camera = camera;
+  if (filmBack) roll.filmBack = filmBack;
+  else if (camera) roll.camera = camera;
 
   const rollUri = await saveRecord(agent, did, NS.instance.filmRoll, roll, null);
 
@@ -377,6 +381,7 @@ export function resolvePhotoCapture(capture, defaults) {
   const d = defaults?.value || {};
   return {
     camera: c.camera || d.camera || null,
+    filmBack: c.filmBack || d.filmBack || null,
     lens: c.lens || d.lens || null,
     filmRoll: c.filmRoll || d.filmRoll || null,
     shoot: c.shoot || d.shoot || null,

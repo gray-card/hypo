@@ -48,6 +48,8 @@ export async function openAddFrame(
     async () => {
       const record: FilmValue = {
         roll: roll.uri,
+        camera: roll.value.camera,
+        filmBack: roll.value.filmBack,
         createdAt: new Date().toISOString(),
         provenance: { source: "manual", assertedAt: new Date().toISOString() },
       };

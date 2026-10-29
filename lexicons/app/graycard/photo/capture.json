@@ -14,6 +14,7 @@
           "medium": { "type": "ref", "ref": "app.graycard.workflow.defs#medium" },
           "shoot": { "type": "string", "format": "at-uri" },
           "camera": { "type": "string", "format": "at-uri" },
+          "filmBack": { "type": "string", "format": "at-uri" },
           "lens": { "type": "string", "format": "at-uri" },
           "filmRoll": { "type": "string", "format": "at-uri" },
           "frameIndex": { "type": "integer", "minimum": 1 },

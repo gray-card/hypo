@@ -132,7 +132,7 @@ describe("extracted Film view", () => {
     expect(body.querySelector(".roll-library-list").textContent).toContain("Finished roll");
     expect(body.querySelector(".roll-library-list").textContent).not.toContain("Lab queue");
     expect([...body.querySelectorAll(".roll-stage-heading h3")].map((node) => node.textContent)).toEqual([
-      "In cameras",
+      "In cameras / backs",
       "Processed",
     ]);
   });

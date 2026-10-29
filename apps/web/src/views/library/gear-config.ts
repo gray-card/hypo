@@ -79,7 +79,7 @@ export const INTEGER_FIELDS = new Set(
 );
 
 export const GEAR_TABS: Readonly<Record<string, readonly string[]>> = {
-  cameras: ["camera"],
+  cameras: ["camera", "filmBack"],
   lenses: ["lens"],
   filters: ["filter"],
   chemistry: ["chemistry"],

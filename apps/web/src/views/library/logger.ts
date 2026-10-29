@@ -20,7 +20,7 @@ const EV_SCALE = ["-3", "-2", "-1", "-2/3", "-1/3", "0", "+1/3", "+2/3", "+1", "
 /** Build and mount the full-screen, offline-capable shot logger. */
 export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerController {
   const { shoot, gear, sticky = {} } = options;
-  const { camera: cameras, lens: lenses, filter: filters, filmRoll: rolls } = gear;
+  const { camera: cameras, filmBack: filmBacks = [], lens: lenses, filter: filters, filmRoll: rolls } = gear;
   let store = options.store;
   const state = createInitialShotLoggerState(gear, sticky);
   const persistSticky = () => options.persistSticky(state);
@@ -45,6 +45,17 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
   const pickRollFor = (cameraUri: string | null) =>
     rolls.find((roll) => roll.value.camera === cameraUri)?.uri || rolls[0]?.uri || null;
   if (!state.roll) state.roll = pickRollFor(state.camera);
+  const syncCarrierFromRoll = () => {
+    const roll = rolls.find((candidate) => candidate.uri === state.roll);
+    if (!roll) return;
+    if (roll.value.filmBack && filmBacks.some((back) => back.uri === roll.value.filmBack)) {
+      state.filmBack = roll.value.filmBack;
+    } else if (roll.value.camera && cameras.some((camera) => camera.uri === roll.value.camera)) {
+      state.camera = roll.value.camera;
+      state.filmBack = null;
+    }
+  };
+  syncCarrierFromRoll();
 
   const overlay = el("div", { class: "logger-overlay" });
   const gpsPill = el("span", { class: "gps-pill" }, "GPS…");
@@ -88,7 +99,8 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
     () => state.camera,
     (uri) => {
       state.camera = uri;
-      state.roll = pickRollFor(uri);
+      const selectedRoll = rolls.find((roll) => roll.uri === state.roll);
+      if (!selectedRoll?.value.filmBack) state.roll = pickRollFor(uri);
       state.lastFrame = null;
       persistSticky();
       refreshFrame();
@@ -105,11 +117,35 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
     () => state.roll,
     (uri) => {
       state.roll = uri;
+      syncCarrierFromRoll();
       state.lastFrame = null;
       persistSticky();
       refreshFrame();
       renderRecent();
       updateSameButton();
+      cameraChips.paint();
+      filmBackChips.paint();
+      renderStickySummary();
+    },
+    options.instanceLabel,
+    true,
+  );
+  const filmBackChips = createGearChips(
+    filmBacks,
+    "filmBack",
+    () => state.filmBack,
+    (uri) => {
+      state.filmBack = uri;
+      if (uri) {
+        const loadedRoll = rolls.find((roll) => roll.value.filmBack === uri);
+        if (loadedRoll) state.roll = loadedRoll.uri;
+      }
+      state.lastFrame = null;
+      persistSticky();
+      refreshFrame();
+      renderRecent();
+      updateSameButton();
+      rollChips.paint();
       renderStickySummary();
     },
     options.instanceLabel,
@@ -146,6 +182,23 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
   const activeCameraType = () => {
     const camera = cameras.find((candidate) => candidate.uri === state.camera);
     return camera && store.catalog.cameraType?.find((type) => type.uri === camera.value.type)?.value;
+  };
+  const activeFilmBackType = () => {
+    const filmBack = filmBacks.find((candidate) => candidate.uri === state.filmBack);
+    return filmBack && store.catalog.filmBackType?.find((type) => type.uri === filmBack.value.type)?.value;
+  };
+  const incompatibleBackMessage = () => {
+    const cameraInterface = String(activeCameraType()?.backInterface || "")
+      .trim()
+      .toLocaleLowerCase();
+    const backInterface = String(activeFilmBackType()?.backInterface || "")
+      .trim()
+      .toLocaleLowerCase();
+    if (!state.camera || !state.filmBack) return "";
+    if (!cameraInterface) return "The selected camera body does not declare support for detachable film backs.";
+    if (!backInterface) return "The selected film back does not declare a compatible camera interface.";
+    if (cameraInterface === backInterface) return "";
+    return "This film back is not compatible with the selected camera body.";
   };
   const clampDial = (get: () => string | null, set: (value: string | null) => void, values: readonly string[]) => {
     const current = get();
@@ -229,6 +282,7 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
   renderShutters();
 
   const stickySummary = el("div", { class: "logger-sticky-summary", "aria-live": "polite" });
+  const compatibilityStatus = el("p", { class: "muted small logger-compatibility", role: "alert" });
   const stickyItemLabel = (items: readonly LoggerRecord[], kind: LoggerGearKind, uri: string | null) => {
     const item = items.find((candidate) => candidate.uri === uri);
     return item ? options.instanceLabel(kind, item.value) : null;
@@ -236,12 +290,18 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
   renderStickySummary = () => {
     stickySummary.textContent = [
       stickyItemLabel(cameras, "camera", state.camera),
+      stickyItemLabel(filmBacks, "filmBack", state.filmBack),
       stickyItemLabel(lenses, "lens", state.lens),
       stickyItemLabel(rolls, "filmRoll", state.roll),
       stickyItemLabel(filters, "filter", state.filter),
     ]
       .filter(Boolean)
       .join(" · ");
+    const message = incompatibleBackMessage();
+    compatibilityStatus.textContent = message;
+    compatibilityStatus.classList.toggle("hidden", !message);
+    logButton.disabled = Boolean(message);
+    sameButton.disabled = Boolean(message);
   };
 
   const {
@@ -320,9 +380,12 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
   };
 
   const logExposure = (sameFrame = false) => {
+    const compatibilityMessage = incompatibleBackMessage();
+    if (compatibilityMessage) throw new Error(compatibilityMessage);
     const now = new Date().toISOString();
     const record: LoggerValue = { shoot: shoot.uri, createdAt: now, takenAt: now };
     if (state.camera) record.camera = state.camera;
+    if (state.filmBack) record.filmBack = state.filmBack;
     if (state.lens) record.lens = state.lens;
     if (state.filter) record.filter = state.filter;
     if (state.roll) {
@@ -402,6 +465,7 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
     ]),
     frameLabel,
     stickySummary,
+    compatibilityStatus,
     el("div", { class: "logger-scroll" }, [
       cameras.length > 1
         ? el("div", { class: "logger-group logger-extended" }, [
@@ -413,6 +477,12 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
         ? el("div", { class: "logger-group logger-extended" }, [
             el("span", { class: "logger-lab" }, "Roll"),
             rollChips.row,
+          ])
+        : null,
+      filmBacks.length
+        ? el("div", { class: "logger-group logger-extended" }, [
+            el("span", { class: "logger-lab" }, "Film back"),
+            filmBackChips.row,
           ])
         : null,
       el("div", { class: "logger-group logger-extended" }, [

@@ -21,6 +21,11 @@
           "category": { "type": "ref", "ref": "app.graycard.defs#cameraCategory" },
           "mount": { "type": "ref", "ref": "app.graycard.defs#mount" },
           "format": { "type": "ref", "ref": "app.graycard.defs#captureFormat" },
+          "backInterface": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Open name of the detachable film-back interface supported by this camera body, e.g. Bronica SQ. Omit for cameras without detachable backs."
+          },
           "shutterType": { "type": "ref", "ref": "app.graycard.defs#shutterType" },
           "minShutterSpeed": {
             "type": "ref",

@@ -92,10 +92,11 @@ describe("instanceLabel", () => {
 
 describe("resolvePhotoCapture", () => {
   it("prefers per-photo capture over gallery defaults", () => {
-    const capture = { value: { camera: "at://cam-a" } };
-    const defaults = { value: { camera: "at://cam-b", lens: "at://lens-b" } };
+    const capture = { value: { camera: "at://cam-a", filmBack: "at://back-a" } };
+    const defaults = { value: { camera: "at://cam-b", filmBack: "at://back-b", lens: "at://lens-b" } };
     const r = resolvePhotoCapture(capture, defaults);
     expect(r.camera).toBe("at://cam-a");
+    expect(r.filmBack).toBe("at://back-a");
     expect(r.lens).toBe("at://lens-b");
   });
 });

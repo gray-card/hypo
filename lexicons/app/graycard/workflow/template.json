@@ -33,6 +33,10 @@
             "type": "string",
             "format": "at-uri"
           },
+          "defaultFilmBack": {
+            "type": "string",
+            "format": "at-uri"
+          },
           "defaultLens": {
             "type": "string",
             "format": "at-uri"

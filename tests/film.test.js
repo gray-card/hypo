@@ -84,4 +84,17 @@ describe("splitRollFromStockpile", () => {
       status: "loaded",
     });
   });
+
+  it("loads a roll into a detachable back instead of a camera body", async () => {
+    const agent = mockAgent();
+    const sp = fullStockpile();
+    const filmBack = "at://did:plc:test/app.graycard.instance.filmBack/back";
+    await splitRollFromStockpile(agent, did, sp, {
+      camera: "at://did:plc:test/app.graycard.instance.camera/cam",
+      filmBack,
+    });
+    const created = agent.created.find((candidate) => candidate.collection === NS.instance.filmRoll);
+    expect(created.record.filmBack).toBe(filmBack);
+    expect(created.record.camera).toBeUndefined();
+  });
 });
