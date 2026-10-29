@@ -32,6 +32,23 @@ function latestReleaseBaseline(ref) {
     .find(Boolean);
 }
 
+function breakingChangesBelongOnlyToAddedNsids(report) {
+  const addedNsids = new Set(
+    (report.non_breaking || [])
+      .filter((change) => change.type === "added_nsid" && typeof change.nsid === "string")
+      .map((change) => change.nsid),
+  );
+  return (
+    addedNsids.size > 0 &&
+    Array.isArray(report.breaking) &&
+    report.breaking.length > 0 &&
+    report.breaking.every(
+      (change) =>
+        typeof change.vertex_id === "string" && [...addedNsids].some((nsid) => change.vertex_id.includes(`::${nsid}:`)),
+    )
+  );
+}
+
 const releaseBaseline = baseRef ? latestReleaseBaseline(baseRef) : null;
 
 if (!baseRef || !releaseBaseline) {
@@ -60,50 +77,63 @@ try {
   } else if (compat.status !== 1) {
     throw new Error(`schema compat failed to load the merge-base suite:\n${compat.stdout}${compat.stderr}`);
   } else {
-    const messages = run("git", ["log", "--format=%B", `${mergeBase}..HEAD`]).stdout;
-    if (!messages.includes("[breaking-change-acknowledged]")) {
-      throw new Error("Breaking schema changes require [breaking-change-acknowledged] in a commit message");
-    }
-
-    const manifestPath = join(root, "lenses", "breaking-change.json");
-    if (!existsSync(manifestPath)) {
-      throw new Error("Acknowledged breaking changes require lenses/breaking-change.json in the same PR");
-    }
-    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-    const transitions = Array.isArray(manifest.transitions) ? manifest.transitions : [];
-    if (!transitions.length) throw new Error("lenses/breaking-change.json must declare at least one transition");
-
-    for (const transition of transitions) {
-      for (const field of ["source", "target", "lens", "projection", "data", "verify"]) {
-        if (typeof transition[field] !== "string" || !existsSync(join(root, transition[field]))) {
-          throw new Error(`Breaking-change transition has no readable ${field} path`);
-        }
-      }
-      const transitionCompat = run(
-        schemaBin,
-        ["compat", transition.source, transition.target, "--protocol", "atproto", "--format", "json"],
-        { allowFailure: true },
+    const report = JSON.parse(compat.stdout);
+    // Panproto 0.70.1 classifies required properties within an entirely new
+    // NSID as required-edge additions. Those constraints cannot invalidate an
+    // existing record because the collection itself did not exist in the base
+    // suite. Changes to any pre-existing NSID still take the migration path.
+    if (breakingChangesBelongOnlyToAddedNsids(report)) {
+      console.log(
+        `Panproto PR compatibility: additive new records against merge base ${mergeBase} (release baseline ${releaseBaseline}).`,
       );
-      if (transitionCompat.status !== 1) {
-        throw new Error(
-          `Breaking transition ${transition.id || transition.lens} is not classified as breaking:\n${transitionCompat.stdout}${transitionCompat.stderr}`,
+    } else {
+      const messages = run("git", ["log", "--format=%B", `${mergeBase}..HEAD`]).stdout;
+      if (!messages.includes("[breaking-change-acknowledged]")) {
+        throw new Error("Breaking schema changes require [breaking-change-acknowledged] in a commit message");
+      }
+
+      const manifestPath = join(root, "lenses", "breaking-change.json");
+      if (!existsSync(manifestPath)) {
+        throw new Error("Acknowledged breaking changes require lenses/breaking-change.json in the same PR");
+      }
+      const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+      const transitions = Array.isArray(manifest.transitions) ? manifest.transitions : [];
+      if (!transitions.length) throw new Error("lenses/breaking-change.json must declare at least one transition");
+
+      for (const transition of transitions) {
+        for (const field of ["source", "target", "lens", "projection", "data", "verify"]) {
+          if (typeof transition[field] !== "string" || !existsSync(join(root, transition[field]))) {
+            throw new Error(`Breaking-change transition has no readable ${field} path`);
+          }
+        }
+        const transitionCompat = run(
+          schemaBin,
+          ["compat", transition.source, transition.target, "--protocol", "atproto", "--format", "json"],
+          { allowFailure: true },
         );
+        if (transitionCompat.status !== 1) {
+          throw new Error(
+            `Breaking transition ${transition.id || transition.lens} is not classified as breaking:\n${transitionCompat.stdout}${transitionCompat.stderr}`,
+          );
+        }
+        const transitionReport = JSON.parse(transitionCompat.stdout);
+        if (transitionReport.classification !== "breaking") {
+          throw new Error(
+            `Breaking transition ${transition.id || transition.lens} reported ${transitionReport.classification}`,
+          );
+        }
+        run("node", [
+          "--import",
+          "tsx",
+          transition.verify,
+          transition.lens,
+          transition.data,
+          transition.source,
+          transition.target,
+        ]);
       }
-      const report = JSON.parse(transitionCompat.stdout);
-      if (report.classification !== "breaking") {
-        throw new Error(`Breaking transition ${transition.id || transition.lens} reported ${report.classification}`);
-      }
-      run("node", [
-        "--import",
-        "tsx",
-        transition.verify,
-        transition.lens,
-        transition.data,
-        transition.source,
-        transition.target,
-      ]);
+      console.log(`Panproto PR compatibility: acknowledged break verified against merge base ${mergeBase}.`);
     }
-    console.log(`Panproto PR compatibility: acknowledged break verified against merge base ${mergeBase}.`);
   }
 } finally {
   rmSync(sandbox, { recursive: true, force: true });
