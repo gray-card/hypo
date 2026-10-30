@@ -724,6 +724,19 @@ export const PRESETS = {
     label: (i) => `${i.make} ${i.model}`,
     items: [],
   },
+  // These lists intentionally start empty: unlike the compact offline seeds
+  // for a few older catalog kinds, enlarger suggestions must come only from
+  // the sourced, versioned catalog shards below.
+  enlargerType: {
+    primary: "model",
+    label: (i) => `${i.make} ${i.model}`,
+    items: [],
+  },
+  enlargingLensType: {
+    primary: "model",
+    label: (i) => `${i.make} ${i.model}`,
+    items: [],
+  },
   scannerType: {
     primary: "model",
     label: (i) => `${i.make} ${i.model}`,
@@ -881,6 +894,8 @@ const PRESET_DOMAINS = {
   cameraType: "cameras",
   filmBackType: "film-backs",
   lensType: "lenses",
+  enlargerType: "enlargers",
+  enlargingLensType: "enlarging-lenses",
   filmStock: "film-stocks",
   chemistryType: "darkroom-products",
 };
@@ -914,6 +929,14 @@ function applyCatalogDomain(domain, items) {
     );
   } else if (domain === "lenses") {
     replaceUnique(PRESETS.lensType.items, items, (item) =>
+      `${item.make || ""}\0${item.model || ""}`.trim().toLowerCase(),
+    );
+  } else if (domain === "enlargers") {
+    replaceUnique(PRESETS.enlargerType.items, items, (item) =>
+      `${item.make || ""}\0${item.model || ""}`.trim().toLowerCase(),
+    );
+  } else if (domain === "enlarging-lenses") {
+    replaceUnique(PRESETS.enlargingLensType.items, items, (item) =>
       `${item.make || ""}\0${item.model || ""}`.trim().toLowerCase(),
     );
   } else if (domain === "film-stocks") mergeFilmStocks(items);
@@ -970,10 +993,22 @@ export async function loadCatalogPresets(kinds = Object.keys(PRESET_DOMAINS), op
 // replace MODE and remove this fixture-only branch, so none of these JSON files
 // are emitted into the application graph.
 if (import.meta.env.MODE === "test") {
-  const [cameras, lensfunCameras, filmBacks, lenses, lensfunLenses, filmStocks, darkroomProducts] = await Promise.all([
+  const [
+    cameras,
+    lensfunCameras,
+    filmBacks,
+    enlargers,
+    enlargingLenses,
+    lenses,
+    lensfunLenses,
+    filmStocks,
+    darkroomProducts,
+  ] = await Promise.all([
     import("./curated-cameras.json"),
     import("./lensfun-cameras.json"),
     import("./curated-film-backs.json"),
+    import("./curated-enlargers.json"),
+    import("./curated-enlarging-lenses.json"),
     import("./curated-lenses.json"),
     import("./lensfun-lenses.json"),
     import("./curated-film-stocks.json"),
@@ -982,6 +1017,8 @@ if (import.meta.env.MODE === "test") {
   const fixtures = {
     cameras: [...(cameras.default.cameras || []), ...(lensfunCameras.default.cameras || [])],
     "film-backs": filmBacks.default.filmBacks || [],
+    enlargers: enlargers.default.enlargers || [],
+    "enlarging-lenses": enlargingLenses.default.lenses || [],
     lenses: [...(lenses.default.lenses || []), ...(lensfunLenses.default.lenses || [])],
     "film-stocks": filmStocks.default.stocks || [],
     "darkroom-products": [

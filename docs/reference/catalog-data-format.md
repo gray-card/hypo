@@ -17,7 +17,7 @@ Each file in a curated directory contains one complete JSON object per line. Fie
 
 Source rows may also carry build metadata such as `document`, `verifiedFields`, `sourcePage`, `sourceTable`, `sourceMethod`, and `sourceNote`. The catalog build converts this material to schema-native `documents` and `specSources`. It does not copy manufacturer documents into the repository.
 
-The current human-maintained source groups are cameras, detachable film backs, lenses, film stocks, development times, and datasheet enrichment. Run `npm run build:catalog` after editing a source. Do not edit the generated JSON in `src/data/` or `public/catalog/` by hand.
+The current human-maintained source groups are cameras, detachable film backs, enlargers, enlarging lenses, taking lenses, film stocks, development times, and datasheet enrichment. Run `npm run build:catalog` after editing a source. Do not edit the generated JSON in `src/data/` or `public/catalog/` by hand.
 
 ## Manifest
 
@@ -61,7 +61,7 @@ Each shard has this envelope:
 }
 ```
 
-The current named domains are `cameras`, `film-backs`, `lenses`, `dev-times`, `film-stocks`, and `darkroom-products`. The client accepts future string domains, but it rejects a shard whose `schemaVersion`, `domain`, item count, byte count, or SHA-256 digest does not agree with the manifest.
+The current named domains are `cameras`, `film-backs`, `enlargers`, `enlarging-lenses`, `lenses`, `dev-times`, `film-stocks`, and `darkroom-products`. The client accepts future string domains, but it rejects a shard whose `schemaVersion`, `domain`, item count, byte count, or SHA-256 digest does not agree with the manifest.
 
 ## Fetch and cache behavior
 

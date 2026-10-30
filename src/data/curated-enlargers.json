@@ -1,0 +1,1808 @@
+{
+  "_source": "enlarger models and specifications transcribed from manufacturer manuals, catalogs, and product pages in data/curated-enlargers/*.jsonl",
+  "_license": "Hypo's original compilation: CC-BY-SA 4.0; individual product specifications may be non-copyrightable facts. See data/LICENSE.md",
+  "_generated": "2026-10-30T20:23:36.052Z",
+  "enlargers": [
+    {
+      "make": "Beseler",
+      "model": "23C III Condenser Enlarger",
+      "maxFormat": "6x9",
+      "headType": "condenser",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.beselerphoto.com/light-sources/",
+            "title": "Enlarger Light Sources",
+            "source": "Beseler"
+          },
+          "publisher": "Beseler",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.beselerphoto.com/light-sources/",
+              "title": "Enlarger Light Sources",
+              "source": "Beseler"
+            },
+            "publisher": "Beseler",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Beseler",
+      "model": "23C III Dichro Color Enlarger",
+      "maxFormat": "6x9",
+      "headType": "dichroic-color",
+      "colorHead": true,
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.beselerphoto.com/light-sources/",
+            "title": "Enlarger Light Sources",
+            "source": "Beseler"
+          },
+          "publisher": "Beseler",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.beselerphoto.com/light-sources/",
+              "title": "Enlarger Light Sources",
+              "source": "Beseler"
+            },
+            "publisher": "Beseler",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType",
+            "colorHead"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Beseler",
+      "model": "23C III Variable Contrast Enlarger",
+      "maxFormat": "6x9",
+      "headType": "diffusion",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.beselerphoto.com/light-sources/",
+            "title": "Enlarger Light Sources",
+            "source": "Beseler"
+          },
+          "publisher": "Beseler",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.beselerphoto.com/light-sources/",
+              "title": "Enlarger Light Sources",
+              "source": "Beseler"
+            },
+            "publisher": "Beseler",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Beseler",
+      "model": "67 XLC Condenser Enlarger",
+      "maxFormat": "6x7",
+      "headType": "condenser",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.beselerphoto.com/light-sources/",
+            "title": "Enlarger Light Sources",
+            "source": "Beseler"
+          },
+          "publisher": "Beseler",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.beselerphoto.com/light-sources/",
+              "title": "Enlarger Light Sources",
+              "source": "Beseler"
+            },
+            "publisher": "Beseler",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Beseler",
+      "model": "67 XLD Dichro Color Enlarger",
+      "maxFormat": "6x7",
+      "headType": "dichroic-color",
+      "colorHead": true,
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.beselerphoto.com/photography-enlargers/",
+            "title": "Photography Enlargers",
+            "source": "Beseler"
+          },
+          "publisher": "Beseler",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.beselerphoto.com/photography-enlargers/",
+              "title": "Photography Enlargers",
+              "source": "Beseler"
+            },
+            "publisher": "Beseler",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType",
+            "colorHead"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Beseler",
+      "model": "67 XLVC Enlarger",
+      "maxFormat": "6x7",
+      "headType": "diffusion",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.beselerphoto.com/light-sources/",
+            "title": "Enlarger Light Sources",
+            "source": "Beseler"
+          },
+          "publisher": "Beseler",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.beselerphoto.com/light-sources/",
+              "title": "Enlarger Light Sources",
+              "source": "Beseler"
+            },
+            "publisher": "Beseler",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Beseler",
+      "model": "Printmaker 35 Condenser Enlarger",
+      "maxFormat": "35mm",
+      "headType": "condenser",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.beselerphoto.com/parts/",
+            "title": "Beseler Photography Equipment Parts",
+            "source": "Beseler"
+          },
+          "publisher": "Beseler",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.beselerphoto.com/parts/",
+              "title": "Beseler Photography Equipment Parts",
+              "source": "Beseler"
+            },
+            "publisher": "Beseler",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Beseler",
+      "model": "Printmaker 67 Condenser Enlarger",
+      "maxFormat": "6x7",
+      "headType": "condenser",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.beselerphoto.com/light-sources/",
+            "title": "Enlarger Light Sources",
+            "source": "Beseler"
+          },
+          "publisher": "Beseler",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.beselerphoto.com/light-sources/",
+              "title": "Enlarger Light Sources",
+              "source": "Beseler"
+            },
+            "publisher": "Beseler",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Beseler",
+      "model": "45 MXT Enlarger",
+      "maxFormat": "4x5",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.beselerphoto.com/wp-content/uploads/2021/04/BESELER-Photo-Brochure_PrintUpload.pdf",
+            "title": "Beseler Photography Equipment brochure",
+            "source": "Beseler"
+          },
+          "publisher": "Beseler",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.beselerphoto.com/wp-content/uploads/2021/04/BESELER-Photo-Brochure_PrintUpload.pdf",
+              "title": "Beseler Photography Equipment brochure",
+              "source": "Beseler"
+            },
+            "publisher": "Beseler",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat"
+          ],
+          "page": "2",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Beseler",
+      "model": "45 V-XL Enlarger",
+      "maxFormat": "4x5",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.beselerphoto.com/wp-content/uploads/2021/04/BESELER-Photo-Brochure_PrintUpload.pdf",
+            "title": "Beseler Photography Equipment brochure",
+            "source": "Beseler"
+          },
+          "publisher": "Beseler",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.beselerphoto.com/wp-content/uploads/2021/04/BESELER-Photo-Brochure_PrintUpload.pdf",
+              "title": "Beseler Photography Equipment brochure",
+              "source": "Beseler"
+            },
+            "publisher": "Beseler",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat"
+          ],
+          "page": "2",
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Kaiser",
+      "model": "VP 6005 SYSTEM-V",
+      "maxFormat": "6x6",
+      "headType": "condenser",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.kaiser-fototechnik.de/en/produkte/artikel.php?nr=4465",
+            "title": "VP 6005 B & W enlarger SYSTEM-V",
+            "source": "Kaiser Fototechnik"
+          },
+          "publisher": "Kaiser Fototechnik",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.kaiser-fototechnik.de/en/produkte/artikel.php?nr=4465",
+              "title": "VP 6005 B & W enlarger SYSTEM-V",
+              "source": "Kaiser Fototechnik"
+            },
+            "publisher": "Kaiser Fototechnik",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Kaiser",
+      "model": "VP 9005 SYSTEM-V",
+      "maxFormat": "6x9",
+      "headType": "condenser",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.kaiser-fototechnik.de/default-wAssets/docs/anleitungen/4465_1024.pdf",
+            "title": "SYSTEM-V operating instructions",
+            "source": "Kaiser Fototechnik"
+          },
+          "publisher": "Kaiser Fototechnik",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.kaiser-fototechnik.de/default-wAssets/docs/anleitungen/4465_1024.pdf",
+              "title": "SYSTEM-V operating instructions",
+              "source": "Kaiser Fototechnik"
+            },
+            "publisher": "Kaiser Fototechnik",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Kaiser",
+      "model": "VCP 6005 SYSTEM-V",
+      "maxFormat": "6x6",
+      "headType": "dichroic-color",
+      "colorHead": true,
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cms.kaiser-fototechnik.de/de/download/bedienungsanleitungen.php",
+            "title": "Kaiser enlarger operating-instructions archive",
+            "source": "Kaiser Fototechnik"
+          },
+          "publisher": "Kaiser Fototechnik",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cms.kaiser-fototechnik.de/de/download/bedienungsanleitungen.php",
+              "title": "Kaiser enlarger operating-instructions archive",
+              "source": "Kaiser Fototechnik"
+            },
+            "publisher": "Kaiser Fototechnik",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType",
+            "colorHead"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Kaiser",
+      "model": "VCP 7005 SYSTEM-V",
+      "maxFormat": "6x7",
+      "headType": "dichroic-color",
+      "colorHead": true,
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cms.kaiser-fototechnik.de/de/download/bedienungsanleitungen.php",
+            "title": "Kaiser enlarger operating-instructions archive",
+            "source": "Kaiser Fototechnik"
+          },
+          "publisher": "Kaiser Fototechnik",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cms.kaiser-fototechnik.de/de/download/bedienungsanleitungen.php",
+              "title": "Kaiser enlarger operating-instructions archive",
+              "source": "Kaiser Fototechnik"
+            },
+            "publisher": "Kaiser Fototechnik",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType",
+            "colorHead"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Kaiser",
+      "model": "VCP 9005 SYSTEM-V",
+      "maxFormat": "6x9",
+      "headType": "dichroic-color",
+      "colorHead": true,
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cms.kaiser-fototechnik.de/de/download/bedienungsanleitungen.php",
+            "title": "Kaiser enlarger operating-instructions archive",
+            "source": "Kaiser Fototechnik"
+          },
+          "publisher": "Kaiser Fototechnik",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cms.kaiser-fototechnik.de/de/download/bedienungsanleitungen.php",
+              "title": "Kaiser enlarger operating-instructions archive",
+              "source": "Kaiser Fototechnik"
+            },
+            "publisher": "Kaiser Fototechnik",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType",
+            "colorHead"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Kaiser",
+      "model": "VPM 6005 SYSTEM-V",
+      "maxFormat": "6x6",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://cms.kaiser-fototechnik.de/de/download/bedienungsanleitungen.php",
+            "title": "Kaiser enlarger operating-instructions archive",
+            "source": "Kaiser Fototechnik"
+          },
+          "publisher": "Kaiser Fototechnik",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://cms.kaiser-fototechnik.de/de/download/bedienungsanleitungen.php",
+              "title": "Kaiser enlarger operating-instructions archive",
+              "source": "Kaiser Fototechnik"
+            },
+            "publisher": "Kaiser Fototechnik",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Axomat 4",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Axomat 4a",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Axomat II",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Magnifax 3",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Magnifax 3a",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Magnifax 6.5x9",
+      "maxFormat": "6x9",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model",
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Magnifax II",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Meochromem",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Multifax 6x9",
+      "maxFormat": "6x9",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model",
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Opemus 4x4",
+      "maxFormat": "other",
+      "notes": "Manufacturer designation specifies 4×4 cm format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model",
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Opemus 5",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Opemus 5a",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Opemus IIa",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Opemus III",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Opemus Standard",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Opemus Standard 2",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Opematus 6x6",
+      "maxFormat": "6x6",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model",
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Laborant 9x12",
+      "maxFormat": "other",
+      "notes": "Manufacturer designation specifies 9×12 cm format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model",
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Magnitarus 10x15",
+      "maxFormat": "other",
+      "notes": "Manufacturer designation specifies 10×15 cm format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model",
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Meopta",
+      "model": "Magnitarus 13x18",
+      "maxFormat": "other",
+      "notes": "Manufacturer designation specifies 13×18 cm format.",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+            "title": "Meopta historical products",
+            "source": "Meopta"
+          },
+          "publisher": "Meopta",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://www.meopta.com/en/products-1404041852/?page=17",
+              "title": "Meopta historical products",
+              "source": "Meopta"
+            },
+            "publisher": "Meopta",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "model",
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Omega",
+      "model": "B-22",
+      "maxFormat": "6x6",
+      "headType": "condenser",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/01787/01787.pdf",
+            "title": "Simmon Omega B-22 & B-22XL Instruction Manual",
+            "source": "Berkey Technical Corp."
+          },
+          "publisher": "Berkey Technical Corp.",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/01787/01787.pdf",
+              "title": "Simmon Omega B-22 & B-22XL Instruction Manual",
+              "source": "Berkey Technical Corp."
+            },
+            "publisher": "Berkey Technical Corp.",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Omega",
+      "model": "B-22XL",
+      "maxFormat": "6x6",
+      "headType": "condenser",
+      "documents": [
+        {
+          "kind": "manual",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/01787/01787.pdf",
+            "title": "Simmon Omega B-22 & B-22XL Instruction Manual",
+            "source": "Berkey Technical Corp."
+          },
+          "publisher": "Berkey Technical Corp.",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "manual",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/01787/01787.pdf",
+              "title": "Simmon Omega B-22 & B-22XL Instruction Manual",
+              "source": "Berkey Technical Corp."
+            },
+            "publisher": "Berkey Technical Corp.",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Omega",
+      "model": "B-66",
+      "maxFormat": "6x6",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+            "title": "Omega B-66 and Chromega B sales brochure",
+            "source": "Simmon Omega"
+          },
+          "publisher": "Simmon Omega",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+              "title": "Omega B-66 and Chromega B sales brochure",
+              "source": "Simmon Omega"
+            },
+            "publisher": "Simmon Omega",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Omega",
+      "model": "Chromega B",
+      "maxFormat": "6x6",
+      "headType": "dichroic-color",
+      "colorHead": true,
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+            "title": "Omega B-66 and Chromega B sales brochure",
+            "source": "Simmon Omega"
+          },
+          "publisher": "Simmon Omega",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+              "title": "Omega B-66 and Chromega B sales brochure",
+              "source": "Simmon Omega"
+            },
+            "publisher": "Simmon Omega",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType",
+            "colorHead"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Omega",
+      "model": "C760 Condenser Enlarger",
+      "maxFormat": "6x7",
+      "headType": "condenser",
+      "lensMount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/02777/02777.pdf",
+            "title": "C700 Medium Format Enlarging System catalog",
+            "source": "Omega"
+          },
+          "publisher": "Omega",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/02777/02777.pdf",
+              "title": "C700 Medium Format Enlarging System catalog",
+              "source": "Omega"
+            },
+            "publisher": "Omega",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType",
+            "lensMount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Omega",
+      "model": "C760 Dichroic Enlarger",
+      "maxFormat": "6x7",
+      "headType": "dichroic-color",
+      "colorHead": true,
+      "lensMount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/02777/02777.pdf",
+            "title": "C700 Medium Format Enlarging System catalog",
+            "source": "Omega"
+          },
+          "publisher": "Omega",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/02777/02777.pdf",
+              "title": "C700 Medium Format Enlarging System catalog",
+              "source": "Omega"
+            },
+            "publisher": "Omega",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType",
+            "colorHead",
+            "lensMount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Omega",
+      "model": "C760 Diffusion Enlarger",
+      "maxFormat": "6x7",
+      "headType": "diffusion",
+      "lensMount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/02777/02777.pdf",
+            "title": "C700 Medium Format Enlarging System catalog",
+            "source": "Omega"
+          },
+          "publisher": "Omega",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/02777/02777.pdf",
+              "title": "C700 Medium Format Enlarging System catalog",
+              "source": "Omega"
+            },
+            "publisher": "Omega",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType",
+            "lensMount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Omega",
+      "model": "D-2 Enlarger",
+      "maxFormat": "4x5",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+            "title": "Omega D2 and D-3 sales brochure",
+            "source": "Simmon Omega"
+          },
+          "publisher": "Simmon Omega",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+              "title": "Omega D2 and D-3 sales brochure",
+              "source": "Simmon Omega"
+            },
+            "publisher": "Simmon Omega",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Omega",
+      "model": "D-3 Enlarger",
+      "maxFormat": "4x5",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+            "title": "Omega D2 and D-3 sales brochure",
+            "source": "Simmon Omega"
+          },
+          "publisher": "Simmon Omega",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+              "title": "Omega D2 and D-3 sales brochure",
+              "source": "Simmon Omega"
+            },
+            "publisher": "Simmon Omega",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Omega",
+      "model": "D5V Enlarger",
+      "maxFormat": "4x5",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+            "title": "D5V/DSV-XL and Super Chromega D II sales brochure",
+            "source": "Omega"
+          },
+          "publisher": "Omega",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+              "title": "D5V/DSV-XL and Super Chromega D II sales brochure",
+              "source": "Omega"
+            },
+            "publisher": "Omega",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Omega",
+      "model": "Super Chromega D II",
+      "maxFormat": "4x5",
+      "headType": "dichroic-color",
+      "colorHead": true,
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+            "title": "D5V/DSV-XL and Super Chromega D II sales brochure",
+            "source": "Omega"
+          },
+          "publisher": "Omega",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.pacificrimcamera.com/rl/rlOmegaMisc.htm",
+              "title": "D5V/DSV-XL and Super Chromega D II sales brochure",
+              "source": "Omega"
+            },
+            "publisher": "Omega",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "maxFormat",
+            "headType",
+            "colorHead"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    }
+  ]
+}

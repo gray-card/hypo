@@ -1,0 +1,1219 @@
+{
+  "_source": "enlarging-lens models and specifications transcribed from manufacturer technical documents in data/curated-enlarging-lenses/*.jsonl",
+  "_license": "Hypo's original compilation: CC-BY-SA 4.0; individual product specifications may be non-copyrightable facts. See data/LICENSE.md",
+  "_generated": "2026-10-30T20:23:36.053Z",
+  "lenses": [
+    {
+      "make": "Nikon",
+      "model": "EL-Nikkor 50mm f/2.8",
+      "focalLengthMm": 50,
+      "maxAperture": {
+        "value": 2800000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "35mm",
+      "documents": [
+        {
+          "kind": "technical-data",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+            "title": "NIKKOR: The Thousand and One Nights No. 64",
+            "source": "Nikon"
+          },
+          "publisher": "Nikon",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "technical-data",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+              "title": "NIKKOR: The Thousand and One Nights No. 64",
+              "source": "Nikon"
+            },
+            "publisher": "Nikon",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Nikon",
+      "model": "EL-Nikkor 50mm f/4",
+      "focalLengthMm": 50,
+      "maxAperture": {
+        "value": 4000000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "35mm",
+      "documents": [
+        {
+          "kind": "technical-data",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+            "title": "NIKKOR: The Thousand and One Nights No. 64",
+            "source": "Nikon"
+          },
+          "publisher": "Nikon",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "technical-data",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+              "title": "NIKKOR: The Thousand and One Nights No. 64",
+              "source": "Nikon"
+            },
+            "publisher": "Nikon",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Nikon",
+      "model": "EL-Nikkor 63mm f/3.5",
+      "focalLengthMm": 63,
+      "maxAperture": {
+        "value": 3500000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "documents": [
+        {
+          "kind": "technical-data",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+            "title": "NIKKOR: The Thousand and One Nights No. 64",
+            "source": "Nikon"
+          },
+          "publisher": "Nikon",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "technical-data",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+              "title": "NIKKOR: The Thousand and One Nights No. 64",
+              "source": "Nikon"
+            },
+            "publisher": "Nikon",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Nikon",
+      "model": "EL-Nikkor 75mm f/4",
+      "focalLengthMm": 75,
+      "maxAperture": {
+        "value": 4000000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "6x6",
+      "documents": [
+        {
+          "kind": "technical-data",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+            "title": "NIKKOR: The Thousand and One Nights No. 64",
+            "source": "Nikon"
+          },
+          "publisher": "Nikon",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "technical-data",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+              "title": "NIKKOR: The Thousand and One Nights No. 64",
+              "source": "Nikon"
+            },
+            "publisher": "Nikon",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Nikon",
+      "model": "EL-Nikkor 80mm f/5.6",
+      "focalLengthMm": 80,
+      "maxAperture": {
+        "value": 5600000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "6x6",
+      "documents": [
+        {
+          "kind": "technical-data",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+            "title": "NIKKOR: The Thousand and One Nights No. 64",
+            "source": "Nikon"
+          },
+          "publisher": "Nikon",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "technical-data",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+              "title": "NIKKOR: The Thousand and One Nights No. 64",
+              "source": "Nikon"
+            },
+            "publisher": "Nikon",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Nikon",
+      "model": "EL-Nikkor 80mm f/5.6N",
+      "focalLengthMm": 80,
+      "maxAperture": {
+        "value": 5600000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "6x6",
+      "documents": [
+        {
+          "kind": "technical-data",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+            "title": "NIKKOR: The Thousand and One Nights No. 64",
+            "source": "Nikon"
+          },
+          "publisher": "Nikon",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "technical-data",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+              "title": "NIKKOR: The Thousand and One Nights No. 64",
+              "source": "Nikon"
+            },
+            "publisher": "Nikon",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Nikon",
+      "model": "EL-Nikkor 105mm f/5.6",
+      "focalLengthMm": 105,
+      "maxAperture": {
+        "value": 5600000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "documents": [
+        {
+          "kind": "technical-data",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+            "title": "NIKKOR: The Thousand and One Nights No. 64",
+            "source": "Nikon"
+          },
+          "publisher": "Nikon",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "technical-data",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+              "title": "NIKKOR: The Thousand and One Nights No. 64",
+              "source": "Nikon"
+            },
+            "publisher": "Nikon",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Nikon",
+      "model": "EL-Nikkor 135mm f/5.6",
+      "focalLengthMm": 135,
+      "maxAperture": {
+        "value": 5600000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "documents": [
+        {
+          "kind": "technical-data",
+          "asset": {
+            "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+            "title": "NIKKOR: The Thousand and One Nights No. 64",
+            "source": "Nikon"
+          },
+          "publisher": "Nikon",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "technical-data",
+            "asset": {
+              "url": "https://imaging.nikon.com/imaging/information/story/0064/index.html",
+              "title": "NIKKOR: The Thousand and One Nights No. 64",
+              "source": "Nikon"
+            },
+            "publisher": "Nikon",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rodenstock",
+      "model": "Rodagon 28mm f/4",
+      "focalLengthMm": 28,
+      "maxAperture": {
+        "value": 4000000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "other",
+      "notes": "Maximum film format: 18×24 mm.",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+            "title": "Lenses for Enlarging, CCD Photos and Video",
+            "source": "Rodenstock Photo Optics"
+          },
+          "publisher": "Rodenstock Photo Optics",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+              "title": "Lenses for Enlarging, CCD Photos and Video",
+              "source": "Rodenstock Photo Optics"
+            },
+            "publisher": "Rodenstock Photo Optics",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rodenstock",
+      "model": "Rodagon 35mm f/4",
+      "focalLengthMm": 35,
+      "maxAperture": {
+        "value": 4000000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "other",
+      "notes": "Maximum film format: 24×24 mm.",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+            "title": "Lenses for Enlarging, CCD Photos and Video",
+            "source": "Rodenstock Photo Optics"
+          },
+          "publisher": "Rodenstock Photo Optics",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+              "title": "Lenses for Enlarging, CCD Photos and Video",
+              "source": "Rodenstock Photo Optics"
+            },
+            "publisher": "Rodenstock Photo Optics",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rodenstock",
+      "model": "Rodagon 50mm f/2.8",
+      "focalLengthMm": 50,
+      "maxAperture": {
+        "value": 2800000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "35mm",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+            "title": "Lenses for Enlarging, CCD Photos and Video",
+            "source": "Rodenstock Photo Optics"
+          },
+          "publisher": "Rodenstock Photo Optics",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+              "title": "Lenses for Enlarging, CCD Photos and Video",
+              "source": "Rodenstock Photo Optics"
+            },
+            "publisher": "Rodenstock Photo Optics",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rodenstock",
+      "model": "Rodagon 60mm f/4",
+      "focalLengthMm": 60,
+      "maxAperture": {
+        "value": 4000000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "other",
+      "notes": "Maximum film format: 40×40 mm.",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+            "title": "Lenses for Enlarging, CCD Photos and Video",
+            "source": "Rodenstock Photo Optics"
+          },
+          "publisher": "Rodenstock Photo Optics",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+              "title": "Lenses for Enlarging, CCD Photos and Video",
+              "source": "Rodenstock Photo Optics"
+            },
+            "publisher": "Rodenstock Photo Optics",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rodenstock",
+      "model": "Rodagon 80mm f/4",
+      "focalLengthMm": 80,
+      "maxAperture": {
+        "value": 4000000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "6x7",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+            "title": "Lenses for Enlarging, CCD Photos and Video",
+            "source": "Rodenstock Photo Optics"
+          },
+          "publisher": "Rodenstock Photo Optics",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+              "title": "Lenses for Enlarging, CCD Photos and Video",
+              "source": "Rodenstock Photo Optics"
+            },
+            "publisher": "Rodenstock Photo Optics",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rodenstock",
+      "model": "Rodagon 105mm f/5.6",
+      "focalLengthMm": 105,
+      "maxAperture": {
+        "value": 5600000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "6x9",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+            "title": "Lenses for Enlarging, CCD Photos and Video",
+            "source": "Rodenstock Photo Optics"
+          },
+          "publisher": "Rodenstock Photo Optics",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+              "title": "Lenses for Enlarging, CCD Photos and Video",
+              "source": "Rodenstock Photo Optics"
+            },
+            "publisher": "Rodenstock Photo Optics",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rodenstock",
+      "model": "Rodagon 135mm f/5.6",
+      "focalLengthMm": 135,
+      "maxAperture": {
+        "value": 5600000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "4x5",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+            "title": "Lenses for Enlarging, CCD Photos and Video",
+            "source": "Rodenstock Photo Optics"
+          },
+          "publisher": "Rodenstock Photo Optics",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+              "title": "Lenses for Enlarging, CCD Photos and Video",
+              "source": "Rodenstock Photo Optics"
+            },
+            "publisher": "Rodenstock Photo Optics",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Rodenstock",
+      "model": "Rodagon 150mm f/5.6",
+      "focalLengthMm": 150,
+      "maxAperture": {
+        "value": 5600000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "coversFormat": "4x5",
+      "documents": [
+        {
+          "kind": "catalog",
+          "asset": {
+            "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+            "title": "Lenses for Enlarging, CCD Photos and Video",
+            "source": "Rodenstock Photo Optics"
+          },
+          "publisher": "Rodenstock Photo Optics",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "catalog",
+            "asset": {
+              "url": "https://www.rodenstock-photo.com/sites/default/files/2020-04/e_Rodenstock_Printing_CCD_43-62__8230%20%281%29.pdf",
+              "title": "Lenses for Enlarging, CCD Photos and Video",
+              "source": "Rodenstock Photo Optics"
+            },
+            "publisher": "Rodenstock Photo Optics",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "coversFormat"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Schneider-Kreuznach",
+      "model": "Componon 28mm f/4",
+      "focalLengthMm": 28,
+      "maxAperture": {
+        "value": 4000000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "mount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+            "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+            "source": "Schneider-Kreuznach"
+          },
+          "publisher": "Schneider-Kreuznach",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+              "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+              "source": "Schneider-Kreuznach"
+            },
+            "publisher": "Schneider-Kreuznach",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "mount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Schneider-Kreuznach",
+      "model": "Componon 35mm f/4",
+      "focalLengthMm": 35,
+      "maxAperture": {
+        "value": 4000000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "mount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+            "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+            "source": "Schneider-Kreuznach"
+          },
+          "publisher": "Schneider-Kreuznach",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+              "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+              "source": "Schneider-Kreuznach"
+            },
+            "publisher": "Schneider-Kreuznach",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "mount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Schneider-Kreuznach",
+      "model": "Apo-Componon 40mm f/2.8",
+      "focalLengthMm": 40,
+      "maxAperture": {
+        "value": 2800000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "mount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+            "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+            "source": "Schneider-Kreuznach"
+          },
+          "publisher": "Schneider-Kreuznach",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+              "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+              "source": "Schneider-Kreuznach"
+            },
+            "publisher": "Schneider-Kreuznach",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "mount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Schneider-Kreuznach",
+      "model": "Apo-Componon 45mm f/4",
+      "focalLengthMm": 45,
+      "maxAperture": {
+        "value": 4000000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "mount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+            "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+            "source": "Schneider-Kreuznach"
+          },
+          "publisher": "Schneider-Kreuznach",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+              "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+              "source": "Schneider-Kreuznach"
+            },
+            "publisher": "Schneider-Kreuznach",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "mount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Schneider-Kreuznach",
+      "model": "Componon-S 50mm f/2.8",
+      "focalLengthMm": 50,
+      "maxAperture": {
+        "value": 2800000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "mount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+            "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+            "source": "Schneider-Kreuznach"
+          },
+          "publisher": "Schneider-Kreuznach",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+              "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+              "source": "Schneider-Kreuznach"
+            },
+            "publisher": "Schneider-Kreuznach",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "mount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Schneider-Kreuznach",
+      "model": "Apo-Componon 60mm f/4",
+      "focalLengthMm": 60,
+      "maxAperture": {
+        "value": 4000000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "mount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+            "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+            "source": "Schneider-Kreuznach"
+          },
+          "publisher": "Schneider-Kreuznach",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+              "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+              "source": "Schneider-Kreuznach"
+            },
+            "publisher": "Schneider-Kreuznach",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "mount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Schneider-Kreuznach",
+      "model": "Componon-S 80mm f/4",
+      "focalLengthMm": 80,
+      "maxAperture": {
+        "value": 4000000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "mount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+            "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+            "source": "Schneider-Kreuznach"
+          },
+          "publisher": "Schneider-Kreuznach",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+              "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+              "source": "Schneider-Kreuznach"
+            },
+            "publisher": "Schneider-Kreuznach",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "mount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Schneider-Kreuznach",
+      "model": "Apo-Componon 90mm f/4.5",
+      "focalLengthMm": 90,
+      "maxAperture": {
+        "value": 4500000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "mount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+            "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+            "source": "Schneider-Kreuznach"
+          },
+          "publisher": "Schneider-Kreuznach",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+              "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+              "source": "Schneider-Kreuznach"
+            },
+            "publisher": "Schneider-Kreuznach",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "mount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Schneider-Kreuznach",
+      "model": "Componon-S 100mm f/5.6",
+      "focalLengthMm": 100,
+      "maxAperture": {
+        "value": 5600000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "mount": "M39 (Leica)",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+            "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+            "source": "Schneider-Kreuznach"
+          },
+          "publisher": "Schneider-Kreuznach",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+              "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+              "source": "Schneider-Kreuznach"
+            },
+            "publisher": "Schneider-Kreuznach",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "mount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Schneider-Kreuznach",
+      "model": "Componon-S 135mm f/5.6",
+      "focalLengthMm": 135,
+      "maxAperture": {
+        "value": 5600000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "mount": "M50 x 0.75",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+            "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+            "source": "Schneider-Kreuznach"
+          },
+          "publisher": "Schneider-Kreuznach",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+              "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+              "source": "Schneider-Kreuznach"
+            },
+            "publisher": "Schneider-Kreuznach",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "mount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    },
+    {
+      "make": "Schneider-Kreuznach",
+      "model": "Componon-S 150mm f/5.6",
+      "focalLengthMm": 150,
+      "maxAperture": {
+        "value": 5600000,
+        "unit": "f-number",
+        "scale": 1000000
+      },
+      "mount": "M50 x 0.75",
+      "documents": [
+        {
+          "kind": "product-page",
+          "asset": {
+            "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+            "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+            "source": "Schneider-Kreuznach"
+          },
+          "publisher": "Schneider-Kreuznach",
+          "language": "en",
+          "retrievedAt": "2026-10-30T00:00:00.000Z"
+        }
+      ],
+      "specSources": [
+        {
+          "document": {
+            "kind": "product-page",
+            "asset": {
+              "url": "https://schneiderkreuznach.com/en/industrial-optics/knowledge-hub/read-new-lens-names",
+              "title": "How to Read Schneider-Kreuznach Lens Names & Models",
+              "source": "Schneider-Kreuznach"
+            },
+            "publisher": "Schneider-Kreuznach",
+            "language": "en",
+            "retrievedAt": "2026-10-30T00:00:00.000Z"
+          },
+          "fields": [
+            "focalLengthMm",
+            "maxAperture",
+            "mount"
+          ],
+          "method": "manual-transcription"
+        }
+      ]
+    }
+  ]
+}
