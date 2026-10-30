@@ -26,6 +26,8 @@ const LOCAL_DB = join(ROOT, "data", "lensfun-db");
 const CURATED_DIR = join(ROOT, "data", "curated-lenses");
 const CURATED_CAM_DIR = join(ROOT, "data", "curated-cameras");
 const CURATED_FILM_BACK_DIR = join(ROOT, "data", "curated-film-backs");
+const CURATED_ENLARGER_DIR = join(ROOT, "data", "curated-enlargers");
+const CURATED_ENLARGING_LENS_DIR = join(ROOT, "data", "curated-enlarging-lenses");
 const CURATED_DEV_DIR = join(ROOT, "data", "curated-dev-times");
 const CURATED_FILM_DIR = join(ROOT, "data", "curated-film-stocks");
 const DATASHEET_DIR = join(ROOT, "data", "datasheets");
@@ -293,6 +295,87 @@ if (filmBacks.length) {
     `curated film backs: ${filmBacks.length} from ${readdirSync(CURATED_FILM_BACK_DIR).filter((f) => f.endsWith(".jsonl")).length} source file(s)`,
   );
 }
+
+// -- curated enlargers and enlarging lenses ---------------------------------
+// Unlike taking lenses, these two catalog kinds are wholly human-curated. The
+// source row is kept beside its exact manufacturer document (or a scanned
+// original document when the maker no longer hosts an archive), then converted
+// into the record-native provenance fields shared by the other curated kinds.
+function loadCuratedCatalogTypes(directory, collectionName) {
+  if (!existsSync(directory)) return [];
+  const out = [];
+  const seen = new Set();
+  for (const f of readdirSync(directory)
+    .filter((name) => name.endsWith(".jsonl"))
+    .sort()) {
+    const lines = readFileSync(join(directory, f), "utf8")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    lines.forEach((line, i) => {
+      let source;
+      try {
+        source = JSON.parse(line);
+      } catch (error) {
+        throw new Error(`${f}:${i + 1}: invalid JSON: ${error.message}`);
+      }
+      for (const field of ["make", "model", "datasheetUrl", "verifiedFields"]) {
+        if (source[field] == null) throw new Error(`${f}:${i + 1}: missing required field '${field}'`);
+      }
+      if (!/^https:\/\//.test(source.datasheetUrl)) {
+        throw new Error(`${f}:${i + 1}: datasheetUrl must use https`);
+      }
+      if (!Array.isArray(source.verifiedFields) || !source.verifiedFields.length) {
+        throw new Error(`${f}:${i + 1}: verifiedFields must be a non-empty array`);
+      }
+      const identity = `${source.make}\0${source.model}`.toLowerCase();
+      if (seen.has(identity)) throw new Error(`${f}:${i + 1}: duplicate ${source.make} ${source.model}`);
+      seen.add(identity);
+
+      const {
+        datasheetUrl,
+        verifiedFields,
+        sourceKind = "product-page",
+        sourceTitle,
+        sourcePublisher,
+        sourcePage,
+        sourceNote,
+        sourceLanguage = "en",
+        ...record
+      } = source;
+      const document = {
+        kind: sourceKind,
+        asset: {
+          url: datasheetUrl,
+          ...(sourceTitle ? { title: sourceTitle } : {}),
+          ...(sourcePublisher ? { source: sourcePublisher } : {}),
+        },
+        ...(sourcePublisher ? { publisher: sourcePublisher } : {}),
+        language: sourceLanguage,
+        retrievedAt: "2026-10-30T00:00:00.000Z",
+      };
+      record.documents = [...(record.documents || []), document];
+      record.specSources = [
+        ...(record.specSources || []),
+        {
+          document,
+          fields: verifiedFields,
+          ...(sourcePage ? { page: sourcePage } : {}),
+          method: "manual-transcription",
+          ...(sourceNote ? { note: sourceNote } : {}),
+        },
+      ];
+      out.push(record);
+    });
+  }
+  console.log(
+    `curated ${collectionName}: ${out.length} from ${readdirSync(directory).filter((f) => f.endsWith(".jsonl")).length} source file(s)`,
+  );
+  return out;
+}
+
+const enlargers = loadCuratedCatalogTypes(CURATED_ENLARGER_DIR, "enlargers");
+const enlargingLenses = loadCuratedCatalogTypes(CURATED_ENLARGING_LENS_DIR, "enlarging lenses");
 
 // -- curated development recipes (from manufacturer datasheets) ---------------
 // data/curated-dev-times/<maker>.jsonl holds development times transcribed from
@@ -578,6 +661,25 @@ const filmBackHeader = {
   _generated: new Date().toISOString(),
 };
 writeFileSync(join(OUT, "curated-film-backs.json"), JSON.stringify({ ...filmBackHeader, filmBacks }, null, 2));
+const enlargerHeader = {
+  _source:
+    "enlarger models and specifications transcribed from manufacturer manuals, catalogs, and product pages in data/curated-enlargers/*.jsonl",
+  _license:
+    "Hypo's original compilation: CC-BY-SA 4.0; individual product specifications may be non-copyrightable facts. See data/LICENSE.md",
+  _generated: new Date().toISOString(),
+};
+writeFileSync(join(OUT, "curated-enlargers.json"), JSON.stringify({ ...enlargerHeader, enlargers }, null, 2));
+const enlargingLensHeader = {
+  _source:
+    "enlarging-lens models and specifications transcribed from manufacturer technical documents in data/curated-enlarging-lenses/*.jsonl",
+  _license:
+    "Hypo's original compilation: CC-BY-SA 4.0; individual product specifications may be non-copyrightable facts. See data/LICENSE.md",
+  _generated: new Date().toISOString(),
+};
+writeFileSync(
+  join(OUT, "curated-enlarging-lenses.json"),
+  JSON.stringify({ ...enlargingLensHeader, lenses: enlargingLenses }, null, 2),
+);
 const devHeader = {
   _source:
     "development times transcribed from official manufacturer datasheets, authored in data/curated-dev-times/*.jsonl; each recipe carries its own source URL",
@@ -614,5 +716,5 @@ writeFileSync(
   ),
 );
 console.log(
-  `wrote ${lenses.length} lensfun lenses, ${cameras.length} cameras, ${curated.length} curated lenses, ${curatedCameras.length} curated cameras, ${filmBacks.length} film backs, ${devTimes.length} dev recipes, ${filmStocks.length} film stocks, ${developerProducts.length + chemistryProducts.length} chemistry specs${RESOLVE_WIKIDATA ? " (+ Wikidata QIDs)" : ""}`,
+  `wrote ${lenses.length} lensfun lenses, ${cameras.length} cameras, ${curated.length} curated lenses, ${curatedCameras.length} curated cameras, ${filmBacks.length} film backs, ${enlargers.length} enlargers, ${enlargingLenses.length} enlarging lenses, ${devTimes.length} dev recipes, ${filmStocks.length} film stocks, ${developerProducts.length + chemistryProducts.length} chemistry specs${RESOLVE_WIKIDATA ? " (+ Wikidata QIDs)" : ""}`,
 );

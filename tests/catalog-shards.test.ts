@@ -61,6 +61,8 @@ describe("catalog shard build", () => {
       "cameras",
       "darkroom-products",
       "dev-times",
+      "enlargers",
+      "enlarging-lenses",
       "film-backs",
       "film-stocks",
       "lenses",

@@ -45,6 +45,19 @@ catalog is copied into the repository. Compatible rows in
 `data/curated-cameras/` carry the same open `backInterface` value, while cameras
 whose film chamber is integral remain unannotated.
 
+## Enlargers and enlarging lenses
+
+`data/curated-enlargers/*.jsonl` and
+`data/curated-enlarging-lenses/*.jsonl` are Hypo's original compilations of
+darkroom equipment. They are distinct from Lensfun's taking-lens database.
+Each row links the exact manufacturer manual, catalog, support page, or product
+page that supports its named fields. For discontinued equipment whose maker no
+longer hosts an archive, a scanned original manufacturer document is linked and
+identified as such in its provenance. The build converts each source row to
+schema-native `documents` and field-level `specSources`; it does not copy the
+linked document. These catalogues are the sole source for enlarger and enlarging
+lens autocomplete suggestions in the add-gear interface.
+
 ## Wikidata: canonical identifiers + images
 
 When present, `wikidata` QIDs are resolved from **Wikidata** (<https://www.wikidata.org>),

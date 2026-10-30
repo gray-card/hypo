@@ -7,7 +7,7 @@ description: Add a sourced JSONL row, rebuild generated catalog artifacts, and c
 
 Edit the human-maintained JSON Lines under `data/`, not generated catalog files.
 
-1. Choose the matching directory: `curated-cameras/`, `curated-film-backs/`, `curated-lenses/`, `curated-film-stocks/`, `curated-dev-times/`, or the relevant datasheet source.
+1. Choose the matching directory: `curated-cameras/`, `curated-film-backs/`, `curated-enlargers/`, `curated-enlarging-lenses/`, `curated-lenses/`, `curated-film-stocks/`, `curated-dev-times/`, or the relevant datasheet source.
 2. Add one complete JSON object on one line. Match the manufacturer and model spelling used by the catalog so deduplication and enrichment can find the row.
 3. Cite an exact primary source when adding specifications. Prefer a manufacturer technical sheet, then an official manual, catalog, support page, or product page for that exact model.
 4. Add `verifiedFields` only for fields supported by the cited edition. Use `sourcePage`, `sourceTable`, `sourceMethod`, and `sourceNote` to locate the evidence.

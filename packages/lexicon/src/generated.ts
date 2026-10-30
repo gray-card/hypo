@@ -230,6 +230,8 @@ export type AppGraycardCatalogEnlargerTypeMain = {
   "lensMount"?: string;
   "image"?: AppGraycardDefsAssetRef;
   "datasheet"?: AppGraycardDefsAssetRef;
+  "documents"?: Array<AppGraycardDefsProductDocument>;
+  "specSources"?: Array<AppGraycardDefsSpecSource>;
   "links"?: AppGraycardDefsCatalogLinks;
   "notes"?: string;
   "createdAt": string;
@@ -246,6 +248,8 @@ export type AppGraycardCatalogEnlargingLensTypeMain = {
   "coversFormat"?: AppGraycardDefsNegativeFormat;
   "image"?: AppGraycardDefsAssetRef;
   "datasheet"?: AppGraycardDefsAssetRef;
+  "documents"?: Array<AppGraycardDefsProductDocument>;
+  "specSources"?: Array<AppGraycardDefsSpecSource>;
   "links"?: AppGraycardDefsCatalogLinks;
   "notes"?: string;
   "createdAt": string;
@@ -3972,6 +3976,24 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "ref": "app.graycard.defs#assetRef",
               "description": "Official datasheet: a link (preferred), an uploaded file, or another record."
             },
+            "documents": {
+              "type": "array",
+              "maxLength": 16,
+              "description": "Technical sheets, manuals, catalogs, and other documents consulted for this model.",
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#productDocument"
+              }
+            },
+            "specSources": {
+              "type": "array",
+              "maxLength": 64,
+              "description": "Field-level assertions identifying the exact document location behind structured specifications.",
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#specSource"
+              }
+            },
             "links": {
               "type": "ref",
               "ref": "app.graycard.defs#catalogLinks"
@@ -4044,6 +4066,24 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#assetRef",
               "description": "Official datasheet: a link (preferred), an uploaded file, or another record."
+            },
+            "documents": {
+              "type": "array",
+              "maxLength": 16,
+              "description": "Technical sheets, manuals, catalogs, and other documents consulted for this model.",
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#productDocument"
+              }
+            },
+            "specSources": {
+              "type": "array",
+              "maxLength": 64,
+              "description": "Field-level assertions identifying the exact document location behind structured specifications.",
+              "items": {
+                "type": "ref",
+                "ref": "app.graycard.defs#specSource"
+              }
             },
             "links": {
               "type": "ref",

@@ -51,6 +51,31 @@ describe("lens catalog", () => {
   });
 });
 
+describe("sourced darkroom equipment catalogs", () => {
+  it("makes Omega B-22 available from the enlarger catalog", () => {
+    expect(PRESETS.enlargerType.items).toContainEqual(
+      expect.objectContaining({ make: "Omega", model: "B-22", maxFormat: "6x6", headType: "condenser" }),
+    );
+  });
+
+  it("uses the enlarging-lens catalog with schema-native aperture measures", () => {
+    expect(PRESETS.enlargingLensType.items).toContainEqual(
+      expect.objectContaining({
+        make: "Rodenstock",
+        model: "Rodagon 80mm f/4",
+        focalLengthMm: 80,
+        maxAperture: { value: 4_000_000, unit: "f-number", scale: 1_000_000 },
+        coversFormat: "6x7",
+      }),
+    );
+  });
+
+  it("does not retain an unsourced fallback list for either darkroom catalog", () => {
+    expect(PRESETS.enlargerType.items.length).toBeGreaterThan(40);
+    expect(PRESETS.enlargingLensType.items.length).toBeGreaterThan(20);
+  });
+});
+
 describe("enum data", () => {
   it("exposes the enums the forms rely on", () => {
     expect(ENUMS.rollStatus).not.toContain("stored"); // the "in stock" state was removed

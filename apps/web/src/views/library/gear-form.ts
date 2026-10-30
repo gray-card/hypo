@@ -62,7 +62,8 @@ function setPresetField(key: string, value: unknown, inputs: GearInputMap, servi
   else if (["minShutterSpeed", "maxShutterSpeed"].includes(key) && typeof value === "number")
     displayValue = services.shutterScaledToDisplay(value);
   else if (Array.isArray(value) && (ENUM_LIST.has(key) || STRING_LIST.has(key))) displayValue = value.join("\n");
-  else if (key === "factorStops" && typeof value === "object") displayValue = services.measureToDisplay(value);
+  else if (["factorStops", "maxAperture"].includes(key) && typeof value === "object")
+    displayValue = services.measureToDisplay(value);
   else if (typeof value === "object") return;
   const text = String(displayValue);
   const native = nativeInput(input);
@@ -344,13 +345,22 @@ export function openGearForm(
       let typeUri: string | null = null;
       if (typeKind) {
         const typeRecord = readGearFormFields(typeInputs, services, {
-          scaledKeys: ["focalLengthMin", "focalLengthMax", "maxAperture", "minAperture"],
+          scaledKeys: [
+            "focalLengthMin",
+            "focalLengthMax",
+            ...(typeKind === "enlargingLensType" ? [] : ["maxAperture"]),
+            "minAperture",
+          ],
           shutterScaledKeys: ["minShutterSpeed", "maxShutterSpeed"],
           scaledArrayKeys: {
             apertureSteps: (value) => services.displayToScaled(value),
             shutterSpeedSteps: (value) => services.displayToShutterScaled(value),
           },
-          measureKeys: { defaultTemperature: "celsius", factorStops: "stop" },
+          measureKeys: {
+            defaultTemperature: "celsius",
+            factorStops: "stop",
+            ...(typeKind === "enlargingLensType" ? { maxAperture: "f-number" } : {}),
+          },
         });
         const required = TYPE_IDENTITY[typeKind].filter(([, , isRequired]) => isRequired).map(([key]) => key);
         if (required.some((key) => !valueOf(typeInputs[key]).trim()))
@@ -421,8 +431,13 @@ export function openGearEditor(
     const typeValue = services.getStore().catalog[typeKind]?.find((record) => record.uri === typeUri)?.value;
     if (typeValue) {
       const converted = { ...typeValue };
-      for (const key of ["focalLengthMin", "focalLengthMax", "maxAperture", "minAperture"])
+      for (const key of ["focalLengthMin", "focalLengthMax", "minAperture"])
         if (converted[key] != null) converted[key] = services.scaledToDisplay(converted[key]);
+      if (converted.maxAperture != null)
+        converted.maxAperture =
+          typeKind === "enlargingLensType"
+            ? services.measureToDisplay(converted.maxAperture)
+            : services.scaledToDisplay(converted.maxAperture);
       for (const key of ["minShutterSpeed", "maxShutterSpeed"])
         if (converted[key] != null) converted[key] = services.shutterScaledToDisplay(converted[key]);
       if (converted.factorStops != null) converted.factorStops = services.measureToDisplay(converted.factorStops);
