@@ -1,0 +1,13 @@
+{
+  "projection": "meter-reading-projection-lexicon.json",
+  "records": [
+    {
+      "$type": "app.graycard.meter.reading",
+      "geometry": "incident",
+      "lightKind": "ambient",
+      "filter": "at://did:plc:test/app.graycard.instance.filter/nd8",
+      "createdAt": "2026-10-30T12:00:00.000Z",
+      "expectedFilters": ["at://did:plc:test/app.graycard.instance.filter/nd8"]
+    }
+  ]
+}

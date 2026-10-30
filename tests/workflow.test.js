@@ -47,11 +47,13 @@ describe("defaultStagePayload", () => {
 });
 
 describe("stepsFromTemplate", () => {
-  it("expands stageKinds and marks configured steps", () => {
+  it("normalizes canonical steps and marks configured steps", () => {
     const steps = stepsFromTemplate({
       value: {
-        stageKinds: ["capture", "develop"],
-        stageDefaults: [{ kind: "develop", fields: { tankType: "tank" } }],
+        steps: [
+          { id: "capture-1", kind: "capture" },
+          { id: "develop-1", kind: "develop", processDefaults: { tankType: "tank" } },
+        ],
       },
     });
     expect(steps.map((s) => s.kind)).toEqual(["capture", "develop"]);
@@ -87,13 +89,12 @@ describe("stepsFromTemplate", () => {
     expect(steps[1].stageFields).toEqual({ notes: "Second developer" });
   });
 
-  it("assigns deterministic IDs and distinct defaults to repeated legacy kinds", () => {
+  it("keeps stable IDs and distinct defaults for repeated kinds", () => {
     const steps = stepsFromTemplate({
       value: {
-        stageKinds: ["develop", "develop"],
-        stageDefaults: [
-          { kind: "develop", fields: { chemistry: "at://first" } },
-          { kind: "develop", fields: { chemistry: "at://second" } },
+        steps: [
+          { id: "develop-1", kind: "develop", processDefaults: { chemistry: "at://first" } },
+          { id: "develop-2", kind: "develop", processDefaults: { chemistry: "at://second" } },
         ],
       },
     });
@@ -103,11 +104,17 @@ describe("stepsFromTemplate", () => {
 });
 
 describe("workflow template conversion", () => {
-  it("normalizes a legacy linear template into ports and compatible edges", () => {
+  it("normalizes a canonical linear template into ports and compatible edges", () => {
     const normalized = normalizeWorkflowTemplate({
-      value: { medium: "film", stageKinds: ["capture", "develop", "digitize", "edit", "output"] },
+      value: {
+        medium: "film",
+        steps: ["capture", "develop", "digitize", "edit", "output"].map((kind) => ({
+          id: `${kind}-1`,
+          kind,
+        })),
+      },
     });
-    expect(normalized.source).toBe("legacy");
+    expect(normalized.source).toBe("rich");
     expect(normalized.steps.map((step) => step.id)).toEqual([
       "capture-1",
       "develop-1",
@@ -123,15 +130,15 @@ describe("workflow template conversion", () => {
     });
   });
 
-  it("serializes rich steps together with a legacy mirror", () => {
+  it("serializes only canonical rich steps", () => {
     const payload = templateFromSteps("Reversal", "film", [
       { kind: "develop", processFields: { chemistry: "at://chem/first" }, stageFields: {}, configured: true },
       { kind: "develop", processFields: { chemistry: "at://chem/second" }, stageFields: {}, configured: true },
     ]);
     expect(payload.steps.map((step) => step.id)).toEqual(["develop-1", "develop-2"]);
     expect(payload.steps[1].processDefaults).toEqual({ chemistry: "at://chem/second" });
-    expect(payload.stageKinds).toEqual(["develop", "develop"]);
-    expect(payload.stageDefaults).toHaveLength(2);
+    expect(payload).not.toHaveProperty("stageKinds");
+    expect(payload).not.toHaveProperty("stageDefaults");
   });
 
   it("plans session-less stages with stable template identity and lifecycle state", () => {

@@ -1,0 +1,24 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.workflow.stage",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "properties": {
+          "photo": { "type": "string", "format": "at-uri" },
+          "target": {
+            "type": "object",
+            "required": ["service"],
+            "properties": {
+              "service": { "type": "string" },
+              "ref": { "type": "string", "format": "at-uri" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.filmRoll",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["stock", "quantity", "createdAt"],
+        "properties": {
+          "stock": { "type": "string", "format": "at-uri" },
+          "quantity": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

@@ -2,7 +2,7 @@ const STICKY_FIELDS = Object.freeze([
   "quick",
   "camera",
   "lens",
-  "filter",
+  "filters",
   "roll",
   "aperture",
   "shutter",
@@ -21,9 +21,11 @@ export function loadShotLoggerState(did, shootUri, storage = globalThis.localSto
   try {
     const parsed = JSON.parse(storage?.getItem(shotLoggerStateKey(did, shootUri)) || "null");
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
-    return Object.fromEntries(
+    const sticky = Object.fromEntries(
       STICKY_FIELDS.filter((field) => parsed[field] !== undefined).map((field) => [field, parsed[field]]),
     );
+    if (!sticky.filters && parsed.filter) sticky.filters = [parsed.filter];
+    return sticky;
   } catch {
     return {};
   }

@@ -1,0 +1,90 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.scene.ontology",
+  "defs": {
+    "typeDecl": {
+      "type": "object",
+      "description": "Defines one node type or relation type. Relation types may specify inverse, opposite, symmetric, transitive, reflexive, and functional properties. domain and range are declared source and target preferences. domainIncludes and rangeIncludes are non-exhaustive observations from scene graphs, not constraints. sameAs associates the term with external identifiers.",
+      "required": ["id", "label"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "description": "Local term id, unique within this ontology." },
+        "label": { "type": "string", "maxLength": 128 },
+        "definition": { "type": "string", "maxLength": 1000 },
+        "domain": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "For relation types, the preferred source node-type IDs."
+        },
+        "range": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "For relation types, the preferred target node-type IDs."
+        },
+        "domainIncludes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Non-exhaustive source node types observed on relation instances. This field is not a constraint."
+        },
+        "rangeIncludes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Non-exhaustive target node types observed on relation instances. This field is not a constraint."
+        },
+        "inverse": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "ID of the converse relation type, such as has-part for part-of. The converse swaps source and target. A symmetric relation is its own inverse."
+        },
+        "opposite": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "ID of the directional opposite, such as out-of for into. An opposite retains source and target; an inverse swaps them."
+        },
+        "symmetric": { "type": "boolean", "description": "For edge types: A rel B implies B rel A." },
+        "transitive": { "type": "boolean", "description": "For edge types: A rel B and B rel C implies A rel C." },
+        "reflexive": { "type": "boolean", "description": "For edge types: A rel A always holds." },
+        "functional": {
+          "type": "boolean",
+          "description": "For edge types: each source relates to at most one target."
+        },
+        "sameAs": { "type": "array", "items": { "type": "ref", "ref": "app.graycard.defs#externalId" } }
+      }
+    },
+    "main": {
+      "type": "record",
+      "description": "A shareable vocabulary for scene graphs. nodeTypes defines concepts and edgeTypes defines relations. Scene node and edge records hold observed instances; domainIncludes and rangeIncludes summarize the node types seen in those records. An observed instance relation does not create a type-level axiom. schemaVersion identifies the Panproto theory used by the vocabulary.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "createdAt"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 128 },
+          "description": { "type": "string", "maxLength": 2000 },
+          "schemaVersion": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Identity/version of the underlying panproto theory this vocabulary realizes."
+          },
+          "nodeTypes": {
+            "type": "array",
+            "items": { "type": "ref", "ref": "#typeDecl" },
+            "description": "The concept (node) types in the vocabulary."
+          },
+          "edgeTypes": {
+            "type": "array",
+            "items": { "type": "ref", "ref": "#typeDecl" },
+            "description": "The relation (edge) types in the vocabulary, with algebra and domain/codomain (asserted preferences + observed witnesses)."
+          },
+          "imports": {
+            "type": "array",
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Other ontologies composed into this one."
+          },
+          "links": { "type": "ref", "ref": "app.graycard.defs#catalogLinks" },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

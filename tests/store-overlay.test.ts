@@ -146,9 +146,14 @@ describe("record selectors", () => {
   const cameraB = `at://${repo}/app.graycard.instance.camera/b`;
   const filmBack = `at://${repo}/app.graycard.instance.filmBack/a`;
   const lens = `at://${repo}/app.graycard.instance.lens/a`;
+  const yellow = `at://${repo}/app.graycard.instance.filter/yellow`;
+  const polarizer = `at://${repo}/app.graycard.instance.filter/polarizer`;
   const exposures: StoredRecord<ExposureValue>[] = [
     { uri: "at://exposure/2b", value: { roll: rollA, shoot, frameNumber: 2, frameExposureIndex: 2, camera: cameraB } },
-    { uri: "at://exposure/1", value: { roll: rollA, shoot, frameNumber: 1, camera: cameraA, filmBack, lens } },
+    {
+      uri: "at://exposure/1",
+      value: { roll: rollA, shoot, frameNumber: 1, camera: cameraA, filmBack, lens, filters: [yellow, polarizer] },
+    },
     { uri: "at://exposure/2a", value: { roll: rollA, shoot, frameNumber: 2, frameExposureIndex: 1, camera: cameraB } },
     { uri: "at://exposure/b", value: { roll: rollB, frameNumber: 1 } },
   ];
@@ -191,6 +196,10 @@ describe("record selectors", () => {
     expect(result.lens.effective).toEqual([lens]);
     expect(result.filmBack).toEqual({ explicit: [filmBack], inherited: [filmBack], effective: [filmBack] });
     expect(result.filmRoll.effective).toEqual([rollA]);
-    expect(result.filter).toEqual({ explicit: [], inherited: [], effective: [] });
+    expect(result.filter).toEqual({
+      explicit: [],
+      inherited: [yellow, polarizer],
+      effective: [yellow, polarizer],
+    });
   });
 });

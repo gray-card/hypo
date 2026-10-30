@@ -9,7 +9,7 @@ export interface ExposureValue {
   readonly camera?: string;
   readonly filmBack?: string;
   readonly lens?: string;
-  readonly filter?: string;
+  readonly filters?: readonly string[];
   readonly takenAt?: string;
   readonly createdAt?: string;
   readonly [field: string]: unknown;
@@ -167,7 +167,7 @@ export function selectShootGearInheritance<S extends ShootValue, E extends Expos
     ),
     filter: inheritance(
       shoot.value.filters ?? [],
-      shootExposures.map((exposure) => exposure.value.filter),
+      shootExposures.flatMap((exposure) => exposure.value.filters ?? []),
     ),
   };
 }

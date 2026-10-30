@@ -13,6 +13,8 @@ import {
 import { assertConsumableLifecycle, assertFilmRollCarrier, assertRecordTimeSpans } from "@hypo/domain";
 import { migrateLegacyDeveloperRecords } from "./legacyDeveloperMigration.ts";
 import { migrateDevelopSessions } from "./developSessionMigration.ts";
+import { migrateFilterStacks } from "./filterStackMigration.ts";
+import { migrateLegacyShapes } from "./legacyShapeMigration.ts";
 
 export { NS, CATALOG_KINDS, INSTANCE_KINDS };
 
@@ -105,7 +107,15 @@ export const compareShootsByDate = (a, b) => shootDateKey(b.value).localeCompare
 export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
   const migration = await migrateLegacyDeveloperRecords(agent, did);
   const developSessionMigration = await migrateDevelopSessions(agent, did);
-  if (migration.migrated || developSessionMigration.migrated) refresh = true;
+  const filterStackMigration = await migrateFilterStacks(agent, did);
+  const legacyShapeMigration = await migrateLegacyShapes(agent, did);
+  if (
+    migration.migrated ||
+    developSessionMigration.migrated ||
+    filterStackMigration.migrated ||
+    legacyShapeMigration.migrated
+  )
+    refresh = true;
   const catalog = {};
   const instance = {};
   const byUri = new Map();
@@ -379,10 +389,12 @@ function resolveTypeValue(store, kind, uri) {
 export function resolvePhotoCapture(capture, defaults) {
   const c = capture?.value || {};
   const d = defaults?.value || {};
+  const filters = Array.isArray(c.filters) ? c.filters : Array.isArray(d.filters) ? d.filters : [];
   return {
     camera: c.camera || d.camera || null,
     filmBack: c.filmBack || d.filmBack || null,
     lens: c.lens || d.lens || null,
+    filters: [...new Set(filters.filter(Boolean))],
     filmRoll: c.filmRoll || d.filmRoll || null,
     shoot: c.shoot || d.shoot || null,
     medium: c.medium || null,
@@ -429,6 +441,7 @@ export function projectCaptureToExif(form, refs, store, { mode = "fill" } = {}) 
 
 export async function savePhotoCapture(agent, did, photoUri, fields, existing) {
   const value = {
+    ...(existing?.value || {}),
     photo: photoUri,
     createdAt: existing?.value?.createdAt || new Date().toISOString(),
     ...fields,

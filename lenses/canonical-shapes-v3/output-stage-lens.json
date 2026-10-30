@@ -1,0 +1,14 @@
+{
+  "id": "graycard.output-stage-photo-to-target.v1",
+  "source": "app.graycard.workflow.stage",
+  "target": "app.graycard.workflow.stage",
+  "steps": [
+    {
+      "compute_field": {
+        "target": "target",
+        "kind": "object",
+        "expr": "if is_null photo then null else { service = \"social.grain\", ref = photo }"
+      }
+    }
+  ]
+}

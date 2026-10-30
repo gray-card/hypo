@@ -165,17 +165,11 @@ describe("adaptive steps", () => {
       store,
       { practices: ["film-home"], digitize: "own" },
     );
-    expect(payload).toMatchObject({
-      defaultCamera: "cam",
-      defaultLens: "lens",
-      defaultChemistry: "chem",
-      defaultScanner: "scan",
-    });
-    expect(payload.stageDefaults).toEqual(
+    expect(payload.steps).toEqual(
       expect.arrayContaining([
-        { kind: "capture", fields: { camera: "cam", lens: "lens" } },
-        { kind: "develop", fields: { chemistry: "chem" } },
-        { kind: "digitize", fields: { scanner: "scan" } },
+        { id: "capture-1", kind: "capture", processDefaults: { camera: "cam", lens: "lens" } },
+        { id: "develop-1", kind: "develop", processDefaults: expect.objectContaining({ chemistry: "chem" }) },
+        { id: "digitize-1", kind: "digitize", processDefaults: { scanner: "scan" } },
       ]),
     );
   });

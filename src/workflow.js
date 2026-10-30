@@ -52,7 +52,7 @@ function templateRecord(template) {
 function allowedContextDefaults(kind, defaults = {}) {
   const shared = ["method", "params"];
   const byKind = {
-    capture: ["camera", "lens", "filmRoll"],
+    capture: ["camera", "filmBack", "lens", "filters", "filmRoll"],
     develop: ["filmRoll", "chemistry", "lab", "recipe"],
     digitize: ["filmRoll", "scanner", "scanProfile", "lab", "camera"],
     digital: ["recipe"],
@@ -75,7 +75,8 @@ function applyRuntimeContext(value, kind, defaults = {}) {
   };
   if (!Object.keys(next.processDefaults).length) delete next.processDefaults;
   if (kind === "capture") {
-    for (const key of ["camera", "lens", "filmRoll", "shoot"]) if (defaults[key]) next[key] = defaults[key];
+    for (const key of ["camera", "filmBack", "lens", "filters", "filmRoll", "shoot"])
+      if (defaults[key]) next[key] = defaults[key];
   }
   return next;
 }
@@ -178,7 +179,7 @@ function runMatchesSubject(run, subject) {
   const value = recordValue(run);
   const ref = typeof subject === "string" ? subject : subject?.ref;
   if (!ref) return false;
-  return value.photo === ref || [...(value.subjects || []), ...(value.products || [])].some((item) => item.ref === ref);
+  return [...(value.subjects || []), ...(value.products || [])].some((item) => item.ref === ref);
 }
 
 export async function createProcessSession(agent, did, processKind, fields = {}) {
@@ -192,7 +193,6 @@ export async function saveWorkflowRun(agent, did, input) {
   const value = {
     ...(existing?.value || {}),
     ...(input.value || {}),
-    ...(input.photo ? { photo: input.photo } : {}),
     medium: input.medium || input.value?.medium || existing?.value?.medium || "digital",
     stages: input.stages || input.value?.stages || existing?.value?.stages || [],
     ...(input.subjects?.length ? { subjects: input.subjects } : {}),
@@ -302,7 +302,6 @@ export async function instantiateWorkflowTemplate(
   const resolvedTemplateUri = templateUri || template?.uri;
   const resolvedTemplateCid = templateCid || template?.cid;
   const runUri = await saveWorkflowRun(agent, did, {
-    photo,
     medium: record.value.medium || "digital",
     subjects: normalizedSubjects,
     products: normalizedProducts,
@@ -372,7 +371,7 @@ export async function completeWorkflowStageAndAdvance(
     : stage.value.outputBindings;
   const completedValue = {
     ...stage.value,
-    ...(sessionUri ? { session: sessionUri } : {}),
+    ...(sessionUri ? (stageKind(stage) === "capture" ? { shoot: sessionUri } : { session: sessionUri }) : {}),
     ...(productRefs.length ? { output: productRefs[0], outputs: productRefs, outputBindings } : {}),
     status,
     ...(status === "skipped" ? { skippedAt: completedAt } : { completedAt }),
@@ -450,7 +449,6 @@ export async function buildWorkflowForPhoto(agent, did, photoUri, medium, steps,
     templateUri: first?.templateUri,
     subjects: [],
     products: [{ kind: "digital-raster", ref: photoUri }],
-    photo: photoUri,
     linkPhoto: false,
     store,
     occurrences,

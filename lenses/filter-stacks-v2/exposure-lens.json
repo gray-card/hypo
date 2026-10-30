@@ -1,0 +1,14 @@
+{
+  "id": "graycard.exposure-filter-to-stack.v1",
+  "source": "app.graycard.instance.exposure",
+  "target": "app.graycard.instance.exposure",
+  "steps": [
+    {
+      "compute_field": {
+        "target": "filters",
+        "kind": "array",
+        "expr": "if is_null filter then [] else [filter]"
+      }
+    }
+  ]
+}

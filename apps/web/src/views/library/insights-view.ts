@@ -197,6 +197,9 @@ export function renderInsightsView(body: HTMLElement, services: ActivityServices
       const uri = capture.value[key];
       if (uri) usage.set(uri, (usage.get(uri) || 0) + 1);
     }
+    for (const uri of Array.isArray(capture.value.filters) ? capture.value.filters : []) {
+      usage.set(uri, (usage.get(uri) || 0) + 1);
+    }
   }
   const top = [...usage].sort((left, right) => right[1] - left[1]).slice(0, 6);
   if (!top.length) return;

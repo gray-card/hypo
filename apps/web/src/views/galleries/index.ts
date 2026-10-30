@@ -60,7 +60,13 @@ export function deriveGalleryPresentation(
   const blobByPhoto = new Map(photos.map((record) => [record.uri, record.value.photo]));
   const gearPhotos = new Set(
     captures
-      .filter((record) => record.value.camera || record.value.lens || record.value.filmRoll)
+      .filter(
+        (record) =>
+          record.value.camera ||
+          record.value.lens ||
+          record.value.filmRoll ||
+          (Array.isArray(record.value.filters) && record.value.filters.length > 0),
+      )
       .map((record) => record.value.photo),
   );
   const workflowPhotos = new Set(workflows.map((record) => record.value.photo));

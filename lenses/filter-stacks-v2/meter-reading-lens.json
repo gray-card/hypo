@@ -1,0 +1,14 @@
+{
+  "id": "graycard.meter-reading-filter-to-stack.v1",
+  "source": "app.graycard.meter.reading",
+  "target": "app.graycard.meter.reading",
+  "steps": [
+    {
+      "compute_field": {
+        "target": "filters",
+        "kind": "array",
+        "expr": "if is_null filter then [] else [filter]"
+      }
+    }
+  ]
+}

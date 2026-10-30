@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NS } from "../src/graycard.js";
 import { pending } from "../src/outbox.js";
 import { initLibrary, openShotLogger } from "../src/ui/library.js";
-import { loadShotLoggerState, saveShotLoggerState } from "../src/ui/shotLoggerState.js";
+import { loadShotLoggerState, saveShotLoggerState, shotLoggerStateKey } from "../src/ui/shotLoggerState.js";
 import { createLoggerDial, openShotLoggerView } from "../apps/web/src/views/library/logger.ts";
 import { mockAgent } from "./setup.js";
 
@@ -38,6 +38,12 @@ describe("shot logger sticky state", () => {
       shutter: "1/125",
       flash: true,
     });
+  });
+
+  it("migrates the legacy sticky filter into an ordered filter stack", () => {
+    const shoot = `at://${did}/app.graycard.session.capture/shoot`;
+    localStorage.setItem(shotLoggerStateKey(did, shoot), JSON.stringify({ filter: "at://filter/legacy" }));
+    expect(loadShotLoggerState(did, shoot)).toEqual({ filters: ["at://filter/legacy"] });
   });
 });
 
@@ -156,6 +162,8 @@ describe("extracted shot logger view", () => {
     const camera = "at://camera";
     const filmBack = "at://film-back";
     const lens = "at://lens";
+    const yellow = "at://filter/yellow";
+    const polarizer = "at://filter/polarizer";
     const roll = "at://roll";
     const queued = [];
     const store = {
@@ -173,9 +181,13 @@ describe("extracted shot logger view", () => {
         camera: [{ uri: camera, value: { type: "at://camera-type", nickname: "Camera" } }],
         filmBack: [{ uri: filmBack, value: { type: "at://back-type", nickname: "Back A" } }],
         lens: [{ uri: lens, value: { nickname: "Lens" } }],
-        filter: [],
+        filter: [
+          { uri: yellow, value: { nickname: "Yellow" } },
+          { uri: polarizer, value: { nickname: "Polarizer" } },
+        ],
         filmRoll: [{ uri: roll, value: { label: "Roll A", filmBack } }],
       },
+      sticky: { filters: [yellow, polarizer] },
       persistSticky: () => {},
       framesForRoll: () => [],
       pendingExposures: () => queued,
@@ -205,6 +217,7 @@ describe("extracted shot logger view", () => {
       camera,
       filmBack,
       lens,
+      filters: [yellow, polarizer],
       roll,
       frameNumber: 1,
       frameExposureIndex: 1,

@@ -2,6 +2,34 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.8.0] - 2026-10-30
+
+### Added
+
+- Add ordered filter stacks to exposures, meter readings, photo and gallery
+  capture metadata, workflow defaults, the shot logger, and `.frames` imports.
+- Record filter kind, thread size, dimensions, optical effect, and light loss on
+  catalog and owned-filter records.
+
+### Changed
+
+- Canonicalize workflow templates on stable `steps` and `connections`, workflow
+  publications on `products`, capture stages on `shoot`, output stages on
+  `target`, and film-stock availability on `formats`.
+- Preserve the distinct meanings of a lens type's primary `mount` and its full
+  `mounts` list, and define workflow-run `branches` as the canonical graph edge
+  set.
+- Advance the checked-in schema suite to `lexicons-v3`. Reviewed Panproto lenses
+  now migrate every supported legacy shape before the first current-schema
+  store read.
+
+### Fixed
+
+- Preserve legacy grouped film inventory by rewriting a quantity of N as one
+  physical roll plus a linked stockpile containing the remaining N−1 rolls.
+- Stop new workflow records from writing legacy mirrors alongside their
+  canonical fields, eliminating conflicting sources of truth.
+
 ## [1.7.0] - 2026-10-29
 
 ### Added
@@ -432,3 +460,4 @@ Notable changes to Hypo are recorded here.
 [1.6.2]: https://github.com/gray-card/hypo/compare/v1.6.1...v1.6.2
 [1.6.3]: https://github.com/gray-card/hypo/compare/v1.6.2...v1.6.3
 [1.7.0]: https://github.com/gray-card/hypo/compare/v1.6.3...v1.7.0
+[1.8.0]: https://github.com/gray-card/hypo/compare/v1.7.0...v1.8.0

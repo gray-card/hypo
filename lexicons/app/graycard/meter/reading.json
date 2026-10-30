@@ -102,10 +102,11 @@
             "ref": "app.graycard.defs#measure",
             "description": "Cine mode: shutter angle in degrees (time = angle / (360 × fps))."
           },
-          "filter": {
-            "type": "string",
-            "format": "at-uri",
-            "description": "Optional app.graycard.instance.filter whose factor is included in the solution."
+          "filters": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Ordered app.graycard.instance.filter stack whose combined factor is included in the solution, in light-path order from the scene toward the film or sensor."
           },
           "filterCompensation": {
             "type": "ref",

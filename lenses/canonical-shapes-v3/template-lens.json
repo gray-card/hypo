@@ -1,0 +1,6 @@
+{
+  "id": "graycard.workflow-template-legacy-to-steps.v1",
+  "source": "app.graycard.workflow.template",
+  "target": "app.graycard.workflow.template",
+  "steps": [{ "compute_field": { "target": "steps", "kind": "array", "expr": "[]" } }]
+}

@@ -45,10 +45,11 @@
             "description": "Optional app.graycard.instance.filmBack mounted for this exposure. Omit for cameras without detachable backs."
           },
           "lens": { "type": "string", "format": "at-uri", "description": "Optional app.graycard.instance.lens used." },
-          "filter": {
-            "type": "string",
-            "format": "at-uri",
-            "description": "Optional app.graycard.instance.filter used."
+          "filters": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Ordered app.graycard.instance.filter stack used for this exposure, in light-path order from the scene toward the film or sensor."
           },
           "aperture": {
             "type": "string",

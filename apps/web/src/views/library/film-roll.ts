@@ -66,7 +66,7 @@ export function openDuplicateReserve(stockpile: FilmRecord, services: FilmViewSe
     iso: stock.iso,
     filmType: stock.filmType,
     process: stock.process,
-    format: value.format ?? stock.format,
+    format: value.format ?? (Array.isArray(stock.formats) ? stock.formats[0] : undefined),
     storage: value.storage,
     storageLocation: value.storageLocation,
     quantity: value.quantity,

@@ -1,0 +1,52 @@
+{
+  "records": [
+    {
+      "kind": "filmStock",
+      "value": { "name": "Tri-X", "format": "120", "createdAt": "2026-10-30T12:00:00.000Z" }
+    },
+    {
+      "kind": "workflowRun",
+      "value": {
+        "photo": "at://did:plc:test/social.grain.photo/one",
+        "medium": "digital",
+        "stages": [],
+        "createdAt": "2026-10-30T12:00:00.000Z"
+      }
+    },
+    {
+      "kind": "workflowTemplate",
+      "value": {
+        "name": "Film",
+        "medium": "film",
+        "stageKinds": ["capture", "develop"],
+        "defaultCamera": "at://did:plc:test/app.graycard.instance.camera/one",
+        "createdAt": "2026-10-30T12:00:00.000Z"
+      }
+    },
+    {
+      "kind": "filmRoll",
+      "value": {
+        "stock": "at://did:plc:test/app.graycard.catalog.filmStock/tri-x",
+        "quantity": 4,
+        "createdAt": "2026-10-30T12:00:00.000Z"
+      }
+    },
+    {
+      "kind": "captureStage",
+      "value": {
+        "$type": "app.graycard.workflow#captureStage",
+        "session": "at://did:plc:test/app.graycard.session.capture/one",
+        "input": { "kind": "scene" },
+        "output": { "kind": "digital-raw" }
+      }
+    },
+    {
+      "kind": "outputStage",
+      "value": {
+        "$type": "app.graycard.workflow#outputStage",
+        "photo": "at://did:plc:test/social.grain.photo/one",
+        "input": { "kind": "digital-raster" }
+      }
+    }
+  ]
+}

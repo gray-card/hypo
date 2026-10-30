@@ -1,0 +1,14 @@
+{
+  "id": "graycard.film-stock-format-to-formats.v1",
+  "source": "app.graycard.catalog.filmStock",
+  "target": "app.graycard.catalog.filmStock",
+  "steps": [
+    {
+      "compute_field": {
+        "target": "formats",
+        "kind": "array",
+        "expr": "if is_null format then [] else [format]"
+      }
+    }
+  ]
+}

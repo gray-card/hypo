@@ -27,13 +27,13 @@ The repository pins `@panproto/core` and `panproto-cli` at 0.70.1. The `.panprot
 4. exercising manifest-backed compatibility and diff loading; and
 5. parsing the bundle through the TypeScript SDK.
 
-The sidecar tags the 1.0 baseline as `lexicons-v1` and the ordered development-stage suite as `lexicons-v2`. Pull-request compatibility checks compare proposed changes with the latest released Git baseline reachable from `main`.
+The sidecar tags the 1.0 baseline as `lexicons-v1`, the ordered development-stage suite as `lexicons-v2`, and the canonical collection shapes introduced with Hypo 1.8.0 as `lexicons-v3`. Pull-request compatibility checks compare proposed changes with the latest released Git baseline reachable from `main`.
 
 ## Browser record boundary
 
-The browser identifies the current application view as `lexicons-v1`. The generated ATProto validator is the fast path for current records. Panproto's WASM runtime loads only if that validator rejects an `app.graycard.*` record and another registered version or transition must be considered.
+The browser identifies the current application view as `lexicons-v3`. The generated ATProto validator is the fast path for current records. Panproto's WASM runtime loads for the reviewed repository migrations that lift supported legacy records into this view.
 
-The current runtime registers only `lexicons-v1`; its general transition and complement-custody machinery is present, but there is no multi-version transition chain. A record that does not match the current validator is rejected as an unknown schema version.
+The current runtime registers only `lexicons-v3`; repository migrations run before normal store reads and rewrite supported v1/v2 shapes atomically. A record that is neither current nor covered by a reviewed repository migration is rejected as an unknown schema version.
 
 ## Repository migrations
 
@@ -56,3 +56,9 @@ Hypo detects `app.graycard.process.developSession` records that carry session-wi
 The migration updates each record at the same collection and record key with `com.atproto.repo.applyWrites#update`. It removes the superseded fields only in the replacement value and guards each write batch with the current repository commit CID. The migration is idempotent: records already using only `steps[]` are skipped.
 
 The source suite, lens document, projection schema, and migration fixtures are checked in under `lenses/develop-session-v2/`. The pull-request gate independently classifies the transition as breaking, compiles the reviewed lens, runs the fixtures through the application rewrite, and validates every result against the target lexicons.
+
+### Canonical collection shapes
+
+Hypo 1.8.0 removes writable legacy mirrors from workflow templates, runs, and stages; wraps singular film-stock formats in `formats[]`; and moves grouped film-roll reserve counts into stockpiles. The reviewed Panproto lenses and fixtures live under `lenses/canonical-shapes-v3/`.
+
+The migration preserves workflow defaults inside stable template steps, represents published photos as `digital-raster` workflow products, renames capture-session and output-photo aliases, and preserves a legacy roll quantity of N as one physical roll plus N−1 reserve rolls. Every replacement is applied with the current repository commit CID before the first current-schema read.

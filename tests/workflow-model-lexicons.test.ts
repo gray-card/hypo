@@ -44,10 +44,10 @@ describe("rich workflow lexicons", () => {
           artifactKind: "film-negative",
         },
       ],
-      stageKinds: ["develop", "develop"],
       createdAt,
     });
     expect(result).toMatchObject({ success: true });
+    expect(SCHEMAS[NS.workflow.template].defs.main.record.properties.stageKinds).toBeUndefined();
   });
 
   it("validates runs with general subjects, products, lifecycle, and template identity", () => {
@@ -136,7 +136,7 @@ describe("rich workflow lexicons", () => {
   it("uses the canonical shoot and render-session records without changing stable stage discriminators", () => {
     const defs = SCHEMAS[NS.workflow.stage].defs;
     expect(defs.captureStage.properties.shoot.description).toContain("app.graycard.session.capture");
-    expect(defs.captureStage.properties.session.description).toContain("Deprecated alias of shoot");
+    expect(defs.captureStage.properties.session).toBeUndefined();
     expect(defs.digitalStage.description).toContain("render or export stage");
     expect(defs.digitalStage.properties.session.description).toContain("app.graycard.process.renderSession");
     expect(STAGE_VARIANTS.digital).toBe("app.graycard.workflow#digitalStage");

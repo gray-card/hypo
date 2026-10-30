@@ -1,0 +1,19 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.catalog.filmStock",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["createdAt"],
+        "properties": {
+          "createdAt": { "type": "string", "format": "datetime" },
+          "format": { "type": "string" },
+          "formats": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

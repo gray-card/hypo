@@ -1,0 +1,226 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.process.developSession",
+  "defs": {
+    "step": {
+      "type": "object",
+      "description": "One ordered chemical bath or physical operation in a film-development process.",
+      "required": ["roles"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Human-readable bath or operation name, such as 'Wash' or 'Bleach + fix'."
+        },
+        "recipe": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "app.graycard.catalog.devRecipe selected for this stage."
+        },
+        "sourceDocument": {
+          "type": "ref",
+          "ref": "app.graycard.defs#productDocument",
+          "description": "Structured manufacturer document used when no catalog recipe record is available."
+        },
+        "sourceSpec": {
+          "type": "ref",
+          "ref": "app.graycard.defs#specSource",
+          "description": "Exact source location supporting this stage's selected processing values."
+        },
+        "kind": {
+          "type": "ref",
+          "ref": "#stepKind",
+          "description": "The physical kind of stage. roles may be empty for a stage such as drying or re-exposure."
+        },
+        "roles": {
+          "type": "array",
+          "maxLength": 16,
+          "description": "Atomic functions performed in this bath step.",
+          "items": { "type": "ref", "ref": "app.graycard.defs#chemistryRole" }
+        },
+        "chemistries": {
+          "type": "array",
+          "maxLength": 16,
+          "description": "All tracked app.graycard.instance.chemistry records combined in or otherwise consumed by this stage. The first item is the primary chemistry when the distinction matters.",
+          "items": {
+            "type": "string",
+            "format": "at-uri"
+          }
+        },
+        "dilution": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "temperatureSetpoint": {
+          "type": "ref",
+          "ref": "app.graycard.defs#measure"
+        },
+        "actualTemperature": {
+          "type": "ref",
+          "ref": "app.graycard.defs#measure"
+        },
+        "publishedTimeSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 604800
+        },
+        "actualTimeSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 604800
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "finishedAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "agitationMethod": {
+          "type": "ref",
+          "ref": "#agitationMethod"
+        },
+        "agitationScheme": {
+          "type": "ref",
+          "ref": "app.graycard.catalog.devRecipe#agitation"
+        },
+        "volumeMl": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Working bath volume used for this stage."
+        },
+        "disposition": {
+          "type": "ref",
+          "ref": "#bathDisposition",
+          "description": "What happened to the bath after this session."
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      }
+    },
+    "stepKind": {
+      "type": "string",
+      "knownValues": [
+        "chemical-bath",
+        "water-bath",
+        "rinse",
+        "wash",
+        "rem-jet-removal",
+        "re-exposure",
+        "drain",
+        "dry",
+        "other"
+      ]
+    },
+    "agitationMethod": {
+      "type": "string",
+      "knownValues": [
+        "none",
+        "inversion",
+        "rotary",
+        "swizzle-stick",
+        "tray-rocking",
+        "dip-and-dunk",
+        "roller-transport",
+        "nitrogen-burst",
+        "manual",
+        "other"
+      ]
+    },
+    "bathDisposition": {
+      "type": "string",
+      "knownValues": [
+        "one-shot-discarded",
+        "discarded",
+        "returned-to-stock",
+        "retained",
+        "replenished",
+        "exhausted",
+        "not-applicable",
+        "unknown"
+      ]
+    },
+    "main": {
+      "type": "record",
+      "description": "One development event. References photographic chemistry and optionally film roll instances. steps captures the ordered bath sequence for multi-step chemistry.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["process", "createdAt"],
+        "properties": {
+          "filmRolls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "at-uri"
+            },
+            "description": "app.graycard.instance.filmRoll(s) developed in this session (one or more)."
+          },
+          "process": {
+            "type": "ref",
+            "ref": "app.graycard.defs#filmProcess"
+          },
+          "steps": {
+            "type": "array",
+            "maxLength": 64,
+            "description": "Ordered baths and physical operations. Recipe, chemistry, observations, and agitation belong to the stage where they occurred.",
+            "items": {
+              "type": "ref",
+              "ref": "#step"
+            }
+          },
+          "tankType": { "type": "ref", "ref": "app.graycard.defs#tankType" },
+          "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
+          "fieldProvenance": {
+            "type": "array",
+            "maxLength": 256,
+            "items": { "type": "ref", "ref": "app.graycard.defs#fieldProvenance" }
+          },
+          "pushPull": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure",
+            "description": "Push/pull in stops (unit: stop)."
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "labService": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Free-text lab name when the roll was developed by a lab."
+          },
+          "lab": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "app.graycard.instance.labAccount that developed the roll (structured alternative to labService)."
+          },
+          "developmentLocation": {
+            "type": "string",
+            "knownValues": ["home", "lab", "other"],
+            "description": "Where this development session was performed. This keeps the session self-describing when its linked rolls change."
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      }
+    }
+  }
+}

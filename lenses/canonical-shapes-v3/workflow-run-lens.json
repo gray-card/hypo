@@ -1,0 +1,14 @@
+{
+  "id": "graycard.workflow-run-photo-to-products.v1",
+  "source": "app.graycard.workflow.run",
+  "target": "app.graycard.workflow.run",
+  "steps": [
+    {
+      "compute_field": {
+        "target": "products",
+        "kind": "array",
+        "expr": "if is_null photo then [] else [{ kind = \"digital-raster\", ref = photo }]"
+      }
+    }
+  ]
+}

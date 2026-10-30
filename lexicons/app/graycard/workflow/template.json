@@ -29,67 +29,6 @@
             "description": "Directed artifact-flow graph over named step ports. The graph must be acyclic.",
             "items": { "type": "ref", "ref": "app.graycard.workflow.defs#templateConnection" }
           },
-          "defaultCamera": {
-            "type": "string",
-            "format": "at-uri"
-          },
-          "defaultFilmBack": {
-            "type": "string",
-            "format": "at-uri"
-          },
-          "defaultLens": {
-            "type": "string",
-            "format": "at-uri"
-          },
-          "defaultFilmRoll": {
-            "type": "string",
-            "format": "at-uri"
-          },
-          "defaultChemistry": {
-            "type": "string",
-            "format": "at-uri",
-            "description": "Default app.graycard.instance.chemistry for the primary developer or multi-role bath."
-          },
-          "defaultScanner": {
-            "type": "string",
-            "format": "at-uri"
-          },
-          "defaultScanProfile": {
-            "type": "string",
-            "format": "at-uri"
-          },
-          "defaultLab": {
-            "type": "string",
-            "format": "at-uri"
-          },
-          "stageKinds": {
-            "type": "array",
-            "maxLength": 256,
-            "description": "Legacy ordered stage kinds. New writers also write steps; readers normalize either representation.",
-            "items": {
-              "type": "ref",
-              "ref": "app.graycard.workflow.defs#stageKind"
-            }
-          },
-          "stageDefaults": {
-            "type": "array",
-            "maxLength": 256,
-            "description": "Legacy per-kind process defaults. New writers use step.processDefaults and may mirror these for older readers.",
-            "items": {
-              "type": "object",
-              "required": ["kind"],
-              "properties": {
-                "kind": {
-                  "type": "ref",
-                  "ref": "app.graycard.workflow.defs#stageKind"
-                },
-                "fields": {
-                  "type": "object",
-                  "description": "Legacy open process-default object."
-                }
-              }
-            }
-          },
           "notes": {
             "type": "string",
             "maxLength": 2000

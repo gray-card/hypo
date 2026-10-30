@@ -51,7 +51,7 @@ interface RecordValue {
   title?: string | null;
   description?: string | null;
   alt?: string | null;
-  stageKinds?: string[];
+  steps?: Array<{ kind?: string }>;
   medium?: string | null;
   createdAt?: string | null;
 }
@@ -1020,7 +1020,10 @@ export async function openProfile(handle: string): Promise<void> {
     if (templates.length) {
       const ul = el("ul", { class: "gear-list" });
       for (const t of templates) {
-        const kinds = (t.value.stageKinds || []).map((kind) => STAGE_LABELS[kind] || kind).join(" → ");
+        const kinds = (t.value.steps || [])
+          .map((step) => String(step.kind || "other"))
+          .map((kind) => STAGE_LABELS[kind] || kind)
+          .join(" → ");
         ul.append(
           el("li", { class: "gear-row" }, [
             el("div", {}, [

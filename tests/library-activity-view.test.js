@@ -196,7 +196,10 @@ describe("extracted library activity views", () => {
     expect(services.saveWorkflowTemplate.mock.calls[0][0]).toMatchObject({
       name: "Film workflow",
       medium: "film",
-      stageKinds: ["capture", "develop"],
+      steps: [
+        { id: expect.any(String), kind: "capture" },
+        { id: expect.any(String), kind: "develop" },
+      ],
     });
     expect(services.reloadStore).toHaveBeenCalled();
   });
@@ -212,8 +215,7 @@ describe("extracted library activity views", () => {
       item("at://template", {
         name: "Two bath",
         medium: "film",
-        stageKinds: ["develop"],
-        stageDefaults: [{ kind: "develop", fields: { chemistry: chemistry.uri } }],
+        steps: [{ id: "develop-1", kind: "develop", processDefaults: { chemistry: chemistry.uri } }],
         createdAt: "2026-01-01T00:00:00Z",
       }),
       undefined,
@@ -225,12 +227,10 @@ describe("extracted library activity views", () => {
     document.querySelector(".modal-actions button:not(.ghost)").click();
     await vi.waitFor(() => expect(services.saveWorkflowTemplate).toHaveBeenCalledTimes(1));
     expect(services.saveWorkflowTemplate.mock.calls[0][0]).toMatchObject({
-      stageKinds: ["develop", "develop"],
-      stageDefaults: [
-        { kind: "develop", fields: { chemistry: chemistry.uri } },
-        { kind: "develop", fields: { chemistry: chemistry.uri } },
+      steps: [
+        { id: expect.any(String), kind: "develop", processDefaults: { chemistry: chemistry.uri } },
+        { id: expect.any(String), kind: "develop", processDefaults: { chemistry: chemistry.uri } },
       ],
-      defaultChemistry: chemistry.uri,
     });
   });
 
@@ -241,7 +241,7 @@ describe("extracted library activity views", () => {
       item("at://template", {
         name: "Optional development",
         medium: "film",
-        stageKinds: ["develop"],
+        steps: [{ id: "develop-1", kind: "develop" }],
         createdAt: "2026-01-01T00:00:00Z",
       }),
       undefined,

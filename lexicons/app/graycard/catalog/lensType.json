@@ -18,11 +18,15 @@
             "description": "Alternative model or EXIF labels for this lens. Clients use these names when matching imported photo metadata.",
             "items": { "type": "string", "maxLength": 256 }
           },
-          "mount": { "type": "ref", "ref": "app.graycard.defs#mount" },
+          "mount": {
+            "type": "ref",
+            "ref": "app.graycard.defs#mount",
+            "description": "The primary catalog variant represented by this record. This is intentionally distinct from mounts, which lists every mount in which the optical family was offered."
+          },
           "mounts": {
             "type": "array",
             "maxLength": 32,
-            "description": "All mounts in which the optical model was offered. mount remains the primary/legacy value.",
+            "description": "All mounts in which the optical family was offered. mount identifies the primary catalog variant represented by this record.",
             "items": { "type": "ref", "ref": "app.graycard.defs#mount" }
           },
           "variants": {

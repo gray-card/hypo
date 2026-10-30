@@ -33,8 +33,8 @@ describe("data model covers everything the Frames app records", () => {
     }
   });
 
-  it("per-frame gear links (lens, filter, camera, roll) + photo are present", () => {
-    for (const f of ["lens", "filter", "camera", "roll", "photo", "shoot"]) {
+  it("per-frame gear links (lens, filter stack, camera, roll) + photo are present", () => {
+    for (const f of ["lens", "filters", "camera", "roll", "photo", "shoot"]) {
       expect(exposure[f], `exposure.${f}`).toBeTruthy();
     }
   });
