@@ -1,0 +1,22 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.instance.exposure",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["createdAt"],
+        "properties": {
+          "createdAt": { "type": "string", "format": "datetime" },
+          "filter": { "type": "string", "format": "at-uri" },
+          "filters": {
+            "type": "array",
+            "items": { "type": "string", "format": "at-uri" }
+          }
+        }
+      }
+    }
+  }
+}

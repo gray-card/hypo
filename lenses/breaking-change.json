@@ -8,6 +8,24 @@
       "projection": "lenses/develop-session-v2/projection-lexicon.json",
       "data": "lenses/develop-session-v2/fixtures.json",
       "verify": "scripts/verify-develop-session-transition.ts"
+    },
+    {
+      "id": "exposure-filter-stacks-v2",
+      "source": "lenses/filter-stacks-v2/source",
+      "target": "lexicons",
+      "lens": "lenses/filter-stacks-v2/exposure-lens.json",
+      "projection": "lenses/filter-stacks-v2/exposure-projection-lexicon.json",
+      "data": "lenses/filter-stacks-v2/exposure-fixtures.json",
+      "verify": "scripts/verify-filter-stack-transition.ts"
+    },
+    {
+      "id": "meter-reading-filter-stacks-v2",
+      "source": "lenses/filter-stacks-v2/source",
+      "target": "lexicons",
+      "lens": "lenses/filter-stacks-v2/meter-reading-lens.json",
+      "projection": "lenses/filter-stacks-v2/meter-reading-projection-lexicon.json",
+      "data": "lenses/filter-stacks-v2/meter-reading-fixtures.json",
+      "verify": "scripts/verify-filter-stack-transition.ts"
     }
   ]
 }

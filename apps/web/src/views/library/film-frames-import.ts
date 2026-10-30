@@ -324,7 +324,6 @@ function exposureValue(
     filmBack: options.filmBack,
     lens: uniqueGearMatch("lens", frame.lens, services),
     filters: filters.length ? filters : undefined,
-    filter: filters.length === 1 ? filters[0] : undefined,
     frameNumber: Number.isFinite(Number(frame.number)) ? Math.max(0, Math.round(Number(frame.number))) : undefined,
     aperture: Number.isFinite(Number(frame.aperture)) ? String(frame.aperture) : undefined,
     shutterSpeed: formatFramesShutterSpeed(frame.shutterSpeed),

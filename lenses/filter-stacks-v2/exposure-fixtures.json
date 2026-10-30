@@ -1,0 +1,12 @@
+{
+  "projection": "exposure-projection-lexicon.json",
+  "records": [
+    {
+      "$type": "app.graycard.instance.exposure",
+      "filter": "at://did:plc:test/app.graycard.instance.filter/yellow",
+      "frameNumber": 7,
+      "createdAt": "2026-10-30T12:00:00.000Z",
+      "expectedFilters": ["at://did:plc:test/app.graycard.instance.filter/yellow"]
+    }
+  ]
+}

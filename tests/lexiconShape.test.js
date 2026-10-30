@@ -124,6 +124,15 @@ describe("lexicon shape guards", () => {
     expect(p.provenance.ref).toBe("app.graycard.defs#provenance");
   });
 
+  it("exposures and meter readings use only the canonical filter stack", () => {
+    for (const id of ["instance.exposure", "meter.reading"]) {
+      const p = load(id).defs.main.record.properties;
+      expect(p.filters.type, `${id}.filters`).toBe("array");
+      expect(p.filters.items.format, `${id}.filters items`).toBe("at-uri");
+      expect(p.filter, `${id} should not retain singular filter`).toBeUndefined();
+    }
+  });
+
   it("every record def has a top-level description", () => {
     const missing = [];
     for (const { doc } of lexicons) {

@@ -833,7 +833,6 @@ export type AppGraycardInstanceExposureMain = {
   "camera"?: string;
   "filmBack"?: string;
   "lens"?: string;
-  "filter"?: string;
   "filters"?: Array<string>;
   "aperture"?: string;
   "shutterSpeed"?: string;
@@ -1099,7 +1098,6 @@ export type AppGraycardMeterReadingMain = {
   "exposureCompensation"?: string;
   "frameRate"?: AppGraycardDefsMeasure;
   "shutterAngle"?: AppGraycardDefsMeasure;
-  "filter"?: string;
   "filters"?: Array<string>;
   "filterCompensation"?: AppGraycardDefsMeasure;
   "reciprocity"?: {
@@ -6999,11 +6997,6 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "format": "at-uri",
               "description": "Optional app.graycard.instance.lens used."
             },
-            "filter": {
-              "type": "string",
-              "format": "at-uri",
-              "description": "Legacy single app.graycard.instance.filter used. New writers use filters; readers use this value only when filters is absent or empty."
-            },
             "filters": {
               "type": "array",
               "maxLength": 32,
@@ -8329,11 +8322,6 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#measure",
               "description": "Cine mode: shutter angle in degrees (time = angle / (360 × fps))."
-            },
-            "filter": {
-              "type": "string",
-              "format": "at-uri",
-              "description": "Legacy single app.graycard.instance.filter whose factor is included in the solution. New writers use filters; readers use this value only when filters is absent or empty."
             },
             "filters": {
               "type": "array",

@@ -391,7 +391,6 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
     if (state.lens) record.lens = state.lens;
     if (state.filters.length) {
       record.filters = [...state.filters];
-      if (state.filters.length === 1) record.filter = state.filters[0];
     }
     if (state.roll) {
       if (sameFrame && state.lastFrame != null) {

@@ -42,7 +42,6 @@ interface ExposureValue {
   photo?: string | null;
   camera?: string | null;
   lens?: string | null;
-  filter?: string | null;
   filters?: readonly string[] | null;
   roll?: string | null;
   shoot?: string | null;
@@ -355,8 +354,7 @@ export function buildPhotoIndex({
     const metadata = ensure(value.photo);
     if (value.camera) addGraycardGear(metadata, "camera", value.camera);
     if (value.lens) addGraycardGear(metadata, "lens", value.lens);
-    const filters = value.filters?.length ? value.filters : value.filter ? [value.filter] : [];
-    for (const filter of filters) addGraycardGear(metadata, "filter", filter);
+    for (const filter of value.filters || []) addGraycardGear(metadata, "filter", filter);
     if (value.roll) {
       const stockUri = stockOfRoll(value.roll);
       if (stockUri) {
