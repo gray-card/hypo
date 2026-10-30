@@ -19,7 +19,7 @@ const GUIDED_IDENTITY: Readonly<Record<string, readonly string[]>> = {
   filmStock: ["brand", "name", "iso", "filmType", "process"],
   chemistryType: ["brand", "name", "roles", "productKind", "process", "form", "defaultDilution", "defaultTemperature"],
   scannerType: ["make", "model", "scannerKind"],
-  filterType: ["make", "name", "filterKind", "threadDiameterMm"],
+  filterType: ["make", "name", "filterKind", "threadDiameterMm", "factorStops"],
   lab: ["name", "website", "location"],
   enlargerType: ["make", "model", "maxFormat", "headType"],
   enlargingLensType: ["make", "model", "focalLengthMm", "coversFormat"],
@@ -62,6 +62,7 @@ function setPresetField(key: string, value: unknown, inputs: GearInputMap, servi
   else if (["minShutterSpeed", "maxShutterSpeed"].includes(key) && typeof value === "number")
     displayValue = services.shutterScaledToDisplay(value);
   else if (Array.isArray(value) && (ENUM_LIST.has(key) || STRING_LIST.has(key))) displayValue = value.join("\n");
+  else if (key === "factorStops" && typeof value === "object") displayValue = services.measureToDisplay(value);
   else if (typeof value === "object") return;
   const text = String(displayValue);
   const native = nativeInput(input);
@@ -349,7 +350,7 @@ export function openGearForm(
             apertureSteps: (value) => services.displayToScaled(value),
             shutterSpeedSteps: (value) => services.displayToShutterScaled(value),
           },
-          measureKeys: { defaultTemperature: "celsius" },
+          measureKeys: { defaultTemperature: "celsius", factorStops: "stop" },
         });
         const required = TYPE_IDENTITY[typeKind].filter(([, , isRequired]) => isRequired).map(([key]) => key);
         if (required.some((key) => !valueOf(typeInputs[key]).trim()))
@@ -424,6 +425,7 @@ export function openGearEditor(
         if (converted[key] != null) converted[key] = services.scaledToDisplay(converted[key]);
       for (const key of ["minShutterSpeed", "maxShutterSpeed"])
         if (converted[key] != null) converted[key] = services.shutterScaledToDisplay(converted[key]);
+      if (converted.factorStops != null) converted.factorStops = services.measureToDisplay(converted.factorStops);
       if (converted.apertureSteps?.length)
         converted.apertureSteps = services.formatScaledList(converted.apertureSteps, services.scaledToDisplay);
       if (converted.shutterSpeedSteps?.length)

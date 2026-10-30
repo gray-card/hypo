@@ -99,6 +99,13 @@ describe("resolvePhotoCapture", () => {
     expect(r.filmBack).toBe("at://back-a");
     expect(r.lens).toBe("at://lens-b");
   });
+
+  it("uses an explicit ordered photo filter stack before gallery defaults", () => {
+    const capture = { value: { filters: ["at://filter/red", "at://filter/polarizer"] } };
+    const defaults = { value: { filters: ["at://filter/yellow"] } };
+    expect(resolvePhotoCapture(capture, defaults).filters).toEqual(["at://filter/red", "at://filter/polarizer"]);
+    expect(resolvePhotoCapture({ value: {} }, defaults).filters).toEqual(["at://filter/yellow"]);
+  });
 });
 
 describe("projectCaptureToExif", () => {
@@ -204,7 +211,12 @@ describe("savePhotoCapture — frame position on the roll", () => {
       uri: `${PHOTO.replace("social.grain.photo", "app.graycard.photo.capture")}`,
       cid: "cid0",
       rkey: "cap1",
-      value: { photo: PHOTO, filmRoll: ROLL, createdAt: "2026-01-01T00:00:00Z" },
+      value: {
+        photo: PHOTO,
+        filmRoll: ROLL,
+        filters: ["at://did:plc:test/app.graycard.instance.filter/yellow"],
+        createdAt: "2026-01-01T00:00:00Z",
+      },
       schemaRuntime: {
         nativeVersion: "lexicons-v1",
         viewVersion: "lexicons-v1",
@@ -215,6 +227,7 @@ describe("savePhotoCapture — frame position on the roll", () => {
     expect(agent.put).toHaveLength(1);
     expect(agent.put[0].rkey).toBe("cap1");
     expect(agent.put[0].record.frameIndex).toBe(7);
+    expect(agent.put[0].record.filters).toEqual(["at://did:plc:test/app.graycard.instance.filter/yellow"]);
     expect(saved.schemaRuntime).toBe(existing.schemaRuntime);
   });
 });

@@ -38,6 +38,7 @@ export interface FramesFrame {
   readonly placemark?: FramesPlacemark | null;
   readonly lens?: FramesGearDescription | null;
   readonly filter?: FramesGearDescription | null;
+  readonly filters?: readonly FramesGearDescription[] | null;
   readonly notes?: string | null;
   readonly [key: string]: unknown;
 }
@@ -141,6 +142,9 @@ export function parseFramesArchive(input: unknown, sourceName = "Imported.frames
       placemark: recordValue(frame.placemark) as FramesPlacemark | undefined,
       lens: parseGear(frame.lens),
       filter: parseGear(frame.filter),
+      filters: Array.isArray(frame.filters)
+        ? frame.filters.map(parseGear).filter((filter): filter is FramesGearDescription => Boolean(filter))
+        : undefined,
       notes: optionalString(frame.notes),
     } satisfies FramesFrame;
   });

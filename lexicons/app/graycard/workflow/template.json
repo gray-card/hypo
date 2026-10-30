@@ -41,6 +41,12 @@
             "type": "string",
             "format": "at-uri"
           },
+          "defaultFilters": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Legacy top-level mirror of the primary capture step's ordered filter defaults."
+          },
           "defaultFilmRoll": {
             "type": "string",
             "format": "at-uri"

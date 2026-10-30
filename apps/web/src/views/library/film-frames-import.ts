@@ -262,25 +262,42 @@ function preselectedCamera(archive: FramesArchive, services: FilmViewServices): 
 }
 
 function uniqueGearMatch(
-  kind: "lens" | "camera",
-  gear: FramesArchive["camera"] | FramesFrame["lens"],
+  kind: "lens" | "camera" | "filter",
+  gear: FramesArchive["camera"] | FramesFrame["lens"] | FramesFrame["filter"],
   services: FilmViewServices,
 ): string | undefined {
   if (!gear) return undefined;
-  const match = services.matchGear(
-    kind === "lens" ? { lensMake: gear.make, lensModel: gear.model } : { make: gear.make, model: gear.model },
-  )[kind];
-  if (!match?.instances?.length) return undefined;
+  let instances: FilmValue[] = [];
+  if (kind === "filter") {
+    const wanted = normalize([gear.make, gear.model || gear.name].filter(Boolean).join(" "));
+    const typeUris = (services.getStore().catalog.filterType || [])
+      .filter((type) => {
+        const candidate = normalize([type.value.make, type.value.name].filter(Boolean).join(" "));
+        return (
+          wanted && candidate && (wanted === candidate || wanted.includes(candidate) || candidate.includes(wanted))
+        );
+      })
+      .map((type) => type.uri);
+    instances = (services.getStore().instance.filter || [])
+      .filter((instance) => typeUris.includes(instance.value.type))
+      .map((instance) => ({ uri: instance.uri, label: services.instanceLabel("filter", instance.value) }));
+  } else {
+    const match = services.matchGear(
+      kind === "lens" ? { lensMake: gear.make, lensModel: gear.model } : { make: gear.make, model: gear.model },
+    )[kind];
+    instances = match?.instances || [];
+  }
+  if (!instances.length) return undefined;
   if (gear.serial) {
     const serial = normalize(gear.serial);
     const record = (services.getStore().instance[kind] || []).find(
       (candidate) =>
-        match.instances.some((item: FilmValue) => item.uri === candidate.uri) &&
+        instances.some((item: FilmValue) => item.uri === candidate.uri) &&
         normalize(candidate.value.serialNumber) === serial,
     );
     if (record) return record.uri;
   }
-  return match.instances.length === 1 ? match.instances[0]!.uri : undefined;
+  return instances.length === 1 ? instances[0]!.uri : undefined;
 }
 
 function exposureValue(
@@ -296,12 +313,18 @@ function exposureValue(
   },
   services: FilmViewServices,
 ): FilmValue {
+  const importedFilters = frame.filters?.length ? frame.filters : frame.filter ? [frame.filter] : [];
+  const filters = [
+    ...new Set(importedFilters.map((filter) => uniqueGearMatch("filter", filter, services)).filter(Boolean)),
+  ];
   const value: FilmValue = {
     roll: options.roll,
     shoot: options.shoot,
     camera: options.camera,
     filmBack: options.filmBack,
     lens: uniqueGearMatch("lens", frame.lens, services),
+    filters: filters.length ? filters : undefined,
+    filter: filters.length === 1 ? filters[0] : undefined,
     frameNumber: Number.isFinite(Number(frame.number)) ? Math.max(0, Math.round(Number(frame.number))) : undefined,
     aperture: Number.isFinite(Number(frame.aperture)) ? String(frame.aperture) : undefined,
     shutterSpeed: formatFramesShutterSpeed(frame.shutterSpeed),
@@ -347,6 +370,14 @@ function shootValue(
   const lenses = [
     ...new Set(cluster.frames.map((frame) => uniqueGearMatch("lens", frame.lens, services)).filter(Boolean)),
   ];
+  const filters = [
+    ...new Set(
+      cluster.frames
+        .flatMap((frame) => (frame.filters?.length ? frame.filters : frame.filter ? [frame.filter] : []))
+        .map((filter) => uniqueGearMatch("filter", filter, services))
+        .filter(Boolean),
+    ),
+  ];
   const endedAt =
     cluster.startedAt && cluster.endedAt && Date.parse(cluster.endedAt) > Date.parse(cluster.startedAt)
       ? cluster.endedAt
@@ -358,6 +389,7 @@ function shootValue(
     cameras: state.cameraSelect.value ? [state.cameraSelect.value] : undefined,
     filmBacks: state.filmBackSelect.value ? [state.filmBackSelect.value] : undefined,
     lenses: lenses.length ? lenses : undefined,
+    filters: filters.length ? filters : undefined,
     rolls: [roll],
     provenance: {
       source: "inferred",

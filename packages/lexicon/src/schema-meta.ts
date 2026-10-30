@@ -333,6 +333,7 @@ export const GEAR_CATALOG_FORM_META = {
     { key: "name", label: "Name", required: true },
     { key: "filterKind", label: "Kind", control: "enum", options: GEAR_FIELD_ENUM_OPTIONS.filterKind },
     { key: "threadDiameterMm", label: "Thread size (mm)", control: "integer" },
+    { key: "factorStops", label: "Light loss (stops)", control: "measure", unit: "stop" },
   ]),
   lab: gearForm("app.graycard.catalog.lab", [
     { key: "name", label: "Name", required: true },

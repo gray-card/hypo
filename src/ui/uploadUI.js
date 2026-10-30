@@ -3,9 +3,10 @@
 
 import { el, field, toast } from "./dom.js";
 import { uploadImage, createGallery, createPhoto, addGalleryItem, saveExif } from "../grain.js";
-import { saveGalleryDefaults } from "../graycard.js";
+import { instanceLabel, saveGalleryDefaults } from "../graycard.js";
 import { fileToExifForm } from "../readExif.js";
 import { instanceSelect, getStore, refreshStore } from "./library.js";
+import { createFilterStackControl } from "./filterStack.js";
 
 export async function aspectRatioOf(file) {
   try {
@@ -214,6 +215,10 @@ export async function openUploadModal(agent, did, onDone) {
   const camSel = instanceSelect("camera", "");
   const backSel = instanceSelect("filmBack", "");
   const lensSel = instanceSelect("lens", "");
+  const store = getStore();
+  const filterStack = createFilterStackControl(store?.instance?.filter || [], [], (item) =>
+    instanceLabel("filter", item.value, store),
+  );
   const rollSel = instanceSelect("filmRoll", "");
 
   const status = el("div", { class: "muted small upload-status", role: "status", "aria-live": "polite" });
@@ -260,6 +265,7 @@ export async function openUploadModal(agent, did, onDone) {
       if (camSel.value) defaults.camera = camSel.value;
       if (backSel.value) defaults.filmBack = backSel.value;
       if (lensSel.value) defaults.lens = lensSel.value;
+      if (filterStack.getSelected().length) defaults.filters = filterStack.getSelected();
       if (rollSel.value) defaults.filmRoll = rollSel.value;
       if (Object.keys(defaults).length) await saveGalleryDefaults(agent, did, gallery, defaults);
       toast(`Created “${titleIn.value.trim() || "Untitled gallery"}”`, "ok");
@@ -285,6 +291,7 @@ export async function openUploadModal(agent, did, onDone) {
     field("Camera", camSel),
     field("Film back", backSel),
     field("Lens", lensSel),
+    field("Filter stack", filterStack.node),
     field("Film", rollSel),
     barWrap,
     el("div", { class: "row modal-actions" }, [

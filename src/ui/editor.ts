@@ -20,6 +20,7 @@ import {
   savePhotoCapture,
   saveGalleryDefaults,
   matchGear,
+  instanceLabel,
   NS,
 } from "../graycard.js";
 import { previewBatch, applyBatch, RULE_PRESETS } from "../batch.js";
@@ -55,6 +56,7 @@ import { distinctTerms, lookupGroundings, applyGroundings } from "../grounding.j
 import { locationField } from "./mapView.js";
 import { imageAlt, lazyThumb } from "./lazy.js";
 import { icon } from "./icons.js";
+import { createFilterStackControl } from "./filterStack.js";
 
 import { instanceSelect, shootSelect, refreshStore, openAddGear } from "./library.js";
 import { buildProcessSessionForm, stageExtraFields } from "./processForms.js";
@@ -266,15 +268,25 @@ function openBulkGear(): void {
   const camSel = instanceSelect("camera", "");
   const backSel = instanceSelect("filmBack", "");
   const lensSel = instanceSelect("lens", "");
+  const filterStack = createFilterStackControl(ctx.store.instance.filter || [], [], (item: StoredRecord) =>
+    instanceLabel("filter", item.value, ctx.store),
+  );
   const rollSel = instanceSelect("filmRoll", "");
   openModal(
     `Set gear on ${selected.size} photo${selected.size > 1 ? "s" : ""}`,
-    [field("Camera", camSel), field("Film back", backSel), field("Lens", lensSel), field("Film roll", rollSel)],
+    [
+      field("Camera", camSel),
+      field("Film back", backSel),
+      field("Lens", lensSel),
+      field("Filter stack", filterStack.node),
+      field("Film roll", rollSel),
+    ],
     async () => {
-      const patch: { camera?: string; filmBack?: string; lens?: string; filmRoll?: string } = {};
+      const patch: { camera?: string; filmBack?: string; lens?: string; filters?: string[]; filmRoll?: string } = {};
       if (camSel.value) patch.camera = camSel.value;
       if (backSel.value) patch.filmBack = backSel.value;
       if (lensSel.value) patch.lens = lensSel.value;
+      if (filterStack.getSelected().length) patch.filters = filterStack.getSelected();
       if (rollSel.value) patch.filmRoll = rollSel.value;
       if (!Object.keys(patch).length) throw new Error("Pick at least one");
       let n = 0;
@@ -791,6 +803,11 @@ function buildDefaultsCard(): HTMLDetailsElement {
   const camSel = instanceSelect("camera", defs?.value?.camera);
   const backSel = instanceSelect("filmBack", defs?.value?.filmBack);
   const lensSel = instanceSelect("lens", defs?.value?.lens);
+  const filterStack = createFilterStackControl(
+    ctx.store.instance.filter || [],
+    defs?.value?.filters || [],
+    (item: StoredRecord) => instanceLabel("filter", item.value, ctx.store),
+  );
   const rollSel = instanceSelect("filmRoll", defs?.value?.filmRoll);
   const shootSel = shootSelect(defs?.value?.shoot);
   const locF = locationField(defs?.value?.location);
@@ -800,6 +817,7 @@ function buildDefaultsCard(): HTMLDetailsElement {
     field("Camera", camSel),
     field("Film back", backSel),
     field("Lens", lensSel),
+    field("Filter stack", filterStack.node),
     field("Film roll", rollSel),
     field("Shoot", shootSel),
     field("Location", locF.node),
@@ -817,6 +835,7 @@ function buildDefaultsCard(): HTMLDetailsElement {
                 camera: camSel.value || undefined,
                 filmBack: backSel.value || undefined,
                 lens: lensSel.value || undefined,
+                filters: filterStack.getSelected(),
                 filmRoll: rollSel.value || undefined,
                 shoot: shootSel.value || undefined,
                 location: locF.get(),
@@ -1545,6 +1564,14 @@ function sameGearAsAbove(btn: HTMLButtonElement): void {
       copied++;
     }
   }
+  const fromStack = prev.querySelector<HTMLElement>(".filter-stack-control");
+  const toStack = card.querySelector<HTMLElement>(".filter-stack-control");
+  if (fromStack && toStack) {
+    const filters = JSON.parse(fromStack.dataset.selected || "[]");
+    toStack.dispatchEvent(new CustomEvent("filter-stack-set", { detail: filters }));
+    toStack.querySelector<HTMLInputElement>("input")?.dispatchEvent(new Event("change"));
+    if (filters.length) copied++;
+  }
   toast(copied ? "Copied gear from the photo above" : "The photo above has no gear set", copied ? "ok" : "info");
 }
 
@@ -1576,6 +1603,9 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
   const camSel = instanceSelect("camera", refs.camera);
   const backSel = instanceSelect("filmBack", refs.filmBack);
   const lensSel = instanceSelect("lens", refs.lens);
+  const filterStack = createFilterStackControl(ctx.store.instance.filter || [], refs.filters, (item: StoredRecord) =>
+    instanceLabel("filter", item.value, ctx.store),
+  );
   const rollSel = instanceSelect("filmRoll", refs.filmRoll);
   const shootSel = shootSelect(refs.shoot);
   const locF = locationField(capture?.value?.location);
@@ -1597,6 +1627,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
     }
   };
   for (const sel of [camSel, backSel, lensSel, rollSel, shootSel]) sel.addEventListener("change", markDirty);
+  for (const input of filterStack.inputs) input.addEventListener("change", markDirty);
   frameInput.addEventListener("input", markDirty);
   locF.node.querySelector("button")?.addEventListener("click", () => setTimeout(markDirty, 0));
 
@@ -1716,6 +1747,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
         camera: camSel.value || undefined,
         filmBack: backSel.value || undefined,
         lens: lensSel.value || undefined,
+        filters: filterStack.getSelected(),
         filmRoll: rollSel.value || undefined,
         frameIndex: frameInput.value ? parseInt(frameInput.value, 10) : undefined,
         shoot: shootSel.value || undefined,
@@ -1761,6 +1793,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
       gearField("Film back", "filmBack", backSel),
       gearSuggestion("lens", gearMatch.lens, lensSel, markDirty),
       gearField("Lens", "lens", lensSel),
+      field("Filter stack", filterStack.node),
       gearField("Film roll", "filmRoll", rollSel),
       field("Frame # on roll", frameInput),
       field("Shoot", shootSel),
@@ -1791,6 +1824,11 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
           "button",
           { class: "ghost small-btn", onclick: () => openAddGear("lens", () => openGallery(ctx.galleryUri)) },
           "+ Lens",
+        ),
+        el(
+          "button",
+          { class: "ghost small-btn", onclick: () => openAddGear("filter", () => openGallery(ctx.galleryUri)) },
+          "+ Filter",
         ),
         el(
           "button",

@@ -98,6 +98,35 @@ function openTemplateStepConfig(
     nodes.push(control.wrap);
     readers.push(() => [key, control.input.value.trim() || undefined]);
   };
+  const addFilters = (fieldLabel: string, ariaLabel: string): void => {
+    const filters = el(
+      "select",
+      { multiple: true, size: "4", "aria-label": ariaLabel },
+      (services.getStore().instance.filter || []).map((record) =>
+        el("option", { value: record.uri }, services.instanceLabel("filter", record.value)),
+      ),
+    );
+    let filterOrder = Array.isArray(step.processFields.filters) ? [...step.processFields.filters] : [];
+    const selectedFilters = new Set(filterOrder);
+    for (const option of filters.options) option.selected = selectedFilters.has(option.value);
+    const order = el("span", { class: "muted small", "aria-live": "polite" });
+    const paintOrder = () => {
+      const labels = new Map([...filters.options].map((option) => [option.value, option.textContent || option.value]));
+      order.textContent = filterOrder.length
+        ? `Order: ${filterOrder.map((uri, index) => `${index + 1}. ${labels.get(uri)}`).join(" → ")}`
+        : "Order: none";
+    };
+    filters.addEventListener("change", () => {
+      const selected = new Set([...filters.selectedOptions].map((option) => option.value));
+      filterOrder = filterOrder.filter((uri) => selected.has(uri));
+      for (const option of filters.selectedOptions)
+        if (!filterOrder.includes(option.value)) filterOrder.push(option.value);
+      paintOrder();
+    });
+    paintOrder();
+    nodes.push(field(fieldLabel, el("div", {}, [filters, order])));
+    readers.push(() => ["filters", filterOrder]);
+  };
   if (step.kind === "capture") {
     addSelect("Camera", "camera", createInstanceSelect("camera", String(step.processFields.camera || ""), services));
     addSelect(
@@ -106,6 +135,7 @@ function openTemplateStepConfig(
       createInstanceSelect("filmBack", String(step.processFields.filmBack || ""), services),
     );
     addSelect("Lens", "lens", createInstanceSelect("lens", String(step.processFields.lens || ""), services));
+    addFilters("Filter stack (scene side first)", "Capture filter stack");
     addSelect(
       "Film roll",
       "filmRoll",
@@ -155,18 +185,8 @@ function openTemplateStepConfig(
       "lightSource",
       createInstanceSelect("lightSource", String(step.processFields.lightSource || ""), services),
     );
-    const filters = el(
-      "select",
-      { multiple: true, size: "4", "aria-label": "Print filters" },
-      (services.getStore().instance.filter || []).map((record) =>
-        el("option", { value: record.uri }, services.instanceLabel("filter", record.value)),
-      ),
-    );
-    const selectedFilters = new Set(Array.isArray(step.processFields.filters) ? step.processFields.filters : []);
-    for (const option of filters.options) option.selected = selectedFilters.has(option.value);
-    nodes.push(field("Filters (choose any)", filters));
+    addFilters("Filters (choose any)", "Print filters");
     addText("Recipe AT-URI", "recipe", step.processFields.recipe);
-    readers.push(() => ["filters", [...filters.selectedOptions].map((option) => option.value)]);
   } else if (step.kind === "edit" || step.kind === "digital") {
     addText("Method or software", "method", step.processFields.method);
     addText("Recipe AT-URI", "recipe", step.processFields.recipe);
@@ -574,6 +594,7 @@ export function openWorkflowTemplate(
         defaultCamera: firstStepField(steps, "capture", "camera"),
         defaultFilmBack: firstStepField(steps, "capture", "filmBack"),
         defaultLens: firstStepField(steps, "capture", "lens"),
+        defaultFilters: firstStepField(steps, "capture", "filters") as readonly string[] | undefined,
         defaultFilmRoll: firstStepField(steps, "capture", "filmRoll"),
         defaultChemistry: firstStepField(steps, "develop", "chemistry"),
         defaultScanner: firstStepField(steps, "digitize", "scanner"),

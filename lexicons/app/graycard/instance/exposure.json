@@ -48,7 +48,13 @@
           "filter": {
             "type": "string",
             "format": "at-uri",
-            "description": "Optional app.graycard.instance.filter used."
+            "description": "Legacy single app.graycard.instance.filter used. New writers use filters; readers use this value only when filters is absent or empty."
+          },
+          "filters": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Ordered app.graycard.instance.filter stack used for this exposure, in light-path order from the scene toward the film or sensor."
           },
           "aperture": {
             "type": "string",

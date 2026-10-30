@@ -379,10 +379,20 @@ function resolveTypeValue(store, kind, uri) {
 export function resolvePhotoCapture(capture, defaults) {
   const c = capture?.value || {};
   const d = defaults?.value || {};
+  const filters = Array.isArray(c.filters)
+    ? c.filters
+    : c.filter
+      ? [c.filter]
+      : Array.isArray(d.filters)
+        ? d.filters
+        : d.filter
+          ? [d.filter]
+          : [];
   return {
     camera: c.camera || d.camera || null,
     filmBack: c.filmBack || d.filmBack || null,
     lens: c.lens || d.lens || null,
+    filters: [...new Set(filters.filter(Boolean))],
     filmRoll: c.filmRoll || d.filmRoll || null,
     shoot: c.shoot || d.shoot || null,
     medium: c.medium || null,
@@ -429,6 +439,7 @@ export function projectCaptureToExif(form, refs, store, { mode = "fill" } = {}) 
 
 export async function savePhotoCapture(agent, did, photoUri, fields, existing) {
   const value = {
+    ...(existing?.value || {}),
     photo: photoUri,
     createdAt: existing?.value?.createdAt || new Date().toISOString(),
     ...fields,

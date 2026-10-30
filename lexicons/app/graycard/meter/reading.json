@@ -105,7 +105,13 @@
           "filter": {
             "type": "string",
             "format": "at-uri",
-            "description": "Optional app.graycard.instance.filter whose factor is included in the solution."
+            "description": "Legacy single app.graycard.instance.filter whose factor is included in the solution. New writers use filters; readers use this value only when filters is absent or empty."
+          },
+          "filters": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Ordered app.graycard.instance.filter stack whose combined factor is included in the solution, in light-path order from the scene toward the film or sensor."
           },
           "filterCompensation": {
             "type": "ref",

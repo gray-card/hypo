@@ -748,6 +748,7 @@ export type AppGraycardGalleryDefaultsMain = {
   "camera"?: string;
   "filmBack"?: string;
   "lens"?: string;
+  "filters"?: Array<string>;
   "filmRoll"?: string;
   "shoot"?: string;
   "location"?: AppGraycardDefsGeoLocation;
@@ -833,6 +834,7 @@ export type AppGraycardInstanceExposureMain = {
   "filmBack"?: string;
   "lens"?: string;
   "filter"?: string;
+  "filters"?: Array<string>;
   "aperture"?: string;
   "shutterSpeed"?: string;
   "exposureCompensation"?: string;
@@ -1098,6 +1100,7 @@ export type AppGraycardMeterReadingMain = {
   "frameRate"?: AppGraycardDefsMeasure;
   "shutterAngle"?: AppGraycardDefsMeasure;
   "filter"?: string;
+  "filters"?: Array<string>;
   "filterCompensation"?: AppGraycardDefsMeasure;
   "reciprocity"?: {
     "applied"?: boolean;
@@ -1140,6 +1143,7 @@ export type AppGraycardPhotoCaptureMain = {
   "camera"?: string;
   "filmBack"?: string;
   "lens"?: string;
+  "filters"?: Array<string>;
   "filmRoll"?: string;
   "frameIndex"?: number;
   "location"?: AppGraycardDefsGeoLocation;
@@ -1702,6 +1706,7 @@ export type AppGraycardWorkflowStageCaptureStage = {
   "camera"?: string;
   "filmBack"?: string;
   "lens"?: string;
+  "filters"?: Array<string>;
   "filmRoll"?: string;
   "frameIndex"?: number;
   "temporal"?: AppGraycardDefsTemporalRef;
@@ -1914,6 +1919,7 @@ export type AppGraycardWorkflowTemplateMain = {
   "defaultCamera"?: string;
   "defaultFilmBack"?: string;
   "defaultLens"?: string;
+  "defaultFilters"?: Array<string>;
   "defaultFilmRoll"?: string;
   "defaultChemistry"?: string;
   "defaultScanner"?: string;
@@ -6585,6 +6591,15 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "string",
               "format": "at-uri"
             },
+            "filters": {
+              "type": "array",
+              "maxLength": 32,
+              "items": {
+                "type": "string",
+                "format": "at-uri"
+              },
+              "description": "Default ordered app.graycard.instance.filter stack, in light-path order from the scene toward the film or sensor."
+            },
             "filmRoll": {
               "type": "string",
               "format": "at-uri"
@@ -6987,7 +7002,16 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "filter": {
               "type": "string",
               "format": "at-uri",
-              "description": "Optional app.graycard.instance.filter used."
+              "description": "Legacy single app.graycard.instance.filter used. New writers use filters; readers use this value only when filters is absent or empty."
+            },
+            "filters": {
+              "type": "array",
+              "maxLength": 32,
+              "items": {
+                "type": "string",
+                "format": "at-uri"
+              },
+              "description": "Ordered app.graycard.instance.filter stack used for this exposure, in light-path order from the scene toward the film or sensor."
             },
             "aperture": {
               "type": "string",
@@ -8309,7 +8333,16 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "filter": {
               "type": "string",
               "format": "at-uri",
-              "description": "Optional app.graycard.instance.filter whose factor is included in the solution."
+              "description": "Legacy single app.graycard.instance.filter whose factor is included in the solution. New writers use filters; readers use this value only when filters is absent or empty."
+            },
+            "filters": {
+              "type": "array",
+              "maxLength": 32,
+              "items": {
+                "type": "string",
+                "format": "at-uri"
+              },
+              "description": "Ordered app.graycard.instance.filter stack whose combined factor is included in the solution, in light-path order from the scene toward the film or sensor."
             },
             "filterCompensation": {
               "type": "ref",
@@ -8509,6 +8542,15 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "lens": {
               "type": "string",
               "format": "at-uri"
+            },
+            "filters": {
+              "type": "array",
+              "maxLength": 32,
+              "items": {
+                "type": "string",
+                "format": "at-uri"
+              },
+              "description": "Ordered app.graycard.instance.filter stack used for this photo, in light-path order from the scene toward the film or sensor."
             },
             "filmRoll": {
               "type": "string",
@@ -10691,7 +10733,8 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "items": {
               "type": "string",
               "format": "at-uri"
-            }
+            },
+            "description": "Ordered app.graycard.instance.filter resources used by the stage. For capture stages, order follows the light path from the scene toward the film or sensor."
           },
           "recipe": {
             "type": "string",
@@ -11254,6 +11297,15 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
           "lens": {
             "type": "string",
             "format": "at-uri"
+          },
+          "filters": {
+            "type": "array",
+            "maxLength": 32,
+            "items": {
+              "type": "string",
+              "format": "at-uri"
+            },
+            "description": "Ordered capture filter stack, in light-path order from the scene toward the film or sensor."
           },
           "filmRoll": {
             "type": "string",
@@ -12231,6 +12283,15 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "defaultLens": {
               "type": "string",
               "format": "at-uri"
+            },
+            "defaultFilters": {
+              "type": "array",
+              "maxLength": 32,
+              "items": {
+                "type": "string",
+                "format": "at-uri"
+              },
+              "description": "Legacy top-level mirror of the primary capture step's ordered filter defaults."
             },
             "defaultFilmRoll": {
               "type": "string",

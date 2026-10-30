@@ -1,5 +1,5 @@
 import { createRovingDial, el, field, toast } from "@hypo/ui";
-import { createGearChips, createInitialShotLoggerState } from "./logger-controls.ts";
+import { createGearChips, createGearMultiChips, createInitialShotLoggerState } from "./logger-controls.ts";
 import { createMeterReadingField } from "./logger-readings.ts";
 import { createLoggerLocationTracker } from "./logger-location.ts";
 import { renderRecentExposures } from "./logger-recent.ts";
@@ -162,17 +162,16 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
     },
     options.instanceLabel,
   );
-  const filterChips = createGearChips(
+  const filterChips = createGearMultiChips(
     filters,
     "filter",
-    () => state.filter,
-    (uri) => {
-      state.filter = uri;
+    () => state.filters,
+    (uris) => {
+      state.filters = uris;
       persistSticky();
       renderStickySummary();
     },
     options.instanceLabel,
-    true,
   );
 
   const activeLensType = () => {
@@ -293,7 +292,10 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
       stickyItemLabel(filmBacks, "filmBack", state.filmBack),
       stickyItemLabel(lenses, "lens", state.lens),
       stickyItemLabel(rolls, "filmRoll", state.roll),
-      stickyItemLabel(filters, "filter", state.filter),
+      state.filters
+        .map((uri) => stickyItemLabel(filters, "filter", uri))
+        .filter(Boolean)
+        .join(" + ") || null,
     ]
       .filter(Boolean)
       .join(" · ");
@@ -387,7 +389,10 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
     if (state.camera) record.camera = state.camera;
     if (state.filmBack) record.filmBack = state.filmBack;
     if (state.lens) record.lens = state.lens;
-    if (state.filter) record.filter = state.filter;
+    if (state.filters.length) {
+      record.filters = [...state.filters];
+      if (state.filters.length === 1) record.filter = state.filters[0];
+    }
     if (state.roll) {
       if (sameFrame && state.lastFrame != null) {
         record.roll = state.roll;
@@ -491,8 +496,9 @@ export function openShotLoggerView(options: ShotLoggerDependencies): ShotLoggerC
       ]),
       filters.length
         ? el("div", { class: "logger-group logger-extended" }, [
-            el("span", { class: "logger-lab" }, "Filter"),
+            el("span", { class: "logger-lab" }, "Filter stack"),
             filterChips.row,
+            el("span", { class: "muted small" }, "Tap in light-path order: scene side first, camera side last."),
           ])
         : null,
       el("div", { class: "logger-group" }, [

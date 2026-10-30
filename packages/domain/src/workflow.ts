@@ -295,6 +295,7 @@ export interface WorkflowTemplateValue {
   defaultCamera?: unknown;
   defaultFilmBack?: unknown;
   defaultLens?: unknown;
+  defaultFilters?: readonly string[];
   defaultFilmRoll?: unknown;
   defaultChemistry?: unknown;
   defaultScanner?: unknown;
@@ -448,6 +449,7 @@ export function applyTemplateDefaults(
       if (!processFields.camera && value.defaultCamera) processFields.camera = value.defaultCamera;
       if (!processFields.filmBack && value.defaultFilmBack) processFields.filmBack = value.defaultFilmBack;
       if (!processFields.lens && value.defaultLens) processFields.lens = value.defaultLens;
+      if (!processFields.filters && value.defaultFilters) processFields.filters = value.defaultFilters;
       if (!processFields.filmRoll && value.defaultFilmRoll) processFields.filmRoll = value.defaultFilmRoll;
     }
     return { ...step, processFields };
@@ -504,6 +506,7 @@ export interface WorkflowTemplateExtra {
   defaultCamera?: unknown;
   defaultFilmBack?: unknown;
   defaultLens?: unknown;
+  defaultFilters?: readonly string[];
   defaultFilmRoll?: unknown;
   defaultChemistry?: unknown;
   defaultScanner?: unknown;
@@ -567,6 +570,7 @@ export function templateFromSteps(
     defaultCamera: extra.defaultCamera,
     defaultFilmBack: extra.defaultFilmBack,
     defaultLens: extra.defaultLens,
+    defaultFilters: extra.defaultFilters,
     defaultFilmRoll: extra.defaultFilmRoll,
     defaultChemistry: extra.defaultChemistry,
     defaultScanner: extra.defaultScanner,

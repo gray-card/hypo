@@ -106,7 +106,8 @@
         "filters": {
           "type": "array",
           "maxLength": 32,
-          "items": { "type": "string", "format": "at-uri" }
+          "items": { "type": "string", "format": "at-uri" },
+          "description": "Ordered app.graycard.instance.filter resources used by the stage. For capture stages, order follows the light path from the scene toward the film or sensor."
         },
         "recipe": { "type": "string", "format": "at-uri" },
         "method": { "type": "string", "maxLength": 128 },

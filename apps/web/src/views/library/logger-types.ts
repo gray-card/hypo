@@ -47,7 +47,7 @@ export interface ShotLoggerState {
   camera: string | null;
   filmBack: string | null;
   lens: string | null;
-  filter: string | null;
+  filters: string[];
   roll: string | null;
   lastFrame: number | null;
   aperture: string | null;
@@ -61,7 +61,10 @@ export interface ShotLoggerState {
   note: string;
 }
 
-export type StickyShotLoggerState = Partial<Omit<ShotLoggerState, "lastFrame" | "gps" | "note">>;
+export type StickyShotLoggerState = Partial<Omit<ShotLoggerState, "lastFrame" | "gps" | "note">> & {
+  /** Pre-filter-stack persisted state. */
+  filter?: string | null;
+};
 
 export interface ShotLoggerDependencies {
   shoot: LoggerRecord;

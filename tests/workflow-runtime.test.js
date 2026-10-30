@@ -169,6 +169,29 @@ describe("workflow runtime", () => {
     expect(stages.some((stage) => stage.value.templateStepId === "print")).toBe(false);
   });
 
+  it("populates film backs and ordered filter stacks on capture stages", async () => {
+    const agent = mockAgent();
+    const filmBack = "at://did:plc:test/app.graycard.instance.filmBack/sq-a";
+    const filters = [
+      "at://did:plc:test/app.graycard.instance.filter/yellow",
+      "at://did:plc:test/app.graycard.instance.filter/polarizer",
+    ];
+    await instantiateWorkflowTemplate(agent, "did:plc:test", {
+      template: {
+        value: {
+          name: "Filtered capture",
+          medium: "film",
+          steps: [{ id: "capture", kind: "capture" }],
+          createdAt: "2026-08-13T10:00:00.000Z",
+        },
+      },
+      subjects: [{ kind: "scene", ref: "at://did:plc:test/app.graycard.session.capture/shoot" }],
+      processDefaults: { filmBack, filters },
+    });
+    const [stage] = recordsWritten(agent, NS.workflow.stage);
+    expect(stage.value).toMatchObject({ filmBack, filters, processDefaults: { filmBack, filters } });
+  });
+
   it("lets an optional action be skipped and lets an active run be cancelled", async () => {
     const agent = mockAgent();
     await instantiateWorkflowTemplate(agent, "did:plc:test", {

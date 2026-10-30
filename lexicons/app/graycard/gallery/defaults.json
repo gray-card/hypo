@@ -14,6 +14,12 @@
           "camera": { "type": "string", "format": "at-uri" },
           "filmBack": { "type": "string", "format": "at-uri" },
           "lens": { "type": "string", "format": "at-uri" },
+          "filters": {
+            "type": "array",
+            "maxLength": 32,
+            "items": { "type": "string", "format": "at-uri" },
+            "description": "Default ordered app.graycard.instance.filter stack, in light-path order from the scene toward the film or sensor."
+          },
           "filmRoll": { "type": "string", "format": "at-uri" },
           "shoot": { "type": "string", "format": "at-uri" },
           "location": { "type": "ref", "ref": "app.graycard.defs#geoLocation" },

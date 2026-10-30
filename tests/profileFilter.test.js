@@ -127,6 +127,36 @@ describe("photoMatches — instance filters are exact, model filters are model-l
   });
 });
 
+describe("ordered capture filter stacks", () => {
+  it("indexes every filter on photo captures and exposures", () => {
+    const photo = "at://did/social.grain.photo/stacked";
+    const red = "at://did/app.graycard.instance.filter/red";
+    const polarizer = "at://did/app.graycard.instance.filter/polarizer";
+    const redType = "at://did/app.graycard.catalog.filterType/red";
+    const polarizerType = "at://did/app.graycard.catalog.filterType/polarizer";
+    const idx = buildPhotoIndex({
+      store: {
+        catalog: {
+          filterType: [
+            { uri: redType, value: {} },
+            { uri: polarizerType, value: {} },
+          ],
+        },
+        instance: {
+          filter: [
+            { uri: red, value: { type: redType } },
+            { uri: polarizer, value: { type: polarizerType } },
+          ],
+          exposure: [],
+        },
+      },
+      captures: [{ value: { photo, filters: [red, polarizer] } }],
+    });
+    expect([...idx.meta.get(photo).filters]).toEqual([red, polarizer]);
+    expect([...idx.meta.get(photo).filterTypes]).toEqual([redType, polarizerType]);
+  });
+});
+
 describe("location — precedence, fallbacks, and ~5km coarsening", () => {
   const nyc = { latitude: 407128000, longitude: -740060000, placemark: { name: "Manhattan" } };
   const la = { latitude: 340522000, longitude: -1182437000 };

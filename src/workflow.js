@@ -52,7 +52,7 @@ function templateRecord(template) {
 function allowedContextDefaults(kind, defaults = {}) {
   const shared = ["method", "params"];
   const byKind = {
-    capture: ["camera", "lens", "filmRoll"],
+    capture: ["camera", "filmBack", "lens", "filters", "filmRoll"],
     develop: ["filmRoll", "chemistry", "lab", "recipe"],
     digitize: ["filmRoll", "scanner", "scanProfile", "lab", "camera"],
     digital: ["recipe"],
@@ -75,7 +75,8 @@ function applyRuntimeContext(value, kind, defaults = {}) {
   };
   if (!Object.keys(next.processDefaults).length) delete next.processDefaults;
   if (kind === "capture") {
-    for (const key of ["camera", "lens", "filmRoll", "shoot"]) if (defaults[key]) next[key] = defaults[key];
+    for (const key of ["camera", "filmBack", "lens", "filters", "filmRoll", "shoot"])
+      if (defaults[key]) next[key] = defaults[key];
   }
   return next;
 }
