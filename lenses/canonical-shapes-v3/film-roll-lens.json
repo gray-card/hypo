@@ -1,0 +1,14 @@
+{
+  "id": "graycard.film-roll-quantity-to-stockpile.v1",
+  "source": "app.graycard.instance.filmRoll",
+  "target": "app.graycard.instance.filmStockpile",
+  "steps": [
+    {
+      "compute_field": {
+        "target": "$type",
+        "kind": "string",
+        "expr": "\"app.graycard.instance.filmStockpile\""
+      }
+    }
+  ]
+}

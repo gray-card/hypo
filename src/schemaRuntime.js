@@ -1,7 +1,7 @@
 import { validateRecord } from "@hypo/lexicon/validators";
 import { createSchemaRuntime } from "@hypo/schema-runtime";
 
-export const PINNED_SCHEMA_VERSION = "lexicons-v1";
+export const PINNED_SCHEMA_VERSION = "lexicons-v3";
 
 let runtimePromise;
 
@@ -11,7 +11,7 @@ function runtime() {
     versions: [
       {
         id: PINNED_SCHEMA_VERSION,
-        order: 1,
+        order: 3,
         validate: (collection, value) => {
           // Internal projections and legacy fixtures may omit $type. With no
           // on-record version signal, interpret them as the pinned app view.
@@ -21,7 +21,8 @@ function runtime() {
       },
     ],
     // Released transitions are added here with their vendored schemas and
-    // reviewed chain documents. Keeping the list empty is correct for v1.
+    // reviewed chain documents. Repository migrations canonicalize supported
+    // v1/v2 records before decoding, so the browser exposes only the v3 view.
     transitions: [],
   });
   return runtimePromise;

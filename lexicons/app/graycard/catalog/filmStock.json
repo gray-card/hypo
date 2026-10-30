@@ -120,11 +120,6 @@
           },
           "filmType": { "type": "ref", "ref": "app.graycard.defs#filmType" },
           "process": { "type": "ref", "ref": "app.graycard.defs#filmProcess" },
-          "format": {
-            "type": "ref",
-            "ref": "app.graycard.defs#captureFormat",
-            "description": "Primary/legacy format. Prefer `formats` for the full list."
-          },
           "formats": {
             "type": "array",
             "maxLength": 64,

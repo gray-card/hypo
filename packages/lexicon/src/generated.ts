@@ -326,7 +326,6 @@ export type AppGraycardCatalogFilmStockMain = {
   "isoMax"?: number;
   "filmType"?: AppGraycardDefsFilmType;
   "process"?: AppGraycardDefsFilmProcess;
-  "format"?: AppGraycardDefsCaptureFormat;
   "formats"?: Array<AppGraycardDefsCaptureFormat>;
   "variants"?: Array<AppGraycardCatalogFilmStockFormatVariant>;
   "base"?: KnownValue<"acetate" | "triacetate" | "polyester" | "other">;
@@ -881,7 +880,6 @@ export type AppGraycardInstanceFilmRollMain = {
   "format"?: AppGraycardDefsCaptureFormat;
   "exposuresTotal"?: number;
   "exposuresUsed"?: number;
-  "quantity"?: number;
   "shotAtIso"?: number;
   "developedWith"?: string;
   "lab"?: string;
@@ -1663,7 +1661,6 @@ export type AppGraycardWorkflowDefsBranchLink = {
 };
 
 export type AppGraycardWorkflowRunMain = {
-  "photo"?: string;
   "subjects"?: Array<AppGraycardWorkflowDefsArtifactRef>;
   "products"?: Array<AppGraycardWorkflowDefsArtifactRef>;
   "medium": AppGraycardWorkflowDefsMedium;
@@ -1699,7 +1696,6 @@ export type AppGraycardWorkflowStageCaptureStage = {
   "outputs"?: Array<AppGraycardWorkflowDefsArtifactRef>;
   "inputBindings"?: Array<AppGraycardWorkflowDefsArtifactBinding>;
   "outputBindings"?: Array<AppGraycardWorkflowDefsArtifactBinding>;
-  "session"?: string;
   "shoot"?: string;
   "camera"?: string;
   "filmBack"?: string;
@@ -1866,7 +1862,6 @@ export type AppGraycardWorkflowStageOutputStage = {
   "inputBindings"?: Array<AppGraycardWorkflowDefsArtifactBinding>;
   "outputBindings"?: Array<AppGraycardWorkflowDefsArtifactBinding>;
   "target"?: AppGraycardWorkflowDefsPublishTarget;
-  "photo"?: string;
   "temporal"?: AppGraycardDefsTemporalRef;
   "params"?: unknown;
   "notes"?: string;
@@ -1914,20 +1909,6 @@ export type AppGraycardWorkflowTemplateMain = {
   "medium": AppGraycardWorkflowDefsMedium;
   "steps"?: Array<AppGraycardWorkflowDefsTemplateStep>;
   "connections"?: Array<AppGraycardWorkflowDefsTemplateConnection>;
-  "defaultCamera"?: string;
-  "defaultFilmBack"?: string;
-  "defaultLens"?: string;
-  "defaultFilters"?: Array<string>;
-  "defaultFilmRoll"?: string;
-  "defaultChemistry"?: string;
-  "defaultScanner"?: string;
-  "defaultScanProfile"?: string;
-  "defaultLab"?: string;
-  "stageKinds"?: Array<AppGraycardWorkflowDefsStageKind>;
-  "stageDefaults"?: Array<{
-    "kind": AppGraycardWorkflowDefsStageKind;
-    "fields"?: Record<string, unknown>;
-  }>;
   "notes"?: string;
   "createdAt": string;
   "updatedAt"?: string;
@@ -4423,11 +4404,6 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.defs#filmProcess"
             },
-            "format": {
-              "type": "ref",
-              "ref": "app.graycard.defs#captureFormat",
-              "description": "Primary/legacy format. Prefer `formats` for the full list."
-            },
             "formats": {
               "type": "array",
               "maxLength": 64,
@@ -4809,12 +4785,13 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             },
             "mount": {
               "type": "ref",
-              "ref": "app.graycard.defs#mount"
+              "ref": "app.graycard.defs#mount",
+              "description": "The primary catalog variant represented by this record. This is intentionally distinct from mounts, which lists every mount in which the optical family was offered."
             },
             "mounts": {
               "type": "array",
               "maxLength": 32,
-              "description": "All mounts in which the optical model was offered. mount remains the primary/legacy value.",
+              "description": "All mounts in which the optical family was offered. mount identifies the primary catalog variant represented by this record.",
               "items": {
                 "type": "ref",
                 "ref": "app.graycard.defs#mount"
@@ -7229,11 +7206,6 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "exposuresUsed": {
               "type": "integer",
               "minimum": 0
-            },
-            "quantity": {
-              "type": "integer",
-              "minimum": 1,
-              "description": "DEPRECATED: reserve counts now live in app.graycard.instance.filmStockpile. Retained only to read legacy rolls; a filmRoll is one physical roll."
             },
             "shotAtIso": {
               "type": "integer",
@@ -11073,11 +11045,6 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "createdAt"
           ],
           "properties": {
-            "photo": {
-              "type": "string",
-              "format": "at-uri",
-              "description": "Legacy convenience for a single published-photo product. Prefer products."
-            },
             "subjects": {
               "type": "array",
               "maxLength": 256,
@@ -11138,7 +11105,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "branches": {
               "type": "array",
               "maxLength": 512,
-              "description": "Legacy explicit run-stage branch links.",
+              "description": "Canonical directed run-stage edges. For graph topology this is the complete edge set.",
               "items": {
                 "type": "ref",
                 "ref": "app.graycard.workflow.defs#branchLink"
@@ -11263,11 +11230,6 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "ref",
               "ref": "app.graycard.workflow.defs#artifactBinding"
             }
-          },
-          "session": {
-            "type": "string",
-            "format": "at-uri",
-            "description": "Deprecated alias of shoot. When present, references app.graycard.session.capture."
           },
           "shoot": {
             "type": "string",
@@ -11595,7 +11557,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
       },
       "digitalStage": {
         "type": "object",
-        "description": "A render or export stage that materializes a digital output artifact. Editing decisions belong in editStage; the digitalStage name is retained for compatibility with existing workflow records.",
+        "description": "A render or export stage that materializes a digital output artifact. digitalStage is the stable wire identifier; editing decisions belong in editStage.",
         "required": [
           "$type",
           "input",
@@ -12025,11 +11987,6 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "ref": "app.graycard.workflow.defs#publishTarget",
             "description": "Preferred: abstract publish target."
           },
-          "photo": {
-            "type": "string",
-            "format": "at-uri",
-            "description": "Deprecated convenience: published photo AT-URI (e.g. social.grain.photo). Prefer target."
-          },
           "temporal": {
             "type": "ref",
             "ref": "app.graycard.defs#temporalRef"
@@ -12258,78 +12215,6 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "items": {
                 "type": "ref",
                 "ref": "app.graycard.workflow.defs#templateConnection"
-              }
-            },
-            "defaultCamera": {
-              "type": "string",
-              "format": "at-uri"
-            },
-            "defaultFilmBack": {
-              "type": "string",
-              "format": "at-uri"
-            },
-            "defaultLens": {
-              "type": "string",
-              "format": "at-uri"
-            },
-            "defaultFilters": {
-              "type": "array",
-              "maxLength": 32,
-              "items": {
-                "type": "string",
-                "format": "at-uri"
-              },
-              "description": "Legacy top-level mirror of the primary capture step's ordered filter defaults."
-            },
-            "defaultFilmRoll": {
-              "type": "string",
-              "format": "at-uri"
-            },
-            "defaultChemistry": {
-              "type": "string",
-              "format": "at-uri",
-              "description": "Default app.graycard.instance.chemistry for the primary developer or multi-role bath."
-            },
-            "defaultScanner": {
-              "type": "string",
-              "format": "at-uri"
-            },
-            "defaultScanProfile": {
-              "type": "string",
-              "format": "at-uri"
-            },
-            "defaultLab": {
-              "type": "string",
-              "format": "at-uri"
-            },
-            "stageKinds": {
-              "type": "array",
-              "maxLength": 256,
-              "description": "Legacy ordered stage kinds. New writers also write steps; readers normalize either representation.",
-              "items": {
-                "type": "ref",
-                "ref": "app.graycard.workflow.defs#stageKind"
-              }
-            },
-            "stageDefaults": {
-              "type": "array",
-              "maxLength": 256,
-              "description": "Legacy per-kind process defaults. New writers use step.processDefaults and may mirror these for older readers.",
-              "items": {
-                "type": "object",
-                "required": [
-                  "kind"
-                ],
-                "properties": {
-                  "kind": {
-                    "type": "ref",
-                    "ref": "app.graycard.workflow.defs#stageKind"
-                  },
-                  "fields": {
-                    "type": "object",
-                    "description": "Legacy open process-default object."
-                  }
-                }
               }
             },
             "notes": {

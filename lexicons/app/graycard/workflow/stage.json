@@ -35,11 +35,6 @@
           "maxLength": 32,
           "items": { "type": "ref", "ref": "app.graycard.workflow.defs#artifactBinding" }
         },
-        "session": {
-          "type": "string",
-          "format": "at-uri",
-          "description": "Deprecated alias of shoot. When present, references app.graycard.session.capture."
-        },
         "shoot": {
           "type": "string",
           "format": "at-uri",
@@ -155,7 +150,7 @@
     },
     "digitalStage": {
       "type": "object",
-      "description": "A render or export stage that materializes a digital output artifact. Editing decisions belong in editStage; the digitalStage name is retained for compatibility with existing workflow records.",
+      "description": "A render or export stage that materializes a digital output artifact. digitalStage is the stable wire identifier; editing decisions belong in editStage.",
       "required": ["$type", "input", "output"],
       "properties": {
         "$type": { "type": "string", "knownValues": ["app.graycard.workflow#digitalStage"] },
@@ -321,11 +316,6 @@
           "type": "ref",
           "ref": "app.graycard.workflow.defs#publishTarget",
           "description": "Preferred: abstract publish target."
-        },
-        "photo": {
-          "type": "string",
-          "format": "at-uri",
-          "description": "Deprecated convenience: published photo AT-URI (e.g. social.grain.photo). Prefer target."
         },
         "temporal": { "type": "ref", "ref": "app.graycard.defs#temporalRef" },
         "params": { "type": "unknown" },

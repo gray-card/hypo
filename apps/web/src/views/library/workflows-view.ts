@@ -14,10 +14,6 @@ function templateSteps(value: LibraryValue): WorkflowStep[] {
   return applyTemplateDefaults(stepsFromTemplate({ value }), { value });
 }
 
-function firstStepField(steps: readonly WorkflowStep[], kind: string, key: string): unknown {
-  return steps.find((step) => step.kind === kind)?.processFields[key];
-}
-
 function stepSummary(step: WorkflowStep, services: ActivityServices): string | undefined {
   const labels: string[] = [];
   if (step.label) labels.push(step.label);
@@ -591,15 +587,6 @@ export function openWorkflowTemplate(
       const record: LibraryValue = templateFromSteps(name, mediumSelect.value, steps, {
         connections:
           connections.length || topologyTouched || Array.isArray(value.connections) ? connections : undefined,
-        defaultCamera: firstStepField(steps, "capture", "camera"),
-        defaultFilmBack: firstStepField(steps, "capture", "filmBack"),
-        defaultLens: firstStepField(steps, "capture", "lens"),
-        defaultFilters: firstStepField(steps, "capture", "filters") as readonly string[] | undefined,
-        defaultFilmRoll: firstStepField(steps, "capture", "filmRoll"),
-        defaultChemistry: firstStepField(steps, "develop", "chemistry"),
-        defaultScanner: firstStepField(steps, "digitize", "scanner"),
-        defaultScanProfile: firstStepField(steps, "digitize", "scanProfile"),
-        defaultLab: firstStepField(steps, "develop", "lab"),
         notes: notes.input.value.trim() || undefined,
       });
       record.createdAt = value.createdAt || record.createdAt;

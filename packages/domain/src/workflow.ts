@@ -280,27 +280,11 @@ export interface WorkflowTemplateConnection {
   label?: string;
 }
 
-export interface WorkflowStageDefault {
-  kind: string;
-  fields?: Record<string, unknown>;
-}
-
 export interface WorkflowTemplateValue {
   name?: string;
   medium?: string;
   steps?: readonly WorkflowTemplateStep[];
   connections?: readonly WorkflowTemplateConnection[];
-  stageKinds?: readonly string[];
-  stageDefaults?: readonly WorkflowStageDefault[];
-  defaultCamera?: unknown;
-  defaultFilmBack?: unknown;
-  defaultLens?: unknown;
-  defaultFilters?: readonly string[];
-  defaultFilmRoll?: unknown;
-  defaultChemistry?: unknown;
-  defaultScanner?: unknown;
-  defaultScanProfile?: unknown;
-  defaultLab?: unknown;
   [key: string]: unknown;
 }
 
@@ -363,97 +347,35 @@ function stableStepIds(kinds: readonly string[]): string[] {
   });
 }
 
-function legacyDefaultsForKinds(
-  kinds: readonly string[],
-  defaults: readonly WorkflowStageDefault[],
-): Array<WorkflowStageDefault | undefined> {
-  const byKind = new Map<string, WorkflowStageDefault[]>();
-  for (const entry of defaults) {
-    const entries = byKind.get(entry.kind) || [];
-    entries.push(entry);
-    byKind.set(entry.kind, entries);
-  }
-  const occurrence = new Map<string, number>();
-  return kinds.map((kind) => {
-    const entries = byKind.get(kind) || [];
-    const index = occurrence.get(kind) || 0;
-    occurrence.set(kind, index + 1);
-    if (entries.length === 1) return entries[0];
-    return entries[index];
-  });
-}
-
-/**
- * Normalize either the rich step representation or the legacy
- * stageKinds/stageDefaults representation into UI-ready steps.
- */
+/** Normalize the canonical rich step representation into UI-ready steps. */
 export function stepsFromTemplate(template: WorkflowTemplateRecord): WorkflowStep[] {
   const value = template.value;
-  if (value.steps) {
-    return value.steps.map((step) => {
-      const ports = defaultPorts(step.kind, value.medium);
-      const processFields = { ...(step.processDefaults || step.processFields || step.fields || step.defaults || {}) };
-      const stageFields = { ...(step.stageDefaults || step.stageFields || {}) };
-      return {
-        id: step.id,
-        kind: step.kind,
-        label: step.label,
-        description: step.description,
-        optional: step.optional,
-        cardinality: step.cardinality ? { ...step.cardinality } : undefined,
-        sessionScope: step.sessionScope,
-        inputs: (step.inputs || ports.inputs).map(clonePort),
-        outputs: (step.outputs || ports.outputs).map(clonePort),
-        processFields,
-        stageFields,
-        configured: Object.keys(processFields).length > 0 || Object.keys(stageFields).length > 0,
-      };
-    });
-  }
-
-  const kinds = value.stageKinds || [];
-  const ids = stableStepIds(kinds);
-  const defaults = legacyDefaultsForKinds(kinds, value.stageDefaults || []);
-  return kinds.map((kind, index) => {
-    const processFields = defaults[index]?.fields ? { ...defaults[index]!.fields } : {};
-    const ports = defaultPorts(kind, value.medium);
+  return (value.steps || []).map((step) => {
+    const ports = defaultPorts(step.kind, value.medium);
+    const processFields = { ...(step.processDefaults || step.processFields || step.fields || step.defaults || {}) };
+    const stageFields = { ...(step.stageDefaults || step.stageFields || {}) };
     return {
-      id: ids[index],
-      kind,
-      optional: false,
-      cardinality: { min: 1, max: 1 },
-      sessionScope: "per-stage",
-      inputs: ports.inputs,
-      outputs: ports.outputs,
+      id: step.id,
+      kind: step.kind,
+      label: step.label,
+      description: step.description,
+      optional: step.optional,
+      cardinality: step.cardinality ? { ...step.cardinality } : undefined,
+      sessionScope: step.sessionScope,
+      inputs: (step.inputs || ports.inputs).map(clonePort),
+      outputs: (step.outputs || ports.outputs).map(clonePort),
       processFields,
-      stageFields: {},
-      configured: Object.keys(processFields).length > 0,
+      stageFields,
+      configured: Object.keys(processFields).length > 0 || Object.keys(stageFields).length > 0,
     };
   });
 }
 
 export function applyTemplateDefaults(
   steps: readonly WorkflowStep[],
-  template: WorkflowTemplateRecord,
+  _template: WorkflowTemplateRecord,
 ): WorkflowStep[] {
-  const value = template.value;
-  return steps.map((step) => {
-    const processFields = { ...step.processFields };
-    if (step.kind === "develop" && !processFields.chemistry && value.defaultChemistry) {
-      processFields.chemistry = value.defaultChemistry;
-    }
-    if (step.kind === "digitize" && !processFields.scanner && value.defaultScanner) {
-      processFields.scanner = value.defaultScanner;
-    }
-    if (step.kind === "capture") {
-      if (!processFields.camera && value.defaultCamera) processFields.camera = value.defaultCamera;
-      if (!processFields.filmBack && value.defaultFilmBack) processFields.filmBack = value.defaultFilmBack;
-      if (!processFields.lens && value.defaultLens) processFields.lens = value.defaultLens;
-      if (!processFields.filters && value.defaultFilters) processFields.filters = value.defaultFilters;
-      if (!processFields.filmRoll && value.defaultFilmRoll) processFields.filmRoll = value.defaultFilmRoll;
-    }
-    return { ...step, processFields };
-  });
+  return steps.map((step) => ({ ...step, processFields: { ...step.processFields } }));
 }
 
 function commonArtifactKind(from: WorkflowPort, to: WorkflowPort): string | undefined {
@@ -485,33 +407,23 @@ function inferredConnections(steps: readonly WorkflowStep[]): WorkflowTemplateCo
 export interface NormalizedWorkflowTemplate {
   steps: WorkflowStep[];
   connections: WorkflowTemplateConnection[];
-  source: "rich" | "legacy";
+  source: "rich";
 }
 
-/** Convert a legacy template into the rich graph view without mutating it. */
+/** Normalize a canonical template into the rich graph view without mutating it. */
 export function normalizeWorkflowTemplate(template: WorkflowTemplateRecord): NormalizedWorkflowTemplate {
   const steps = stepsFromTemplate(template);
-  const source = template.value.steps ? "rich" : "legacy";
   return {
     steps,
     connections: template.value.connections
       ? template.value.connections.map((connection) => ({ ...connection }))
       : inferredConnections(steps),
-    source,
+    source: "rich",
   };
 }
 
 export interface WorkflowTemplateExtra {
   connections?: readonly WorkflowTemplateConnection[];
-  defaultCamera?: unknown;
-  defaultFilmBack?: unknown;
-  defaultLens?: unknown;
-  defaultFilters?: readonly string[];
-  defaultFilmRoll?: unknown;
-  defaultChemistry?: unknown;
-  defaultScanner?: unknown;
-  defaultScanProfile?: unknown;
-  defaultLab?: unknown;
   notes?: unknown;
 }
 
@@ -520,15 +432,10 @@ export interface WorkflowTemplatePayload extends WorkflowTemplateExtra {
   medium: string;
   steps: WorkflowTemplateStep[];
   connections: WorkflowTemplateConnection[];
-  stageKinds: string[];
-  stageDefaults: WorkflowStageDefault[];
   createdAt: string;
 }
 
-/**
- * Serialize editable steps as the rich representation and a legacy mirror.
- * The mirror keeps older Hypo clients able to open templates from this release.
- */
+/** Serialize editable steps in the canonical rich representation. */
 export function templateFromSteps(
   name: string,
   medium: string,
@@ -563,19 +470,6 @@ export function templateFromSteps(
     medium,
     steps,
     connections,
-    stageKinds: editableSteps.map((step) => step.kind),
-    // Keep one marker per occurrence, including empty defaults, because the
-    // legacy shape identifies occurrences only by stable array order.
-    stageDefaults: editableSteps.map((step) => ({ kind: step.kind, fields: { ...step.processFields } })),
-    defaultCamera: extra.defaultCamera,
-    defaultFilmBack: extra.defaultFilmBack,
-    defaultLens: extra.defaultLens,
-    defaultFilters: extra.defaultFilters,
-    defaultFilmRoll: extra.defaultFilmRoll,
-    defaultChemistry: extra.defaultChemistry,
-    defaultScanner: extra.defaultScanner,
-    defaultScanProfile: extra.defaultScanProfile,
-    defaultLab: extra.defaultLab,
     notes: extra.notes,
     createdAt: new Date().toISOString(),
   };

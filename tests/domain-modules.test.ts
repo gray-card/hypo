@@ -42,7 +42,7 @@ describe("strict domain module exports", () => {
     });
     expect(
       stepsFromTemplate({
-        value: { stageKinds: ["capture"], stageDefaults: [{ kind: "capture", fields: { camera: "at://cam" } }] },
+        value: { steps: [{ id: "capture-1", kind: "capture", processDefaults: { camera: "at://cam" } }] },
       })[0],
     ).toMatchObject({ kind: "capture", configured: true, processFields: { camera: "at://cam" } });
   });

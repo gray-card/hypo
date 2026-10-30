@@ -1387,10 +1387,6 @@ function buildWorkflowBuilderCard(): HTMLDetailsElement {
                 mediumSel.value,
                 steps.map((step) => ({ ...step, id: undefined, occurrence: undefined })),
               );
-              payload.stageDefaults = steps.map((step) => ({
-                kind: step.kind,
-                ...(Object.keys(step.processFields).length ? { fields: step.processFields } : {}),
-              }));
               await saveTemplate(ctx.agent, ctx.did, payload, null);
               ctx.store = await refreshStore();
               refreshTemplateOptions();

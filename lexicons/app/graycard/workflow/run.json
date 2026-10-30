@@ -10,11 +10,6 @@
         "type": "object",
         "required": ["medium", "stages", "createdAt"],
         "properties": {
-          "photo": {
-            "type": "string",
-            "format": "at-uri",
-            "description": "Legacy convenience for a single published-photo product. Prefer products."
-          },
           "subjects": {
             "type": "array",
             "maxLength": 256,
@@ -57,7 +52,7 @@
           "branches": {
             "type": "array",
             "maxLength": 512,
-            "description": "Legacy explicit run-stage branch links.",
+            "description": "Canonical directed run-stage edges. For graph topology this is the complete edge set.",
             "items": { "type": "ref", "ref": "app.graycard.workflow.defs#branchLink" }
           },
           "label": { "type": "string", "maxLength": 128 },

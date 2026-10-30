@@ -14,6 +14,7 @@ import { assertConsumableLifecycle, assertFilmRollCarrier, assertRecordTimeSpans
 import { migrateLegacyDeveloperRecords } from "./legacyDeveloperMigration.ts";
 import { migrateDevelopSessions } from "./developSessionMigration.ts";
 import { migrateFilterStacks } from "./filterStackMigration.ts";
+import { migrateLegacyShapes } from "./legacyShapeMigration.ts";
 
 export { NS, CATALOG_KINDS, INSTANCE_KINDS };
 
@@ -107,7 +108,14 @@ export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
   const migration = await migrateLegacyDeveloperRecords(agent, did);
   const developSessionMigration = await migrateDevelopSessions(agent, did);
   const filterStackMigration = await migrateFilterStacks(agent, did);
-  if (migration.migrated || developSessionMigration.migrated || filterStackMigration.migrated) refresh = true;
+  const legacyShapeMigration = await migrateLegacyShapes(agent, did);
+  if (
+    migration.migrated ||
+    developSessionMigration.migrated ||
+    filterStackMigration.migrated ||
+    legacyShapeMigration.migrated
+  )
+    refresh = true;
   const catalog = {};
   const instance = {};
   const byUri = new Map();

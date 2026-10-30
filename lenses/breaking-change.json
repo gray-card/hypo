@@ -26,6 +26,15 @@
       "projection": "lenses/filter-stacks-v2/meter-reading-projection-lexicon.json",
       "data": "lenses/filter-stacks-v2/meter-reading-fixtures.json",
       "verify": "scripts/verify-filter-stack-transition.ts"
+    },
+    {
+      "id": "canonical-record-shapes-v3",
+      "source": "lenses/filter-stacks-v2/source",
+      "target": "lexicons",
+      "lens": "lenses/canonical-shapes-v3/template-lens.json",
+      "projection": "lenses/canonical-shapes-v3/template-projection.json",
+      "data": "lenses/canonical-shapes-v3/fixtures.json",
+      "verify": "scripts/verify-canonical-shapes-transition.ts"
     }
   ]
 }

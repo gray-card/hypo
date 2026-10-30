@@ -96,21 +96,10 @@ interface WorkflowSpec {
   stages: string[];
 }
 
-interface StageDefault {
-  kind: string;
-  fields: Record<string, string>;
-}
-
 interface WorkflowPayload {
   name: string;
   medium: string;
-  stageKinds: string[];
-  stageDefaults: StageDefault[];
-  defaultCamera?: string;
-  defaultLens?: string;
-  defaultChemistry?: string;
-  defaultScanner?: string;
-  defaultLab?: string;
+  steps: Array<{ id: string; kind: string; processDefaults?: Record<string, string> }>;
   notes: string;
   createdAt: string;
   updatedAt: string;
@@ -477,13 +466,15 @@ export function workflowPayload(
   const enlarger = firstInstance(store, "enlarger");
   const enlargingLens = firstInstance(store, "enlargingLens");
   const printer = firstInstance(store, "printer");
-  const stageDefaults: StageDefault[] = [];
+  const defaults = new Map<string, Array<Record<string, string>>>();
   const add = (kind: string, fields: Record<string, string | null | undefined>) => {
     const clean: Record<string, string> = {};
     for (const [key, value] of Object.entries(fields)) {
       if (value) clean[key] = value;
     }
-    if (Object.keys(clean).length) stageDefaults.push({ kind, fields: clean });
+    const entries = defaults.get(kind) || [];
+    entries.push(clean);
+    defaults.set(kind, entries);
   };
   add("capture", { camera: camera?.uri, lens: lens?.uri });
   add("develop", {
@@ -495,16 +486,21 @@ export function workflowPayload(
   add("digitize", { scanner: scanner?.uri, lab: state.digitize === "lab" ? lab?.uri : null });
   add("print", { enlarger: enlarger?.uri, enlargingLens: enlargingLens?.uri, printer: printer?.uri });
   const now = new Date().toISOString();
+  const occurrences = new Map<string, number>();
+  const steps = spec.stages.map((kind) => {
+    const occurrence = (occurrences.get(kind) || 0) + 1;
+    occurrences.set(kind, occurrence);
+    const processDefaults = defaults.get(kind)?.[occurrence - 1] || defaults.get(kind)?.[0] || {};
+    return {
+      id: `${kind}-${occurrence}`,
+      kind,
+      ...(Object.keys(processDefaults).length ? { processDefaults } : {}),
+    };
+  });
   return {
     name: spec.name,
     medium: spec.medium,
-    stageKinds: spec.stages,
-    stageDefaults,
-    defaultCamera: camera?.uri,
-    defaultLens: lens?.uri,
-    defaultChemistry: developer?.uri,
-    defaultScanner: scanner?.uri,
-    defaultLab: lab?.value?.lab,
+    steps,
     notes: "Created by guided setup.",
     createdAt: now,
     updatedAt: now,

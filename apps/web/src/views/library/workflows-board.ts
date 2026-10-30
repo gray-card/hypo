@@ -53,7 +53,7 @@ function stageIsComplete(stage: LibraryRecord, roll: LibraryRecord, store: Libra
   if (kind === "capture") return stage.value.filmRoll === roll.uri || rollRank >= 2;
   if (kind === "develop") return rollRank >= (ROLL_STATUS_RANK.get("developed") || 5);
   if (kind === "digitize") return rollRank >= (ROLL_STATUS_RANK.get("scanned") || 6);
-  if (kind === "output") return Boolean(stage.value.target || stage.value.photo);
+  if (kind === "output") return Boolean(stage.value.target);
   return false;
 }
 
