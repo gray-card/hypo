@@ -93,7 +93,9 @@ test("a stale gear edit surfaces the fixture PDS swap conflict", async ({ page, 
 
   await dialog.getByLabel(/Nickname/).fill("local stale edit");
   await dialog.getByRole("button", { name: "Save", exact: true }).click();
-  await expect(dialog.locator(".status.err")).toContainText("swapRecord does not match the current CID");
+  await expect(dialog.locator(".status.err")).toContainText(
+    "This record changed on another device. Open “Needs attention” from the menu",
+  );
   await expect(dialog).toBeVisible();
 
   await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
