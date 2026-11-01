@@ -179,6 +179,7 @@ function createRuntime(repo) {
     agent: null,
     operations,
     acknowledgements: new Map(),
+    persistenceFailures: new Map(),
     lastCreatedAt,
     outbox: null,
     mutationTail: Promise.resolve(),
@@ -301,7 +302,10 @@ export function enqueue(did, collection, record, options = {}) {
       id: metadata.id,
       createdAt: metadata.createdAt,
     }),
-  ).catch(() => runtime.operations.delete(operation.id));
+  ).catch((error) => {
+    runtime.operations.delete(operation.id);
+    runtime.persistenceFailures.set(operation.id, error);
+  });
   return compatibilityOperation(operation);
 }
 
@@ -342,7 +346,10 @@ export function enqueuePut(did, uriOrInput, record, swapRecord, options = {}) {
       id: metadata.id,
       createdAt: metadata.createdAt,
     }),
-  ).catch(() => runtime.operations.delete(operation.id));
+  ).catch((error) => {
+    runtime.operations.delete(operation.id);
+    runtime.persistenceFailures.set(operation.id, error);
+  });
   return compatibilityOperation(operation);
 }
 
@@ -370,7 +377,10 @@ export function enqueueDelete(did, uriOrInput, swapRecord, options = {}) {
   remember(runtime, operation);
   scheduleMutation(runtime, (outbox) =>
     outbox.enqueueDelete({ ...input, collection, rkey, id: metadata.id, createdAt: metadata.createdAt }),
-  ).catch(() => runtime.operations.delete(operation.id));
+  ).catch((error) => {
+    runtime.operations.delete(operation.id);
+    runtime.persistenceFailures.set(operation.id, error);
+  });
   return compatibilityOperation(operation);
 }
 
@@ -466,7 +476,21 @@ export async function flush(agent, did) {
 export async function flushOperation(agent, did, id) {
   const runtime = runtimeFor(did);
   const queued = runtime.operations.get(id);
-  let result = await flush(agent, did);
+  let result;
+  try {
+    result = await flush(agent, did);
+  } catch (error) {
+    runtime.persistenceFailures.delete(id);
+    throw error;
+  }
+  const persistenceFailure = runtime.persistenceFailures.get(id);
+  if (persistenceFailure) {
+    runtime.persistenceFailures.delete(id);
+    throw new Error(
+      "Your change could not be stored in this browser. Check available storage space, reload Hypo, and try again. This change was not saved.",
+      { cause: persistenceFailure },
+    );
+  }
   let operation = runtime.operations.get(id);
   // A scheduler flush may already have been running when this operation was
   // enqueued, or another tab may briefly own the Web Lock. In either case the

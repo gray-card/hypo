@@ -55,7 +55,11 @@ export async function flushRecordOperation(agent, did, operation) {
   try {
     settled = await outbox.flushOperation(agent, did, operation.id);
   } catch (error) {
-    store.replaceOperations(await outbox.list(did));
+    try {
+      store.replaceOperations(await outbox.list(did));
+    } catch {
+      // Preserve the write failure when the durable store is unavailable too.
+    }
     throw error;
   }
   if (settled.operation) {
