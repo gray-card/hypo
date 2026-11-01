@@ -1,6 +1,9 @@
 import { el, field } from "@hypo/ui";
 import type { ActivityServices, LibraryRecord, LibraryStore, LibraryValue } from "../library/maintenance-types.ts";
 import { renderActiveWorkflowsView } from "../library/workflows-view.ts";
+import { openScanSetupEditor } from "../library/scan-setup.ts";
+import { openPrintExposurePlanEditor } from "../library/print-exposure-plan.ts";
+import { openDevelopmentPlanEditor } from "../library/development-plan.ts";
 
 export const SESSION_KINDS = [
   "all",
@@ -26,7 +29,7 @@ export interface SessionViewServices extends ActivityServices {
   navigateSession(kind: SessionKind, rkey: string): unknown;
   editSession(kind: SessionKind, record: LibraryRecord, onDone: () => void): unknown;
   duplicateSession(kind: SessionKind, record: LibraryRecord, onDone: () => void): unknown;
-  createSession(kind: "capture" | "develop" | "digitize", onDone: () => void): unknown;
+  createSession(kind: "capture" | "develop" | "digitize" | "print", onDone: () => void): unknown;
   logFrames(record: LibraryRecord, onDone: () => void): unknown;
   startDevelopment(onDone: () => void): unknown;
   linkFrames(onDone: () => void): unknown;
@@ -55,9 +58,9 @@ const SUBJECT_FIELDS: Readonly<Record<SessionKind, readonly string[]>> = {
 const EQUIPMENT_FIELDS: Readonly<Record<SessionKind, readonly string[]>> = {
   capture: ["cameras", "filmBacks", "lenses", "filters"],
   develop: ["lab", "labService"],
-  digitize: ["scanner", "camera", "lens", "scanProfile", "labService"],
+  digitize: ["scanSetup", "scanner", "camera", "lens", "scanProfile", "labService"],
   edit: ["software", "preset", "recipe"],
-  print: ["enlarger", "enlargingLens", "printer", "paper", "paperInstance", "lab"],
+  print: ["exposurePlan", "enlarger", "enlargingLens", "printer", "paper", "paperInstance", "lab"],
   render: ["software", "recipe", "outputFormat", "colorSpace"],
   maintenance: ["kind"],
 };
@@ -263,7 +266,7 @@ function sessionCard(entry: SessionEntry, services: SessionViewServices, rerende
             )
           : null,
         el("button", { type: "button", class: "ghost small-btn", onclick: open }, "View"),
-        ["capture", "develop", "digitize"].includes(entry.kind)
+        ["capture", "develop", "digitize", "print"].includes(entry.kind)
           ? el(
               "button",
               {
@@ -337,7 +340,6 @@ export function renderSessionsView(
   services: SessionViewServices,
   initialScope: SessionScope = "all",
 ): void {
-  const allEntries = collectSessions(services.getStore());
   let scope: SessionScope = SESSION_KINDS.includes(initialScope) ? initialScope : "all";
   let shown = 25;
 
@@ -352,6 +354,9 @@ export function renderSessionsView(
   const reviewOnly = el("input", { type: "checkbox" });
   const scopes = el("div", { class: "library-scope-bar session-scopes", "aria-label": "Session type" });
   const activeWork = el("div", { class: "session-active-work" });
+  const scanSetups = el("div", {});
+  const printPlans = el("div", {});
+  const developmentPlans = el("div", {});
   const results = el("div", { class: "session-results", "aria-live": "polite" });
   const summary = el("p", { class: "library-result-summary muted small" });
 
@@ -362,6 +367,144 @@ export function renderSessionsView(
   };
 
   const render = () => {
+    const allEntries = collectSessions(services.getStore());
+    scanSetups.replaceChildren();
+    printPlans.replaceChildren();
+    developmentPlans.replaceChildren();
+    if (scope === "digitize") {
+      const setups = services.getStore().instance.scanSetup || [];
+      scanSetups.append(
+        el("div", { class: "card" }, [
+          el("div", { class: "row between wrap" }, [
+            el("div", {}, [
+              el("h3", {}, "Scanning setups"),
+              el(
+                "p",
+                { class: "muted small" },
+                "Reuse a camera, lens, holder, light and any other components; each session keeps its own snapshot.",
+              ),
+            ]),
+            el(
+              "button",
+              { type: "button", class: "ghost small-btn", onclick: () => openScanSetupEditor(services, render) },
+              "New setup",
+            ),
+          ]),
+          setups.length
+            ? el(
+                "ul",
+                { class: "gear-list" },
+                setups.map((setup) =>
+                  el("li", { class: "gear-row row between" }, [
+                    el("span", {}, `${setup.value.name} · ${(setup.value.components || []).length} components`),
+                    el(
+                      "button",
+                      {
+                        type: "button",
+                        class: "ghost small-btn",
+                        onclick: () => openScanSetupEditor(services, render, setup),
+                      },
+                      "Edit",
+                    ),
+                  ]),
+                ),
+              )
+            : el("p", { class: "muted small" }, "No saved setups. You can still log a one-off digitization."),
+        ]),
+      );
+    }
+    if (scope === "print") {
+      const plans = services.getStore().recordsByCollection?.["app.graycard.print.exposurePlan"] || [];
+      printPlans.append(
+        el("div", { class: "card" }, [
+          el("div", { class: "row between wrap" }, [
+            el("div", {}, [
+              el("h3", {}, "Print exposure plans"),
+              el(
+                "p",
+                { class: "muted small" },
+                "Plan base exposures, dodges, and burns against a photo, then reuse the sequence when printing.",
+              ),
+            ]),
+            el(
+              "button",
+              {
+                type: "button",
+                class: "ghost small-btn",
+                onclick: () => openPrintExposurePlanEditor(services, render),
+              },
+              "New plan",
+            ),
+          ]),
+          plans.length
+            ? el(
+                "ul",
+                { class: "gear-list" },
+                plans.map((plan) =>
+                  el("li", { class: "gear-row row between" }, [
+                    el("span", {}, `${plan.value.name} · ${(plan.value.exposures || []).length} exposures`),
+                    el(
+                      "button",
+                      {
+                        type: "button",
+                        class: "ghost small-btn",
+                        onclick: () => openPrintExposurePlanEditor(services, render, plan),
+                      },
+                      "Edit",
+                    ),
+                  ]),
+                ),
+              )
+            : el("p", { class: "muted small" }, "No exposure plans yet. Add one to map local print adjustments."),
+        ]),
+      );
+    }
+    if (scope === "develop") {
+      const plans = services.getStore().recordsByCollection?.["app.graycard.process.developmentPlan"] || [];
+      developmentPlans.append(
+        el("div", { class: "card" }, [
+          el("div", { class: "row between wrap" }, [
+            el("div", {}, [
+              el("h3", {}, "Film-processing sequences"),
+              el(
+                "p",
+                { class: "muted small" },
+                "Save an ordered bath sequence, then use it as the starting point for a development session.",
+              ),
+            ]),
+            el(
+              "button",
+              { type: "button", class: "ghost small-btn", onclick: () => openDevelopmentPlanEditor(services, render) },
+              "New sequence",
+            ),
+          ]),
+          plans.length
+            ? el(
+                "ul",
+                { class: "gear-list" },
+                plans.map((plan) =>
+                  el("li", { class: "gear-row row between" }, [
+                    el("span", {}, `${plan.value.name} · ${(plan.value.steps || []).length} stages`),
+                    el(
+                      "button",
+                      {
+                        type: "button",
+                        class: "ghost small-btn",
+                        onclick: () => openDevelopmentPlanEditor(services, render, plan),
+                      },
+                      "Edit",
+                    ),
+                  ]),
+                ),
+              )
+            : el(
+                "p",
+                { class: "muted small" },
+                "No processing sequences yet. You can still log a one-off development.",
+              ),
+        ]),
+      );
+    }
     activeWork.replaceChildren();
     renderActiveWorkflowsView(activeWork, services, render);
     scopes.replaceChildren(
@@ -458,6 +601,7 @@ export function renderSessionsView(
         "Log completed development",
       ),
       el("button", { type: "button", onclick: () => services.createSession("digitize", render) }, "Log digitization"),
+      el("button", { type: "button", onclick: () => services.createSession("print", render) }, "Log print"),
       el("button", { type: "button", onclick: () => services.linkFrames(render) }, "Link frames to photos"),
     ]),
   ]);
@@ -487,6 +631,9 @@ export function renderSessionsView(
       ]),
     ]),
     activeWork,
+    scanSetups,
+    developmentPlans,
+    printPlans,
     scopes,
     el("div", { class: "session-filter-panel" }, [
       field("Search", query),
@@ -577,7 +724,7 @@ export function renderSessionDetail(body: HTMLElement, entry: SessionEntry, serv
                 "Log frames",
               )
             : null,
-          ["capture", "develop", "digitize"].includes(entry.kind)
+          ["capture", "develop", "digitize", "print"].includes(entry.kind)
             ? el(
                 "button",
                 {

@@ -9,7 +9,7 @@ hide_title: true
 
 # Lexicon NSIDs
 
-This index covers 61 NSIDs: 57 record collections and 4 definition-only namespaces. Each page resolves refs, field shapes, constraints, and known values from the source JSON.
+This index covers 64 NSIDs: 60 record collections and 4 definition-only namespaces. Each page resolves refs, field shapes, constraints, and known values from the source JSON.
 
 > `knownValues` are open suggestions in the AT Protocol lexicon model. Clients should preserve unfamiliar string values.
 
@@ -74,6 +74,7 @@ This index covers 61 NSIDs: 57 record collections and 4 definition-only namespac
 | [`app.graycard.instance.meter`](./app.graycard.instance.meter.md)                     | `record` | 1           | An owned metering instrument: a handheld meter referencing its catalog.meterType, or a phone acting as a meter (kind 'phone-camera', identified by deviceModel). Instance conventions follow the other instance.* records. Calibration state lives in app.graycard.meter.calibration records that reference this instance, so recalibration never rewrites gear identity. |
 | [`app.graycard.instance.printer`](./app.graycard.instance.printer.md)                 | `record` | 1           | A specific printer the user owns/uses. References catalog.printerType.                                                                                                                                                                                                                                                                                                    |
 | [`app.graycard.instance.scanner`](./app.graycard.instance.scanner.md)                 | `record` | 1           | A specific scanner or copy-stand rig. References app.graycard.catalog.scannerType.                                                                                                                                                                                                                                                                                        |
+| [`app.graycard.instance.scanSetup`](./app.graycard.instance.scanSetup.md)             | `record` | 5           | A reusable modular setup for photographing or otherwise digitizing physical originals. Components and their relationships are open-ended rather than tied to one camera-scanning method.                                                                                                                                                                                  |
 | [`app.graycard.instance.storageLocation`](./app.graycard.instance.storageLocation.md) | `record` | 1           | A place the user stores film, prints, or gear (fridge, freezer, dry cabinet, shelf).                                                                                                                                                                                                                                                                                      |
 
 ## Metering
@@ -91,10 +92,17 @@ This index covers 61 NSIDs: 57 record collections and 4 definition-only namespac
 | [`app.graycard.photo.capture`](./app.graycard.photo.capture.md)   | `record` | 1           | Per-photo graycard capture metadata (gear, film, frame, location) layered onto a grain photo. |
 | [`app.graycard.photo.workflow`](./app.graycard.photo.workflow.md) | `record` | 1           | Links a photo to the workflow run that produced it.                                           |
 
+## Print
+
+| NSID                                                                      | Kind     | Definitions | Summary                                                                                                                                                                                                        |
+| ------------------------------------------------------------------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`app.graycard.print.exposurePlan`](./app.graycard.print.exposurePlan.md) | `record` | 6           | Reusable darkroom print exposure plan: ordered base exposures, overlapping dodges, additional burns, split-grade filtration, and image-relative selections. This is a plan, not a record of a completed print. |
+
 ## Processes
 
 | NSID                                                                                      | Kind     | Definitions | Summary                                                                                                                                                                                                                                                                                             |
 | ----------------------------------------------------------------------------------------- | -------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`app.graycard.process.developmentPlan`](./app.graycard.process.developmentPlan.md)       | `record` | 3           | Reusable film-processing sequence with ordered baths, temperatures, times, agitation, and chemistry. Manufacturer devRecipe records remain source-backed recommendations for individual developer stages.                                                                                           |
 | [`app.graycard.process.developSession`](./app.graycard.process.developSession.md)         | `record` | 5           | One development event. References photographic chemistry and optionally film roll instances. steps captures the ordered bath sequence for multi-step chemistry.                                                                                                                                     |
 | [`app.graycard.process.digitizeSession`](./app.graycard.process.digitizeSession.md)       | `record` | 1           | One digitization event (scan, copy-stand capture, lab scan, file import).                                                                                                                                                                                                                           |
 | [`app.graycard.process.editSession`](./app.graycard.process.editSession.md)               | `record` | 1           | One editing event — software and adjustments applied to a photo.                                                                                                                                                                                                                                    |

@@ -8,6 +8,7 @@ import {
 } from "./development-step-editor.ts";
 import { createInstanceSelect } from "./maintenance-selectors.ts";
 import type { ActivityServices, LibraryRecord, LibraryValue } from "./maintenance-types.ts";
+import { developmentPlanSnapshot, type DevelopmentPlanValue } from "@hypo/domain";
 
 const FILM_ROLL_COLLECTION = "app.graycard.instance.filmRoll";
 const DEVELOPED_OR_LATER = new Set(["developed", "scanned", "archived"]);
@@ -417,9 +418,16 @@ export function openManualDevelopment(
   options: ManualDevelopmentOptions = {},
 ) {
   const existing = options.existing || null;
-  const value = existing?.value || options.initial || {};
+  const value =
+    existing?.value || options.initial || services.workflowDefaults?.("develop", options.selectedRolls || []) || {};
   const rolls = services.getStore().instance.filmRoll || [];
   const chemistry = services.getStore().instance.chemistry || [];
+  const processingPlans = services.getStore().recordsByCollection?.["app.graycard.process.developmentPlan"] || [];
+  const planSelect = el("select", { "data-key": "developmentPlan" }, [
+    el("option", { value: "" }, "No saved sequence"),
+    ...processingPlans.map((plan) => el("option", { value: plan.uri }, String(plan.value.name || plan.uri))),
+  ]);
+  planSelect.value = String(value.developmentPlan || "");
   const processSelect = el(
     "select",
     { "data-key": "process" },
@@ -505,7 +513,16 @@ export function openManualDevelopment(
   rollSearch.addEventListener("input", filterRolls);
   rollScope.addEventListener("change", filterRolls);
   filterRolls();
-  const stageEditor = createDevelopmentStepEditor(services, Array.isArray(value.steps) ? value.steps : []);
+  let stageEditor = createDevelopmentStepEditor(services, Array.isArray(value.steps) ? value.steps : []);
+  const stagesNode = el("div", {}, [stageEditor.node]);
+  planSelect.addEventListener("change", () => {
+    const plan = processingPlans.find((candidate) => candidate.uri === planSelect.value)?.value;
+    if (!plan) return;
+    processSelect.value = String(plan.process || "bw");
+    tankTypeSelect.value = String(plan.tankType || "tank");
+    stageEditor = createDevelopmentStepEditor(services, Array.isArray(plan.steps) ? structuredClone(plan.steps) : []);
+    stagesNode.replaceChildren(stageEditor.node);
+  });
 
   return openModal(
     existing ? "Edit development" : options.initial ? "Repeat development setup" : "Log completed development",
@@ -528,12 +545,18 @@ export function openManualDevelopment(
       el("div", { class: "library-filter-bar" }, [rollSearch, field("Show", rollScope)]),
       rollList.node,
       field("Process", processSelect),
+      field("Film-processing sequence", planSelect),
+      el(
+        "p",
+        { class: "muted small" },
+        "Choosing a saved sequence replaces the stages below; actual times and observations remain editable.",
+      ),
       field("Tank or processor", tankTypeSelect),
       field("Push / pull", pushPullSelect),
       field("Development location", locationSelect),
       timing.node,
       el("h3", { class: "modal-sub" }, "Ordered process stages"),
-      stageEditor.node,
+      stagesNode,
       field("Notes", notesInput),
     ],
     async () => {
@@ -565,6 +588,12 @@ export function openManualDevelopment(
         filmRolls: rollUris,
         process: processSelect.value,
         steps,
+        developmentPlan: planSelect.value || undefined,
+        developmentPlanSnapshot: planSelect.value
+          ? developmentPlanSnapshot(
+              processingPlans.find((candidate) => candidate.uri === planSelect.value)!.value as DevelopmentPlanValue,
+            )
+          : value.developmentPlanSnapshot || undefined,
         tankType: tankTypeSelect.value,
         finishedAt,
         notes: notesInput.value.trim() || undefined,

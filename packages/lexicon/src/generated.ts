@@ -1024,6 +1024,47 @@ export type AppGraycardInstanceScannerMain = {
   $type?: "app.graycard.instance.scanner";
 };
 
+export type AppGraycardInstanceScanSetupSetting = {
+  "key": string;
+  "value": string;
+  "unit"?: string;
+};
+
+export type AppGraycardInstanceScanSetupComponent = {
+  "id": string;
+  "role": string;
+  "ref"?: string;
+  "label"?: string;
+  "settings"?: Array<AppGraycardInstanceScanSetupSetting>;
+  "notes"?: string;
+};
+
+export type AppGraycardInstanceScanSetupConnection = {
+  "from": string;
+  "to": string;
+  "relation": string;
+  "notes"?: string;
+};
+
+export type AppGraycardInstanceScanSetupSnapshot = {
+  "name": string;
+  "components": Array<AppGraycardInstanceScanSetupComponent>;
+  "connections"?: Array<AppGraycardInstanceScanSetupConnection>;
+  "settings"?: Array<AppGraycardInstanceScanSetupSetting>;
+};
+
+export type AppGraycardInstanceScanSetupMain = {
+  "name": string;
+  "method"?: AppGraycardWorkflowDefsDigitizeMethod;
+  "components": Array<AppGraycardInstanceScanSetupComponent>;
+  "connections"?: Array<AppGraycardInstanceScanSetupConnection>;
+  "settings"?: Array<AppGraycardInstanceScanSetupSetting>;
+  "notes"?: string;
+  "createdAt": string;
+  "updatedAt"?: string;
+  $type?: "app.graycard.instance.scanSetup";
+};
+
 export type AppGraycardInstanceStorageLocationMain = {
   "name": string;
   "storage"?: AppGraycardDefsStorage;
@@ -1164,6 +1205,104 @@ export type AppGraycardPhotoWorkflowMain = {
   $type?: "app.graycard.photo.workflow";
 };
 
+export type AppGraycardPrintExposurePlanPoint = {
+  "x": number;
+  "y": number;
+};
+
+export type AppGraycardPrintExposurePlanSelection = {
+  "kind": KnownValue<"brush" | "polygon" | "ellipse" | "linear-gradient">;
+  "combine"?: KnownValue<"add" | "subtract" | "intersect">;
+  "points": Array<AppGraycardPrintExposurePlanPoint>;
+  "width"?: number;
+  "feather"?: number;
+  "opacity"?: number;
+  "invert"?: boolean;
+  "sourceRegion"?: string;
+};
+
+export type AppGraycardPrintExposurePlanExposure = {
+  "id": string;
+  "label"?: string;
+  "targetNode"?: string;
+  "targetLabel"?: string;
+  "action": KnownValue<"base" | "dodge" | "burn">;
+  "durationMs": number;
+  "grade"?: string;
+  "filtration"?: AppGraycardProcessPrintSessionFiltration;
+  "baseId"?: string;
+  "startOffsetMs"?: number;
+  "selections"?: Array<AppGraycardPrintExposurePlanSelection>;
+  "toolNote"?: string;
+  "notes"?: string;
+};
+
+export type AppGraycardPrintExposurePlanTestStrip = {
+  "grade"?: string;
+  "baseDurationMs": number;
+  "incrementMs"?: number;
+  "strips"?: number;
+  "chosenDurationMs"?: number;
+  "notes"?: string;
+};
+
+export type AppGraycardPrintExposurePlanSnapshot = {
+  "name": string;
+  "referencePhoto"?: string;
+  "imageWidth"?: number;
+  "imageHeight"?: number;
+  "exposures": Array<AppGraycardPrintExposurePlanExposure>;
+  "testStrips"?: Array<AppGraycardPrintExposurePlanTestStrip>;
+  "notes"?: string;
+};
+
+export type AppGraycardPrintExposurePlanMain = {
+  "name": string;
+  "referencePhoto"?: string;
+  "imageWidth"?: number;
+  "imageHeight"?: number;
+  "exposures": Array<AppGraycardPrintExposurePlanExposure>;
+  "testStrips"?: Array<AppGraycardPrintExposurePlanTestStrip>;
+  "notes"?: string;
+  "createdAt": string;
+  "updatedAt"?: string;
+  $type?: "app.graycard.print.exposurePlan";
+};
+
+export type AppGraycardProcessDevelopmentPlanStep = {
+  "name"?: string;
+  "kind"?: AppGraycardProcessDevelopSessionStepKind;
+  "roles": Array<AppGraycardDefsChemistryRole>;
+  "recipe"?: string;
+  "chemistries"?: Array<string>;
+  "dilution"?: string;
+  "temperatureSetpoint"?: AppGraycardDefsMeasure;
+  "publishedTimeSeconds"?: number;
+  "agitationMethod"?: AppGraycardProcessDevelopSessionAgitationMethod;
+  "agitationScheme"?: AppGraycardCatalogDevRecipeAgitation;
+  "volumeMl"?: number;
+  "notes"?: string;
+};
+
+export type AppGraycardProcessDevelopmentPlanSnapshot = {
+  "name": string;
+  "process": AppGraycardDefsFilmProcess;
+  "tankType"?: AppGraycardDefsTankType;
+  "steps": Array<AppGraycardProcessDevelopmentPlanStep>;
+  "notes"?: string;
+};
+
+export type AppGraycardProcessDevelopmentPlanMain = {
+  "name": string;
+  "process": AppGraycardDefsFilmProcess;
+  "tankType"?: AppGraycardDefsTankType;
+  "steps": Array<AppGraycardProcessDevelopmentPlanStep>;
+  "notes"?: string;
+  "createdAt": string;
+  "updatedAt"?: string;
+  $type?: "app.graycard.process.developmentPlan";
+};
+
 export type AppGraycardProcessDevelopSessionStep = {
   "name"?: string;
   "recipe"?: string;
@@ -1196,6 +1335,8 @@ export type AppGraycardProcessDevelopSessionMain = {
   "filmRolls"?: Array<string>;
   "process": AppGraycardDefsFilmProcess;
   "steps"?: Array<AppGraycardProcessDevelopSessionStep>;
+  "developmentPlan"?: string;
+  "developmentPlanSnapshot"?: AppGraycardProcessDevelopmentPlanSnapshot;
   "tankType"?: AppGraycardDefsTankType;
   "provenance"?: AppGraycardDefsProvenance;
   "fieldProvenance"?: Array<AppGraycardDefsFieldProvenance>;
@@ -1216,6 +1357,8 @@ export type AppGraycardProcessDigitizeSessionMain = {
   "filmRolls"?: Array<string>;
   "photos"?: Array<string>;
   "scanner"?: string;
+  "scanSetup"?: string;
+  "setupSnapshot"?: AppGraycardInstanceScanSetupSnapshot;
   "camera"?: string;
   "lens"?: string;
   "scanProfile"?: string;
@@ -1335,6 +1478,8 @@ export type AppGraycardProcessPrintSessionMain = {
   "filtration"?: AppGraycardProcessPrintSessionFiltration;
   "testStrip"?: string;
   "dodgeBurn"?: string;
+  "exposurePlan"?: string;
+  "exposurePlanSnapshot"?: AppGraycardPrintExposurePlanSnapshot;
   "wetProcess"?: AppGraycardProcessPrintSessionWetProcess;
   "altProcess"?: AppGraycardProcessPrintSessionAltProcess;
   "digital"?: AppGraycardProcessPrintSessionDigital;
@@ -1398,7 +1543,7 @@ export type AppGraycardRuleBatchAction = {
 
 export type AppGraycardRuleBatchMain = {
   "name": string;
-  "scope"?: KnownValue<"gallery" | "selection" | "account">;
+  "scope"?: string;
   "when": AppGraycardRuleBatchComparison | AppGraycardRuleBatchBooleanGroup;
   "actions": Array<AppGraycardRuleBatchAction>;
   "notes"?: string;
@@ -1577,6 +1722,9 @@ export type AppGraycardWorkflowDefsProcessDefaults = {
   "filmRoll"?: string;
   "chemistry"?: string;
   "scanner"?: string;
+  "scanSetup"?: string;
+  "developmentPlan"?: string;
+  "exposurePlan"?: string;
   "scanProfile"?: string;
   "lab"?: string;
   "printer"?: string;
@@ -1956,11 +2104,14 @@ export interface RecordTypeMap {
   "app.graycard.instance.meter": AppGraycardInstanceMeterMain;
   "app.graycard.instance.printer": AppGraycardInstancePrinterMain;
   "app.graycard.instance.scanner": AppGraycardInstanceScannerMain;
+  "app.graycard.instance.scanSetup": AppGraycardInstanceScanSetupMain;
   "app.graycard.instance.storageLocation": AppGraycardInstanceStorageLocationMain;
   "app.graycard.meter.calibration": AppGraycardMeterCalibrationMain;
   "app.graycard.meter.reading": AppGraycardMeterReadingMain;
   "app.graycard.photo.capture": AppGraycardPhotoCaptureMain;
   "app.graycard.photo.workflow": AppGraycardPhotoWorkflowMain;
+  "app.graycard.print.exposurePlan": AppGraycardPrintExposurePlanMain;
+  "app.graycard.process.developmentPlan": AppGraycardProcessDevelopmentPlanMain;
   "app.graycard.process.developSession": AppGraycardProcessDevelopSessionMain;
   "app.graycard.process.digitizeSession": AppGraycardProcessDigitizeSessionMain;
   "app.graycard.process.editSession": AppGraycardProcessEditSessionMain;
@@ -2546,6 +2697,22 @@ export const KNOWN_VALUES = {
     "factory",
     "manufacturer-spec"
   ],
+  "app.graycard.print.exposurePlan/defs/selection/properties/kind": [
+    "brush",
+    "polygon",
+    "ellipse",
+    "linear-gradient"
+  ],
+  "app.graycard.print.exposurePlan/defs/selection/properties/combine": [
+    "add",
+    "subtract",
+    "intersect"
+  ],
+  "app.graycard.print.exposurePlan/defs/exposure/properties/action": [
+    "base",
+    "dodge",
+    "burn"
+  ],
   "app.graycard.process.developSession/defs/stepKind": [
     "chemical-bath",
     "water-bath",
@@ -2674,11 +2841,6 @@ export const KNOWN_VALUES = {
     "fill",
     "overwrite",
     "ifEmpty"
-  ],
-  "app.graycard.rule.batch/defs/main/record/properties/scope": [
-    "gallery",
-    "selection",
-    "account"
   ],
   "app.graycard.scene.defs/defs/regionKind": [
     "whole",
@@ -7945,6 +8107,196 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
       }
     }
   },
+  "app.graycard.instance.scanSetup": {
+    "lexicon": 1,
+    "id": "app.graycard.instance.scanSetup",
+    "defs": {
+      "setting": {
+        "type": "object",
+        "description": "An open-ended, named setting. A unit is recorded separately so values remain understandable.",
+        "required": [
+          "key",
+          "value"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      },
+      "component": {
+        "type": "object",
+        "description": "One role in an assembled digitization setup. ref may identify any owned equipment, including an existing camera, lens, or scanner; label covers unlisted or borrowed equipment. Roles are open-ended.",
+        "required": [
+          "id",
+          "role"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "ref": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "settings": {
+            "type": "array",
+            "maxLength": 32,
+            "items": {
+              "type": "ref",
+              "ref": "#setting"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "connection": {
+        "type": "object",
+        "description": "A directed physical or signal relationship between two component IDs, such as mounted-on, attached-to, illuminates, or controls.",
+        "required": [
+          "from",
+          "to",
+          "relation"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "to": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "relation": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 512
+          }
+        }
+      },
+      "snapshot": {
+        "type": "object",
+        "description": "The assembled configuration actually used, copied into a digitization session so later edits to the reusable setup do not rewrite history.",
+        "required": [
+          "name",
+          "components"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "components": {
+            "type": "array",
+            "maxLength": 64,
+            "items": {
+              "type": "ref",
+              "ref": "#component"
+            }
+          },
+          "connections": {
+            "type": "array",
+            "maxLength": 128,
+            "items": {
+              "type": "ref",
+              "ref": "#connection"
+            }
+          },
+          "settings": {
+            "type": "array",
+            "maxLength": 64,
+            "items": {
+              "type": "ref",
+              "ref": "#setting"
+            }
+          }
+        }
+      },
+      "main": {
+        "type": "record",
+        "description": "A reusable modular setup for photographing or otherwise digitizing physical originals. Components and their relationships are open-ended rather than tied to one camera-scanning method.",
+        "key": "tid",
+        "record": {
+          "type": "object",
+          "required": [
+            "name",
+            "components",
+            "createdAt"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "method": {
+              "type": "ref",
+              "ref": "app.graycard.workflow.defs#digitizeMethod"
+            },
+            "components": {
+              "type": "array",
+              "maxLength": 64,
+              "items": {
+                "type": "ref",
+                "ref": "#component"
+              }
+            },
+            "connections": {
+              "type": "array",
+              "maxLength": 128,
+              "items": {
+                "type": "ref",
+                "ref": "#connection"
+              }
+            },
+            "settings": {
+              "type": "array",
+              "maxLength": 64,
+              "items": {
+                "type": "ref",
+                "ref": "#setting"
+              }
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "datetime"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "datetime"
+            }
+          }
+        }
+      }
+    }
+  },
   "app.graycard.instance.storageLocation": {
     "lexicon": 1,
     "id": "app.graycard.instance.storageLocation",
@@ -8634,6 +8986,467 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
       }
     }
   },
+  "app.graycard.print.exposurePlan": {
+    "lexicon": 1,
+    "id": "app.graycard.print.exposurePlan",
+    "defs": {
+      "point": {
+        "type": "object",
+        "required": [
+          "x",
+          "y"
+        ],
+        "properties": {
+          "x": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          }
+        }
+      },
+      "selection": {
+        "type": "object",
+        "description": "One image-relative selection. Coordinates are ten-thousandths of the uncropped source image, independent of preview size.",
+        "required": [
+          "kind",
+          "points"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "knownValues": [
+              "brush",
+              "polygon",
+              "ellipse",
+              "linear-gradient"
+            ]
+          },
+          "combine": {
+            "type": "string",
+            "knownValues": [
+              "add",
+              "subtract",
+              "intersect"
+            ]
+          },
+          "points": {
+            "type": "array",
+            "minLength": 1,
+            "maxLength": 256,
+            "items": {
+              "type": "ref",
+              "ref": "#point"
+            }
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5000,
+            "description": "Brush diameter in ten-thousandths of image width."
+          },
+          "feather": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000,
+            "description": "Edge softness in ten-thousandths."
+          },
+          "opacity": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000,
+            "description": "Selection strength; 10000 is fully selected."
+          },
+          "invert": {
+            "type": "boolean"
+          },
+          "sourceRegion": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional app.graycard.scene.region from which this selection was copied. Geometry remains snapshotted here."
+          }
+        }
+      },
+      "exposure": {
+        "type": "object",
+        "description": "One timed exposure instruction. A dodge overlaps the referenced base exposure; a burn is an additional exposure. Array order is execution order among base and burn steps.",
+        "required": [
+          "id",
+          "action",
+          "durationMs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "targetNode": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Optional semantic app.graycard.scene.node targeted by this dodge or burn."
+          },
+          "targetLabel": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Human-readable target when no scene node is linked."
+          },
+          "action": {
+            "type": "string",
+            "knownValues": [
+              "base",
+              "dodge",
+              "burn"
+            ]
+          },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3600000
+          },
+          "grade": {
+            "type": "string",
+            "maxLength": 32,
+            "description": "Contrast grade for this exposure, allowing split-grade printing."
+          },
+          "filtration": {
+            "type": "ref",
+            "ref": "app.graycard.process.printSession#filtration"
+          },
+          "baseId": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Base exposure during which a dodge occurs."
+          },
+          "startOffsetMs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3600000,
+            "description": "When to start the dodge within its base exposure."
+          },
+          "selections": {
+            "type": "array",
+            "maxLength": 16,
+            "items": {
+              "type": "ref",
+              "ref": "#selection"
+            }
+          },
+          "toolNote": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Physical card, wand, motion, or other masking instruction."
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 512
+          }
+        }
+      },
+      "testStrip": {
+        "type": "object",
+        "required": [
+          "baseDurationMs"
+        ],
+        "properties": {
+          "grade": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "baseDurationMs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3600000
+          },
+          "incrementMs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3600000
+          },
+          "strips": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 64
+          },
+          "chosenDurationMs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3600000
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 512
+          }
+        }
+      },
+      "snapshot": {
+        "type": "object",
+        "required": [
+          "name",
+          "exposures"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "referencePhoto": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "imageWidth": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "imageHeight": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "exposures": {
+            "type": "array",
+            "maxLength": 48,
+            "items": {
+              "type": "ref",
+              "ref": "#exposure"
+            }
+          },
+          "testStrips": {
+            "type": "array",
+            "maxLength": 24,
+            "items": {
+              "type": "ref",
+              "ref": "#testStrip"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "main": {
+        "type": "record",
+        "description": "Reusable darkroom print exposure plan: ordered base exposures, overlapping dodges, additional burns, split-grade filtration, and image-relative selections. This is a plan, not a record of a completed print.",
+        "key": "tid",
+        "record": {
+          "type": "object",
+          "required": [
+            "name",
+            "exposures",
+            "createdAt"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "referencePhoto": {
+              "type": "string",
+              "format": "at-uri",
+              "description": "Existing photo used as the visual reference for selections."
+            },
+            "imageWidth": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "imageHeight": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "exposures": {
+              "type": "array",
+              "maxLength": 48,
+              "items": {
+                "type": "ref",
+                "ref": "#exposure"
+              }
+            },
+            "testStrips": {
+              "type": "array",
+              "maxLength": 24,
+              "items": {
+                "type": "ref",
+                "ref": "#testStrip"
+              }
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "datetime"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "datetime"
+            }
+          }
+        }
+      }
+    }
+  },
+  "app.graycard.process.developmentPlan": {
+    "lexicon": 1,
+    "id": "app.graycard.process.developmentPlan",
+    "defs": {
+      "step": {
+        "type": "object",
+        "description": "A planned bath or physical operation; actual observations belong in a development session.",
+        "required": [
+          "roles"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "kind": {
+            "type": "ref",
+            "ref": "app.graycard.process.developSession#stepKind"
+          },
+          "roles": {
+            "type": "array",
+            "maxLength": 16,
+            "items": {
+              "type": "ref",
+              "ref": "app.graycard.defs#chemistryRole"
+            }
+          },
+          "recipe": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "chemistries": {
+            "type": "array",
+            "maxLength": 16,
+            "items": {
+              "type": "string",
+              "format": "at-uri"
+            }
+          },
+          "dilution": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "temperatureSetpoint": {
+            "type": "ref",
+            "ref": "app.graycard.defs#measure"
+          },
+          "publishedTimeSeconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 604800
+          },
+          "agitationMethod": {
+            "type": "ref",
+            "ref": "app.graycard.process.developSession#agitationMethod"
+          },
+          "agitationScheme": {
+            "type": "ref",
+            "ref": "app.graycard.catalog.devRecipe#agitation"
+          },
+          "volumeMl": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "snapshot": {
+        "type": "object",
+        "required": [
+          "name",
+          "process",
+          "steps"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "process": {
+            "type": "ref",
+            "ref": "app.graycard.defs#filmProcess"
+          },
+          "tankType": {
+            "type": "ref",
+            "ref": "app.graycard.defs#tankType"
+          },
+          "steps": {
+            "type": "array",
+            "maxLength": 64,
+            "items": {
+              "type": "ref",
+              "ref": "#step"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "main": {
+        "type": "record",
+        "description": "Reusable film-processing sequence with ordered baths, temperatures, times, agitation, and chemistry. Manufacturer devRecipe records remain source-backed recommendations for individual developer stages.",
+        "key": "tid",
+        "record": {
+          "type": "object",
+          "required": [
+            "name",
+            "process",
+            "steps",
+            "createdAt"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "process": {
+              "type": "ref",
+              "ref": "app.graycard.defs#filmProcess"
+            },
+            "tankType": {
+              "type": "ref",
+              "ref": "app.graycard.defs#tankType"
+            },
+            "steps": {
+              "type": "array",
+              "maxLength": 64,
+              "items": {
+                "type": "ref",
+                "ref": "#step"
+              }
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "datetime"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "datetime"
+            }
+          }
+        }
+      }
+    }
+  },
   "app.graycard.process.developSession": {
     "lexicon": 1,
     "id": "app.graycard.process.developSession",
@@ -8816,6 +9629,16 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
                 "ref": "#step"
               }
             },
+            "developmentPlan": {
+              "type": "string",
+              "format": "at-uri",
+              "description": "Reusable app.graycard.process.developmentPlan selected for this session."
+            },
+            "developmentPlanSnapshot": {
+              "type": "ref",
+              "ref": "app.graycard.process.developmentPlan#snapshot",
+              "description": "The planned sequence at the time of development, independent of later plan edits. Actual observations remain in steps."
+            },
             "tankType": {
               "type": "ref",
               "ref": "app.graycard.defs#tankType"
@@ -8920,6 +9743,16 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "type": "string",
               "format": "at-uri",
               "description": "app.graycard.instance.scanner"
+            },
+            "scanSetup": {
+              "type": "string",
+              "format": "at-uri",
+              "description": "Reusable app.graycard.instance.scanSetup chosen for this session. Existing scanner, camera, and lens fields describe the actual primary devices and remain valid independently of a setup."
+            },
+            "setupSnapshot": {
+              "type": "ref",
+              "ref": "app.graycard.instance.scanSetup#snapshot",
+              "description": "The components, connections, and settings actually used, independent of later changes to scanSetup."
             },
             "camera": {
               "type": "string",
@@ -9469,6 +10302,16 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
               "maxLength": 1000,
               "description": "Local dodge/burn notes."
             },
+            "exposurePlan": {
+              "type": "string",
+              "format": "at-uri",
+              "description": "Reusable app.graycard.print.exposurePlan used for this print."
+            },
+            "exposurePlanSnapshot": {
+              "type": "ref",
+              "ref": "app.graycard.print.exposurePlan#snapshot",
+              "description": "The exposure sequence actually used, independent of later edits to the plan."
+            },
             "wetProcess": {
               "type": "ref",
               "ref": "#wetProcess"
@@ -9794,11 +10637,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             },
             "scope": {
               "type": "string",
-              "knownValues": [
-                "gallery",
-                "selection",
-                "account"
-              ]
+              "description": "Target surface. Gallery, selection, account, development, scanning, printing, and workflow-stage scopes are supported; new scopes can be added without rewriting saved rules."
             },
             "when": {
               "type": "union",
@@ -10696,6 +11535,18 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
             "format": "at-uri"
           },
           "scanner": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "scanSetup": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "developmentPlan": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "exposurePlan": {
             "type": "string",
             "format": "at-uri"
           },

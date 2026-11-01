@@ -79,7 +79,10 @@
         "required": ["name", "when", "actions", "createdAt"],
         "properties": {
           "name": { "type": "string", "maxLength": 128 },
-          "scope": { "type": "string", "knownValues": ["gallery", "selection", "account"] },
+          "scope": {
+            "type": "string",
+            "description": "Target surface. Gallery, selection, account, development, scanning, printing, and workflow-stage scopes are supported; new scopes can be added without rewriting saved rules."
+          },
           "when": { "type": "union", "refs": ["#comparison", "#booleanGroup"] },
           "actions": { "type": "array", "items": { "type": "ref", "ref": "#action" } },
           "notes": { "type": "string", "maxLength": 2000 },

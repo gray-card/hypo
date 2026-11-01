@@ -8,6 +8,7 @@ export interface BatchValueRecord<Value extends object = Record<string, unknown>
 export interface BatchExifValue extends Record<string, unknown> {}
 
 export interface BatchContext {
+  record?: BatchValueRecord | null;
   gallery?: BatchValueRecord<{ title?: string; description?: string; [key: string]: unknown }> | null;
   photo?: BatchValueRecord<{ alt?: string; [key: string]: unknown }> | null;
   exif?: BatchValueRecord<BatchExifValue> | null;
@@ -93,6 +94,7 @@ function nestedValue(value: object | undefined, path: readonly string[]): unknow
 export function readField<Store>(context: BatchContext, path: string, adapters: BatchDomainAdapters<Store>): unknown {
   const [root, ...rest] = path.split(".");
   if (root === "gallery") return nestedValue(context.gallery?.value, rest) ?? "";
+  if (root === "record") return nestedValue(context.record?.value, rest) ?? "";
   if (root === "photo") return nestedValue(context.photo?.value, rest) ?? "";
   if (root === "exif") {
     const key = rest[0];
@@ -231,7 +233,11 @@ export function previewPhotoChanges<Store>(
         }
       }
       exifForm = nextForm;
+      continue;
     }
+    throw new Error(
+      `“${action.op}” is not supported for gallery batch edits. Choose a gallery action or change the rule scope.`,
+    );
   }
   return { changes, alt, exifForm, captureRefs };
 }
@@ -259,7 +265,7 @@ export function previewBatch<Store extends BatchLookupStore>(
   store: Store,
   rule: BatchRule,
   adapters: BatchDomainAdapters<Store>,
-): { matched: MatchedPhotoPreview[]; galleryDescriptionChange: null } {
+): { matched: MatchedPhotoPreview[]; galleryDescriptionChange: { from: string; to: string } | null } {
   const matched: MatchedPhotoPreview[] = [];
   for (let index = 0; index < detail.photos.length; index += 1) {
     const photo = detail.photos[index];
@@ -276,7 +282,23 @@ export function previewBatch<Store extends BatchLookupStore>(
     const preview = previewPhotoChanges(context, rule.actions, store, adapters);
     if (preview.changes.length) matched.push({ index: index + 1, photoUri, ...preview });
   }
-  return { matched, galleryDescriptionChange: null };
+  const descriptions = [
+    ...new Set(
+      matched.flatMap((item) =>
+        item.changes.filter((change) => change.kind === "gallery.description").map((change) => String(change.to ?? "")),
+      ),
+    ),
+  ];
+  if (descriptions.length > 1)
+    throw new Error(
+      "The gallery description action produces different values for different photos. Remove photo-specific tokens or narrow the condition.",
+    );
+  return {
+    matched,
+    galleryDescriptionChange: descriptions.length
+      ? { from: detail.gallery.value?.description || "", to: descriptions[0] }
+      : null,
+  };
 }
 
 export const RULE_PRESETS: BatchRule[] = [

@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
 
 import { Panproto } from "@panproto/core";
+import { assertPanprotoSidecarFresh } from "./panproto-sidecar-freshness.mjs";
 
 const PANPROTO_VERSION = "0.70.1";
 const root = resolve(import.meta.dirname, "..");
@@ -89,6 +90,8 @@ if (validation.issues.length !== 0) {
 }
 
 const dataStatus = run(["status", "--data", "fixtures/records"]);
+const checkedInIndex = JSON.parse(readFileSync(join(root, ".panproto", "index.json"), "utf8"));
+assertPanprotoSidecarFresh(dataStatus, checkedInIndex);
 if (!dataStatus.includes(`${fixtureCount} data set(s) tracked at HEAD`)) {
   throw new Error(`the checked-in sidecar does not track the complete corpus:\n${dataStatus}`);
 }

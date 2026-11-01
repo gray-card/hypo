@@ -25,10 +25,12 @@ export const WRITTEN_COLLECTIONS = [
   NS.catalog.devRecipe,
   // darkroom / scanning / maintenance sessions
   NS.process.developSession,
+  NS.process.developmentPlan,
   NS.process.digitizeSession,
   NS.process.editSession,
   NS.process.maintenanceSession,
   NS.process.printSession,
+  NS.print.exposurePlan,
   NS.process.renderSession,
   // shoots
   NS.session.capture,

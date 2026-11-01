@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { readField, isEmpty, evaluateCondition, renderTemplate } from "../src/batch.js";
+import { readField, isEmpty, evaluateCondition, renderTemplate, previewBatch } from "../src/batch.js";
 
 const ctx = {
   gallery: { value: { title: "Sunset", description: "" } },
@@ -59,5 +59,28 @@ describe("evaluateCondition", () => {
 describe("renderTemplate", () => {
   it("interpolates {{field}} placeholders", () => {
     expect(renderTemplate("{{gallery.title}} #{{index}}", ctx)).toBe("Sunset #3");
+  });
+});
+
+describe("gallery batch actions", () => {
+  const detail = {
+    gallery: { uri: "gallery", value: { title: "Sunset", description: "" } },
+    photos: [{ photo: { uri: "photo1", value: { alt: "" } } }, { photo: { uri: "photo2", value: { alt: "" } } }],
+  };
+  const store = { photoCaptureByPhoto: new Map(), galleryDefaultsByGallery: new Map() };
+  it("previews one gallery-description mutation", () => {
+    const result = previewBatch(detail, store, {
+      when: { field: "gallery.description", op: "empty" },
+      actions: [{ op: "setGalleryDescription", value: "{{gallery.title}}", mode: "ifEmpty" }],
+    });
+    expect(result.galleryDescriptionChange).toEqual({ from: "", to: "Sunset" });
+  });
+  it("rejects photo-dependent gallery descriptions and unsupported actions", () => {
+    expect(() =>
+      previewBatch(detail, store, { actions: [{ op: "setGalleryDescription", value: "Frame {{index}}" }] }),
+    ).toThrow(/different values/);
+    expect(() => previewBatch(detail, store, { actions: [{ op: "setField", field: "alt", value: "x" }] })).toThrow(
+      /not supported/,
+    );
   });
 });

@@ -1,0 +1,58 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.process.developmentPlan",
+  "defs": {
+    "step": {
+      "type": "object",
+      "description": "A planned bath or physical operation; actual observations belong in a development session.",
+      "required": ["roles"],
+      "properties": {
+        "name": { "type": "string", "maxLength": 128 },
+        "kind": { "type": "ref", "ref": "app.graycard.process.developSession#stepKind" },
+        "roles": {
+          "type": "array",
+          "maxLength": 16,
+          "items": { "type": "ref", "ref": "app.graycard.defs#chemistryRole" }
+        },
+        "recipe": { "type": "string", "format": "at-uri" },
+        "chemistries": { "type": "array", "maxLength": 16, "items": { "type": "string", "format": "at-uri" } },
+        "dilution": { "type": "string", "maxLength": 64 },
+        "temperatureSetpoint": { "type": "ref", "ref": "app.graycard.defs#measure" },
+        "publishedTimeSeconds": { "type": "integer", "minimum": 0, "maximum": 604800 },
+        "agitationMethod": { "type": "ref", "ref": "app.graycard.process.developSession#agitationMethod" },
+        "agitationScheme": { "type": "ref", "ref": "app.graycard.catalog.devRecipe#agitation" },
+        "volumeMl": { "type": "integer", "minimum": 0 },
+        "notes": { "type": "string", "maxLength": 1000 }
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "required": ["name", "process", "steps"],
+      "properties": {
+        "name": { "type": "string", "maxLength": 128 },
+        "process": { "type": "ref", "ref": "app.graycard.defs#filmProcess" },
+        "tankType": { "type": "ref", "ref": "app.graycard.defs#tankType" },
+        "steps": { "type": "array", "maxLength": 64, "items": { "type": "ref", "ref": "#step" } },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "main": {
+      "type": "record",
+      "description": "Reusable film-processing sequence with ordered baths, temperatures, times, agitation, and chemistry. Manufacturer devRecipe records remain source-backed recommendations for individual developer stages.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "process", "steps", "createdAt"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 128 },
+          "process": { "type": "ref", "ref": "app.graycard.defs#filmProcess" },
+          "tankType": { "type": "ref", "ref": "app.graycard.defs#tankType" },
+          "steps": { "type": "array", "maxLength": 64, "items": { "type": "ref", "ref": "#step" } },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

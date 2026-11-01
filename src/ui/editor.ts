@@ -861,12 +861,14 @@ const openRuleBuilderWithSave = openRuleBuilder as unknown as (
 ) => void;
 
 function buildBatchCard(): HTMLDetailsElement {
-  const saved: BatchRule[] = (ctx.store.batchRules || []).map((r: StoredRecord) => ({
-    id: r.uri,
-    name: r.value.name || "(rule)",
-    when: r.value.when,
-    actions: r.value.actions || [],
-  }));
+  const saved: BatchRule[] = (ctx.store.batchRules || [])
+    .filter((r: StoredRecord) => !r.value.scope || ["gallery", "selection", "account"].includes(r.value.scope))
+    .map((r: StoredRecord) => ({
+      id: r.uri,
+      name: r.value.name || "(rule)",
+      when: r.value.when,
+      actions: r.value.actions || [],
+    }));
   const allRules: BatchRule[] = [...RULE_PRESETS, ...saved] as BatchRule[];
   const presetSel = el(
     "select",

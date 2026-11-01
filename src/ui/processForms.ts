@@ -1,6 +1,13 @@
 // processForms.ts: modal forms for app.graycard.process.* sessions
 
-import type { DevelopmentRecipe, TimeRecommendation } from "@hypo/domain";
+import {
+  developmentPlanSnapshot,
+  exposurePlanSnapshot,
+  type DevelopmentPlanValue,
+  type DevelopmentRecipe,
+  type TimeRecommendation,
+  type ExposurePlanValue,
+} from "@hypo/domain";
 import { NS, displayToMeasure, measureToDisplay } from "../graycard.js";
 import { renderOn, type RecordStore } from "@hypo/store";
 import { c10ToC, cToC10, fmtMMSS, recipeRecommendationStatus, resolveTimeRecommendation } from "../devRecipes.js";
@@ -62,6 +69,7 @@ interface StoredValue<Value> {
 }
 
 interface ProcessFormStore {
+  photos?: readonly StoredValue<JsonObject>[];
   instance: {
     chemistry: readonly StoredValue<JsonObject>[];
     [kind: string]: readonly StoredValue<JsonObject>[];
@@ -70,6 +78,7 @@ interface ProcessFormStore {
     devRecipe?: readonly StoredValue<ProcessRecipe>[];
     [kind: string]: readonly StoredValue<JsonObject>[] | readonly StoredValue<ProcessRecipe>[] | undefined;
   };
+  recordsByCollection?: Record<string, readonly StoredValue<JsonObject>[]>;
 }
 
 interface BathStepInitial {
@@ -108,6 +117,8 @@ interface ProcessFormInitial {
   agitation?: string;
   tankType?: string;
   recipe?: string;
+  developmentPlan?: string;
+  developmentPlanSnapshot?: JsonObject;
   temperatureSetpoint?: Measure | null;
   actualTemperature?: Measure | null;
   publishedTimeSeconds?: string | number;
@@ -123,6 +134,8 @@ interface ProcessFormInitial {
   notes?: string;
   method?: string;
   scanner?: string;
+  scanSetup?: string;
+  setupSnapshot?: JsonObject;
   camera?: string;
   lens?: string;
   software?: string;
@@ -136,6 +149,18 @@ interface ProcessFormInitial {
   paperInstance?: string;
   grade?: string;
   exposureTimeSeconds?: string | number;
+  exposurePlan?: string;
+  exposurePlanSnapshot?: JsonObject;
+  printProcess?: string;
+  printMethod?: string;
+  subject?: string;
+  filmRoll?: string;
+  enlargingLens?: string;
+  printer?: string;
+  lightSource?: string;
+  aperture?: string;
+  size?: string;
+  copies?: number;
   pictureProfile?: string;
   filmSimulation?: string;
   rawFormat?: string;
@@ -341,6 +366,17 @@ export function buildProcessSessionForm(
   };
 
   if (processKind === "developSession") {
+    const plans = store.recordsByCollection?.["app.graycard.process.developmentPlan"] || [];
+    inputs.developmentPlan = el("select", {}, [
+      el("option", { value: "" }, "No saved sequence"),
+      ...plans.map((plan) => el("option", { value: plan.uri }, String(plan.value.name || plan.uri))),
+      ...(initial.developmentPlan && !plans.some((plan) => plan.uri === initial.developmentPlan)
+        ? [el("option", { value: initial.developmentPlan }, "Unavailable sequence (preserve existing link)")]
+        : []),
+    ]);
+    inputs.developmentPlan.value = initial.developmentPlan || "";
+    const sequencePreview = el("p", { class: "muted small", "aria-live": "polite" });
+    nodes.push(field("Film-processing sequence", inputs.developmentPlan), sequencePreview);
     const workingUri = initial.chemistry || "";
     inputs.workingSolution = chemistrySelect(workingUri, {
       roles: ["film-developer", "first-developer", "color-developer"],
@@ -378,6 +414,32 @@ export function buildProcessSessionForm(
     ]);
     inputs.tankType.value = initial.tankType || "";
     nodes.push(field("Tank type", inputs.tankType));
+    const selectedPlan = () => plans.find((plan) => plan.uri === inputs.developmentPlan.value)?.value;
+    const showSequence = () => {
+      const plan = selectedPlan();
+      sequencePreview.textContent = plan
+        ? `${(Array.isArray(plan.steps) ? plan.steps : [])
+            .map((step: JsonObject) =>
+              String(step.name || (Array.isArray(step.roles) ? step.roles.join(" + ") : "Stage")),
+            )
+            .join(" → ")}. Enter the actual time and temperature below; the sequence is only a plan.`
+        : "Choose a sequence to keep its planned baths with this log. Enter what actually happened below.";
+    };
+    inputs.developmentPlan.addEventListener("change", () => {
+      const plan = selectedPlan();
+      if (plan) {
+        if (typeof plan.process === "string") inputs.process.value = plan.process;
+        if (typeof plan.tankType === "string") inputs.tankType.value = plan.tankType;
+        const developer = (Array.isArray(plan.steps) ? plan.steps : []).find(
+          (step: JsonObject) =>
+            Array.isArray(step.roles) && step.roles.some((role) => String(role).includes("developer")),
+        );
+        if (developer && Array.isArray(developer.chemistries) && typeof developer.chemistries[0] === "string")
+          inputs.workingSolution.value = developer.chemistries[0];
+      }
+      showSequence();
+    });
+    showSequence();
 
     // Less commonly edited recipe provenance and observed-vs-published values
     // stay available without crowding the normal manual-session form.
@@ -752,6 +814,12 @@ export function buildProcessSessionForm(
         return {
           ...readTiming(),
           process: inputs.process.value,
+          developmentPlan: inputs.developmentPlan.value || undefined,
+          developmentPlanSnapshot: selectedPlan()
+            ? developmentPlanSnapshot(selectedPlan() as DevelopmentPlanValue)
+            : inputs.developmentPlan.value === initial.developmentPlan
+              ? initial.developmentPlanSnapshot || undefined
+              : undefined,
           filmRolls: inputs.filmRoll.value ? [inputs.filmRoll.value] : undefined,
           provenance: {
             source: "manual",
@@ -772,12 +840,31 @@ export function buildProcessSessionForm(
   if (processKind === "digitizeSession") {
     nodes.push(enumSelect("Method *", DIGITIZE_METHODS, "method", initial.method || "dedicated-film-scanner"));
     inputs.method = nodes[nodes.length - 1].querySelector("select") as HTMLSelectElement;
+    inputs.scanSetup = instanceSelect("scanSetup", initial.scanSetup || "");
+    if (initial.scanSetup && ![...inputs.scanSetup.options].some((option) => option.value === initial.scanSetup)) {
+      inputs.scanSetup.add(el("option", { value: initial.scanSetup }, "Unavailable setup (preserve existing link)"));
+      inputs.scanSetup.value = initial.scanSetup;
+    }
+    nodes.push(field("Reusable scanning setup", inputs.scanSetup));
     inputs.scanner = instanceSelect("scanner", initial.scanner || "");
     nodes.push(field("Scanner", inputs.scanner));
     inputs.camera = instanceSelect("camera", initial.camera || "");
     nodes.push(field("Camera (copy stand)", inputs.camera));
     inputs.lens = instanceSelect("lens", initial.lens || "");
     nodes.push(field("Lens (copy stand)", inputs.lens));
+    const selectedSetup = () => store.instance.scanSetup?.find((setup) => setup.uri === inputs.scanSetup.value);
+    inputs.scanSetup.addEventListener("change", () => {
+      const components = selectedSetup()?.value.components;
+      if (!Array.isArray(components)) return;
+      for (const [role, input] of [
+        ["scanner", inputs.scanner],
+        ["capture-camera", inputs.camera],
+        ["capture-lens", inputs.lens],
+      ] as const) {
+        const ref = components.find((component) => component.role === role)?.ref;
+        if (typeof ref === "string") input.value = ref;
+      }
+    });
     const sw = inputField("Software", "software", initial.software || "");
     inputs.software = sw.input;
     nodes.push(sw.wrap);
@@ -804,6 +891,17 @@ export function buildProcessSessionForm(
           ...readTiming(),
           method: inputs.method.value,
           scanner: inputs.scanner.value || undefined,
+          scanSetup: inputs.scanSetup.value || undefined,
+          setupSnapshot: selectedSetup()
+            ? {
+                name: selectedSetup()!.value.name,
+                components: structuredClone(selectedSetup()!.value.components || []),
+                connections: structuredClone(selectedSetup()!.value.connections || []),
+                settings: structuredClone(selectedSetup()!.value.settings || []),
+              }
+            : inputs.scanSetup.value === initial.scanSetup
+              ? initial.setupSnapshot || undefined
+              : undefined,
           camera: inputs.camera.value || undefined,
           lens: inputs.lens.value || undefined,
           software: inputs.software.value.trim() || undefined,
@@ -843,8 +941,70 @@ export function buildProcessSessionForm(
   }
 
   if (processKind === "printSession") {
+    inputs.printProcess = el(
+      "select",
+      {},
+      [
+        "silver-gelatin",
+        "ra4",
+        "cyanotype",
+        "platinum-palladium",
+        "kallitype",
+        "salt",
+        "van-dyke",
+        "carbon",
+        "gum-bichromate",
+        "bromoil",
+        "albumen",
+        "wet-plate-collodion",
+        "dye-transfer",
+        "dye-destruction",
+        "photogravure",
+        "lith",
+        "inkjet",
+        "dye-sublimation",
+        "other",
+      ].map((kind) => el("option", { value: kind }, enumLabel(kind))),
+    );
+    inputs.printProcess.value = initial.printProcess || "silver-gelatin";
+    nodes.push(field("Print process", inputs.printProcess));
+    inputs.printMethod = el(
+      "select",
+      {},
+      ["enlargement", "contact", "digital-inkjet", "digital-lab", "photogram", "other"].map((kind) =>
+        el("option", { value: kind }, enumLabel(kind)),
+      ),
+    );
+    inputs.printMethod.value = initial.printMethod || "enlargement";
+    nodes.push(field("Print method", inputs.printMethod));
+    const plans = store.recordsByCollection?.["app.graycard.print.exposurePlan"] || [];
+    inputs.exposurePlan = el("select", {}, [
+      el("option", { value: "" }, "No saved plan"),
+      ...plans.map((plan) => el("option", { value: plan.uri }, String(plan.value.name || plan.uri))),
+      ...(initial.exposurePlan && !plans.some((plan) => plan.uri === initial.exposurePlan)
+        ? [el("option", { value: initial.exposurePlan }, "Unavailable plan (preserve existing link)")]
+        : []),
+    ]);
+    inputs.exposurePlan.value = initial.exposurePlan || "";
+    nodes.push(field("Print exposure plan", inputs.exposurePlan));
+    inputs.subject = el("select", {}, [
+      el("option", { value: "" }, "No linked photo"),
+      ...(store.photos || []).map((photo) =>
+        el("option", { value: photo.uri }, String(photo.value.alt || photo.value.name || photo.uri)),
+      ),
+    ]);
+    inputs.subject.value = initial.subject || "";
+    nodes.push(field("Reference photo", inputs.subject));
+    inputs.filmRoll = instanceSelect("filmRoll", initial.filmRoll || "");
+    nodes.push(field("Source film roll", inputs.filmRoll));
     inputs.enlarger = instanceSelect("enlarger", initial.enlarger || "");
     nodes.push(field("Enlarger", inputs.enlarger));
+    inputs.enlargingLens = instanceSelect("enlargingLens", initial.enlargingLens || "");
+    nodes.push(field("Enlarging lens", inputs.enlargingLens));
+    inputs.lightSource = instanceSelect("lightSource", initial.lightSource || "");
+    nodes.push(field("Light source", inputs.lightSource));
+    inputs.printer = instanceSelect("printer", initial.printer || "");
+    nodes.push(field("Printer", inputs.printer));
     inputs.paper = catalogSelect("paperType", initial.paper || initial.paperType || "");
     nodes.push(field("Paper type", inputs.paper));
     const pi = inputField("Paper batch / instance", "paperInstance", initial.paperInstance || "");
@@ -856,6 +1016,27 @@ export function buildProcessSessionForm(
     const exp = inputField("Exposure (seconds)", "exposureTimeSeconds", initial.exposureTimeSeconds ?? "");
     inputs.exposureTimeSeconds = exp.input;
     nodes.push(exp.wrap);
+    inputs.exposurePlan.addEventListener("change", () => {
+      const plan = plans.find((candidate) => candidate.uri === inputs.exposurePlan.value)?.value;
+      const firstBase = Array.isArray(plan?.exposures)
+        ? plan.exposures.find((step: JsonObject) => step.action === "base")
+        : null;
+      if (firstBase) {
+        if (firstBase.grade) inputs.grade.value = String(firstBase.grade);
+        if (typeof firstBase.durationMs === "number")
+          inputs.exposureTimeSeconds.value = String(Math.round(firstBase.durationMs / 1000));
+      }
+      if (plan?.referencePhoto && !inputs.subject.value) inputs.subject.value = String(plan.referencePhoto);
+    });
+    const aperture = inputField("Enlarging aperture", "aperture", initial.aperture || "");
+    inputs.aperture = aperture.input;
+    nodes.push(aperture.wrap);
+    const size = inputField("Print size", "size", initial.size || "");
+    inputs.size = size.input;
+    nodes.push(size.wrap);
+    const copies = inputField("Copies", "copies", initial.copies || 1, { type: "number", min: "1", step: "1" });
+    inputs.copies = copies.input;
+    nodes.push(copies.wrap);
     nodes.push(timing!.node);
     const notes = textareaField("Notes", "notes", initial.notes || "");
     inputs.notes = notes.input;
@@ -866,9 +1047,27 @@ export function buildProcessSessionForm(
       read() {
         return {
           ...readTiming(),
+          printProcess: inputs.printProcess.value,
+          printMethod: inputs.printMethod.value,
+          exposurePlan: inputs.exposurePlan.value || undefined,
+          exposurePlanSnapshot: plans.some((candidate) => candidate.uri === inputs.exposurePlan.value)
+            ? exposurePlanSnapshot(
+                plans.find((candidate) => candidate.uri === inputs.exposurePlan.value)!.value as ExposurePlanValue,
+              )
+            : inputs.exposurePlan.value === initial.exposurePlan
+              ? initial.exposurePlanSnapshot || undefined
+              : undefined,
           enlarger: inputs.enlarger.value || undefined,
+          enlargingLens: inputs.enlargingLens.value || undefined,
+          lightSource: inputs.lightSource.value || undefined,
+          printer: inputs.printer.value || undefined,
+          subject: inputs.subject.value || undefined,
+          filmRoll: inputs.filmRoll.value || undefined,
           paper: inputs.paper.value || undefined,
           paperInstance: inputs.paperInstance.value.trim() || undefined,
+          aperture: inputs.aperture.value.trim() || undefined,
+          size: inputs.size.value.trim() || undefined,
+          copies: Number(inputs.copies.value) || undefined,
           grade: inputs.grade.value.trim() || undefined,
           ...readInts(inputs, ["exposureTimeSeconds"]),
           notes: inputs.notes.value.trim() || undefined,

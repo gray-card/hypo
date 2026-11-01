@@ -1,0 +1,138 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.print.exposurePlan",
+  "defs": {
+    "point": {
+      "type": "object",
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "y": { "type": "integer", "minimum": 0, "maximum": 10000 }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "description": "One image-relative selection. Coordinates are ten-thousandths of the uncropped source image, independent of preview size.",
+      "required": ["kind", "points"],
+      "properties": {
+        "kind": { "type": "string", "knownValues": ["brush", "polygon", "ellipse", "linear-gradient"] },
+        "combine": { "type": "string", "knownValues": ["add", "subtract", "intersect"] },
+        "points": { "type": "array", "minLength": 1, "maxLength": 256, "items": { "type": "ref", "ref": "#point" } },
+        "width": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5000,
+          "description": "Brush diameter in ten-thousandths of image width."
+        },
+        "feather": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Edge softness in ten-thousandths."
+        },
+        "opacity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Selection strength; 10000 is fully selected."
+        },
+        "invert": { "type": "boolean" },
+        "sourceRegion": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "Optional app.graycard.scene.region from which this selection was copied. Geometry remains snapshotted here."
+        }
+      }
+    },
+    "exposure": {
+      "type": "object",
+      "description": "One timed exposure instruction. A dodge overlaps the referenced base exposure; a burn is an additional exposure. Array order is execution order among base and burn steps.",
+      "required": ["id", "action", "durationMs"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "label": { "type": "string", "maxLength": 128 },
+        "targetNode": {
+          "type": "string",
+          "format": "at-uri",
+          "description": "Optional semantic app.graycard.scene.node targeted by this dodge or burn."
+        },
+        "targetLabel": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Human-readable target when no scene node is linked."
+        },
+        "action": { "type": "string", "knownValues": ["base", "dodge", "burn"] },
+        "durationMs": { "type": "integer", "minimum": 1, "maximum": 3600000 },
+        "grade": {
+          "type": "string",
+          "maxLength": 32,
+          "description": "Contrast grade for this exposure, allowing split-grade printing."
+        },
+        "filtration": { "type": "ref", "ref": "app.graycard.process.printSession#filtration" },
+        "baseId": { "type": "string", "maxLength": 64, "description": "Base exposure during which a dodge occurs." },
+        "startOffsetMs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3600000,
+          "description": "When to start the dodge within its base exposure."
+        },
+        "selections": { "type": "array", "maxLength": 16, "items": { "type": "ref", "ref": "#selection" } },
+        "toolNote": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Physical card, wand, motion, or other masking instruction."
+        },
+        "notes": { "type": "string", "maxLength": 512 }
+      }
+    },
+    "testStrip": {
+      "type": "object",
+      "required": ["baseDurationMs"],
+      "properties": {
+        "grade": { "type": "string", "maxLength": 32 },
+        "baseDurationMs": { "type": "integer", "minimum": 1, "maximum": 3600000 },
+        "incrementMs": { "type": "integer", "minimum": 1, "maximum": 3600000 },
+        "strips": { "type": "integer", "minimum": 1, "maximum": 64 },
+        "chosenDurationMs": { "type": "integer", "minimum": 1, "maximum": 3600000 },
+        "notes": { "type": "string", "maxLength": 512 }
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "required": ["name", "exposures"],
+      "properties": {
+        "name": { "type": "string", "maxLength": 128 },
+        "referencePhoto": { "type": "string", "format": "at-uri" },
+        "imageWidth": { "type": "integer", "minimum": 1 },
+        "imageHeight": { "type": "integer", "minimum": 1 },
+        "exposures": { "type": "array", "maxLength": 48, "items": { "type": "ref", "ref": "#exposure" } },
+        "testStrips": { "type": "array", "maxLength": 24, "items": { "type": "ref", "ref": "#testStrip" } },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "main": {
+      "type": "record",
+      "description": "Reusable darkroom print exposure plan: ordered base exposures, overlapping dodges, additional burns, split-grade filtration, and image-relative selections. This is a plan, not a record of a completed print.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "exposures", "createdAt"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 128 },
+          "referencePhoto": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Existing photo used as the visual reference for selections."
+          },
+          "imageWidth": { "type": "integer", "minimum": 1 },
+          "imageHeight": { "type": "integer", "minimum": 1 },
+          "exposures": { "type": "array", "maxLength": 48, "items": { "type": "ref", "ref": "#exposure" } },
+          "testStrips": { "type": "array", "maxLength": 24, "items": { "type": "ref", "ref": "#testStrip" } },
+          "notes": { "type": "string", "maxLength": 2000 },
+          "createdAt": { "type": "string", "format": "datetime" },
+          "updatedAt": { "type": "string", "format": "datetime" }
+        }
+      }
+    }
+  }
+}

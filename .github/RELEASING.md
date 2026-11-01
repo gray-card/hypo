@@ -6,7 +6,7 @@ Hypo releases are immutable `v*` tags on the current `main` commit. Every fully 
 
 1. Confirm every pull request intended for the release is merged to `main` and that the required **CI / Release gates** check passed.
 2. Set the root package version to the intended semantic version and update `CHANGELOG.md`. Changesets may prepare this as a version pull request.
-3. Review schema compatibility and migrations, including fixture coverage for any changed `app.graycard.*` record.
+3. Review schema compatibility and migrations, including fixture coverage for any changed `app.graycard.*` record. Confirm `npm run check:panproto` passes: it now rejects a stale or uncommitted published Panproto snapshot.
 4. Review the production and development dependency audit results under [the dependency audit policy](./SECURITY_AUDIT_POLICY.md).
 5. Merge the version pull request and wait for both CI and the **Deploy GitHub Pages** job on `main` to pass.
 

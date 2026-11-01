@@ -21,11 +21,12 @@ The repository pins `@panproto/core` and `panproto-cli` at 0.70.1. The `.panprot
 
 `npm run check:panproto` verifies the current package by:
 
-1. loading all 61 lexicon documents through the root manifest;
+1. loading all 64 lexicon documents through the root manifest;
 2. checking ATProto theory diagnostics;
 3. staging the eight records under `fixtures/records`;
-4. exercising manifest-backed compatibility and diff loading; and
-5. parsing the bundle through the TypeScript SDK.
+4. exercising manifest-backed compatibility and diff loading;
+5. parsing the bundle through the TypeScript SDK; and
+6. confirming that the checked-in Panproto sidecar has committed the current lexicons and conformance corpus.
 
 The sidecar tags the 1.0 baseline as `lexicons-v1`, the ordered development-stage suite as `lexicons-v2`, and the canonical collection shapes introduced with Hypo 1.8.0 as `lexicons-v3`. Pull-request compatibility checks compare proposed changes with the latest released Git baseline reachable from `main`.
 

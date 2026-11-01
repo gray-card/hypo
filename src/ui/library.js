@@ -50,6 +50,7 @@ import { repoClient } from "../pds.js";
 import * as outbox from "../outbox.js";
 import { activeDevRun } from "./devTimerState.js";
 import { openRuleBuilder } from "./ruleBuilder.js";
+import { applyProcessBatch, previewProcessBatch } from "../processBatch.js";
 import { loadShotLoggerState, saveShotLoggerState } from "./shotLoggerState.js";
 import { renderFilmReserveView, renderRollLibraryView } from "../../apps/web/src/views/library/film-view.ts";
 import { maybeRemoveDepletedStockpile, openRollDetail } from "../../apps/web/src/views/library/film-roll.ts";
@@ -492,7 +493,44 @@ export function openShotLogger(shoot, body) {
   return openShootLogger(shoot, shootServices(), body ? () => renderLibrary() : undefined);
 }
 
+async function openPrintSessionEditor(record, onDone) {
+  const { buildProcessSessionForm } = await import("./processForms.ts");
+  const photos = await getPhotos(ctx.agent, ctx.did).catch(() => []);
+  const form = buildProcessSessionForm("printSession", { ...ctx.store, photos }, record?.value || {});
+  return openModal(
+    record ? "Edit print session" : "Log print session",
+    form.nodes,
+    async () => {
+      const values = form.read();
+      const now = new Date().toISOString();
+      const next = {
+        ...(record?.value || {}),
+        ...values,
+        createdAt: record?.value.createdAt || now,
+        ...(record ? { updatedAt: now } : {}),
+        provenance: record?.value.provenance || { source: "manual", assertedAt: now },
+      };
+      for (const [key, value] of Object.entries(values)) if (value === undefined) delete next[key];
+      await saveRecord(ctx.agent, ctx.did, NS.process.printSession, next, record || null);
+      ctx.store = await loadStore(ctx.agent, ctx.did, { refresh: true });
+      toast(record ? "Print session updated" : "Print session logged", "ok");
+      onDone?.();
+    },
+    { wide: true, saveLabel: record ? "Save changes" : "Log print", onClose: () => form.dispose?.() },
+  );
+}
+
 function activityServices() {
+  const workflowDefaults = (kind, subjectUris) => {
+    const stages = [...new Set(subjectUris.filter(Boolean))]
+      .map((uri) => findNextActionableStage(ctx.store, uri, { kind })?.stage)
+      .filter(Boolean);
+    if (!stages.length) return {};
+    const defaults = stages[0].value.processDefaults || {};
+    return stages.every((stage) => JSON.stringify(stage.value.processDefaults || {}) === JSON.stringify(defaults))
+      ? { ...defaults }
+      : {};
+  };
   const openWorkflowStageLogger = async (run, stage, onDone) => {
     const variant =
       String(stage.value.$type || "")
@@ -505,9 +543,17 @@ function activityServices() {
       ...(stage.value.processDefaults?.filmRoll ? { filmRolls: [stage.value.processDefaults.filmRoll] } : {}),
     };
     const form = processKind
-      ? (await import("./processForms.ts")).buildProcessSessionForm(processKind, ctx.store, defaults, {
-          signals: recordStore(ctx.did),
-        })
+      ? (await import("./processForms.ts")).buildProcessSessionForm(
+          processKind,
+          {
+            ...ctx.store,
+            ...(processKind === "printSession" ? { photos: await getPhotos(ctx.agent, ctx.did).catch(() => []) } : {}),
+          },
+          defaults,
+          {
+            signals: recordStore(ctx.did),
+          },
+        )
       : null;
     const title = processKind ? `Log ${STAGE_LABELS[kind] || kind}` : `Complete ${STAGE_LABELS[kind] || kind}`;
     openModal(
@@ -579,11 +625,20 @@ function activityServices() {
         },
         { existing: record },
       ),
+    previewProcessBatch: (rule) => previewProcessBatch(ctx.store, rule),
+    applyProcessBatch: async (rule) => {
+      const result = await applyProcessBatch(ctx.store, rule, (collection, value, existing) =>
+        saveRecord(ctx.agent, ctx.did, collection, value, existing),
+      );
+      ctx.store = await loadStore(ctx.agent, ctx.did, { refresh: true });
+      return result.matched.length;
+    },
     navigateSessions: (scope) => ctx?.navigateSessions?.(scope),
     navigateSession: (kind, rkey) => ctx?.navigateSession?.({ kind, rkey }),
     editSession: (kind, record, onDone) => {
       if (kind === "develop") return openDevelopmentSession(record, onDone, activityServices());
       if (kind === "digitize") return openScanSession(onDone, activityServices(), { existing: record });
+      if (kind === "print") return openPrintSessionEditor(record, onDone);
       return openInspector(record);
     },
     activeDevelopment: () => activeDevRun(ctx.did),
@@ -596,6 +651,7 @@ function activityServices() {
         },
       }),
     advanceWorkflowStage: advanceWorkflowStageForSubjects,
+    workflowDefaults,
     workflowActions: (run) => getActionableWorkflowStages(ctx.store, run),
     openWorkflowStageLogger,
     skipWorkflowStage: async (run, stage, onDone) => {
@@ -631,18 +687,21 @@ function sessionViewServices() {
       if (kind === "capture") return openShootEditor(record, done);
       if (kind === "develop") return openDevelopmentSession(record, done, services);
       if (kind === "digitize") return openScanSession(done, services, { existing: record });
+      if (kind === "print") return openPrintSessionEditor(record, onDone);
       return services.inspect(record);
     },
     duplicateSession: (kind, record, onDone) => {
       const done = () => refresh(onDone);
       if (kind === "develop") return openManualDevelopment(done, services, { initial: record.value });
       if (kind === "digitize") return openScanSession(done, services, { initial: record.value });
+      if (kind === "print") return openPrintSessionEditor(null, onDone);
       return undefined;
     },
     createSession: (kind, onDone) => {
       const done = () => refresh(onDone);
       if (kind === "capture") return openShootEditor(null, done);
       if (kind === "develop") return openManualDevelopment(done, services);
+      if (kind === "print") return openPrintSessionEditor(null, onDone);
       return openScanSession(done, services);
     },
     logFrames: (record, onDone) => openShootLogger(record, shootServices(), () => refresh(onDone)),

@@ -53,11 +53,11 @@ function allowedContextDefaults(kind, defaults = {}) {
   const shared = ["method", "params"];
   const byKind = {
     capture: ["camera", "filmBack", "lens", "filters", "filmRoll"],
-    develop: ["filmRoll", "chemistry", "lab", "recipe"],
-    digitize: ["filmRoll", "scanner", "scanProfile", "lab", "camera"],
+    develop: ["filmRoll", "chemistry", "lab", "recipe", "developmentPlan"],
+    digitize: ["filmRoll", "scanner", "scanSetup", "scanProfile", "lab", "camera", "lens"],
     digital: ["recipe"],
     edit: ["recipe"],
-    print: ["printer", "enlarger", "enlargingLens", "paper", "lightSource", "filters", "recipe"],
+    print: ["printer", "enlarger", "enlargingLens", "paper", "lightSource", "filters", "recipe", "exposurePlan"],
   };
   const keys = new Set([...(byKind[kind] || []), ...shared]);
   return Object.fromEntries(

@@ -50,6 +50,21 @@ test.beforeEach(async ({ request }) => {
 });
 
 test("a rich workflow can be authored, launched, advanced, and used on mobile", async ({ page, request }) => {
+  const sequenceResponse = await request.post(`${PDS_ORIGIN}/xrpc/com.atproto.repo.createRecord`, {
+    data: {
+      repo: REPO,
+      collection: "app.graycard.process.developmentPlan",
+      record: {
+        $type: "app.graycard.process.developmentPlan",
+        name: "Standard B&W sequence",
+        process: "bw",
+        steps: [{ name: "Developer", roles: ["film-developer"], publishedTimeSeconds: 600 }],
+        createdAt: new Date().toISOString(),
+      },
+    },
+  });
+  expect(sequenceResponse.ok()).toBe(true);
+  const sequenceUri = (await sequenceResponse.json()).uri;
   await login(page);
 
   const body = page.locator("#library-body");
@@ -64,6 +79,12 @@ test("a rich workflow can be authored, launched, advanced, and used on mobile", 
   await addStep(templateDialog, "Develop");
   await addStep(templateDialog, "Develop");
   await addStep(templateDialog, "Digitize");
+
+  await templateDialog.getByRole("button", { name: "Configure Develop, step 2" }).click();
+  const firstDevelop = page.getByRole("dialog", { name: "Configure: Develop" });
+  await firstDevelop.getByLabel("Film-processing sequence").selectOption(sequenceUri);
+  await firstDevelop.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(firstDevelop).toBeHidden();
 
   await templateDialog.getByRole("button", { name: "Configure Develop, step 3" }).click();
   const stepDialog = page.getByRole("dialog", { name: "Configure: Develop" });
@@ -128,6 +149,13 @@ test("a rich workflow can be authored, launched, advanced, and used on mobile", 
   await expect(activeRun.getByRole("button", { name: "Skip Develop", exact: true })).toHaveCount(0);
   stages = await listRecords(request, STAGE_COLLECTION);
   expect(stages.filter((record) => record.value.status === "skipped")).toHaveLength(1);
+
+  await activeRun.getByRole("button", { name: "Log Develop", exact: true }).click();
+  const developLogger = page.getByRole("dialog", { name: "Log Develop" });
+  await expect(developLogger.getByLabel("Film-processing sequence")).toHaveValue(sequenceUri);
+  await expect(developLogger.getByText(/Developer.*Enter the actual time/)).toBeVisible();
+  await developLogger.getByRole("button", { name: "Cancel" }).click();
+  await expect(developLogger).toBeHidden();
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator("#bottom-nav")).toBeVisible();

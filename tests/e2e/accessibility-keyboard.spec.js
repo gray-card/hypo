@@ -280,8 +280,8 @@ test("Library, Rolls, and Sessions support keyboard navigation, focus restoratio
   await expect(edit).toBeFocused();
 
   const sessionsNav = primaryNavButton(page, "sessions");
-  await sessionsNav.focus();
-  await page.keyboard.press("Enter");
+  await sessionsNav.press("Enter");
+  await expect(page.locator("#sessions-view")).toBeVisible();
   const shoot = page
     .locator("#sessions-body .session-card[data-kind='capture']")
     .filter({ hasText: "Fixture photo walk" });
