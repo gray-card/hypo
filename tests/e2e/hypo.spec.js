@@ -50,6 +50,29 @@ test("stubbed OAuth logs in and loads seeded gear from the HTTP fixture PDS", as
   await expect.poll(async () => (await listRecords(request, CAMERA_COLLECTION)).length).toBe(3);
 });
 
+test("darkroom add forms load only sourced enlarger catalogs and save both gear types", async ({ page, request }) => {
+  await login(page);
+  await page.goto("/library/darkroom");
+
+  await page.getByRole("button", { name: "Add enlarger", exact: true }).click();
+  let dialog = page.getByRole("dialog", { name: "Add enlarger" });
+  await expect(dialog.getByRole("status").filter({ hasText: "Catalog suggestions loaded" })).toBeVisible();
+  await dialog.getByLabel("Make").fill("Omega");
+  await dialog.getByLabel(/Model/).fill("B-22");
+  await expect(dialog.getByLabel(/Max negative format/)).toHaveValue("6x6");
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await expect.poll(async () => (await listRecords(request, "app.graycard.instance.enlarger")).length).toBe(1);
+
+  await page.getByRole("button", { name: "Add enlarging lens", exact: true }).click();
+  dialog = page.getByRole("dialog", { name: "Add enlarging lens" });
+  await expect(dialog.getByRole("status").filter({ hasText: "Catalog suggestions loaded" })).toBeVisible();
+  await dialog.getByLabel("Make").fill("Rodenstock");
+  await dialog.getByLabel(/Model/).fill("Rodagon 80mm f/4");
+  await expect(dialog.getByLabel(/Max aperture/)).toHaveValue("4");
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await expect.poll(async () => (await listRecords(request, "app.graycard.instance.enlargingLens")).length).toBe(1);
+});
+
 test("adding a film back saves its type and physical instance", async ({ page, request }) => {
   await login(page);
   await page.goto("/library/cameras");

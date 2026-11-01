@@ -87,6 +87,10 @@ describe("typed schema metadata", () => {
       control: "enum-list",
       options: LEXICON_ENUM_OPTIONS.chemistryRole,
     });
+    expect(GEAR_CATALOG_FORM_META.enlargingLensType.fields.find((field) => field.key === "maxAperture")).toMatchObject({
+      control: "measure",
+      unit: "f-number",
+    });
     expect(GEAR_INSTANCE_FORM_META.filmRoll.typeLink).toEqual({ catalogKind: "filmStock", field: "stock" });
     expect(GEAR_INSTANCE_FORM_META.filmRoll.fields.find((field) => field.key === "camera")).toMatchObject({
       control: "at-uri",
