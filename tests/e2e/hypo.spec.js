@@ -3,6 +3,8 @@ import { expect, test } from "@playwright/test";
 const PDS_ORIGIN = "http://127.0.0.1:2584";
 const REPO = "did:plc:alice";
 const CAMERA_COLLECTION = "app.graycard.instance.camera";
+const FILM_BACK_TYPE_COLLECTION = "app.graycard.catalog.filmBackType";
+const FILM_BACK_COLLECTION = "app.graycard.instance.filmBack";
 const EXPOSURE_COLLECTION = "app.graycard.instance.exposure";
 
 async function resetFixture(request) {
@@ -71,6 +73,24 @@ test("darkroom add forms load only sourced enlarger catalogs and save both gear 
   await expect.poll(async () => (await listRecords(request, "app.graycard.instance.enlargingLens")).length).toBe(1);
 });
 
+test("adding a film back saves its type and physical instance", async ({ page, request }) => {
+  await login(page);
+  await page.goto("/library/cameras");
+  await page.getByRole("button", { name: "Add film back", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Add film back" });
+  await dialog.getByLabel(/^Make/).fill("Bronica");
+  await dialog.getByLabel(/^Model/).fill("Film Back SQ 120");
+  await dialog.getByLabel(/^Back interface/).selectOption("Bronica SQ");
+  await dialog.getByLabel(/^Nickname/).fill("SQ back 1");
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+
+  await expect.poll(async () => (await listRecords(request, FILM_BACK_TYPE_COLLECTION)).length).toBe(1);
+  await expect.poll(async () => (await listRecords(request, FILM_BACK_COLLECTION)).length).toBe(1);
+  const [back] = await listRecords(request, FILM_BACK_COLLECTION);
+  expect(back.value.nickname).toBe("SQ back 1");
+  expect(back.value.type).toMatch(new RegExp(`^at://${REPO}/${FILM_BACK_TYPE_COLLECTION}/`));
+});
+
 test("an offline shot stays queued and flushes after reconnect", async ({ page, context, request }) => {
   await login(page);
 
@@ -116,7 +136,9 @@ test("a stale gear edit surfaces the fixture PDS swap conflict", async ({ page, 
 
   await dialog.getByLabel(/Nickname/).fill("local stale edit");
   await dialog.getByRole("button", { name: "Save", exact: true }).click();
-  await expect(dialog.locator(".status.err")).toContainText("swapRecord does not match the current CID");
+  await expect(dialog.locator(".status.err")).toContainText(
+    "This record changed on another device. Open “Needs attention” from the menu",
+  );
   await expect(dialog).toBeVisible();
 
   await dialog.getByRole("button", { name: "Cancel", exact: true }).click();

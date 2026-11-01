@@ -245,9 +245,10 @@ export function createGalleryListView(options: GalleryListOptions) {
       phase.clear();
       render();
     } catch (error) {
+      console.error("Galleries could not be loaded:", error);
       phase.clear();
       list.replaceChildren();
-      status.textContent = `Error: ${error instanceof Error ? error.message : String(error)}`;
+      status.textContent = "Galleries could not be loaded. Check your connection and reload this page.";
     }
   };
 

@@ -8,3 +8,4 @@ export * from "./ordered-step-editor.ts";
 export * from "./palette.ts";
 export * from "./roving-dial.ts";
 export * from "./toast.ts";
+export * from "./errors.ts";

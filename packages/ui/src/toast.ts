@@ -1,4 +1,5 @@
 import { $, el } from "./element.ts";
+import { userFacingError } from "./errors.ts";
 
 export interface ToastAction {
   label: string;
@@ -23,7 +24,7 @@ export function toast(
     host = el("div", { id: "toast-host", class: "toast-host" });
     document.body.append(host);
   }
-  const label = el("span", {}, message);
+  const label = el("span", {}, kind === "err" ? userFacingError(message) : message);
   const notice = el(
     "div",
     {

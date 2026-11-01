@@ -58,7 +58,9 @@ function hasIndexedDatabase() {
 
 function databaseForRuntime() {
   if (!hasIndexedDatabase()) return Promise.resolve(new MemoryDatabase());
-  indexedDatabasePromise ??= openSyncDatabase().catch(() => new MemoryDatabase());
+  // A browser with IndexedDB must never silently fall back to a volatile
+  // queue: an offline change would appear saved and vanish on reload.
+  indexedDatabasePromise ??= openSyncDatabase();
   return indexedDatabasePromise;
 }
 
@@ -179,6 +181,8 @@ function createRuntime(repo) {
     agent: null,
     operations,
     acknowledgements: new Map(),
+    persistenceFailures: new Map(),
+    initializationError: null,
     lastCreatedAt,
     outbox: null,
     mutationTail: Promise.resolve(),
@@ -197,39 +201,47 @@ function createRuntime(repo) {
     }
   }
 
-  runtime.ready = databaseForRuntime().then(async (database) => {
-    const outbox = new Outbox({
-      database,
-      client: clientDelegate(runtime),
-      repo,
-      isOnline,
-      onAcknowledged: async (acknowledgement) => {
-        runtime.acknowledgements.set(acknowledgement.operation.id, acknowledgement);
-        runtime.operations.delete(acknowledgement.operation.id);
-        for (const listener of acknowledgementListeners.get(repo) || []) {
-          try {
-            await listener(acknowledgement);
-          } catch (error) {
-            console.warn("Acknowledged write projection could not update:", error?.message || error);
+  runtime.ready = databaseForRuntime()
+    .then(async (database) => {
+      const outbox = new Outbox({
+        database,
+        client: clientDelegate(runtime),
+        repo,
+        isOnline,
+        onAcknowledged: async (acknowledgement) => {
+          runtime.acknowledgements.set(acknowledgement.operation.id, acknowledgement);
+          runtime.operations.delete(acknowledgement.operation.id);
+          for (const listener of acknowledgementListeners.get(repo) || []) {
+            try {
+              await listener(acknowledgement);
+            } catch (error) {
+              console.warn("Acknowledged write projection could not update:", error?.message || error);
+            }
           }
-        }
-      },
-    });
-    runtime.outbox = outbox;
-    const legacyStorage = storage();
-    if (legacyStorage) await outbox.migrate(legacyStorage);
+        },
+      });
+      runtime.outbox = outbox;
+      const legacyStorage = storage();
+      if (legacyStorage) await outbox.migrate(legacyStorage);
 
-    const durable = await outbox.list();
-    const merged = new Map(durable.map((operation) => [operation.id, operation]));
-    // Synchronous facade calls may have added operations while IndexedDB was
-    // opening. Their queued mutations run immediately after this handoff.
-    for (const operation of runtime.operations.values()) {
-      if (!merged.has(operation.id)) merged.set(operation.id, operation);
-    }
-    runtime.operations = merged;
-    return outbox;
-  });
+      const durable = await outbox.list();
+      const merged = new Map(durable.map((operation) => [operation.id, operation]));
+      // Synchronous facade calls may have added operations while IndexedDB was
+      // opening. Their queued mutations run immediately after this handoff.
+      for (const operation of runtime.operations.values()) {
+        if (!merged.has(operation.id)) merged.set(operation.id, operation);
+      }
+      runtime.operations = merged;
+      return outbox;
+    })
+    .catch((error) => {
+      runtime.initializationError = error;
+      throw error;
+    });
   runtime.mutationTail = runtime.ready.then(() => undefined);
+  // Synchronous callers can inspect optimistic state without awaiting ready.
+  // Mark the rejected startup promise handled; later writes still receive it.
+  void runtime.mutationTail.catch(() => undefined);
   return runtime;
 }
 
@@ -301,7 +313,10 @@ export function enqueue(did, collection, record, options = {}) {
       id: metadata.id,
       createdAt: metadata.createdAt,
     }),
-  ).catch(() => runtime.operations.delete(operation.id));
+  ).catch((error) => {
+    runtime.operations.delete(operation.id);
+    runtime.persistenceFailures.set(operation.id, error);
+  });
   return compatibilityOperation(operation);
 }
 
@@ -342,7 +357,10 @@ export function enqueuePut(did, uriOrInput, record, swapRecord, options = {}) {
       id: metadata.id,
       createdAt: metadata.createdAt,
     }),
-  ).catch(() => runtime.operations.delete(operation.id));
+  ).catch((error) => {
+    runtime.operations.delete(operation.id);
+    runtime.persistenceFailures.set(operation.id, error);
+  });
   return compatibilityOperation(operation);
 }
 
@@ -370,7 +388,10 @@ export function enqueueDelete(did, uriOrInput, swapRecord, options = {}) {
   remember(runtime, operation);
   scheduleMutation(runtime, (outbox) =>
     outbox.enqueueDelete({ ...input, collection, rkey, id: metadata.id, createdAt: metadata.createdAt }),
-  ).catch(() => runtime.operations.delete(operation.id));
+  ).catch((error) => {
+    runtime.operations.delete(operation.id);
+    runtime.persistenceFailures.set(operation.id, error);
+  });
   return compatibilityOperation(operation);
 }
 
@@ -393,6 +414,7 @@ export function pendingCount(did) {
 export async function list(did, options = {}) {
   const runtime = runtimeFor(did);
   await runtime.mutationTail;
+  if (runtime.initializationError) throw runtime.initializationError;
   const normalized = typeof options === "string" ? { collection: options } : options;
   const operations = await runtime.outbox.list(normalized);
   if (normalized.collection || normalized.status) {
@@ -429,12 +451,14 @@ export function remove(did, id) {
 export async function conflicts(did) {
   const runtime = runtimeFor(did);
   await runtime.mutationTail;
+  if (runtime.initializationError) throw runtime.initializationError;
   return (await runtime.outbox.conflicts()).map(compatibilityOperation);
 }
 
 export async function rebaseConflict(did, id, update) {
   const runtime = runtimeFor(did);
   await runtime.mutationTail;
+  if (runtime.initializationError) throw runtime.initializationError;
   const operation = await runtime.outbox.rebaseConflict(id, update);
   runtime.operations.set(operation.id, operation);
   return compatibilityOperation(operation);
@@ -453,6 +477,7 @@ export async function flush(agent, did) {
   const runtime = runtimeFor(did);
   runtime.agent = agent;
   await runtime.mutationTail;
+  if (runtime.initializationError) throw runtime.initializationError;
   const result = await runtime.outbox.flush();
   await refreshProjection(runtime);
   if (!result.failed) return result;
@@ -465,9 +490,39 @@ export async function flush(agent, did) {
 // transport failures throw, while stale swaps remain parked for the tray.
 export async function flushOperation(agent, did, id) {
   const runtime = runtimeFor(did);
-  const result = await flush(agent, did);
-  const operation = runtime.operations.get(id);
-  const acknowledgement = runtime.acknowledgements.get(id);
+  const queued = runtime.operations.get(id);
+  let result;
+  try {
+    result = await flush(agent, did);
+  } catch (error) {
+    runtime.persistenceFailures.delete(id);
+    throw error;
+  }
+  const persistenceFailure = runtime.persistenceFailures.get(id);
+  if (persistenceFailure) {
+    runtime.persistenceFailures.delete(id);
+    throw new Error(
+      "Your change could not be stored in this browser. Check available storage space, reload Hypo, and try again. This change was not saved.",
+      { cause: persistenceFailure },
+    );
+  }
+  let operation = runtime.operations.get(id);
+  // A scheduler flush may already have been running when this operation was
+  // enqueued, or another tab may briefly own the Web Lock. In either case the
+  // first flush can finish without touching this write. Do not report its
+  // temporary URI as the result of an online create until it has had a turn.
+  for (let attempt = 0; attempt < 100 && operation && isOnline(); attempt += 1) {
+    if (operation.lastError || result.failed || result.deferred || result.offline) break;
+    if (!result.locked && attempt > 0) break;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    result = await flush(agent, did);
+    operation = runtime.operations.get(id);
+  }
+  let acknowledgement = runtime.acknowledgements.get(id);
+  if (!acknowledgement && queued?.kind === "create") {
+    const durable = await runtime.outbox.acknowledgedUri(queued.tempUri);
+    if (durable) acknowledgement = { operation: queued, ...durable };
+  }
   if (operation?.status === "conflict") {
     const error = new Error(operation.conflict?.message || operation.lastError?.message || "Record needs attention");
     error.name = "SwapConflict";
@@ -494,18 +549,20 @@ export function installAutoFlush(agent, did, onFlushed) {
     reconnectPending = true;
   };
   globalThis.window?.addEventListener("offline", onOffline);
-  runtime.mutationTail.then(() => {
-    if (disposed) return;
-    disposeScheduler = installFlushScheduler(runtime.outbox, {
-      onFlushed: async (result) => {
-        await refreshProjection(runtime);
-        if (result.sent && reconnectPending) {
-          reconnectPending = false;
-          onFlushed?.(result);
-        }
-      },
-    });
-  });
+  void runtime.mutationTail
+    .then(() => {
+      if (disposed || runtime.initializationError) return;
+      disposeScheduler = installFlushScheduler(runtime.outbox, {
+        onFlushed: async (result) => {
+          await refreshProjection(runtime);
+          if (result.sent && reconnectPending) {
+            reconnectPending = false;
+            onFlushed?.(result);
+          }
+        },
+      });
+    })
+    .catch(() => undefined);
   return () => {
     disposed = true;
     globalThis.window?.removeEventListener("offline", onOffline);

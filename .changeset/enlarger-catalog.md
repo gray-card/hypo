@@ -1,5 +1,4 @@
 ---
-"hypo": minor
 "@hypo/web": minor
 "@hypo/lexicon": minor
 ---

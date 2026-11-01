@@ -1,7 +1,7 @@
 // uploadUI.js: create a new gallery straight from Hypo, uploading
 // photos to the user's PDS and (optionally) linking the whole set to their gear.
 
-import { el, field, toast } from "./dom.js";
+import { el, field, toast, userFacingError } from "./dom.js";
 import { uploadImage, createGallery, createPhoto, addGalleryItem, saveExif } from "../grain.js";
 import { instanceLabel, saveGalleryDefaults } from "../graycard.js";
 import { fileToExifForm } from "../readExif.js";
@@ -272,7 +272,8 @@ export async function openUploadModal(agent, did, onDone) {
       close();
       onDone?.(gallery);
     } catch (err) {
-      status.textContent = `Error: ${err?.message || err}`;
+      console.error("Gallery upload failed:", err);
+      status.textContent = userFacingError(err);
       saveBtn.disabled = false;
     }
   });
