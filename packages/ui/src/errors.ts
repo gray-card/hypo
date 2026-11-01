@@ -10,13 +10,13 @@ export function userFacingError(error: unknown): string {
     return "The photo has not finished saving, so it cannot be added to the gallery yet. Check your connection, then retry after it appears in your library.";
   }
   if (name === "QuotaExceededError" || /storage (?:quota|is full)/i.test(message)) {
-    return "This browser is out of storage space. Free some space, reload Hypo, and try again. This change was not saved.";
+    return "This browser is out of storage space. Free some space and reload Hypo. Check whether the record already appears before trying again.";
   }
   if (
     name === "InvalidStateError" ||
     /(?:database connection is closing|database.*(?:closed|closing)|transaction.*connection is closing)/i.test(message)
   ) {
-    return "This browser's local storage connection closed before the change could be saved. Reload Hypo and try again. If it keeps happening, check that browser storage is enabled.";
+    return "Hypo lost access to this browser's storage while finishing the action. Reload Hypo and check whether the record already appears before trying again. If it keeps happening, check that browser storage is enabled.";
   }
   if (name === "SwapConflict" || /record changed remotely|invalid.?swap/i.test(message)) {
     return "This record changed on another device. Open “Needs attention” from the menu to review your local change before retrying.";

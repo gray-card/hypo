@@ -1,4 +1,4 @@
-import { $, el, loadPhase, userFacingError } from "@hypo/ui";
+import { $, el, loadPhase } from "@hypo/ui";
 
 export interface GalleryRecord {
   uri: string;
@@ -248,7 +248,7 @@ export function createGalleryListView(options: GalleryListOptions) {
       console.error("Galleries could not be loaded:", error);
       phase.clear();
       list.replaceChildren();
-      status.textContent = userFacingError(error);
+      status.textContent = "Galleries could not be loaded. Check your connection and reload this page.";
     }
   };
 

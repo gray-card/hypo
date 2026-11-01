@@ -7,7 +7,7 @@ describe("actionable write errors", () => {
       "Failed to execute 'transaction': The database connection is closing",
       "InvalidStateError",
     );
-    expect(userFacingError(error)).toMatch(/Reload Hypo and try again/);
+    expect(userFacingError(error)).toMatch(/Reload Hypo and check whether the record already appears/);
     expect(userFacingError(error)).not.toMatch(/transaction|InvalidStateError/);
   });
 
@@ -25,7 +25,7 @@ describe("actionable write errors", () => {
     const logged = vi.spyOn(console, "error").mockImplementation(() => {});
     try {
       expect(await withButton(button, status, () => Promise.reject(error))).toBe(false);
-      expect(status.textContent).toMatch(/Reload Hypo and try again/);
+      expect(status.textContent).toMatch(/Reload Hypo and check whether the record already appears/);
       expect(status.textContent).not.toContain("database connection is closing");
       expect(logged).toHaveBeenCalledWith("Action failed:", error);
     } finally {
