@@ -303,7 +303,7 @@ export const GEAR_CATALOG_FORM_META = {
     { key: "make", label: "Make" },
     { key: "model", label: "Model", required: true },
     { key: "focalLengthMm", label: "Focal length (mm)", control: "integer" },
-    { key: "maxAperture", label: "Max aperture (f)", control: "scaled" },
+    { key: "maxAperture", label: "Max aperture (f)", control: "measure", unit: "f-number" },
     { key: "mount", label: "Mount", control: "enum", options: GEAR_FIELD_ENUM_OPTIONS.mount },
     { key: "coversFormat", label: "Covers format", control: "enum", options: GEAR_FIELD_ENUM_OPTIONS.coversFormat },
   ]),

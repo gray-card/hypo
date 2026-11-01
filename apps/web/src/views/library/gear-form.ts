@@ -150,8 +150,16 @@ export function openGearForm(
       typeInputs[key] = control.input;
       typeNodes[key] = control.node;
       const input = nativeInput(control.input);
-      if ((key === "brand" || key === "make") && input instanceof HTMLInputElement)
-        services.autocomplete(control.node, input, services.manufacturers());
+      if ((key === "brand" || key === "make") && input instanceof HTMLInputElement) {
+        const catalogOnly = typeKind === "enlargerType" || typeKind === "enlargingLensType";
+        services.autocomplete(
+          control.node,
+          input,
+          catalogOnly && preset
+            ? () => [...new Set(preset.items.map((item) => item.make).filter(Boolean))].sort()
+            : services.manufacturers(),
+        );
+      }
       nodes.push(control.node);
     }
     for (const [key, value] of Object.entries(prefill)) {
@@ -190,10 +198,9 @@ export function openGearForm(
         const model = normalized(valueOf(typeInputs[primaryKey]));
         if (!model) return;
         const make = makeKey ? normalized(valueOf(typeInputs[makeKey])) : "";
-        const item =
-          preset.items.find(
-            (candidate) => normalized(candidate[primaryKey]) === model && (!make || makeOf(candidate) === make),
-          ) || preset.items.find((candidate) => normalized(candidate[primaryKey]) === model);
+        const item = preset.items.find(
+          (candidate) => normalized(candidate[primaryKey]) === model && (!make || makeOf(candidate) === make),
+        );
         if (!item) return;
         matchedPreset = item;
         for (const [key, value] of Object.entries(item)) setPresetField(key, value, typeInputs, services);
@@ -344,7 +351,7 @@ export function openGearForm(
     async () => {
       let typeUri: string | null = null;
       if (typeKind) {
-        const typeRecord = readGearFormFields(typeInputs, services, {
+        const submittedType = readGearFormFields(typeInputs, services, {
           scaledKeys: [
             "focalLengthMin",
             "focalLengthMax",
@@ -362,6 +369,12 @@ export function openGearForm(
             ...(typeKind === "enlargingLensType" ? { maxAperture: "f-number" } : {}),
           },
         });
+        // Guided setup hides technical fields, but a catalog selection still
+        // supplies those verified specs and their document provenance.
+        const typeRecord =
+          guided && matchedPreset && (typeKind === "enlargerType" || typeKind === "enlargingLensType")
+            ? { ...matchedPreset, ...submittedType }
+            : submittedType;
         const required = TYPE_IDENTITY[typeKind].filter(([, , isRequired]) => isRequired).map(([key]) => key);
         if (required.some((key) => !valueOf(typeInputs[key]).trim()))
           throw new Error("Please fill the required fields");
@@ -377,8 +390,14 @@ export function openGearForm(
         const knownType = (services.getStore().catalog[typeKind] || []).find(
           (item) => services.catalogLabel(typeKind, item.value).toLowerCase().trim() === submittedLabel,
         );
-        if (matchedPreset?.datasheetUrl && !typeRecord.datasheet && !knownType?.value.datasheet)
-          typeRecord.datasheet = { url: matchedPreset.datasheetUrl };
+        const presetDocumentUrl =
+          matchedPreset?.datasheetUrl ||
+          ((typeKind === "enlargerType" || typeKind === "enlargingLensType") &&
+            matchedPreset?.documents?.find((document: GearValue) =>
+              /\.pdf(?:[?#]|$)/i.test(String(document.asset?.url || "")),
+            )?.asset?.url);
+        if (presetDocumentUrl && !typeRecord.datasheet && !knownType?.value.datasheet)
+          typeRecord.datasheet = { url: presetDocumentUrl };
         typeUri = await resolveGearTypeForSave(
           typeKind,
           typeRecord,

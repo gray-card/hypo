@@ -142,6 +142,67 @@ describe("Library PDS refresh", () => {
 });
 
 describe("openAddGear — the add-gear form (types hidden)", () => {
+  it("offers enlarger makers only from the sourced catalog and saves Omega B-22", async () => {
+    openAddGear("enlarger", () => {});
+    const modal = document.querySelector(".modal");
+    const make = labelInput(modal, "Make");
+    make.value = "Ome";
+    make.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(modal.querySelector(".ac-menu")?.textContent).toContain("Omega");
+    expect(modal.querySelector(".ac-menu")?.textContent).not.toContain("Nikon");
+    make.value = "Omega";
+    const model = labelInput(modal, "Model");
+    model.value = "B-22";
+    model.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(labelInput(modal, "Max negative format").value).toBe("6x6");
+    expect(labelInput(modal, "Head / light source").value).toBe("condenser");
+    [...modal.querySelectorAll("button")].find((button) => button.textContent === "Save").click();
+    await vi.waitFor(() => expect(agent.created).toHaveLength(2));
+    expect(agent.created[0].record).toMatchObject({ make: "Omega", model: "B-22", maxFormat: "6x6" });
+    expect(agent.created[0].record.datasheet?.url).toMatch(/01787\.pdf$/);
+    expect(agent.created[0].record.documents).toHaveLength(1);
+    expect(agent.created[1].record.type).toBe("at://did:plc:test/app.graycard.catalog.enlargerType/rk1");
+  });
+
+  it("saves an enlarging lens with a schema-native aperture measure", async () => {
+    openAddGear("enlargingLens", () => {});
+    const modal = document.querySelector(".modal");
+    labelInput(modal, "Make").value = "Rodenstock";
+    const model = labelInput(modal, "Model");
+    model.value = "Rodagon 80mm f/4";
+    model.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(labelInput(modal, "Max aperture").value).toBe("4");
+    expect(labelInput(modal, "Covers format").value).toBe("6x7");
+    [...modal.querySelectorAll("button")].find((button) => button.textContent === "Save").click();
+    await vi.waitFor(() => expect(agent.created).toHaveLength(2));
+    expect(agent.created[0].record).toMatchObject({
+      make: "Rodenstock",
+      model: "Rodagon 80mm f/4",
+      maxAperture: { value: 4_000_000, unit: "f-number", scale: 1_000_000 },
+    });
+    expect(agent.created[0].record.documents).toHaveLength(1);
+    expect(agent.created[1].record.type).toBe("at://did:plc:test/app.graycard.catalog.enlargingLensType/rk1");
+  });
+
+  it("keeps sourced darkroom specifications when guided setup hides technical fields", async () => {
+    openAddGear("enlargingLens", () => {}, {}, null, { guided: true });
+    const modal = document.querySelector(".modal");
+    expect(modal.querySelector(".technical-specs")).toBeNull();
+    labelInput(modal, "Make").value = "Rodenstock";
+    const model = labelInput(modal, "Model");
+    model.value = "Rodagon 80mm f/4";
+    model.dispatchEvent(new Event("input", { bubbles: true }));
+    [...modal.querySelectorAll("button")].find((button) => button.textContent === "Save").click();
+    await vi.waitFor(() => expect(agent.created).toHaveLength(2));
+    expect(agent.created[0].record.maxAperture).toEqual({
+      value: 4_000_000,
+      unit: "f-number",
+      scale: 1_000_000,
+    });
+    expect(agent.created[0].record.documents).toHaveLength(1);
+    expect(agent.created[0].record.specSources).toHaveLength(1);
+  });
+
   it("splits camera into 'which camera' identity and 'your copy', never says 'type'", () => {
     openAddGear("camera", () => {});
     const modal = document.querySelector(".modal");

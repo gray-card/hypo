@@ -235,7 +235,7 @@
         "unit": "f-number",
         "scale": 1000000
       },
-      "coversFormat": "6x6",
+      "coversFormat": "6x7",
       "documents": [
         {
           "kind": "technical-data",
