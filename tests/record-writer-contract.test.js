@@ -89,7 +89,7 @@ describe("application record-writer contract", () => {
     expect(validateRecord(collection, initial), JSON.stringify(initial)).toMatchObject({ success: true });
 
     const uri = await saveRecord(agent, DID, collection, initial, null);
-    expect(uri).toContain(`/${collection}/`);
+    expect(uri).toMatch(new RegExp(`^at://[^/]+/${collection.replaceAll(".", "\\.")}/[^/]+$`));
     expect(agent.created).toHaveLength(1);
     expect(agent.created[0]).toMatchObject({ collection, record: { ...initial, $type: initial.$type || collection } });
     expect(validateRecord(collection, agent.created[0].record)).toMatchObject({ success: true });

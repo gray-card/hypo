@@ -161,7 +161,8 @@ export async function openSyncDatabase(options: OpenSyncDatabaseOptions = {}): P
     throw new Error("IndexedDB is unavailable; inject a MemoryDatabase for this environment");
   }
 
-  const request = factory.open(options.name ?? SYNC_DATABASE_NAME, SYNC_DATABASE_VERSION);
+  const name = options.name ?? SYNC_DATABASE_NAME;
+  const request = factory.open(name, SYNC_DATABASE_VERSION);
   request.onupgradeneeded = (event) => {
     const oldVersion = event.oldVersion;
     const database = request.result;
@@ -176,25 +177,51 @@ export async function openSyncDatabase(options: OpenSyncDatabaseOptions = {}): P
   };
 
   const database = await requestResult(request);
-  return new IndexedDatabase(database);
+  return new IndexedDatabase(database, factory, name);
 }
 
 class IndexedDatabase implements SyncDatabase {
   readonly version: number;
+  private closed = false;
+  private reopening?: Promise<void>;
 
-  constructor(private readonly database: IDBDatabase) {
+  constructor(
+    private database: IDBDatabase,
+    private readonly factory: IDBFactory,
+    private readonly name: string,
+  ) {
     this.version = database.version;
   }
 
+  private async transaction(stores: string | string[], mode: IDBTransactionMode): Promise<IDBTransaction> {
+    if (this.closed) throw new Error("IndexedDB handle has been closed");
+    try {
+      return this.database.transaction(stores, mode);
+    } catch (error) {
+      // Browsers can close an idle connection (notably after a page has been
+      // suspended). Only retry transaction creation, before any write began.
+      if (!(error instanceof DOMException) || error.name !== "InvalidStateError") throw error;
+      this.reopening ??= openSyncDatabase({ factory: this.factory, name: this.name })
+        .then((reopened) => {
+          this.database = (reopened as IndexedDatabase).database;
+        })
+        .finally(() => {
+          this.reopening = undefined;
+        });
+      await this.reopening;
+      return this.database.transaction(stores, mode);
+    }
+  }
+
   async get<S extends StoreName>(store: S, key: StoreKey): Promise<StoreValue<S> | undefined> {
-    const transaction = this.database.transaction(store, "readonly");
+    const transaction = await this.transaction(store, "readonly");
     const value = await requestResult(transaction.objectStore(store).get(key));
     await transactionDone(transaction);
     return value as StoreValue<S> | undefined;
   }
 
   async getAll<S extends StoreName>(store: S): Promise<Array<StoreValue<S>>> {
-    const transaction = this.database.transaction(store, "readonly");
+    const transaction = await this.transaction(store, "readonly");
     const values = await requestResult(transaction.objectStore(store).getAll());
     await transactionDone(transaction);
     return values as Array<StoreValue<S>>;
@@ -206,20 +233,20 @@ class IndexedDatabase implements SyncDatabase {
 
   async putMany<S extends StoreName>(store: S, values: ReadonlyArray<StoreValue<S>>): Promise<void> {
     if (values.length === 0) return;
-    const transaction = this.database.transaction(store, "readwrite");
+    const transaction = await this.transaction(store, "readwrite");
     const objectStore = transaction.objectStore(store);
     for (const value of values) objectStore.put(value);
     await transactionDone(transaction);
   }
 
   async delete<S extends StoreName>(store: S, key: StoreKey): Promise<void> {
-    const transaction = this.database.transaction(store, "readwrite");
+    const transaction = await this.transaction(store, "readwrite");
     transaction.objectStore(store).delete(key);
     await transactionDone(transaction);
   }
 
   async count<S extends StoreName>(store: S): Promise<number> {
-    const transaction = this.database.transaction(store, "readonly");
+    const transaction = await this.transaction(store, "readonly");
     const count = await requestResult(transaction.objectStore(store).count());
     await transactionDone(transaction);
     return count;
@@ -228,7 +255,7 @@ class IndexedDatabase implements SyncDatabase {
   async batch(mutations: ReadonlyArray<DatabaseMutation>): Promise<void> {
     if (mutations.length === 0) return;
     const stores = [...new Set(mutations.map((mutation) => mutation.store))];
-    const transaction = this.database.transaction(stores, "readwrite");
+    const transaction = await this.transaction(stores, "readwrite");
     for (const mutation of mutations) {
       const store = transaction.objectStore(mutation.store);
       if (mutation.type === "put") store.put(mutation.value);
@@ -238,6 +265,7 @@ class IndexedDatabase implements SyncDatabase {
   }
 
   close(): void {
+    this.closed = true;
     this.database.close();
   }
 }

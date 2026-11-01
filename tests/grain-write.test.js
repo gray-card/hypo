@@ -10,6 +10,7 @@ import {
   COLLECTIONS,
 } from "../src/grain.js";
 import { mockAgent } from "./setup.js";
+import * as outbox from "../src/outbox.js";
 
 const BLOB_CID = "bafkreifqn5r4ki5vm4w55xd6qhot5gz6b3tvw7athjuwk4vkz6ppf5zo24";
 
@@ -29,6 +30,52 @@ describe("direct gallery upload helpers", () => {
     const agent = mockAgent();
     await createGallery(agent, "did:plc:test", { title: "   " });
     expect(agent.created[0].record.title).toBe("Untitled gallery");
+  });
+
+  it("waits for a concurrent flush and returns an AT URI before linking photos", async () => {
+    const agent = mockAgent();
+    const originalCreate = agent.com.atproto.repo.createRecord;
+    let releaseFirst;
+    let firstStarted;
+    const started = new Promise((resolve) => (firstStarted = resolve));
+    const gate = new Promise((resolve) => (releaseFirst = resolve));
+    agent.com.atproto.repo.createRecord = async (input) => {
+      if (input.collection === "app.graycard.instance.camera") {
+        firstStarted();
+        await gate;
+      }
+      return originalCreate(input);
+    };
+    const did = "did:plc:gallery-flush-race";
+    outbox.enqueue(did, "app.graycard.instance.camera", {
+      type: "at://did:plc:gallery-flush-race/app.graycard.catalog.cameraType/test",
+      createdAt: new Date().toISOString(),
+      nickname: "Test",
+    });
+    const firstFlush = outbox.flush(agent, did);
+    await started;
+    const galleryPromise = createGallery(agent, did, { title: "Trip" });
+    releaseFirst();
+    await firstFlush;
+    const gallery = await galleryPromise;
+    expect(gallery).toMatch(/^at:\/\//);
+    await addGalleryItem(agent, did, {
+      gallery,
+      item: "at://did:plc:gallery-flush-race/social.grain.photo/photo",
+    });
+    expect(agent.created.at(-1).record.gallery).toBe(gallery);
+  });
+
+  it("does not pass an offline temporary gallery URI to the uploader", async () => {
+    const did = "did:plc:offline-gallery";
+    const agent = mockAgent();
+    Object.defineProperty(navigator, "onLine", { value: false, configurable: true });
+    try {
+      await expect(createGallery(agent, did, { title: "Trip" })).rejects.toThrow(/queued but has not been saved/);
+      expect(agent.created).toHaveLength(0);
+    } finally {
+      Object.defineProperty(navigator, "onLine", { value: true, configurable: true });
+    }
   });
 
   it("createPhoto stores the blob and aspect ratio", async () => {

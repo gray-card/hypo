@@ -465,9 +465,25 @@ export async function flush(agent, did) {
 // transport failures throw, while stale swaps remain parked for the tray.
 export async function flushOperation(agent, did, id) {
   const runtime = runtimeFor(did);
-  const result = await flush(agent, did);
-  const operation = runtime.operations.get(id);
-  const acknowledgement = runtime.acknowledgements.get(id);
+  const queued = runtime.operations.get(id);
+  let result = await flush(agent, did);
+  let operation = runtime.operations.get(id);
+  // A scheduler flush may already have been running when this operation was
+  // enqueued, or another tab may briefly own the Web Lock. In either case the
+  // first flush can finish without touching this write. Do not report its
+  // temporary URI as the result of an online create until it has had a turn.
+  for (let attempt = 0; attempt < 100 && operation && isOnline(); attempt += 1) {
+    if (operation.lastError || result.failed || result.deferred || result.offline) break;
+    if (!result.locked && attempt > 0) break;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    result = await flush(agent, did);
+    operation = runtime.operations.get(id);
+  }
+  let acknowledgement = runtime.acknowledgements.get(id);
+  if (!acknowledgement && queued?.kind === "create") {
+    const durable = await runtime.outbox.acknowledgedUri(queued.tempUri);
+    if (durable) acknowledgement = { operation: queued, ...durable };
+  }
   if (operation?.status === "conflict") {
     const error = new Error(operation.conflict?.message || operation.lastError?.message || "Record needs attention");
     error.name = "SwapConflict";
