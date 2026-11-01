@@ -203,6 +203,54 @@ describe("openAddGear — the add-gear form (types hidden)", () => {
     expect(agent.created[0].record.specSources).toHaveLength(1);
   });
 
+  it("round-trips an existing enlarging lens aperture without changing its unit or scale", async () => {
+    const typeUri = "at://did:plc:test/app.graycard.catalog.enlargingLensType/lens-type";
+    const instanceUri = "at://did:plc:test/app.graycard.instance.enlargingLens/lens-copy";
+    initLibrary({
+      agent,
+      did: "did:plc:test",
+      store: {
+        catalog: {
+          enlargingLensType: [
+            {
+              uri: typeUri,
+              rkey: "lens-type",
+              cid: "type-cid",
+              value: {
+                make: "Rodenstock",
+                model: "Rodagon 80mm f/4",
+                maxAperture: { value: 4_000_000, unit: "f-number", scale: 1_000_000 },
+                createdAt: "2026-10-30T00:00:00.000Z",
+              },
+            },
+          ],
+        },
+        instance: { enlargingLens: [] },
+      },
+    });
+    openEditGear(
+      "enlargingLens",
+      {
+        uri: instanceUri,
+        rkey: "lens-copy",
+        cid: "instance-cid",
+        value: { type: typeUri, nickname: "My Rodagon", createdAt: "2026-10-30T00:00:00.000Z" },
+      },
+      () => {},
+    );
+    const modal = document.querySelector(".modal");
+    expect(labelInput(modal, "Max aperture").value).toBe("4");
+    labelInput(modal, "Covers format").value = "6x7";
+    labelInput(modal, "Nickname").value = "My 80mm Rodagon";
+    [...modal.querySelectorAll("button")].find((button) => button.textContent === "Save").click();
+    await vi.waitFor(() => expect(agent.put.length).toBeGreaterThan(0));
+    const typeWrite = agent.put.find((entry) => entry.collection === NS.catalog.enlargingLensType);
+    expect(typeWrite.record.maxAperture).toEqual({ value: 4_000_000, unit: "f-number", scale: 1_000_000 });
+    expect(agent.put.find((entry) => entry.collection === NS.instance.enlargingLens)?.record.nickname).toBe(
+      "My 80mm Rodagon",
+    );
+  });
+
   it("splits camera into 'which camera' identity and 'your copy', never says 'type'", () => {
     openAddGear("camera", () => {});
     const modal = document.querySelector(".modal");
