@@ -2,6 +2,25 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.10.0] - 2026-11-01
+
+### Added
+
+- Add reusable camera-scanning setups that link owned cameras and lenses with
+  supports, light sources, carriers, adapters, and other components. Scanning
+  sessions retain a snapshot of the setup used.
+- Add reusable film-processing sequences and print exposure plans. The print
+  editor supports ordered, timed exposures and dodge/burn selections drawn with
+  brush, polygon, ellipse, and gradient tools or imported from scene regions.
+
+### Changed
+
+- Connect scanning setups and processing plans to session logging, workflow
+  defaults, preview-first batch rules, and Data Quality checks. Sessions keep
+  their actual observations separate from the selected plan.
+- Commit the current 64-document Panproto schema snapshot and require its
+  freshness in release checks.
+
 ## [1.9.0] - 2026-11-01
 
 ### Added
