@@ -55,7 +55,11 @@ export async function flushRecordOperation(agent, did, operation) {
   try {
     settled = await outbox.flushOperation(agent, did, operation.id);
   } catch (error) {
-    store.replaceOperations(await outbox.list(did));
+    try {
+      store.replaceOperations(await outbox.list(did));
+    } catch {
+      // Preserve the write failure when the durable store is unavailable too.
+    }
     throw error;
   }
   if (settled.operation) {
@@ -378,7 +382,9 @@ export async function createGallery(agent, did, { title, description }) {
   value = canonicalizeAndValidateGrainRecord(COLLECTIONS.gallery, value);
   const operation = outbox.enqueue(did, COLLECTIONS.gallery, value);
   const settled = await flushRecordOperation(agent, did, operation);
-  return settled.acknowledgement?.uri || operation.tempUri;
+  if (!settled.acknowledgement?.uri)
+    throw new Error("The gallery is queued but has not been saved yet. Wait for sync before uploading photos.");
+  return settled.acknowledgement.uri;
 }
 
 export async function createPhoto(agent, did, { blob, alt, aspectRatio }) {
@@ -388,7 +394,9 @@ export async function createPhoto(agent, did, { blob, alt, aspectRatio }) {
   value = canonicalizeAndValidateGrainRecord(COLLECTIONS.photo, value);
   const operation = outbox.enqueue(did, COLLECTIONS.photo, value);
   const settled = await flushRecordOperation(agent, did, operation);
-  return settled.acknowledgement?.uri || operation.tempUri;
+  if (!settled.acknowledgement?.uri)
+    throw new Error("The photo is queued but has not been saved yet. Wait for sync before adding it to a gallery.");
+  return settled.acknowledgement.uri;
 }
 
 export async function addGalleryItem(agent, did, { gallery, item, position = 0 }) {

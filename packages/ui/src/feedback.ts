@@ -1,5 +1,6 @@
 import { el } from "./element.ts";
 import { toast } from "./toast.ts";
+import { userFacingError } from "./errors.ts";
 
 export interface LoadPhase {
   node: HTMLParagraphElement;
@@ -59,7 +60,8 @@ export async function withButton(
     }
     return true;
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = userFacingError(error);
+    if (message !== (error instanceof Error ? error.message : String(error))) console.error("Action failed:", error);
     if (status) {
       status.classList.add("err");
       status.textContent = `Error: ${message}`;

@@ -77,16 +77,42 @@ function transactionDone(transaction: IDBTransaction): Promise<void> {
 }
 
 class IndexedDbComplementStore implements ComplementStore {
-  constructor(private readonly database: IDBDatabase) {}
+  private closed = false;
+  private reopening?: Promise<void>;
+
+  constructor(
+    private database: IDBDatabase,
+    private readonly factory: IDBFactory,
+    private readonly name: string,
+  ) {}
+
+  private async transaction(mode: IDBTransactionMode): Promise<IDBTransaction> {
+    if (this.closed) throw new Error("Complement store has been closed");
+    try {
+      return this.database.transaction("complements", mode);
+    } catch (error) {
+      if (!(error instanceof DOMException) || error.name !== "InvalidStateError") throw error;
+      // Retry only transaction creation: no read or write has begun yet.
+      this.reopening ??= openComplementStore({ factory: this.factory, name: this.name })
+        .then((reopened) => {
+          this.database = (reopened as IndexedDbComplementStore).database;
+        })
+        .finally(() => {
+          this.reopening = undefined;
+        });
+      await this.reopening;
+      return this.database.transaction("complements", mode);
+    }
+  }
 
   async put(record: ComplementCustodyRecord): Promise<void> {
-    const transaction = this.database.transaction("complements", "readwrite");
+    const transaction = await this.transaction("readwrite");
     transaction.objectStore("complements").put(cloneRecord(record));
     await transactionDone(transaction);
   }
 
   async get(recordUri: string, cid: string, chainId: string): Promise<ComplementCustodyRecord | undefined> {
-    const transaction = this.database.transaction("complements", "readonly");
+    const transaction = await this.transaction("readonly");
     const record = await requestResult<ComplementCustodyRecord | undefined>(
       transaction.objectStore("complements").get(complementKey(recordUri, cid, chainId)),
     );
@@ -95,7 +121,7 @@ class IndexedDbComplementStore implements ComplementStore {
   }
 
   async list(recordUri: string, cid: string): Promise<readonly ComplementCustodyRecord[]> {
-    const transaction = this.database.transaction("complements", "readonly");
+    const transaction = await this.transaction("readonly");
     const records = await requestResult<ComplementCustodyRecord[]>(
       transaction.objectStore("complements").index("record-cid").getAll([recordUri, cid]),
     );
@@ -104,7 +130,7 @@ class IndexedDbComplementStore implements ComplementStore {
   }
 
   async deleteForUri(recordUri: string): Promise<void> {
-    const transaction = this.database.transaction("complements", "readwrite");
+    const transaction = await this.transaction("readwrite");
     const store = transaction.objectStore("complements");
     const keys = await requestResult<IDBValidKey[]>(store.index("record-uri").getAllKeys(recordUri));
     for (const key of keys) store.delete(key);
@@ -112,6 +138,7 @@ class IndexedDbComplementStore implements ComplementStore {
   }
 
   close(): void {
+    this.closed = true;
     this.database.close();
   }
 }
@@ -126,11 +153,12 @@ export async function openComplementStore(options: OpenComplementStoreOptions = 
   const factory = options.factory ?? globalThis.indexedDB;
   if (!factory) return new MemoryComplementStore();
 
-  const request = factory.open(options.name ?? COMPLEMENT_DATABASE_NAME, COMPLEMENT_DATABASE_VERSION);
+  const name = options.name ?? COMPLEMENT_DATABASE_NAME;
+  const request = factory.open(name, COMPLEMENT_DATABASE_VERSION);
   request.onupgradeneeded = () => {
     const store = request.result.createObjectStore("complements", { keyPath: "key" });
     store.createIndex("record-uri", "recordUri");
     store.createIndex("record-cid", ["recordUri", "cid"]);
   };
-  return new IndexedDbComplementStore(await requestResult(request));
+  return new IndexedDbComplementStore(await requestResult(request), factory, name);
 }
