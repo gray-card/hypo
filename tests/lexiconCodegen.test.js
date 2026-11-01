@@ -17,11 +17,11 @@ describe("generated lexicon package", () => {
     expect(CATALOG_KINDS).toContain("cameraType");
     expect(INSTANCE_KINDS).toContain("filmRoll");
     expect(new Set(RECORD_NSID_LIST).size).toBe(RECORD_NSID_LIST.length);
-    expect(RECORD_NSID_LIST).toHaveLength(57);
+    expect(RECORD_NSID_LIST).toHaveLength(60);
   });
 
   it("ships every source schema for runtime validation", () => {
-    expect(Object.keys(SCHEMAS)).toHaveLength(61);
+    expect(Object.keys(SCHEMAS)).toHaveLength(64);
     expect(SCHEMAS["app.graycard.defs"].defs.measure.type).toBe("object");
   });
 

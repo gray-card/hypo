@@ -44,6 +44,7 @@ export const NS = {
     "meter": "app.graycard.instance.meter",
     "printer": "app.graycard.instance.printer",
     "scanner": "app.graycard.instance.scanner",
+    "scanSetup": "app.graycard.instance.scanSetup",
     "storageLocation": "app.graycard.instance.storageLocation"
   },
   "meter": {
@@ -54,7 +55,11 @@ export const NS = {
     "capture": "app.graycard.photo.capture",
     "workflow": "app.graycard.photo.workflow"
   },
+  "print": {
+    "exposurePlan": "app.graycard.print.exposurePlan"
+  },
   "process": {
+    "developmentPlan": "app.graycard.process.developmentPlan",
     "developSession": "app.graycard.process.developSession",
     "digitizeSession": "app.graycard.process.digitizeSession",
     "editSession": "app.graycard.process.editSession",
@@ -118,11 +123,14 @@ export const RECORD_NSID_LIST = [
   "app.graycard.instance.meter",
   "app.graycard.instance.printer",
   "app.graycard.instance.scanner",
+  "app.graycard.instance.scanSetup",
   "app.graycard.instance.storageLocation",
   "app.graycard.meter.calibration",
   "app.graycard.meter.reading",
   "app.graycard.photo.capture",
   "app.graycard.photo.workflow",
+  "app.graycard.print.exposurePlan",
+  "app.graycard.process.developmentPlan",
   "app.graycard.process.developSession",
   "app.graycard.process.digitizeSession",
   "app.graycard.process.editSession",

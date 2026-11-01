@@ -1,4 +1,184 @@
 /* Sessions are a chronological contact sheet: dates form the rail, events form the frames. */
+.print-plan-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr);
+  gap: 24px;
+  align-items: start;
+}
+.print-plan-main,
+.print-plan-rail {
+  min-width: 0;
+}
+.print-plan-stage {
+  padding: 14px;
+  background: #171a1b;
+  border-radius: 9px;
+}
+.print-plan-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #262b2d;
+  border: 1px solid #4a5152;
+  border-radius: 3px;
+}
+.print-plan-canvas:not(.has-photo)::before {
+  content: "Choose a reference image to draw dodge and burn regions";
+  color: #c6cece;
+  max-width: 22ch;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.print-plan-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.print-plan-canvas:not(.has-photo) .print-plan-image {
+  display: none;
+}
+.print-plan-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+.print-plan-canvas:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.print-plan-tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 9px;
+  margin: 12px 0;
+}
+.print-plan-tool-row .field {
+  min-width: 100px;
+  margin: 0;
+}
+.print-plan-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.print-plan-tools button[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--surface-2);
+}
+.print-plan-rail {
+  border-left: 1px solid var(--border);
+  padding-left: 22px;
+}
+.print-plan-rail > h3 {
+  margin: 0 0 3px;
+}
+.print-plan-rail > p {
+  margin-top: 0;
+}
+.print-plan-steps {
+  display: grid;
+  gap: 5px;
+  max-height: 270px;
+  overflow: auto;
+}
+.print-plan-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-elev);
+  color: var(--text);
+}
+.print-plan-step.selected {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+.print-plan-step-index {
+  min-width: 1.7rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.print-plan-step strong,
+.print-plan-step small {
+  display: block;
+}
+.print-plan-step small {
+  color: var(--muted);
+  margin-top: 2px;
+}
+.print-plan-add {
+  margin: 10px 0 16px;
+}
+.print-plan-inspector {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+.print-plan-inspector h3 {
+  margin: 0 0 8px;
+}
+.print-plan-inspector .field {
+  margin-bottom: 7px;
+}
+.print-plan-hint {
+  min-height: 2em;
+}
+.print-plan-vertex {
+  cursor: move;
+}
+.print-plan-shapes {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+  max-height: 280px;
+  overflow: auto;
+}
+.print-plan-shape {
+  padding: 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.print-plan-shape strong {
+  text-transform: capitalize;
+}
+.print-plan-shape .field {
+  margin: 3px 0;
+}
+.print-plan-tests,
+.print-plan-filtration {
+  margin: 12px 0;
+}
+.print-plan-tests > summary,
+.print-plan-filtration > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.print-plan-tests .print-plan-shape {
+  margin: 8px 0;
+}
+@media (max-width: 760px) {
+  .print-plan-editor {
+    grid-template-columns: 1fr;
+  }
+  .print-plan-rail {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    padding: 16px 0 0;
+  }
+}
 .session-hero {
   display: flex;
   align-items: flex-end;

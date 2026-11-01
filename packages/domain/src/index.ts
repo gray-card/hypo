@@ -11,3 +11,5 @@ export * from "./frames.ts";
 export * from "./filmCarrier.ts";
 export * from "./provenance.ts";
 export * from "./timeSpan.ts";
+export * from "./printExposurePlan.ts";
+export * from "./developmentPlan.ts";

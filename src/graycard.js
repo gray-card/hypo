@@ -299,6 +299,7 @@ export function instanceLabel(kind, value, store) {
     return [value.nickname, t && catalogLabel("filterType", t)].filter(Boolean).join(" · ") || "Filter";
   }
   if (kind === "storageLocation") return value.name;
+  if (kind === "scanSetup") return value.name || "Scanning setup";
   if (kind === "intermediate") return value.label || value.kind;
   if (kind === "labAccount") return value.nickname || value.accountId || "Lab account";
   if (kind === "enlarger") return [value.nickname, value.make, value.model].filter(Boolean).join(" · ");

@@ -16,6 +16,8 @@ Workflow templates are reusable process graphs. A run expands one template into 
 5. Open **Configure** on a step to set its label, description, optional status, occurrence limits, process-session scope, and default resources.
 6. Select **Save** after adding at least one step.
 
+Use the typed resource controls in **Configure** for common operations. A development step can default a [film-processing sequence](./plan-darkroom-processing.md), recipe, chemistry and lab. A digitization step can default a [modular scanning setup](../explanation/camera-scanning-setups.md), camera, lens, scanner and scan profile. A print step can default a [print exposure plan](./plan-darkroom-processing.md), printer or enlarger, enlarging lens, paper, light source, filters and recipe. The advanced parameters remain available for stage-specific values that do not yet have a shared control.
+
 A step's occurrence limits control how many stage records a run creates. An optional step has a minimum of zero and may be skipped while the run is active. Repeated steps retain separate stable IDs, so two development baths can carry different defaults.
 
 ## Configure artifact flow
@@ -51,5 +53,7 @@ Open **Setup → Workflows** and find the run under **Active workflows**. Hypo s
 - **Cancel** marks every unfinished stage and the run as cancelled.
 
 Completing a stage stores its process-session link when that stage represents a separate event, records its outputs, and then makes newly available branches ready. Capture stages link directly to `app.graycard.session.capture`; they do not create a redundant process-side capture record. Edit, render/export, print, development, and digitization stages can each link to their corresponding `app.graycard.process.*` event. A join becomes available only after every incoming stage succeeds. The run becomes complete when every stage is completed or skipped.
+
+You can also log development or digitization from a roll rather than opening the workflow board first. Hypo fills the logger from that roll's next actionable stage when one exists, then links the saved session to the stage and advances the run. If a batch combines rolls with different stage defaults, Hypo leaves the conflicting defaults blank for review instead of choosing one roll's plan for every roll. Data Quality flags a completed development, digitization or print stage that lacks a process-session link.
 
 The roll board shows each roll's active workflow, next available stages, and completed-stage count.

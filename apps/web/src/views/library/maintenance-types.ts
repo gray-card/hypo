@@ -10,6 +10,7 @@ export interface LibraryStore {
   readonly catalog: Readonly<Record<string, readonly LibraryRecord[] | undefined>>;
   readonly instance: Readonly<Record<string, readonly LibraryRecord[] | undefined>>;
   readonly byUri: ReadonlyMap<string, { layer: string; kind: string; item: LibraryRecord }>;
+  readonly recordsByCollection?: Readonly<Record<string, readonly LibraryRecord[]>>;
   readonly workflowTemplates?: readonly LibraryRecord[];
   readonly workflowRuns?: readonly LibraryRecord[];
   readonly workflowStages?: readonly LibraryRecord[];
@@ -35,10 +36,12 @@ export interface ActivityCollections {
 }
 
 export interface LintFinding {
+  readonly id?: string;
   readonly title: string;
   readonly detail: string;
   readonly severity: string;
   readonly count: number;
+  readonly subjects?: readonly string[];
 }
 
 export interface ActivityServices {
@@ -59,12 +62,20 @@ export interface ActivityServices {
   isAdvanced(): boolean;
   inspect(record: LibraryRecord): void;
   openBatchRule?(record: LibraryRecord | null, onDone: () => void): void;
+  previewProcessBatch?(rule: LibraryValue): {
+    readonly matched: readonly {
+      readonly record: LibraryRecord;
+      readonly fields: readonly { readonly field: string; readonly before: unknown; readonly after: unknown }[];
+    }[];
+  };
+  applyProcessBatch?(rule: LibraryValue): Promise<number>;
   navigateSessions?(scope?: string): unknown;
   navigateSession?(kind: string, rkey: string): unknown;
   editSession?(kind: string, record: LibraryRecord, onDone: () => void): unknown;
   activeDevelopment(): { readonly film?: string } | null;
   openDevelopmentTimer(options: LibraryValue): Promise<unknown>;
   advanceWorkflowStage?(kind: string, subjectUris: readonly string[], sessionUri: string): Promise<number>;
+  workflowDefaults?(kind: string, subjectUris: readonly string[]): LibraryValue;
   workflowActions?(run: LibraryRecord): readonly LibraryRecord[];
   openWorkflowStageLogger?(run: LibraryRecord, stage: LibraryRecord, onDone: () => void): void;
   skipWorkflowStage?(run: LibraryRecord, stage: LibraryRecord, onDone: () => void): Promise<void>;

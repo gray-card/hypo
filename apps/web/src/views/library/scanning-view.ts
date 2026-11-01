@@ -4,6 +4,7 @@ import { createCatalogSelect, createInstanceSelect } from "./maintenance-selecto
 import type { ActivityServices, LibraryRecord, LibraryValue } from "./maintenance-types.ts";
 import { renderDarkroomActivity } from "./maintenance-darkroom.ts";
 import { openFrameLinker } from "./scanning-linker.ts";
+import { createScanAssemblyEditor, openScanSetupEditor, scanSetupSnapshot } from "./scan-setup.ts";
 
 const FILM_ROLL_COLLECTION = "app.graycard.instance.filmRoll";
 
@@ -43,6 +44,7 @@ export function renderScanningHeader(body: HTMLElement, services: ActivityServic
             { class: "ghost small-btn", onclick: () => openFrameLinker(render, services) },
             "Link frames → photos",
           ),
+          el("button", { class: "ghost small-btn", onclick: () => openScanSetupEditor(services, render) }, "New setup"),
           el("button", { class: "ghost small-btn primary-btn", onclick: () => openScanSession(render, services) }, [
             services.icon("image", 14),
             el("span", {}, "Log scan session"),
@@ -51,6 +53,31 @@ export function renderScanningHeader(body: HTMLElement, services: ActivityServic
       ]),
     ]),
   );
+  const setups = services.getStore().instance.scanSetup || [];
+  if (setups.length)
+    body.append(
+      el("div", { class: "card" }, [
+        el("h3", {}, "Saved scanning setups"),
+        el(
+          "ul",
+          { class: "gear-list" },
+          setups.map((setup) =>
+            el("li", { class: "gear-row row between" }, [
+              el("span", {}, `${setup.value.name} · ${(setup.value.components || []).length} components`),
+              el(
+                "button",
+                {
+                  type: "button",
+                  class: "ghost small-btn",
+                  onclick: () => openScanSetupEditor(services, render, setup),
+                },
+                "Edit",
+              ),
+            ]),
+          ),
+        ),
+      ]),
+    );
   renderDarkroomActivity(body, services, render, {
     kinds: ["digitize"],
     limit: 5,
@@ -65,7 +92,8 @@ export function openScanSession(
   options: ScanSessionOptions = {},
 ) {
   const existing = options.existing || null;
-  const value = existing?.value || options.initial || {};
+  const workflowRolls = options.selectedRolls || (options.selectedRoll ? [options.selectedRoll] : []);
+  const value = existing?.value || options.initial || services.workflowDefaults?.("digitize", workflowRolls) || {};
   const selectedRolls =
     options.selectedRolls || value.filmRolls || (options.selectedRoll ? [options.selectedRoll] : []);
   const rolls = services.getStore().instance.filmRoll || [];
@@ -103,8 +131,33 @@ export function openScanSession(
   updateSelectionSummary();
 
   const scannerSelect = createInstanceSelect("scanner", value.scanner || "", services);
+  const setupSelect = createInstanceSelect("scanSetup", value.scanSetup || "", services);
+  if (value.scanSetup && ![...setupSelect.options].some((option) => option.value === value.scanSetup)) {
+    setupSelect.add(el("option", { value: value.scanSetup }, "Unavailable setup (preserve existing link)"));
+    setupSelect.value = value.scanSetup;
+  }
   const cameraSelect = createInstanceSelect("camera", value.camera || "", services);
   const lensSelect = createInstanceSelect("lens", value.lens || "", services);
+  const assemblyContainer = el("div", {});
+  let assemblyEditor = createScanAssemblyEditor(value.setupSnapshot || {}, services);
+  assemblyContainer.append(assemblyEditor.node);
+  const selectedSetup = () =>
+    (services.getStore().instance.scanSetup || []).find((setup) => setup.uri === setupSelect.value);
+  const loadAssembly = () => {
+    const setup = selectedSetup();
+    assemblyEditor = createScanAssemblyEditor(setup?.value || {}, services);
+    assemblyContainer.replaceChildren(assemblyEditor.node);
+    for (const [role, select] of [
+      ["scanner", scannerSelect],
+      ["capture-camera", cameraSelect],
+      ["capture-lens", lensSelect],
+    ] as const) {
+      const ref = setup?.value.components?.find((component: LibraryValue) => component.role === role)?.ref;
+      if (ref) select.value = ref;
+    }
+  };
+  setupSelect.addEventListener("change", loadAssembly);
+  if (setupSelect.value && !value.setupSnapshot) loadAssembly();
   const profileSelect = createCatalogSelect("scanProfile", value.scanProfile || "", services);
   const methodSelect = el(
     "select",
@@ -183,6 +236,7 @@ export function openScanSession(
       el("details", { class: "process-disclosure", open: Boolean(options.initial || existing) }, [
         el("summary", {}, "Process details"),
         el("div", { class: "process-entry-grid" }, [
+          field("Reusable scanning setup", setupSelect),
           field("Scanner", scannerSelect),
           field("Camera (copy stand)", cameraSelect),
           field("Lens (copy stand)", lensSelect),
@@ -195,6 +249,10 @@ export function openScanSession(
           field("File format", formatInput),
           field("Inversion", inversionSelect),
           field("Lab service", labServiceInput),
+        ]),
+        el("details", { class: "process-disclosure" }, [
+          el("summary", {}, "Components and connections used in this session"),
+          assemblyContainer,
         ]),
       ]),
       field("Notes", notesInput),
@@ -214,8 +272,26 @@ export function openScanSession(
       if (startedAt) record.startedAt = startedAt;
       if (finishedAt) record.finishedAt = finishedAt;
       if (scannerSelect.value) record.scanner = scannerSelect.value;
+      if (setupSelect.value) record.scanSetup = setupSelect.value;
       if (cameraSelect.value) record.camera = cameraSelect.value;
       if (lensSelect.value) record.lens = lensSelect.value;
+      const assembly = assemblyEditor.read();
+      const setup = selectedSetup();
+      if (setup || assembly.components.length || assembly.connections.length || assembly.settings.length) {
+        const snapshot = scanSetupSnapshot({
+          name: setup?.value.name || value.setupSnapshot?.name || "Ad hoc scanning setup",
+          ...assembly,
+        });
+        for (const [role, ref] of [
+          ["scanner", scannerSelect.value],
+          ["capture-camera", cameraSelect.value],
+          ["capture-lens", lensSelect.value],
+        ]) {
+          const component = snapshot.components.find((item: LibraryValue) => item.role === role);
+          if (component && ref) component.ref = ref;
+        }
+        record.setupSnapshot = snapshot;
+      }
       if (profileSelect.value) record.scanProfile = profileSelect.value;
       if (softwareInput.value.trim()) record.software = softwareInput.value.trim();
       if (driverInput.value.trim()) record.driver = driverInput.value.trim();

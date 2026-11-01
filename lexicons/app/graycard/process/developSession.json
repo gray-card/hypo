@@ -172,6 +172,16 @@
               "ref": "#step"
             }
           },
+          "developmentPlan": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Reusable app.graycard.process.developmentPlan selected for this session."
+          },
+          "developmentPlanSnapshot": {
+            "type": "ref",
+            "ref": "app.graycard.process.developmentPlan#snapshot",
+            "description": "The planned sequence at the time of development, independent of later plan edits. Actual observations remain in steps."
+          },
           "tankType": { "type": "ref", "ref": "app.graycard.defs#tankType" },
           "provenance": { "type": "ref", "ref": "app.graycard.defs#provenance" },
           "fieldProvenance": {

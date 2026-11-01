@@ -67,6 +67,7 @@ export const lexiconSidebarItems = [
       "reference/lexicons/app.graycard.instance.meter",
       "reference/lexicons/app.graycard.instance.printer",
       "reference/lexicons/app.graycard.instance.scanner",
+      "reference/lexicons/app.graycard.instance.scanSetup",
       "reference/lexicons/app.graycard.instance.storageLocation",
     ],
   },
@@ -88,9 +89,16 @@ export const lexiconSidebarItems = [
   },
   {
     type: "category",
+    label: "Print",
+    collapsed: true,
+    items: ["reference/lexicons/app.graycard.print.exposurePlan"],
+  },
+  {
+    type: "category",
     label: "Processes",
     collapsed: true,
     items: [
+      "reference/lexicons/app.graycard.process.developmentPlan",
       "reference/lexicons/app.graycard.process.developSession",
       "reference/lexicons/app.graycard.process.digitizeSession",
       "reference/lexicons/app.graycard.process.editSession",

@@ -22,6 +22,16 @@
             "description": "Resulting photo records (e.g. social.grain.photo) produced by the scan."
           },
           "scanner": { "type": "string", "format": "at-uri", "description": "app.graycard.instance.scanner" },
+          "scanSetup": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Reusable app.graycard.instance.scanSetup chosen for this session. Existing scanner, camera, and lens fields describe the actual primary devices and remain valid independently of a setup."
+          },
+          "setupSnapshot": {
+            "type": "ref",
+            "ref": "app.graycard.instance.scanSetup#snapshot",
+            "description": "The components, connections, and settings actually used, independent of later changes to scanSetup."
+          },
           "camera": {
             "type": "string",
             "format": "at-uri",

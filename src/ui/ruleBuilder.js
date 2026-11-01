@@ -4,6 +4,7 @@
 import { el, field, openModal, withButton, toast, confirmModal, autocomplete } from "./dom.js";
 import { previewBatch, applyBatch } from "../batch.js";
 import { saveRecord, NS } from "../graycard.js";
+import { PROCESS_RULE_SCOPES, previewProcessBatch } from "../processBatch.js";
 
 const FIELD_PATHS = [
   "exif.make",
@@ -48,6 +49,8 @@ const ACTION_OPS = [
   "associateCamera",
   "associateLens",
 ];
+const PROCESS_ACTION_OPS = ["setField", "clearField"];
+const SCOPE_OPTIONS = ["gallery", ...Object.keys(PROCESS_RULE_SCOPES)];
 const MODES = ["fill", "overwrite", "ifEmpty"];
 const OP_LABELS = {
   empty: "is empty",
@@ -74,6 +77,8 @@ const OP_LABELS = {
   fill: "Fill blank values",
   overwrite: "Replace existing values",
   ifEmpty: "Only when empty",
+  setField: "Set a field",
+  clearField: "Clear a field",
 };
 
 export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, options = {}) {
@@ -82,7 +87,15 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
   const combinator = el("select", {}, [
     el("option", { value: "and" }, "Match ALL"),
     el("option", { value: "or" }, "Match ANY"),
+    el("option", { value: "not" }, "Match NOT (one condition)"),
   ]);
+  const scopeSelect = el(
+    "select",
+    {},
+    SCOPE_OPTIONS.map((scope) => el("option", { value: scope }, scope.replaceAll("-", " "))),
+  );
+  scopeSelect.value = ctx.detail ? "gallery" : initial?.scope || "gallery";
+  if (ctx.detail) scopeSelect.disabled = true;
   const nameInput = el("input", { type: "text", placeholder: "rule name (to save)", value: initial?.name || "" });
   const preview = el("pre", { class: "batch-preview muted" }, "Preview matches.");
   const status = el("span", { class: "status" });
@@ -92,7 +105,10 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
   function addCond(init = {}) {
     const f = el("input", { type: "text", placeholder: "field", value: init.field || "" });
     const fWrap = el("div", { class: "rb-field" }, [f]);
-    autocomplete(fWrap, f, FIELD_PATHS);
+    autocomplete(fWrap, f, [
+      ...FIELD_PATHS,
+      ...Object.values(PROCESS_RULE_SCOPES).flatMap((scope) => scope.fields.map((name) => `record.${name}`)),
+    ]);
     const op = el(
       "select",
       {},
@@ -126,13 +142,16 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
     condWrap.append(row);
   }
   function addAct(init = {}) {
+    const supported = scopeSelect.value === "gallery" ? ACTION_OPS : PROCESS_ACTION_OPS;
     const op = el(
       "select",
       {},
-      ACTION_OPS.map((o) => el("option", { value: o }, OP_LABELS[o] || o)),
+      supported.map((o) => el("option", { value: o }, OP_LABELS[o] || o)),
     );
-    op.value = init.op || "setAlt";
-    const f = el("input", { type: "text", placeholder: "EXIF field", value: init.field || "" });
+    op.value = init.op || supported[0];
+    const f = el("input", { type: "text", placeholder: "Field name", value: init.field || "" });
+    const fWrap = el("div", { class: "rb-field" }, [f]);
+    autocomplete(fWrap, f, [...new Set(Object.values(PROCESS_RULE_SCOPES).flatMap((scope) => scope.fields))]);
     const v = el("input", { type: "text", placeholder: "Text or template", value: init.value ?? "" });
     const ref = el("select");
     const mode = el(
@@ -142,7 +161,7 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
     );
     mode.value = init.mode || "fill";
     const rec = { op, f, v, ref, mode };
-    const fieldField = field("EXIF field", f);
+    const fieldField = field("Field", fWrap);
     const valueField = field("Value or template", v);
     const refField = field("Camera or lens", ref);
     const modeField = field("Write mode", mode);
@@ -184,9 +203,13 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
     const refresh = () => {
       const action = op.value;
       const associates = action === "associateCamera" || action === "associateLens";
-      fieldField.classList.toggle("hidden", action !== "setExif");
-      valueField.classList.toggle("hidden", !["setAlt", "setGalleryDescription", "setExif"].includes(action));
+      fieldField.classList.toggle("hidden", !["setExif", "setField", "clearField"].includes(action));
+      valueField.classList.toggle(
+        "hidden",
+        !["setAlt", "setGalleryDescription", "setExif", "setField"].includes(action),
+      );
       refField.classList.toggle("hidden", !associates);
+      modeField.classList.toggle("hidden", action === "clearField");
       if (associates) refreshResources(action === "associateCamera" ? "camera" : "lens");
     };
     op.addEventListener("change", refresh);
@@ -199,14 +222,59 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
   if (initial) {
     const w = initial.when;
     const cmps = w?.operator ? w.operands : w ? [w] : [];
-    if (w?.operator) combinator.value = w.operator === "or" ? "or" : "and";
+    if (w?.operator) combinator.value = w.operator;
     cmps.forEach((c) => addCond(c));
     (initial.actions || []).forEach((a) => addAct(a));
   }
   if (!condRows.length) addCond();
   if (!actRows.length) addAct();
+  const advancedRule = el(
+    "textarea",
+    { rows: "12", spellcheck: "false" },
+    initial
+      ? JSON.stringify({ scope: initial.scope || "gallery", when: initial.when, actions: initial.actions }, null, 2)
+      : "",
+  );
+  const useAdvanced = el("input", { type: "checkbox" });
+  const complexInitial = Boolean(
+    initial?.when?.operands?.some((operand) => operand.operator) ||
+    initial?.actions?.some(
+      (action) =>
+        !(initial?.scope && initial.scope !== "gallery" ? PROCESS_ACTION_OPS : ACTION_OPS).includes(action.op),
+    ),
+  );
+  useAdvanced.checked = complexInitial;
+  const advancedBox = el("div", { class: complexInitial ? "" : "hidden" }, [
+    el(
+      "p",
+      { class: "muted small" },
+      "Advanced JSON preserves nested conditions and actions the guided editor cannot express. Validate the preview before applying.",
+    ),
+    advancedRule,
+  ]);
+  useAdvanced.addEventListener("change", () => advancedBox.classList.toggle("hidden", !useAdvanced.checked));
+  scopeSelect.addEventListener("change", () => {
+    const supported = scopeSelect.value === "gallery" ? ACTION_OPS : PROCESS_ACTION_OPS;
+    for (const row of actRows) {
+      const selected = row.op.value;
+      row.op.replaceChildren(...supported.map((op) => el("option", { value: op }, OP_LABELS[op] || op)));
+      if (supported.includes(selected)) row.op.value = selected;
+      row.op.dispatchEvent(new Event("change"));
+    }
+  });
 
   function buildRule() {
+    if (useAdvanced.checked) {
+      const parsed = JSON.parse(advancedRule.value);
+      if (!parsed.when || !Array.isArray(parsed.actions) || !parsed.actions.length)
+        throw new Error("Advanced rules need a condition and at least one action.");
+      return {
+        name: nameInput.value.trim() || "Untitled rule",
+        scope: parsed.scope || scopeSelect.value,
+        when: parsed.when,
+        actions: parsed.actions,
+      };
+    }
     const cmps = condRows
       .filter((r) => r.f.value.trim())
       .map((r) => {
@@ -215,7 +283,10 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
           c.value = r.v.value.trim();
         return c;
       });
-    const when = cmps.length === 1 ? cmps[0] : { operator: combinator.value, operands: cmps };
+    const when =
+      cmps.length === 1 && combinator.value !== "not" ? cmps[0] : { operator: combinator.value, operands: cmps };
+    if (!cmps.length) throw new Error("Add at least one condition.");
+    if (combinator.value === "not" && cmps.length !== 1) throw new Error("Match NOT needs exactly one condition.");
     const actions = actRows
       .filter((r) => r.op.value)
       .map((r) => {
@@ -226,7 +297,8 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
         if (r.mode.value) a.mode = r.mode.value;
         return a;
       });
-    return { name: nameInput.value.trim() || "Untitled rule", when, actions };
+    if (!actions.length) throw new Error("Add at least one action.");
+    return { name: nameInput.value.trim() || "Untitled rule", scope: scopeSelect.value, when, actions };
   }
 
   const galleryActions = Boolean(ctx.detail)
@@ -275,12 +347,15 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
       "A batch rule is a reusable instruction: when a photo or gallery matches the conditions, Hypo applies the changes you specify. Saving a rule does not change any photos until you choose it in a gallery's Batch edit panel.",
     ),
     el("h3", { class: "modal-sub" }, "Conditions"),
+    field("Apply to", scopeSelect),
     field("Combine", combinator),
     condWrap,
     el("button", { class: "ghost small-btn", onclick: () => addCond() }, "+ Condition"),
     el("h3", { class: "modal-sub" }, "Actions"),
     actWrap,
     el("button", { class: "ghost small-btn", onclick: () => addAct() }, "+ Action"),
+    el("label", { class: "row small" }, [useAdvanced, el("span", {}, "Use advanced rule JSON")]),
+    advancedBox,
     field("Save as", nameInput),
     el("div", { class: "row wrap" }, [
       ...galleryActions,
@@ -291,6 +366,11 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
           onclick: async (e) => {
             await withButton(e.target, status, async () => {
               const rule = buildRule();
+              if (rule.scope === "gallery") {
+                const unsupported = rule.actions.find((action) => !ACTION_OPS.includes(action.op));
+                if (unsupported)
+                  throw new Error(`“${unsupported.op}” cannot be applied to a gallery. Choose a supported action.`);
+              } else previewProcessBatch(ctx.store, rule);
               const now = new Date().toISOString();
               const uri = await saveRecord(
                 ctx.agent,
@@ -298,6 +378,7 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
                 NS.rule.batch,
                 {
                   name: rule.name,
+                  scope: rule.scope,
                   when: rule.when,
                   actions: rule.actions,
                   createdAt: options.existing?.value?.createdAt || now,
@@ -305,7 +386,7 @@ export function openRuleBuilder(ctx, onApplied, initial = null, onSaved = null, 
                 },
                 options.existing || null,
               );
-              onSaved?.({ id: uri, name: rule.name, when: rule.when, actions: rule.actions });
+              onSaved?.({ id: uri, name: rule.name, scope: rule.scope, when: rule.when, actions: rule.actions });
               toast(`Saved rule "${rule.name}"`, "ok");
             });
           },

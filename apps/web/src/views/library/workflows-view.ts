@@ -9,6 +9,9 @@ import {
 } from "@hypo/domain";
 import { createCatalogSelect, createChemistrySelect, createInstanceSelect } from "./maintenance-selectors.ts";
 import type { ActivityServices, LibraryRecord, LibraryValue } from "./maintenance-types.ts";
+import { openScanSetupEditor } from "./scan-setup.ts";
+import { openPrintExposurePlanEditor } from "./print-exposure-plan.ts";
+import { openDevelopmentPlanEditor } from "./development-plan.ts";
 
 function templateSteps(value: LibraryValue): WorkflowStep[] {
   return applyTemplateDefaults(stepsFromTemplate({ value }), { value });
@@ -138,6 +141,19 @@ function openTemplateStepConfig(
       createInstanceSelect("filmRoll", String(step.processFields.filmRoll || ""), services),
     );
   } else if (step.kind === "develop") {
+    const developmentPlanSelect = el("select", {}, [
+      el("option", { value: "" }, "None"),
+      ...(services.getStore().recordsByCollection?.["app.graycard.process.developmentPlan"] || []).map((plan) =>
+        el("option", { value: plan.uri }, String(plan.value.name || plan.uri)),
+      ),
+    ]);
+    developmentPlanSelect.value = String(step.processFields.developmentPlan || "");
+    addSelect("Film-processing sequence", "developmentPlan", developmentPlanSelect);
+    addSelect(
+      "Development recipe",
+      "recipe",
+      createCatalogSelect("devRecipe", String(step.processFields.recipe || ""), services),
+    );
     addSelect(
       "Developer chemistry",
       "chemistry",
@@ -150,6 +166,13 @@ function openTemplateStepConfig(
     addSelect("Lab", "lab", createCatalogSelect("lab", String(step.processFields.lab || ""), services));
   } else if (step.kind === "digitize") {
     addSelect(
+      "Scanning setup",
+      "scanSetup",
+      createInstanceSelect("scanSetup", String(step.processFields.scanSetup || ""), services),
+    );
+    addSelect("Camera", "camera", createInstanceSelect("camera", String(step.processFields.camera || ""), services));
+    addSelect("Lens", "lens", createInstanceSelect("lens", String(step.processFields.lens || ""), services));
+    addSelect(
       "Scanner",
       "scanner",
       createInstanceSelect("scanner", String(step.processFields.scanner || ""), services),
@@ -160,6 +183,14 @@ function openTemplateStepConfig(
       createCatalogSelect("scanProfile", String(step.processFields.scanProfile || ""), services),
     );
   } else if (step.kind === "print") {
+    const exposurePlanSelect = el("select", {}, [
+      el("option", { value: "" }, "None"),
+      ...(services.getStore().recordsByCollection?.["app.graycard.print.exposurePlan"] || []).map((plan) =>
+        el("option", { value: plan.uri }, String(plan.value.name || plan.uri)),
+      ),
+    ]);
+    exposurePlanSelect.value = String(step.processFields.exposurePlan || "");
+    addSelect("Print exposure plan", "exposurePlan", exposurePlanSelect);
     addSelect(
       "Printer",
       "printer",
@@ -796,9 +827,38 @@ export function renderDataQualityView(body: HTMLElement, services: ActivityServi
   else {
     const list = el("ul", { class: "gear-list" });
     for (const finding of findings) {
+      const subjects = (finding.subjects || [])
+        .slice(0, 5)
+        .map((uri) => {
+          const record = services.getStore().byUri.get(uri)?.item;
+          if (!record) return null;
+          const open = () => {
+            if (uri.includes(".instance.scanSetup/")) return openScanSetupEditor(services, () => {}, record);
+            if (uri.includes(".print.exposurePlan/")) return openPrintExposurePlanEditor(services, () => {}, record);
+            if (uri.includes(".process.developmentPlan/")) return openDevelopmentPlanEditor(services, () => {}, record);
+            if (uri.includes(".process.digitizeSession/")) return services.editSession?.("digitize", record, () => {});
+            if (uri.includes(".process.developSession/")) return services.editSession?.("develop", record, () => {});
+            return services.inspect(record);
+          };
+          return el(
+            "button",
+            { type: "button", class: "ghost small-btn", onclick: open },
+            record.value.name ||
+              record.value.nickname ||
+              record.value.label ||
+              record.value.method ||
+              uri.split("/").at(-1) ||
+              "Review record",
+          );
+        })
+        .filter(Boolean);
       list.append(
         el("li", { class: "gear-row row between" }, [
-          el("div", {}, [el("strong", {}, finding.title), el("div", { class: "muted small" }, finding.detail)]),
+          el("div", {}, [
+            el("strong", {}, finding.title),
+            el("div", { class: "muted small" }, finding.detail),
+            subjects.length ? el("div", { class: "row wrap" }, subjects) : null,
+          ]),
           el("span", { class: `lint-pill ${finding.severity}` }, String(finding.count)),
         ]),
       );
@@ -836,10 +896,75 @@ export function renderBatchRulesView(body: HTMLElement, services: ActivityServic
   ]);
   const list = el("ul", { class: "gear-list" });
   for (const rule of services.getStore().batchRules) {
+    const processRule = ["develop-session", "digitize-session", "print-session", "workflow-stage"].includes(
+      rule.value.scope,
+    );
+    const previewText = el("div", { class: "muted small", role: "status", "aria-live": "polite" });
+    let previewCount = 0;
+    const applyButton = el(
+      "button",
+      {
+        class: "ghost small-btn",
+        type: "button",
+        disabled: true,
+        onclick: async () => {
+          if (!previewCount || !services.applyProcessBatch) return;
+          if (
+            !(await confirmModal(`Apply “${rule.value.name}” to ${previewCount} records?`, {
+              confirmLabel: "Apply",
+              danger: false,
+            }))
+          )
+            return;
+          try {
+            const count = await services.applyProcessBatch(rule.value);
+            toast(`Updated ${count} records`, "ok");
+            rerender();
+          } catch (error) {
+            toast(error instanceof Error ? error.message : "The rule could not be applied.", "err");
+          }
+        },
+      },
+      "Apply",
+    );
+    const previewButton = el(
+      "button",
+      {
+        class: "ghost small-btn",
+        type: "button",
+        onclick: () => {
+          try {
+            const preview = services.previewProcessBatch?.(rule.value);
+            previewCount = preview?.matched.length || 0;
+            applyButton.disabled = !previewCount;
+            previewText.textContent = previewCount
+              ? `${previewCount} record${previewCount === 1 ? "" : "s"} would change: ${preview!.matched
+                  .slice(0, 5)
+                  .map(
+                    (item) =>
+                      `${item.record.value.name || item.record.value.method || item.record.uri.split("/").at(-1)} (${item.fields.map((change) => change.field).join(", ")})`,
+                  )
+                  .join("; ")}${previewCount > 5 ? "…" : ""}`
+              : "No records match or need changes.";
+          } catch (error) {
+            previewCount = 0;
+            applyButton.disabled = true;
+            previewText.textContent = error instanceof Error ? error.message : "The rule could not be previewed.";
+          }
+        },
+      },
+      "Preview",
+    );
     list.append(
-      el("li", { class: "gear-row row between" }, [
-        el("span", {}, rule.value.name),
+      el("li", { class: "gear-row row between wrap" }, [
+        el("div", {}, [
+          el("span", {}, rule.value.name),
+          el("div", { class: "muted small" }, rule.value.scope || "gallery"),
+          processRule ? previewText : null,
+        ]),
         el("span", { class: "row wrap" }, [
+          processRule ? previewButton : null,
+          processRule ? applyButton : null,
           el(
             "button",
             {

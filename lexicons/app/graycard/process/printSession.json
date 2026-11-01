@@ -204,6 +204,16 @@
           "filtration": { "type": "ref", "ref": "#filtration" },
           "testStrip": { "type": "string", "maxLength": 512, "description": "Test-strip findings." },
           "dodgeBurn": { "type": "string", "maxLength": 1000, "description": "Local dodge/burn notes." },
+          "exposurePlan": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Reusable app.graycard.print.exposurePlan used for this print."
+          },
+          "exposurePlanSnapshot": {
+            "type": "ref",
+            "ref": "app.graycard.print.exposurePlan#snapshot",
+            "description": "The exposure sequence actually used, independent of later edits to the plan."
+          },
 
           "wetProcess": { "type": "ref", "ref": "#wetProcess" },
           "altProcess": { "type": "ref", "ref": "#altProcess" },

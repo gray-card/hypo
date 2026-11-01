@@ -688,6 +688,7 @@ export const RECORD_SCHEMA_META = {
   "app.graycard.instance.meter": meta("app.graycard.instance.meter", "Meter", "Meter"),
   "app.graycard.instance.printer": meta("app.graycard.instance.printer", "Printer", "Printers"),
   "app.graycard.instance.scanner": meta("app.graycard.instance.scanner", "Scanner", "Scanners"),
+  "app.graycard.instance.scanSetup": meta("app.graycard.instance.scanSetup", "Scanning setup", "Scanning setups"),
   "app.graycard.instance.storageLocation": meta("app.graycard.instance.storageLocation", "Storage location", "Storage"),
   "app.graycard.meter.calibration": meta("app.graycard.meter.calibration", "Calibration", "Calibration"),
   "app.graycard.meter.reading": meta("app.graycard.meter.reading", "Reading", "Reading"),
@@ -697,6 +698,16 @@ export const RECORD_SCHEMA_META = {
   "app.graycard.photo.workflow": meta("app.graycard.photo.workflow", "Workflow", "Workflow", {
     collection: "Photo workflow",
   }),
+  "app.graycard.print.exposurePlan": meta(
+    "app.graycard.print.exposurePlan",
+    "Print exposure plan",
+    "Print exposure plans",
+  ),
+  "app.graycard.process.developmentPlan": meta(
+    "app.graycard.process.developmentPlan",
+    "Processing sequence",
+    "Processing sequences",
+  ),
   "app.graycard.process.developSession": meta(
     "app.graycard.process.developSession",
     "Develop session",

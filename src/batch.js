@@ -8,7 +8,7 @@ import {
   renderTemplate as renderDomainTemplate,
 } from "@hypo/domain";
 import { exifValueToForm, projectCaptureToExif, resolvePhotoCapture, savePhotoCapture } from "./graycard.js";
-import { saveExif, savePhotoAlt } from "./grain.js";
+import { saveExif, saveGallery, savePhotoAlt } from "./grain.js";
 
 const domainAdapters = { exifValueToForm, projectCaptureToExif, resolvePhotoCapture };
 
@@ -37,6 +37,12 @@ export function previewBatch(detail, store, rule) {
 export async function applyBatch(agent, did, detail, store, rule, onProgress) {
   const preview = previewBatch(detail, store, rule);
   const total = preview.matched.length;
+  if (preview.galleryDescriptionChange) {
+    await saveGallery(agent, did, detail.gallery, {
+      title: detail.gallery.value.title,
+      description: preview.galleryDescriptionChange.to,
+    });
+  }
   let done = 0;
   for (const item of preview.matched) {
     const photo = detail.photos[item.index - 1];

@@ -12,6 +12,7 @@ These pages describe why the current contracts take their present form:
 - [Types, instances, events, and artifacts](./type-instance-event-artifact.md)
 - [Workflow templates, runs, and stages](./workflow-records.md)
 - [Development sessions and process stages](./development-session-model.md)
+- [Film-processing sequences and print exposure plans](./processing-plans.md)
 - [Swap concurrency](./swap-concurrency.md)
 - [Provenance tiers](./provenance-tiers.md)
 - [Why the timer follows wall-clock deadlines](./timer-wall-clock.md)
