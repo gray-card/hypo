@@ -58,7 +58,9 @@ function hasIndexedDatabase() {
 
 function databaseForRuntime() {
   if (!hasIndexedDatabase()) return Promise.resolve(new MemoryDatabase());
-  indexedDatabasePromise ??= openSyncDatabase().catch(() => new MemoryDatabase());
+  // A browser with IndexedDB must never silently fall back to a volatile
+  // queue: an offline change would appear saved and vanish on reload.
+  indexedDatabasePromise ??= openSyncDatabase();
   return indexedDatabasePromise;
 }
 
@@ -180,6 +182,7 @@ function createRuntime(repo) {
     operations,
     acknowledgements: new Map(),
     persistenceFailures: new Map(),
+    initializationError: null,
     lastCreatedAt,
     outbox: null,
     mutationTail: Promise.resolve(),
@@ -198,39 +201,47 @@ function createRuntime(repo) {
     }
   }
 
-  runtime.ready = databaseForRuntime().then(async (database) => {
-    const outbox = new Outbox({
-      database,
-      client: clientDelegate(runtime),
-      repo,
-      isOnline,
-      onAcknowledged: async (acknowledgement) => {
-        runtime.acknowledgements.set(acknowledgement.operation.id, acknowledgement);
-        runtime.operations.delete(acknowledgement.operation.id);
-        for (const listener of acknowledgementListeners.get(repo) || []) {
-          try {
-            await listener(acknowledgement);
-          } catch (error) {
-            console.warn("Acknowledged write projection could not update:", error?.message || error);
+  runtime.ready = databaseForRuntime()
+    .then(async (database) => {
+      const outbox = new Outbox({
+        database,
+        client: clientDelegate(runtime),
+        repo,
+        isOnline,
+        onAcknowledged: async (acknowledgement) => {
+          runtime.acknowledgements.set(acknowledgement.operation.id, acknowledgement);
+          runtime.operations.delete(acknowledgement.operation.id);
+          for (const listener of acknowledgementListeners.get(repo) || []) {
+            try {
+              await listener(acknowledgement);
+            } catch (error) {
+              console.warn("Acknowledged write projection could not update:", error?.message || error);
+            }
           }
-        }
-      },
-    });
-    runtime.outbox = outbox;
-    const legacyStorage = storage();
-    if (legacyStorage) await outbox.migrate(legacyStorage);
+        },
+      });
+      runtime.outbox = outbox;
+      const legacyStorage = storage();
+      if (legacyStorage) await outbox.migrate(legacyStorage);
 
-    const durable = await outbox.list();
-    const merged = new Map(durable.map((operation) => [operation.id, operation]));
-    // Synchronous facade calls may have added operations while IndexedDB was
-    // opening. Their queued mutations run immediately after this handoff.
-    for (const operation of runtime.operations.values()) {
-      if (!merged.has(operation.id)) merged.set(operation.id, operation);
-    }
-    runtime.operations = merged;
-    return outbox;
-  });
+      const durable = await outbox.list();
+      const merged = new Map(durable.map((operation) => [operation.id, operation]));
+      // Synchronous facade calls may have added operations while IndexedDB was
+      // opening. Their queued mutations run immediately after this handoff.
+      for (const operation of runtime.operations.values()) {
+        if (!merged.has(operation.id)) merged.set(operation.id, operation);
+      }
+      runtime.operations = merged;
+      return outbox;
+    })
+    .catch((error) => {
+      runtime.initializationError = error;
+      throw error;
+    });
   runtime.mutationTail = runtime.ready.then(() => undefined);
+  // Synchronous callers can inspect optimistic state without awaiting ready.
+  // Mark the rejected startup promise handled; later writes still receive it.
+  void runtime.mutationTail.catch(() => undefined);
   return runtime;
 }
 
@@ -403,6 +414,7 @@ export function pendingCount(did) {
 export async function list(did, options = {}) {
   const runtime = runtimeFor(did);
   await runtime.mutationTail;
+  if (runtime.initializationError) throw runtime.initializationError;
   const normalized = typeof options === "string" ? { collection: options } : options;
   const operations = await runtime.outbox.list(normalized);
   if (normalized.collection || normalized.status) {
@@ -439,12 +451,14 @@ export function remove(did, id) {
 export async function conflicts(did) {
   const runtime = runtimeFor(did);
   await runtime.mutationTail;
+  if (runtime.initializationError) throw runtime.initializationError;
   return (await runtime.outbox.conflicts()).map(compatibilityOperation);
 }
 
 export async function rebaseConflict(did, id, update) {
   const runtime = runtimeFor(did);
   await runtime.mutationTail;
+  if (runtime.initializationError) throw runtime.initializationError;
   const operation = await runtime.outbox.rebaseConflict(id, update);
   runtime.operations.set(operation.id, operation);
   return compatibilityOperation(operation);
@@ -463,6 +477,7 @@ export async function flush(agent, did) {
   const runtime = runtimeFor(did);
   runtime.agent = agent;
   await runtime.mutationTail;
+  if (runtime.initializationError) throw runtime.initializationError;
   const result = await runtime.outbox.flush();
   await refreshProjection(runtime);
   if (!result.failed) return result;
@@ -534,18 +549,20 @@ export function installAutoFlush(agent, did, onFlushed) {
     reconnectPending = true;
   };
   globalThis.window?.addEventListener("offline", onOffline);
-  runtime.mutationTail.then(() => {
-    if (disposed) return;
-    disposeScheduler = installFlushScheduler(runtime.outbox, {
-      onFlushed: async (result) => {
-        await refreshProjection(runtime);
-        if (result.sent && reconnectPending) {
-          reconnectPending = false;
-          onFlushed?.(result);
-        }
-      },
-    });
-  });
+  void runtime.mutationTail
+    .then(() => {
+      if (disposed || runtime.initializationError) return;
+      disposeScheduler = installFlushScheduler(runtime.outbox, {
+        onFlushed: async (result) => {
+          await refreshProjection(runtime);
+          if (result.sent && reconnectPending) {
+            reconnectPending = false;
+            onFlushed?.(result);
+          }
+        },
+      });
+    })
+    .catch(() => undefined);
   return () => {
     disposed = true;
     globalThis.window?.removeEventListener("offline", onOffline);
