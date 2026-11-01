@@ -2,6 +2,19 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.8.1] - 2026-11-01
+
+### Fixed
+
+- Recover record writes when a browser closes an idle IndexedDB connection,
+  including the schema-complement store used by versioned records.
+- Wait for saved AT URIs before linking uploaded photos to a gallery, even when
+  another outbox flush is already running.
+- Report failed local queue writes instead of treating a temporary or
+  memory-only record as saved. Give users actionable storage, sync, and
+  conflict messages that prompt them to check for an existing record before
+  retrying.
+
 ## [1.8.0] - 2026-10-30
 
 ### Added
@@ -461,3 +474,4 @@ Notable changes to Hypo are recorded here.
 [1.6.3]: https://github.com/gray-card/hypo/compare/v1.6.2...v1.6.3
 [1.7.0]: https://github.com/gray-card/hypo/compare/v1.6.3...v1.7.0
 [1.8.0]: https://github.com/gray-card/hypo/compare/v1.7.0...v1.8.0
+[1.8.1]: https://github.com/gray-card/hypo/compare/v1.8.0...v1.8.1
