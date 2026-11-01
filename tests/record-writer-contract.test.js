@@ -71,6 +71,7 @@ function updateRecord(collection, record) {
 const currentWrittenCollections = WRITTEN_COLLECTIONS.filter((collection) =>
   collection.startsWith("app.graycard."),
 ).filter((collection) => !RETIRED_COLLECTIONS.has(collection));
+const allGraycardRecordCollections = RECORD_NSID_LIST.filter((collection) => collection.startsWith("app.graycard."));
 
 beforeEach(() => localStorage.clear());
 
@@ -83,7 +84,7 @@ describe("application record-writer contract", () => {
     }
   });
 
-  it.each(currentWrittenCollections)("round-trips create, update, and delete for %s", async (collection) => {
+  it.each(allGraycardRecordCollections)("round-trips create, update, and delete for %s", async (collection) => {
     const agent = mockAgent();
     const initial = minimumRecord(collection);
     expect(validateRecord(collection, initial), JSON.stringify(initial)).toMatchObject({ success: true });

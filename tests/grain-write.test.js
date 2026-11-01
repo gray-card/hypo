@@ -7,6 +7,7 @@ import {
   uploadImage,
   setGalleryItemPosition,
   replacePhoto,
+  saveExif,
   COLLECTIONS,
 } from "../src/grain.js";
 import { mockAgent } from "./setup.js";
@@ -102,6 +103,25 @@ describe("direct gallery upload helpers", () => {
       gallery: "at://did:plc:test/social.grain.gallery/gallery",
       item: "at://did:plc:test/social.grain.photo/photo",
       position: 4,
+    });
+  });
+
+  it("creates and updates Grain EXIF using the shared record write path", async () => {
+    const agent = mockAgent();
+    const did = "did:plc:test";
+    const photoUri = `at://${did}/${COLLECTIONS.photo}/photo`;
+    const created = await saveExif(agent, did, photoUri, null, { make: "Bronica" });
+    expect(created.uri).toMatch(/^at:\/\//);
+    expect(agent.created[0]).toMatchObject({
+      collection: COLLECTIONS.exif,
+      record: { photo: photoUri, make: "Bronica" },
+    });
+
+    await saveExif(agent, did, photoUri, created, { make: "Zenza Bronica" });
+    expect(agent.put[0]).toMatchObject({
+      collection: COLLECTIONS.exif,
+      rkey: created.uri.split("/").at(-1),
+      record: { photo: photoUri, make: "Zenza Bronica", createdAt: created.value.createdAt },
     });
   });
 
