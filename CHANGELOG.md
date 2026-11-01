@@ -2,6 +2,21 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.9.0] - 2026-11-01
+
+### Added
+
+- Add sourced catalogue entries for 47 enlarger models and 27 enlarging lenses,
+  including the Omega B-22 and Rodenstock Rodagon 80mm f/4.
+- Carry verified specifications, source documents, and provenance into new
+  enlarger and enlarging-lens type records.
+
+### Changed
+
+- Use the new enlarger and enlarging-lens catalogues for make and model
+  suggestions in Library and guided setup, while retaining manual entry for
+  equipment not yet catalogued.
+
 ## [1.8.1] - 2026-11-01
 
 ### Fixed
@@ -475,3 +490,4 @@ Notable changes to Hypo are recorded here.
 [1.7.0]: https://github.com/gray-card/hypo/compare/v1.6.3...v1.7.0
 [1.8.0]: https://github.com/gray-card/hypo/compare/v1.7.0...v1.8.0
 [1.8.1]: https://github.com/gray-card/hypo/compare/v1.8.0...v1.8.1
+[1.9.0]: https://github.com/gray-card/hypo/compare/v1.8.1...v1.9.0
