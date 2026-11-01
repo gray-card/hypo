@@ -3,6 +3,8 @@ import { expect, test } from "@playwright/test";
 
 const PDS_ORIGIN = "http://127.0.0.1:2584";
 const REPO = "did:plc:alice";
+const GALLERY_COLLECTION = "social.grain.gallery";
+const GALLERY_ITEM_COLLECTION = "social.grain.gallery.item";
 const PHOTO_COLLECTION = "social.grain.photo";
 
 async function resetFixture(request) {
@@ -79,4 +81,9 @@ test("a browser gallery upload writes a canonical, Grain-sized photo record", as
   expect(record.aspectRatio).toEqual({ width: 2000, height: 1500 });
   expect(record.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
   expect(JSON.stringify(record)).not.toContain("[object Object]");
+
+  const [gallery] = await listRecords(request, GALLERY_COLLECTION);
+  const [item] = await listRecords(request, GALLERY_ITEM_COLLECTION);
+  expect(item.value.gallery).toBe(gallery.uri);
+  expect(item.value.item).toBe(photoView.uri);
 });
