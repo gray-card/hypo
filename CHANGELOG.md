@@ -13,6 +13,8 @@ Notable changes to Hypo are recorded here.
 
 ### Changed
 
+- Show chemistry roles as separate category chips in lists and status cards,
+  avoiding repeated terms such as "Rapid Fixer fixer" in product labels.
 - Save gallery details, shared gear, photo edits, and photo order only through an
   explicit save action. Leaving a field keeps the draft without writing records.
 - Scope batch previews and writes to selected photos while retaining gallery frame

@@ -1,5 +1,6 @@
 import { el } from "@hypo/ui";
 import type { ActivityServices } from "./maintenance-types.ts";
+import { chemistryRoleChips } from "./chemistry-role-chips.ts";
 
 export function countUp(node: HTMLElement, target: number): void {
   if (target <= 0 || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
@@ -70,7 +71,8 @@ export function renderChemistryStatus(body: HTMLElement, services: ActivityServi
     rows.append(
       el("div", { class: `gear-row chemistry-status-row${expired ? " warn-row" : ""}` }, [
         el("div", { class: "chemistry-status-copy" }, [
-          el("strong", {}, services.instanceLabel("chemistry", value)),
+          el("strong", {}, services.instanceLabel("chemistry", value, { includeRoles: false })),
+          chemistryRoleChips(value, services.getStore()),
           details.length ? el("span", { class: "muted small" }, details.join(" · ")) : null,
         ]),
         el("div", { class: "chemistry-measures" }, [

@@ -241,7 +241,7 @@ export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
 /** @deprecated Prefer readStoreSnapshot; retained for compatibility with feature modules. */
 export const loadStore = readStoreSnapshot;
 
-export function catalogLabel(kind, value) {
+export function catalogLabel(kind, value, { includeRoles = true } = {}) {
   if (!value) return "(unknown)";
   switch (kind) {
     case "cameraType":
@@ -257,10 +257,17 @@ export function catalogLabel(kind, value) {
       return [value.brand, value.name].filter(Boolean).join(" ");
     case "filterType":
       return [value.make, value.name].filter(Boolean).join(" ") || value.name || kind;
-    case "chemistryType":
-      return [value.brand, value.name, (value.roles || []).map((role) => role.replaceAll("-", " ")).join(" + ")]
-        .filter(Boolean)
-        .join(" ");
+    case "chemistryType": {
+      const name = [value.brand, value.name].filter(Boolean).join(" ");
+      const words = ` ${name.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ")} `;
+      const roles = includeRoles
+        ? [...new Set(value.roles || [])]
+            .map((role) => role.replaceAll("-", " "))
+            .filter((role) => !words.includes(` ${role.toLowerCase()} `))
+            .join(" + ")
+        : "";
+      return [name, roles].filter(Boolean).join(" ") || "Chemistry";
+    }
     case "lab":
     case "scanProfile":
       return value.name || kind;
@@ -269,7 +276,7 @@ export function catalogLabel(kind, value) {
   }
 }
 
-export function instanceLabel(kind, value, store) {
+export function instanceLabel(kind, value, store, options = {}) {
   if (!value) return "(unknown)";
   const nick = value.nickname || value.label;
   const typeKey = TYPE_REF[kind];
@@ -277,7 +284,7 @@ export function instanceLabel(kind, value, store) {
     const t =
       store.catalog[typeKey]?.find((x) => x.uri === value.type)?.value ||
       store.catalog.filmStock?.find((x) => x.uri === value.stock)?.value;
-    const base = t ? catalogLabel(typeKey === "filmStock" ? "filmStock" : typeKey, t) : value.type;
+    const base = t ? catalogLabel(typeKey === "filmStock" ? "filmStock" : typeKey, t, options) : value.type;
     return [nick, base, value.serialNumber].filter(Boolean).join(" · ");
   }
   if (kind === "filmRoll" && value.stock) {

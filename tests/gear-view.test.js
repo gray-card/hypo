@@ -3,6 +3,7 @@ import { countTypeReferences } from "../apps/web/src/views/library/gear-config.t
 import { technicalPayload } from "../apps/web/src/views/library/gear-controls.ts";
 import { openGearMaintenance } from "../apps/web/src/views/library/gear-maintenance.ts";
 import { renderGearTabView } from "../apps/web/src/views/library/gear-tab.ts";
+import { instanceLabel } from "../src/graycard.js";
 
 const record = (uri, value) => ({ uri, value });
 
@@ -36,6 +37,25 @@ beforeEach(() => {
 });
 
 describe("extracted Gear view boundaries", () => {
+  it("separates chemistry names from deduplicated category chips", () => {
+    const store = {
+      catalog: {
+        chemistryType: [record("type/fixer", { brand: "Ilford", name: "Rapid Fixer", roles: ["fixer", "fixer"] })],
+      },
+      instance: { chemistry: [record("bottle/1", { type: "type/fixer", nickname: "Working bottle" })] },
+    };
+    const deps = services(store);
+    deps.instanceLabel = (kind, value, options) => instanceLabel(kind, value, store, options);
+    const body = document.createElement("div");
+    renderGearTabView(body, ["chemistry"], deps, {
+      addGear: vi.fn(),
+      editGear: vi.fn(),
+      maintain: vi.fn(),
+      render: vi.fn(),
+    });
+    expect(body.querySelector(".chemistry-status-copy > span").textContent).toBe("Working bottle · Ilford Rapid Fixer");
+    expect([...body.querySelectorAll(".chemistry-role-chip")].map((chip) => chip.textContent)).toEqual(["Fixer"]);
+  });
   it("counts shared type references across instance kinds and honors the excluded URI", () => {
     const typeUri = "at://did:plc:test/app.graycard.catalog.filmStock/gold";
     const store = {

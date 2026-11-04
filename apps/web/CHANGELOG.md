@@ -4,6 +4,7 @@
 
 ### Minor Changes
 
+- Separate chemistry roles into readable category chips in resource lists and status cards. Avoid duplicate role words in product labels and preserve category distinctions in selectors.
 - Separate chemistry volume meters from roll-usage counts. Keep meter widths independent of labels, show both measurements when recorded, and label unknown values and reached or exceeded roll limits explicitly.
 - Fix crowded photo toolbars, stretched checkbox spacing, uneven chemistry columns, and misaligned development filters and stage fields. Add screenshot audits and geometry checks across resource, roll, and session screens in both themes.
 - Use shared page framing, headings, panel density, and disclosures across gallery, Library, and session screens. Align photo EXIF rows despite missing or wrapped captions, refresh coverage badges after saves, and respect both themes.

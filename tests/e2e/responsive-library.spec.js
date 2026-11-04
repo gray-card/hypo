@@ -32,14 +32,35 @@ async function seedChemistry(request) {
     maxRollsRecommended: 10,
     createdAt: "2026-08-12T21:30:00.000Z",
   });
+  for (const [rkey, brand, name, roles] of [
+    ["fixer", "Ilford", "Rapid Fixer", ["fixer"]],
+    ["stop", "Kodak", "Indicator Stop Bath", ["stop"]],
+    ["monobath", "CineStill", "Df96", ["film-developer", "fixer"]],
+  ]) {
+    await createRecord(request, "app.graycard.catalog.chemistryType", rkey, {
+      $type: "app.graycard.catalog.chemistryType",
+      brand,
+      name,
+      roles,
+      createdAt: "2026-08-12T20:00:00.000Z",
+    });
+  }
   for (const [rkey, nickname, quantities] of [
     ["reserve", "Fresh reserve", { volumeMl: 1262, volumeRemainingMl: 1262, rollsProcessed: 0 }],
     ["exhausted", "Working bottle at recommended limit", { rollsProcessed: 10, maxRollsRecommended: 10 }],
     ["untracked", "Untracked bottle", {}],
+    ["monobath", "Multi-role working bath", {}],
   ]) {
     await createRecord(request, "app.graycard.instance.chemistry", rkey, {
       $type: "app.graycard.instance.chemistry",
-      type: CHEMISTRY_TYPE,
+      type:
+        rkey === "exhausted"
+          ? `at://${REPO}/app.graycard.catalog.chemistryType/fixer`
+          : rkey === "untracked"
+            ? `at://${REPO}/app.graycard.catalog.chemistryType/stop`
+            : rkey === "monobath"
+              ? `at://${REPO}/app.graycard.catalog.chemistryType/monobath`
+              : CHEMISTRY_TYPE,
       nickname,
       status: "active",
       ...quantities,
@@ -129,9 +150,11 @@ async function selectLibrarySection(page, name) {
 async function captureLayout(page, testInfo, name) {
   await page.evaluate(() => document.fonts.ready);
   const path = testInfo.outputPath(`${name}.png`);
+  const fullPage = !(await page.locator('[role="dialog"]:visible').count());
+  if (fullPage) await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
   await page.screenshot({
     path,
-    fullPage: !(await page.locator('[role="dialog"]:visible').count()),
+    fullPage,
     animations: "disabled",
   });
   await testInfo.attach(name, { path, contentType: "image/png" });
@@ -171,6 +194,13 @@ for (const theme of ["dark", "light"]) {
     const exhausted = page.locator(".chemistry-status-row").filter({ hasText: "Working bottle at recommended limit" });
     await expect(exhausted.getByRole("meter")).toHaveCount(0);
     await expect(exhausted).toContainText("Recommended limit reached");
+    await expect(exhausted.locator("strong")).toHaveText("Working bottle at recommended limit · Ilford Rapid Fixer");
+    await expect(exhausted.locator(".chemistry-role-chip")).toHaveText("Fixer");
+    const stop = page.locator(".chemistry-status-row").filter({ hasText: "Indicator Stop Bath" });
+    await expect(stop.locator("strong")).toHaveText("Untracked bottle · Kodak Indicator Stop Bath");
+    await expect(stop.locator(".chemistry-role-chip")).toHaveText("Stop bath");
+    const monobath = page.locator(".chemistry-status-row").filter({ hasText: "Df96" });
+    await expect(monobath.locator(".chemistry-role-chip")).toHaveText(["Film developer", "Fixer"]);
     await expect(
       page.locator(".card").filter({ has: page.getByRole("heading", { name: "Chemistry status", exact: true }) }),
     ).toHaveScreenshot(`chemistry-status-${theme}.png`, {
@@ -205,6 +235,12 @@ for (const theme of ["dark", "light"]) {
     await captureLayout(page, testInfo, "rolls");
     await nav.getByRole("button", { name: "Library", exact: true }).click();
     await selectLibrarySection(page, "Chemistry");
+    const fixerRow = page.locator(".gear-row").filter({ hasText: "Rapid Fixer" });
+    await expect(fixerRow.locator(".chemistry-status-copy > span").first()).toHaveText(
+      "Working bottle at recommended limit · Ilford Rapid Fixer",
+    );
+    await expect(fixerRow.locator(".chemistry-role-chip")).toHaveText("Fixer");
+    await captureLayout(page, testInfo, "chemistry-list");
     await page.getByRole("button", { name: "Add chemistry" }).click();
     const chemistry = page.getByRole("dialog", { name: "Add chemistry" });
     await expect(chemistry.getByText("Bottle or mixed bath", { exact: true })).toBeVisible();

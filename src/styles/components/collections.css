@@ -155,6 +155,21 @@
 .chemistry-status-copy strong {
   overflow-wrap: anywhere;
 }
+.chemistry-role-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding-block: var(--space-1);
+}
+.chip.chemistry-role-chip {
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  letter-spacing: normal;
+  text-transform: none;
+}
 .chemistry-capacity-label {
   text-align: left;
   font-variant-numeric: tabular-nums;

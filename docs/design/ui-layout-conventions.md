@@ -65,6 +65,11 @@ labelled as unrecorded, not represented as zero. Omit meters with missing or
 nonpositive totals. Clamp visual fill to its track while preserving recorded
 quantities in visible and accessible text.
 
+Chemistry names remain product names. In status cards and resource lists, show
+roles as separate, neutral text chips; multi-role products get one chip per role.
+Do not use category colors as health or safety signals. Plain-text selectors keep
+category labels for disambiguation without appending the same roles again.
+
 ## Verification
 
 `tests/e2e/gallery-editing.spec.js` compares page widths, heading typography,

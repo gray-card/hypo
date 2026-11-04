@@ -65,6 +65,18 @@ function makeStore() {
 }
 
 describe("catalogLabel", () => {
+  it("keeps chemistry roles separate when requested and avoids repeating roles already in names", () => {
+    expect(catalogLabel("chemistryType", { brand: "Ilford", name: "Rapid Fixer", roles: ["fixer"] })).toBe(
+      "Ilford Rapid Fixer",
+    );
+    expect(catalogLabel("chemistryType", { brand: "Kodak", name: "Indicator Stop Bath", roles: ["stop"] })).toBe(
+      "Kodak Indicator Stop Bath",
+    );
+    const product = { brand: "Kodak", name: "Flexicolor C-41", roles: ["bleach"] };
+    expect(catalogLabel("chemistryType", product)).toBe("Kodak Flexicolor C-41 bleach");
+    expect(catalogLabel("chemistryType", product, { includeRoles: false })).toBe("Kodak Flexicolor C-41");
+    expect(catalogLabel("chemistryType", {}, { includeRoles: false })).toBe("Chemistry");
+  });
   it("labels cameras, film, and multi-role chemistry", () => {
     expect(catalogLabel("cameraType", { make: "Leica", model: "M6" })).toBe("Leica M6");
     expect(catalogLabel("filmStock", { brand: "Kodak", name: "Portra 400" })).toBe("Kodak Portra 400");

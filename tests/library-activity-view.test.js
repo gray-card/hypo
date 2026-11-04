@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderChemistryStatus, renderInsightsView } from "../apps/web/src/views/library/insights-view.ts";
+import { instanceLabel } from "../src/graycard.js";
 import {
   openDevelopmentSession,
   openLabDevelopment,
@@ -716,6 +717,28 @@ describe("extracted library activity views", () => {
     expect(rows[2].querySelector('[role="meter"]')).toBeNull();
     expect(rows[2].textContent).toContain("Volume remainingNot recordedRoll usageNot recorded");
     expect(body.querySelector('[role="progressbar"]')).toBeNull();
+  });
+
+  it("shows multi-role chips separately from chemistry names and keeps selector categories once", () => {
+    const product = item("at://type", { brand: "CineStill", name: "Df96", roles: ["film-developer", "fixer"] });
+    const store = emptyStore({
+      catalog: { chemistryType: [product] },
+      instance: { chemistry: [item("at://bottle", { type: product.uri })] },
+    });
+    const deps = createServices(store, {
+      instanceLabel: (kind, value, options) => instanceLabel(kind, value, store, options),
+      chemistryRoles: () => product.value.roles,
+    });
+    const body = document.createElement("div");
+    renderChemistryStatus(body, deps);
+    expect(body.querySelector("strong").textContent).toBe("CineStill Df96");
+    expect([...body.querySelectorAll(".chemistry-role-chip")].map((chip) => chip.textContent)).toEqual([
+      "Film developer",
+      "Fixer",
+    ]);
+    const select = createChemistrySelect("", undefined, deps);
+    expect(select.options[1].textContent.match(/fixer/gi)).toHaveLength(1);
+    expect(select.options[1].textContent).toContain("CineStill Df96");
   });
 
   it.each([
