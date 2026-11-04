@@ -35,55 +35,70 @@ export function renderChemistryStatus(body: HTMLElement, services: ActivityServi
     const value = item.value;
     const capacity = value.volumeMl;
     const remaining = value.volumeRemainingMl;
-    const percent =
-      capacity != null && remaining != null && capacity > 0
-        ? Math.max(0, Math.min(100, Math.round((remaining / capacity) * 100)))
-        : value.maxRollsRecommended > 0 && value.rollsProcessed != null
-          ? Math.max(
-              0,
-              Math.min(
-                100,
-                Math.round(((value.maxRollsRecommended - value.rollsProcessed) / value.maxRollsRecommended) * 100),
-              ),
-            )
-          : null;
+    const hasCapacity = Number.isFinite(capacity) && capacity > 0;
+    const hasRemaining = Number.isFinite(remaining) && remaining >= 0;
+    const percent = hasCapacity && hasRemaining ? Math.max(0, Math.min(100, (remaining / capacity) * 100)) : null;
+    const used = value.rollsProcessed;
+    const limit = value.maxRollsRecommended;
+    const hasUsed = Number.isFinite(used) && used >= 0;
+    const hasLimit = Number.isFinite(limit) && limit > 0;
     const expired = value.expiresAt && Date.parse(value.expiresAt) < now;
     const ageDays = value.mixedAt ? Math.floor((now - Date.parse(value.mixedAt)) / 86_400_000) : null;
     const details: string[] = [];
-    if (value.rollsProcessed != null)
-      details.push(`${value.rollsProcessed} roll${value.rollsProcessed === 1 ? "" : "s"}`);
     if (ageDays != null) details.push(`${ageDays}d old`);
     if (expired) details.push("past use-by");
-    const capacityLabel =
-      capacity != null && remaining != null
+    const volumeLabel = hasRemaining
+      ? hasCapacity
         ? `${remaining} of ${capacity} mL remaining`
-        : value.maxRollsRecommended > 0 && value.rollsProcessed != null
-          ? `${value.rollsProcessed} of ${value.maxRollsRecommended} recommended rolls used`
-          : null;
-    const level = percent == null ? "" : percent <= 15 ? " critical" : percent <= 35 ? " caution" : " healthy";
+        : `${remaining} mL remaining · total not recorded`
+      : hasCapacity
+        ? `Remaining not recorded · ${capacity} mL total`
+        : "Not recorded";
+    const rollLabel = hasUsed
+      ? hasLimit
+        ? `${used} of ${limit} recommended rolls used`
+        : `${used} rolls used · limit not recorded`
+      : hasLimit
+        ? `Usage not recorded · ${limit} rolls recommended`
+        : "Not recorded";
+    const limitStatus =
+      hasUsed && hasLimit && used >= limit
+        ? used > limit
+          ? "Recommended limit exceeded"
+          : "Recommended limit reached"
+        : null;
     rows.append(
       el("div", { class: `gear-row chemistry-status-row${expired ? " warn-row" : ""}` }, [
         el("div", { class: "chemistry-status-copy" }, [
           el("strong", {}, services.instanceLabel("chemistry", value)),
           details.length ? el("span", { class: "muted small" }, details.join(" · ")) : null,
         ]),
-        percent != null && capacityLabel
-          ? el("div", { class: "chemistry-capacity" }, [
-              el("span", { class: "chemistry-capacity-label muted small" }, capacityLabel),
-              el(
-                "span",
-                {
-                  class: `chemistry-capacity-track${level}`,
-                  role: "progressbar",
-                  "aria-label": capacityLabel,
-                  "aria-valuemin": "0",
-                  "aria-valuemax": "100",
-                  "aria-valuenow": String(percent),
-                },
-                [el("span", { class: "chemistry-capacity-fill", style: `width:${percent}%` })],
-              ),
-            ])
-          : el("span", { class: "muted small chemistry-capacity-untracked" }, "Capacity not tracked"),
+        el("div", { class: "chemistry-measures" }, [
+          el("div", { class: "chemistry-capacity" }, [
+            el("span", { class: "chemistry-measure-heading small" }, "Volume remaining"),
+            el("span", { class: "chemistry-capacity-label muted small" }, volumeLabel),
+            percent != null
+              ? el(
+                  "span",
+                  {
+                    class: "chemistry-capacity-track",
+                    role: "meter",
+                    "aria-label": "Volume remaining",
+                    "aria-valuemin": "0",
+                    "aria-valuemax": String(capacity),
+                    "aria-valuenow": String(Math.min(capacity, remaining)),
+                    "aria-valuetext": volumeLabel,
+                  },
+                  [el("span", { class: "chemistry-capacity-fill", style: `width:${percent}%` })],
+                )
+              : null,
+          ]),
+          el("div", { class: "chemistry-roll-usage" }, [
+            el("span", { class: "chemistry-measure-heading small" }, "Roll usage"),
+            el("span", { class: "muted small" }, rollLabel),
+            limitStatus ? el("span", { class: "chemistry-limit-status small" }, limitStatus) : null,
+          ]),
+        ]),
       ]),
     );
   }
@@ -93,7 +108,7 @@ export function renderChemistryStatus(body: HTMLElement, services: ActivityServi
       el(
         "p",
         { class: "muted small" },
-        "The meter uses remaining volume when it is recorded, then falls back to the manufacturer's recommended roll limit. Development sessions update the roll count.",
+        "Volume bars show the fraction remaining in each container, not chemical strength. Roll usage is a separate count against the recommended limit; development sessions update it.",
       ),
       rows,
     ]),

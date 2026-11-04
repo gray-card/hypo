@@ -32,6 +32,20 @@ async function seedChemistry(request) {
     maxRollsRecommended: 10,
     createdAt: "2026-08-12T21:30:00.000Z",
   });
+  for (const [rkey, nickname, quantities] of [
+    ["reserve", "Fresh reserve", { volumeMl: 1262, volumeRemainingMl: 1262, rollsProcessed: 0 }],
+    ["exhausted", "Working bottle at recommended limit", { rollsProcessed: 10, maxRollsRecommended: 10 }],
+    ["untracked", "Untracked bottle", {}],
+  ]) {
+    await createRecord(request, "app.graycard.instance.chemistry", rkey, {
+      $type: "app.graycard.instance.chemistry",
+      type: CHEMISTRY_TYPE,
+      nickname,
+      status: "active",
+      ...quantities,
+      createdAt: "2026-08-12T21:30:00.000Z",
+    });
+  }
 }
 
 async function seedRollLedger(request) {
@@ -112,6 +126,17 @@ async function selectLibrarySection(page, name) {
   await desktopNavigation.getByRole("button", { name, exact: true }).click();
 }
 
+async function captureLayout(page, testInfo, name) {
+  await page.evaluate(() => document.fonts.ready);
+  const path = testInfo.outputPath(`${name}.png`);
+  await page.screenshot({
+    path,
+    fullPage: !(await page.locator('[role="dialog"]:visible').count()),
+    animations: "disabled",
+  });
+  await testInfo.attach(name, { path, contentType: "image/png" });
+}
+
 test.beforeEach(async ({ request }) => {
   const reset = await request.post(`${PDS_ORIGIN}/__fixture__/reset`);
   expect(reset.ok()).toBe(true);
@@ -119,81 +144,196 @@ test.beforeEach(async ({ request }) => {
   await seedRollLedger(request);
 });
 
-test("resource, roll, and session surfaces stay inside the viewport", async ({ page }) => {
-  await login(page);
-  await expectNoHorizontalOverflow(page.locator("body"));
+for (const theme of ["dark", "light"]) {
+  test(`${theme}: resource, roll, and session surfaces stay inside the viewport`, async ({ page }, testInfo) => {
+    await page.clock.setFixedTime(new Date("2026-11-04T12:00:00.000Z"));
+    await login(page);
+    await page.evaluate((value) => {
+      document.documentElement.dataset.theme = value;
+      localStorage.setItem("hypo:theme", value);
+    }, theme);
+    await expect(page.locator(".library-shell")).toBeVisible();
+    await captureLayout(page, testInfo, "library-overview");
+    await expectNoHorizontalOverflow(page.locator("body"));
 
-  const meter = page.getByRole("progressbar", { name: "625 of 1000 mL remaining" });
-  await expect(meter).toHaveAttribute("aria-valuenow", "63");
+    const meters = page.getByRole("meter", { name: "Volume remaining", exact: true });
+    await expect(meters).toHaveCount(2);
+    await expect(meters.first()).toHaveAttribute("aria-valuenow", "625");
+    await expect(meters.first()).toHaveAttribute("aria-valuemax", "1000");
+    const meterBoxes = await meters.evaluateAll((elements) =>
+      elements.map((element) => {
+        const box = element.getBoundingClientRect();
+        return { left: box.left, width: box.width };
+      }),
+    );
+    expect(Math.abs(meterBoxes[0].left - meterBoxes[1].left)).toBeLessThanOrEqual(1);
+    expect(Math.abs(meterBoxes[0].width - meterBoxes[1].width)).toBeLessThanOrEqual(1);
+    const exhausted = page.locator(".chemistry-status-row").filter({ hasText: "Working bottle at recommended limit" });
+    await expect(exhausted.getByRole("meter")).toHaveCount(0);
+    await expect(exhausted).toContainText("Recommended limit reached");
+    await expect(
+      page.locator(".card").filter({ has: page.getByRole("heading", { name: "Chemistry status", exact: true }) }),
+    ).toHaveScreenshot(`chemistry-status-${theme}.png`, {
+      // Isolate the component; fixed navigation otherwise crosses tall captures.
+      stylePath: "tests/e2e/component-snapshot.css",
+    });
 
-  const nav = page.viewportSize().width <= 640 ? page.locator("#bottom-nav") : page.locator("#primary-nav");
-  await nav.getByRole("button", { name: "Rolls", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Rolls", exact: true })).toBeVisible();
-  await expectNoHorizontalOverflow(page.locator("#rolls-view"));
-  await expect(page.locator(".roll-stage-heading h3")).toHaveText([
-    "In cameras / backs",
-    "Needs processing",
-    "Processed",
-    "Archived",
-  ]);
-  await expect(page.locator(".roll-ledger-row").filter({ hasText: "Weekend walk" })).toContainText(
-    "Last frame Sep 20, 2026",
-  );
-  const overflowingRollRows = await page
-    .locator(".roll-ledger-row")
-    .evaluateAll((rows) => rows.filter((row) => row.scrollWidth > row.clientWidth + 1).map((row) => row.textContent));
-  expect(overflowingRollRows).toEqual([]);
-  if ((page.viewportSize()?.width ?? 0) > 760) {
-    const controlTops = await page
+    const nav = page.viewportSize().width <= 640 ? page.locator("#bottom-nav") : page.locator("#primary-nav");
+    await nav.getByRole("button", { name: "Rolls", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Rolls", exact: true })).toBeVisible();
+    await expectNoHorizontalOverflow(page.locator("#rolls-view"));
+    await expect(page.locator(".roll-stage-heading h3")).toHaveText([
+      "In cameras / backs",
+      "Needs processing",
+      "Processed",
+      "Archived",
+    ]);
+    await expect(page.locator(".roll-ledger-row").filter({ hasText: "Weekend walk" })).toContainText(
+      "Last frame Sep 20, 2026",
+    );
+    const overflowingRollRows = await page
+      .locator(".roll-ledger-row")
+      .evaluateAll((rows) => rows.filter((row) => row.scrollWidth > row.clientWidth + 1).map((row) => row.textContent));
+    expect(overflowingRollRows).toEqual([]);
+    if ((page.viewportSize()?.width ?? 0) > 760) {
+      const controlTops = await page
+        .locator(".library-filter-bar .field > :is(input, select)")
+        .evaluateAll((controls) => controls.map((control) => Math.round(control.getBoundingClientRect().top)));
+      expect(Math.max(...controlTops) - Math.min(...controlTops)).toBeLessThanOrEqual(0);
+    }
+
+    await captureLayout(page, testInfo, "rolls");
+    await nav.getByRole("button", { name: "Library", exact: true }).click();
+    await selectLibrarySection(page, "Chemistry");
+    await page.getByRole("button", { name: "Add chemistry" }).click();
+    const chemistry = page.getByRole("dialog", { name: "Add chemistry" });
+    await expect(chemistry.getByText("Bottle or mixed bath", { exact: true })).toBeVisible();
+    await expect(chemistry.getByText("Image and technical details", { exact: true })).toBeVisible();
+    await expectNoHorizontalOverflow(chemistry);
+    if (page.viewportSize().width > 760) {
+      const firstFieldTops = await chemistry
+        .locator(".resource-editor-section")
+        .evaluateAll((sections) =>
+          sections.map((section) => section.querySelector(".field input, .ac-field input").getBoundingClientRect().top),
+        );
+      expect(Math.max(...firstFieldTops) - Math.min(...firstFieldTops)).toBeLessThanOrEqual(1);
+    }
+    await captureLayout(page, testInfo, "chemistry-form");
+    await chemistry.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    await captureLayout(page, testInfo, "chemistry-form-footer");
+    await chemistry.getByRole("button", { name: "Cancel" }).click();
+
+    await selectLibrarySection(page, "Batch rules");
+    await page.getByRole("button", { name: "Create batch rule" }).click();
+    const rule = page.getByRole("dialog", { name: "Create batch rule" });
+    await expect(rule).toContainText("A batch rule is a reusable instruction");
+    await expectNoHorizontalOverflow(rule);
+    await captureLayout(page, testInfo, "batch-rule-form");
+    await rule.getByRole("button", { name: "Close" }).click();
+
+    await nav.getByRole("button", { name: "Sessions", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Sessions", exact: true })).toBeVisible();
+    const sessionCard = page.locator("#sessions-view:not(.hidden) .session-card").first();
+    await expect(sessionCard).toBeVisible();
+    const rightAlignment = await sessionCard.evaluate((card) => {
+      const cardRight = card.getBoundingClientRect().right;
+      const timeRight = card.querySelector(".session-time").getBoundingClientRect().right;
+      const actionsRight = card.querySelector(".session-actions").getBoundingClientRect().right;
+      return {
+        timeGap: Math.round(cardRight - timeRight),
+        actionsGap: Math.round(cardRight - actionsRight),
+      };
+    });
+    expect(rightAlignment.timeGap).toBeGreaterThanOrEqual(12);
+    expect(rightAlignment.timeGap).toBeLessThanOrEqual(14);
+    expect(rightAlignment.actionsGap).toBe(rightAlignment.timeGap);
+    if ((page.viewportSize()?.width ?? 0) > 760) {
+      const controlTops = await page
+        .locator(".session-filter-panel .field > input")
+        .evaluateAll((controls) => controls.map((control) => Math.round(control.getBoundingClientRect().top)));
+      expect(Math.max(...controlTops) - Math.min(...controlTops)).toBeLessThanOrEqual(0);
+    }
+    const reviewSpacing = await page.locator(".session-review-toggle").evaluate((label) => {
+      const input = label.querySelector("input").getBoundingClientRect();
+      const text = label.querySelector("span").getBoundingClientRect();
+      return { width: input.width, gap: text.left - input.right };
+    });
+    expect(reviewSpacing.width).toBeLessThanOrEqual(24);
+    expect(reviewSpacing.gap).toBeGreaterThanOrEqual(4);
+    expect(reviewSpacing.gap).toBeLessThanOrEqual(12);
+    await captureLayout(page, testInfo, "sessions");
+    await page.locator("#sessions-body summary").click();
+    await page.getByRole("button", { name: "Log completed development" }).click();
+    const development = page.getByRole("dialog", { name: "Log completed development" });
+    await expectNoHorizontalOverflow(development);
+    await expectNoHorizontalOverflow(development.locator(".development-role-option").first());
+    const rollControls = await development
       .locator(".library-filter-bar .field > :is(input, select)")
-      .evaluateAll((controls) => controls.map((control) => Math.round(control.getBoundingClientRect().top)));
-    expect(Math.max(...controlTops) - Math.min(...controlTops)).toBeLessThanOrEqual(0);
-  }
+      .evaluateAll((controls) =>
+        controls.map((control) => {
+          const box = control.getBoundingClientRect();
+          return { top: box.top, bottom: box.bottom };
+        }),
+      );
+    if (page.viewportSize().width > 600)
+      expect(
+        Math.max(...rollControls.map((control) => control.top)) -
+          Math.min(...rollControls.map((control) => control.top)),
+      ).toBeLessThanOrEqual(1);
+    const rollList = await development.locator(".check-list").first().boundingBox();
+    expect(rollList.y - Math.max(...rollControls.map((control) => control.bottom))).toBeGreaterThanOrEqual(12);
+    await captureLayout(page, testInfo, "development-form");
+    await development.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    if (page.viewportSize().width > 560) {
+      const timingTops = await development
+        .locator(".development-stage-core .field:nth-child(n+3) > input")
+        .evaluateAll((inputs) => inputs.map((input) => input.getBoundingClientRect().top));
+      expect(timingTops).toHaveLength(3);
+      expect(Math.max(...timingTops) - Math.min(...timingTops)).toBeLessThanOrEqual(1);
+    }
+    const notesBox = await development.getByPlaceholder("Optional session notes", { exact: true }).boundingBox();
+    const footerBox = await development.locator(".modal-actions").boundingBox();
+    expect(footerBox.y - notesBox.y - notesBox.height).toBeGreaterThanOrEqual(12);
+    await captureLayout(page, testInfo, "development-form-footer");
+    await development.getByRole("button", { name: "Cancel", exact: true }).click();
 
-  await nav.getByRole("button", { name: "Library", exact: true }).click();
-  await selectLibrarySection(page, "Chemistry");
-  await page.getByRole("button", { name: "Add chemistry" }).click();
-  const chemistry = page.getByRole("dialog", { name: "Add chemistry" });
-  await expect(chemistry.getByText("Bottle or mixed bath", { exact: true })).toBeVisible();
-  await expect(chemistry.getByText("Image and technical details", { exact: true })).toBeVisible();
-  await expectNoHorizontalOverflow(chemistry);
-  await chemistry.getByRole("button", { name: "Cancel" }).click();
+    await page.goto("/library/cameras");
+    await page.getByRole("button", { name: "Add camera", exact: true }).click();
+    const camera = page.getByRole("dialog", { name: "Add camera", exact: true });
+    await expectNoHorizontalOverflow(camera);
+    await captureLayout(page, testInfo, "camera-form");
+    await camera.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    await captureLayout(page, testInfo, "camera-form-footer");
+    await camera.getByRole("button", { name: "Cancel", exact: true }).click();
 
-  await selectLibrarySection(page, "Batch rules");
-  await page.getByRole("button", { name: "Create batch rule" }).click();
-  const rule = page.getByRole("dialog", { name: "Create batch rule" });
-  await expect(rule).toContainText("A batch rule is a reusable instruction");
-  await expectNoHorizontalOverflow(rule);
-  await rule.getByRole("button", { name: "Close" }).click();
+    await page.goto("/rolls");
+    await page
+      .locator(".roll-ledger-row")
+      .filter({ hasText: "Weekend walk" })
+      .getByRole("button", { name: "Manage", exact: true })
+      .click();
+    const roll = page.getByRole("dialog");
+    await expectNoHorizontalOverflow(roll);
+    await captureLayout(page, testInfo, "roll-form");
+    await roll.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    await captureLayout(page, testInfo, "roll-form-footer");
+    await roll.getByRole("button", { name: "Cancel", exact: true }).click();
 
-  await nav.getByRole("button", { name: "Sessions", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Sessions", exact: true })).toBeVisible();
-  const sessionCard = page.locator("#sessions-view:not(.hidden) .session-card").first();
-  await expect(sessionCard).toBeVisible();
-  const rightAlignment = await sessionCard.evaluate((card) => {
-    const cardRight = card.getBoundingClientRect().right;
-    const timeRight = card.querySelector(".session-time").getBoundingClientRect().right;
-    const actionsRight = card.querySelector(".session-actions").getBoundingClientRect().right;
-    return {
-      timeGap: Math.round(cardRight - timeRight),
-      actionsGap: Math.round(cardRight - actionsRight),
-    };
+    await page.goto("/session/capture/shoot-a");
+    await expect(page.getByRole("heading", { name: "Capture session", exact: true })).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    await expectNoHorizontalOverflow(page.locator("body"));
+    await captureLayout(page, testInfo, "session-detail");
   });
-  expect(rightAlignment.timeGap).toBeGreaterThanOrEqual(12);
-  expect(rightAlignment.timeGap).toBeLessThanOrEqual(14);
-  expect(rightAlignment.actionsGap).toBe(rightAlignment.timeGap);
-  if ((page.viewportSize()?.width ?? 0) > 760) {
-    const controlTops = await page
-      .locator(".session-filter-panel .field > input")
-      .evaluateAll((controls) => controls.map((control) => Math.round(control.getBoundingClientRect().top)));
-    expect(Math.max(...controlTops) - Math.min(...controlTops)).toBeLessThanOrEqual(0);
-  }
-  await page.locator("#sessions-body summary").click();
-  await page.getByRole("button", { name: "Log completed development" }).click();
-  const development = page.getByRole("dialog", { name: "Log completed development" });
-  await expectNoHorizontalOverflow(development);
-  await expectNoHorizontalOverflow(development.locator(".development-role-option").first());
-});
+}
 
 test("small-phone light mode keeps navigation, chips, and editors contained", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });

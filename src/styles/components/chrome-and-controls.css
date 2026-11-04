@@ -88,15 +88,15 @@
 
 /* ---------- layout ---------- */
 main {
-  max-width: 880px;
+  max-width: var(--page-width);
   margin: 0 auto;
-  padding: 30px 26px 96px;
+  padding: var(--page-top-space) var(--page-gutter) 96px;
   position: relative;
   z-index: 1;
 }
 
 .view-head {
-  margin-bottom: 18px;
+  margin-bottom: var(--section-gap);
   flex-wrap: wrap;
   row-gap: 10px;
 }
@@ -105,8 +105,8 @@ main {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 22px;
-  margin-bottom: 18px;
+  padding: var(--panel-padding);
+  margin-bottom: var(--section-gap);
 }
 
 /* ---------- typography ---------- */
@@ -117,8 +117,9 @@ h3 {
   font-weight: 600;
 }
 
-h2 {
-  font-size: 17px;
+h2,
+.view-title {
+  font-size: var(--text-lg);
   margin: 0 0 10px;
 }
 h2.section {
@@ -205,6 +206,12 @@ select {
   transition:
     border-color 0.12s ease,
     box-shadow 0.12s ease;
+}
+
+/* Inline choices must not inherit the full width of text fields. */
+input:where([type="checkbox"], [type="radio"]) {
+  width: auto;
+  flex: 0 0 auto;
 }
 
 input:not([type="checkbox"]):not([type="radio"]),

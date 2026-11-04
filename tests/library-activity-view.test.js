@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderInsightsView } from "../apps/web/src/views/library/insights-view.ts";
+import { renderChemistryStatus, renderInsightsView } from "../apps/web/src/views/library/insights-view.ts";
 import {
   openDevelopmentSession,
   openLabDevelopment,
@@ -690,6 +690,52 @@ describe("extracted library activity views", () => {
     expect(body.textContent).toContain("3 in reserve");
     expect(body.textContent).toContain("Chemistry status");
     expect(body.textContent).toContain("Most used");
+  });
+
+  it("keeps volume and roll usage separate, with a quantity meter only for recorded volume", () => {
+    const store = emptyStore({
+      instance: {
+        chemistry: [
+          item("at://both", { volumeMl: 1000, volumeRemainingMl: 625, rollsProcessed: 5, maxRollsRecommended: 16 }),
+          item("at://count", { rollsProcessed: 10, maxRollsRecommended: 10 }),
+          item("at://unknown", {}),
+        ],
+      },
+    });
+    const body = document.createElement("div");
+    renderChemistryStatus(body, createServices(store));
+    const rows = body.querySelectorAll(".chemistry-status-row");
+    const meter = rows[0].querySelector('[role="meter"]');
+    expect(meter.getAttribute("aria-valuenow")).toBe("625");
+    expect(meter.getAttribute("aria-valuemax")).toBe("1000");
+    expect(meter.getAttribute("aria-valuetext")).toBe("625 of 1000 mL remaining");
+    expect(meter.firstElementChild.style.width).toBe("62.5%");
+    expect(rows[0].textContent).toContain("5 of 16 recommended rolls used");
+    expect(rows[1].querySelector('[role="meter"]')).toBeNull();
+    expect(rows[1].textContent).toContain("Recommended limit reached");
+    expect(rows[2].querySelector('[role="meter"]')).toBeNull();
+    expect(rows[2].textContent).toContain("Volume remainingNot recordedRoll usageNot recorded");
+    expect(body.querySelector('[role="progressbar"]')).toBeNull();
+  });
+
+  it.each([
+    [{ volumeMl: 1000, volumeRemainingMl: 0 }, "0 of 1000 mL remaining", "0%"],
+    [{ volumeMl: 1000, volumeRemainingMl: 1000 }, "1000 of 1000 mL remaining", "100%"],
+    [{ volumeMl: 1000, volumeRemainingMl: 1200 }, "1200 of 1000 mL remaining", "100%"],
+    [{ volumeMl: 0, volumeRemainingMl: 50 }, "50 mL remaining · total not recorded", null],
+    [{ volumeMl: 1000 }, "Remaining not recorded · 1000 mL total", null],
+    [{ rollsProcessed: 0, maxRollsRecommended: 10 }, "0 of 10 recommended rolls used", null],
+    [{ rollsProcessed: 11, maxRollsRecommended: 10 }, "Recommended limit exceeded", null],
+    [{ maxRollsRecommended: 10 }, "Usage not recorded · 10 rolls recommended", null],
+  ])("preserves recorded chemistry quantities without inventing missing capacity: %j", (value, label, width) => {
+    const body = document.createElement("div");
+    renderChemistryStatus(
+      body,
+      createServices(emptyStore({ instance: { chemistry: [item("at://chemistry", value)] } })),
+    );
+    expect(body.textContent).toContain(label);
+    const fill = body.querySelector(".chemistry-capacity-fill");
+    expect(fill?.style.width ?? null).toBe(width);
   });
 
   it("renders workflow completion and next action on a roll", () => {

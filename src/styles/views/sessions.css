@@ -179,22 +179,11 @@
     padding: 16px 0 0;
   }
 }
-.session-hero {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 8px;
-  padding: 18px 0 16px;
-  border-bottom: 1px solid var(--border);
-}
-.session-hero h2,
-.session-detail-head h2 {
-  margin: 0;
-}
 .session-hero p {
   max-width: 62ch;
-  margin: 5px 0 0;
+}
+.session-detail-head h2 {
+  margin: 0;
 }
 .session-create-actions,
 .session-actions,
@@ -543,15 +532,8 @@
 .session-evidence {
   margin-top: 12px;
 }
-.session-evidence summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  cursor: pointer;
-}
-.session-evidence[open] summary {
-  margin-bottom: 16px;
+.session-evidence > summary > span:first-child {
+  margin-inline-end: var(--space-2);
 }
 .session-field-provenance {
   margin-top: 18px;

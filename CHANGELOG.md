@@ -19,6 +19,16 @@ Notable changes to Hypo are recorded here.
   numbers. Label the committing action "Apply and save".
 - Reveal invalid fields, preserve failed edits for retry, serialize overlapping
   saves, and keep mobile save controls above the bottom navigation.
+- Align gallery and session headings, page margins, panel density, and editor
+  disclosures with the shared interface. Keep photo EXIF rows aligned across
+  missing or wrapped captions, refresh coverage badges after saves, and use theme
+  colors for gallery surfaces.
+- Separate photo toolbars from their grids, keep checkbox labels beside their
+  controls, and align chemistry columns, development filters, and stage timing
+  fields across desktop and mobile layouts.
+- Give chemistry volume meters equal widths and a consistent remaining-volume
+  meaning. Show roll usage separately, including recommended-limit warnings,
+  without substituting count bars for missing volume data.
 
 ## [1.10.0] - 2026-11-01
 

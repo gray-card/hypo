@@ -52,7 +52,7 @@
   right: 0;
   bottom: 0;
   z-index: 35;
-  padding: 12px 22px calc(12px + env(safe-area-inset-bottom));
+  padding: 12px var(--page-gutter) calc(12px + env(safe-area-inset-bottom));
   background: color-mix(in oklch, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--border);
@@ -61,7 +61,7 @@
   display: none;
 }
 .save-bar-inner {
-  max-width: 880px;
+  max-width: calc(var(--page-width) - 2 * var(--page-gutter));
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -130,6 +130,11 @@
 
 /* ---------- mobile ---------- */
 @media (max-width: 640px) {
+  :root {
+    --page-gutter: 15px;
+    --page-top-space: 18px;
+    --panel-padding: 16px;
+  }
   .topbar {
     padding: 12px 16px;
     padding-top: max(12px, env(safe-area-inset-top));
@@ -141,13 +146,13 @@
     display: none;
   }
   main {
-    padding: 18px 15px 104px;
+    padding: var(--page-top-space) var(--page-gutter) 104px;
   }
   .card {
-    padding: 16px;
     border-radius: 12px;
   }
-  h2 {
+  h2,
+  .view-title {
     font-size: 16px;
   }
 
@@ -255,7 +260,13 @@ input.invalid:focus {
 
 /* coverage badges */
 .section-head {
-  align-items: baseline;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.section-head > h2.section {
+  margin: 0;
 }
 .badge-row {
   display: flex;

@@ -210,6 +210,196 @@ test("shared gear saves explicitly and individual overrides preserve inheritance
 test("contact sheet and inspector fit the viewport", async ({ page }) => {
   await expect(page).toHaveScreenshot("gallery-contact-sheet.png");
   await page.getByRole("button", { name: "Edit First frame", exact: true }).click();
+  await settleInspectorCapture(page);
   await expect(page).toHaveScreenshot("gallery-photo-inspector.png");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+async function settleInspectorCapture(page) {
+  await expect(page.locator("#photo-inspector-title")).toBeFocused();
+  // Desktop captures include the page header; mobile captures follow inspector focus.
+  // Settle layout before fixing the viewport so scroll anchoring cannot change the crop.
+  if (page.viewportSize().width >= 900) {
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+    await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
+  }
+}
+
+async function visualStyle(locator) {
+  return locator.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      font: style.fontFamily,
+      size: style.fontSize,
+      weight: style.fontWeight,
+      color: style.color,
+    };
+  });
+}
+
+for (const theme of ["dark", "light"]) {
+  test(`${theme} theme keeps page framing, headings, and disclosures consistent across views`, async ({ page }) => {
+    await page.evaluate((value) => {
+      document.documentElement.dataset.theme = value;
+      localStorage.setItem("hypo:theme", value);
+    }, theme);
+    const frame = async () =>
+      page.locator("main").evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return { left: box.left, width: box.width, gutter: parseFloat(style.paddingLeft) };
+      });
+    const galleryFrame = await frame();
+    const headingStyle = await visualStyle(page.locator(".gallery-title"));
+    const subtitleStyle = await visualStyle(page.locator(".gallery-header .view-sub"));
+    const nav = page.locator('nav[aria-label="Primary"]:visible');
+    for (const [section, title, view] of [
+      ["setup", "Library", "#library-view"],
+      ["rolls", "Rolls", "#rolls-view"],
+      ["sessions", "Sessions", "#sessions-view"],
+      ["galleries", "Your galleries", "#list-view"],
+    ]) {
+      await nav.locator(`[data-section="${section}"]`).click();
+      const heading = page.getByRole("heading", { name: title, exact: true, level: 2 });
+      await expect(heading).toBeVisible();
+      expect(await frame()).toEqual(galleryFrame);
+      expect(await visualStyle(heading)).toEqual(headingStyle);
+      expect(await visualStyle(page.locator(`${view} .view-sub`).first())).toEqual(subtitleStyle);
+      expect((await heading.boundingBox()).x).toBeCloseTo(galleryFrame.left + galleryFrame.gutter, 0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+    await page.locator("#gallery-list .gallery-row").filter({ hasText: "Contact sheet" }).click();
+    if (theme === "light") await expect(page).toHaveScreenshot("gallery-contact-sheet-light.png");
+    await page.getByRole("button", { name: "Edit First frame", exact: true }).click();
+    const fields = page.locator(".photo-fields:not([hidden])");
+    if (theme === "light") {
+      await settleInspectorCapture(page);
+      await expect(page).toHaveScreenshot("gallery-photo-inspector-light.png");
+    }
+    const summary = fields.locator('[data-photo-section="exif"] > summary');
+    await summary.focus();
+    await page.keyboard.press("Enter");
+    await expect(fields.getByLabel("Aperture", { exact: true })).toBeVisible();
+    const disclosureStyle = await visualStyle(summary);
+    await fields.getByLabel("Alt text").fill("Draft for save bar alignment");
+    const saveEdges = await page.locator(".save-bar > .save-bar-inner").evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return { left: box.left, right: box.right };
+    });
+    expect(saveEdges.left).toBeCloseTo(galleryFrame.left + galleryFrame.gutter, 0);
+    expect(saveEdges.right).toBeCloseTo(galleryFrame.left + galleryFrame.width - galleryFrame.gutter, 0);
+    await page.getByRole("button", { name: "Save changes", exact: true }).click();
+    await expect(page.locator(".save-bar")).toBeHidden();
+
+    await page.goto("/library/chemistry");
+    await page.getByRole("button", { name: "Add chemistry", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Add chemistry" });
+    const more = dialog.locator(".resource-editor-more > summary").first();
+    await more.focus();
+    await page.keyboard.press("Enter");
+    await expect(dialog.locator(".resource-editor-more").first()).toHaveAttribute("open", "");
+    expect(await visualStyle(more)).toEqual(disclosureStyle);
+    await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
+    await page.goto("/session/capture/shoot-a");
+    const evidence = page.locator(".session-evidence > summary");
+    await evidence.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".session-evidence")).toHaveAttribute("open", "");
+    expect(await visualStyle(evidence)).toEqual(disclosureStyle);
+  });
+}
+
+test("gallery panels respect shared density and remain contained at phone, tablet, and desktop widths", async ({
+  page,
+}) => {
+  for (const width of [320, 768, 900, 1280]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const density of ["comfortable", "compact"]) {
+      await page.evaluate((value) => {
+        document.documentElement.dataset.density = value;
+      }, density);
+      const panelPadding = await page
+        .locator(".gallery-details")
+        .evaluate((element) => getComputedStyle(element).paddingLeft);
+      if (density === "compact") expect(panelPadding).toBe("14px");
+      const toolbar = await page.locator("#editor-body > .section-head").boundingBox();
+      const gridBox = await page.locator("#photos").boundingBox();
+      expect(gridBox.y - (toolbar.y + toolbar.height)).toBeGreaterThanOrEqual(16);
+      const summariesContained = await page
+        .locator(".gallery-tools > details, .gallery-tools > div > details")
+        .evaluateAll((cards) =>
+          cards.every((card) => {
+            const cardBox = card.getBoundingClientRect();
+            const titleBox = card.querySelector("summary h2").getBoundingClientRect();
+            return titleBox.left >= cardBox.left + 12 && titleBox.right <= cardBox.right - 12;
+          }),
+        );
+      expect(summariesContained).toBe(true);
+      await page.getByRole("button", { name: "Edit First frame", exact: true }).click();
+      const inspector = page.locator("#photo-inspector");
+      await expect(inspector).toHaveCSS("padding-left", panelPadding);
+      await inspector.locator('.photo-fields:not([hidden]) [data-photo-section="gear"] > summary').click();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      const bounds = await inspector.boundingBox();
+      expect(bounds.x).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+      if (width >= 900) {
+        const grid = await page.locator("#photos").boundingBox();
+        expect(grid.x + grid.width).toBeLessThan(bounds.x);
+      }
+      await inspector.getByRole("button", { name: "Back to photos" }).click();
+    }
+  }
+});
+
+test("photo captions, optional badges, and EXIF values keep aligned rows after editing", async ({ page }) => {
+  await page.getByRole("button", { name: "Edit Third frame", exact: true }).click();
+  const fields = page.locator(".photo-fields:not([hidden])");
+  await fields
+    .getByLabel("Alt text")
+    .fill("Evening light on the hillside, with a long caption that wraps across several lines in a small photo card.");
+  await fields.locator('[data-photo-section="exif"] > summary').click();
+  await fields.getByLabel("Aperture", { exact: true }).fill("22");
+  await fields.getByLabel("ISO", { exact: true }).fill("12800");
+  await fields.getByLabel("Exposure", { exact: true }).fill("1/8000");
+  await page.getByRole("button", { name: "Save changes", exact: true }).click();
+  await expect(page.locator(".save-bar")).toBeHidden();
+  await page.getByRole("button", { name: "Back to photos", exact: true }).click();
+  const checkAlignment = async () => {
+    const geometry = await page.locator("#photos .photo-card").evaluateAll((cards) =>
+      cards.map((card) => ({
+        readoutOffset: Math.round(
+          card.querySelector(".photo-readout").getBoundingClientRect().top - card.getBoundingClientRect().top,
+        ),
+        captionHeight: card.querySelector(".photo-caption").getBoundingClientRect().height,
+        overflow: card.scrollWidth - card.clientWidth,
+        readoutHeight: card.querySelector(".exif-readout").getBoundingClientRect().height,
+        readoutOverflow:
+          card.querySelector(".exif-readout").scrollWidth - card.querySelector(".exif-readout").clientWidth,
+      })),
+    );
+    expect(new Set(geometry.map((card) => card.readoutOffset)).size).toBe(1);
+    for (const dimension of ["captionHeight", "readoutHeight"]) {
+      const sizes = geometry.map((card) => card[dimension]);
+      expect(Math.max(...sizes) - Math.min(...sizes)).toBeLessThanOrEqual(1);
+    }
+    for (const card of geometry) {
+      expect(card.overflow).toBeLessThanOrEqual(1);
+      expect(card.readoutOverflow).toBeLessThanOrEqual(1);
+    }
+  };
+  await checkAlignment();
+  await expect(page.locator('#photos .photo-card[data-frame="2"] .badge')).toHaveCount(0);
+  await expect(page.locator('#photos .photo-card[data-frame="3"] .badge')).toHaveText(["exif", "alt"]);
+  for (const toast of await page.locator(".toast").all()) await toast.click();
+  await expect(page.locator(".toast")).toHaveCount(0);
+  await expect(page.locator("#photos")).toHaveScreenshot("gallery-mixed-metadata.png");
+  await page.getByRole("button", { name: "Edit Photo 2", exact: true }).click();
+  await fields.getByLabel("Alt text").fill("Now described");
+  await page.getByRole("button", { name: "Save changes", exact: true }).click();
+  await expect(page.locator(".save-bar")).toBeHidden();
+  await page.getByRole("button", { name: "Back to photos", exact: true }).click();
+  await expect(page.locator('#photos .photo-card[data-frame="2"] .badge')).toHaveText(["alt"]);
+  await checkAlignment();
+  await expect(page.locator("#gallery-coverage-summary")).toContainText("3 with alt text");
 });

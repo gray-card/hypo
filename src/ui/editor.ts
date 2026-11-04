@@ -627,6 +627,20 @@ function skeletonCards(n: number): HTMLDivElement[] {
   );
 }
 
+function galleryCoverageSummary(): string {
+  const photos = ctx.detail.photos;
+  const nWf = photos.filter((p) => ctx.store.photoWorkflowByPhoto.has(p.photo.uri)).length;
+  const nScene = photos.filter((p) => ctx.store.sceneGraphByPhoto?.has(p.photo.uri)).length;
+  const nAlt = photos.filter((p) => p.photo?.value?.alt).length;
+  return [
+    nWf && `${nWf} workflow${nWf > 1 ? "s" : ""}`,
+    nScene && `${nScene} scene graph${nScene > 1 ? "s" : ""}`,
+    nAlt && `${nAlt} with alt text`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 function coverageBadges(p: GalleryPhoto, capture: CaptureRecord | undefined, wf: WorkflowRun): HTMLDivElement | null {
   const items = [
     ["exif", !!p.exif],
@@ -719,16 +733,6 @@ export async function openGallery(galleryUri: string): Promise<void> {
     workflowMount.replaceChildren(buildWorkflowBuilderCard());
   });
   const photos = ctx.detail.photos;
-  const nWf = photos.filter((p) => ctx.store.photoWorkflowByPhoto.has(p.photo.uri)).length;
-  const nScene = photos.filter((p) => ctx.store.sceneGraphByPhoto?.has(p.photo.uri)).length;
-  const nAlt = photos.filter((p) => p.photo?.value?.alt).length;
-  const summary = [
-    nWf && `${nWf} workflow${nWf > 1 ? "s" : ""}`,
-    nScene && `${nScene} scene graph${nScene > 1 ? "s" : ""}`,
-    nAlt && `${nAlt} with alt text`,
-  ]
-    .filter(Boolean)
-    .join(" · ");
   const photosWrap = el("div", { id: "photos" });
   let gridMode = true;
   try {
@@ -782,7 +786,7 @@ export async function openGallery(galleryUri: string): Promise<void> {
     el("div", { class: "row between section-head" }, [
       el("h2", { class: "section" }, `Photos (${photos.length})`),
       el("div", { class: "row" }, [
-        summary ? el("span", { class: "mono muted small" }, summary) : null,
+        el("span", { class: "mono muted small", id: "gallery-coverage-summary" }, galleryCoverageSummary()),
         selectAll,
         reorder,
         el("div", { class: "segmented", role: "group", "aria-label": "Photo layout" }, [listSeg, gridSeg]),
@@ -826,7 +830,7 @@ export async function openGallery(galleryUri: string): Promise<void> {
 
 function buildGalleryHeader(): HTMLDivElement {
   let gallery = ctx.detail.gallery;
-  const title = el("h1", { class: "gallery-title" }, gallery.value.title || "Untitled gallery");
+  const title = el("h1", { class: "view-title gallery-title" }, gallery.value.title || "Untitled gallery");
   const titleInput = el("input", { type: "text", value: gallery.value.title || "" });
   const descInput = el("textarea", { rows: "3" }, gallery.value.description || "");
   const status = el("span", { class: "status", role: "status" });
@@ -882,12 +886,14 @@ function buildGalleryHeader(): HTMLDivElement {
   };
   guardControllerSave(ctl, details);
   return el("div", { class: "gallery-header" }, [
-    title,
-    el(
-      "p",
-      { class: "muted small" },
-      "Edits stay on this page until you save. Batch actions have a separate Apply and save step.",
-    ),
+    el("div", { class: "view-head" }, [
+      title,
+      el(
+        "p",
+        { class: "view-sub muted small" },
+        "Edits stay on this page until you save. Batch actions have a separate Apply and save step.",
+      ),
+    ]),
     details,
   ]);
 }
@@ -1868,7 +1874,8 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
 
   const status = el("span", { class: "status" });
   const wfSummary = photoWorkflowSummary(wf, ctx.store);
-  const readoutHost = el("div");
+  const readoutHost = el("div", { class: "photo-readout" });
+  const coverageHost = el("div", { class: "photo-coverage" }, [coverageBadges(p, capture, wf)]);
   const refreshReadout = () => {
     readoutHost.replaceChildren(exifReadout(form));
   };
@@ -2008,6 +2015,9 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
     thumb.setAttribute("aria-label", `Edit ${name}`);
     thumb.querySelector("img")?.setAttribute("alt", name);
     card.querySelector(".photo-select")?.setAttribute("aria-label", `Select ${name}`);
+    coverageHost.replaceChildren(...[coverageBadges(p, capture, wf)].filter((node): node is HTMLDivElement => !!node));
+    const galleryCoverage = document.getElementById("gallery-coverage-summary");
+    if (galleryCoverage) galleryCoverage.textContent = galleryCoverageSummary();
     fields.dispatchEvent(new Event("gallery-defaults-saved"));
     refreshSaveBar();
   };
@@ -2031,11 +2041,11 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
       el("div", { class: "photo-meta" }, [
         el("div", {}, `#${idx + 1}`),
         el("div", { class: "photo-caption muted small" }, p.photo.value.alt || "Missing alt text"),
-        coverageBadges(p, capture, wf),
         readoutHost,
+        coverageHost,
       ]),
     ]),
-    el("details", { "data-photo-section": "gear" }, [
+    el("details", { class: "form-disclosure", "data-photo-section": "gear" }, [
       el("summary", {}, "Capture and gear"),
       el(
         "p",
@@ -2162,7 +2172,10 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
       ]),
       altArea,
     ]),
-    el("details", { "data-photo-section": "exif" }, [el("summary", {}, "Exposure and EXIF"), exifGrid]),
+    el("details", { class: "form-disclosure", "data-photo-section": "exif" }, [
+      el("summary", {}, "Exposure and EXIF"),
+      exifGrid,
+    ]),
     el("div", { class: "row wrap subtle-actions" }, [
       p.photo?.value
         ? el(
@@ -2237,11 +2250,16 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
   fields.append(...children);
   const altField = altArea.closest(".field")!;
   fields.prepend(lazyThumb(ctx.agent, ctx.did, p.photo?.value?.photo, "inspector-preview", photoName), altField);
-  const workflow = el("details", { "data-photo-section": "workflow" }, [el("summary", {}, "Workflow"), wfSummary]);
+  const workflow = el("details", { class: "form-disclosure", "data-photo-section": "workflow" }, [
+    el("summary", {}, "Workflow"),
+    wfSummary,
+  ]);
   const actions = [...fields.children].find((child) => child.classList.contains("subtle-actions"));
   fields.insertBefore(workflow, actions || fields.querySelector(".photo-save"));
   if (actions) {
-    const more = el("details", { "data-photo-section": "actions" }, [el("summary", {}, "More photo actions")]);
+    const more = el("details", { class: "form-disclosure", "data-photo-section": "actions" }, [
+      el("summary", {}, "More photo actions"),
+    ]);
     actions.before(more);
     more.append(actions);
   }

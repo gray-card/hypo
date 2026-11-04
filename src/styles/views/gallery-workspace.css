@@ -1,29 +1,12 @@
 /* Gallery editing: a contact sheet with one persistent photo inspector. */
-main:has(#editor-view:not(.hidden)) {
-  max-width: 1220px;
-}
 .gallery-title {
-  font-size: 24px;
-  margin: 0 0 6px;
   overflow-wrap: anywhere;
-}
-.gallery-header > p {
-  margin: 0 0 16px;
-}
-.gallery-header .collapse-card,
-.gallery-tools .collapse-card {
-  padding: 12px 16px;
-  margin-bottom: 8px;
-}
-.gallery-header .collapse-summary h2,
-.gallery-tools .collapse-summary h2 {
-  font-size: 14px;
 }
 .gallery-tools {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 18px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
 }
 .gallery-tools > details,
 .gallery-tools > div {
@@ -39,11 +22,11 @@ main:has(#editor-view:not(.hidden)) {
 }
 .gallery-workspace {
   display: grid;
-  gap: 20px;
+  gap: var(--section-gap);
   align-items: start;
 }
 .gallery-workspace.has-inspector {
-  grid-template-columns: minmax(0, 1fr) minmax(340px, 400px);
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 380px);
 }
 .gallery-workspace > *,
 .photo-fields,
@@ -53,34 +36,23 @@ main:has(#editor-view:not(.hidden)) {
 }
 .photo-inspector {
   position: sticky;
-  top: 16px;
+  top: var(--space-4);
   max-height: calc(100dvh - 110px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 18px;
 }
 .inspector-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .inspector-heading h2 {
   margin: 0;
 }
 .inspector-navigation {
-  margin: 12px 0 18px;
-}
-.photo-fields > details {
-  border-top: 1px solid var(--border);
-  padding: 12px 0;
-}
-.photo-fields > details > summary {
-  cursor: pointer;
-}
-.photo-fields > details[open] > summary {
-  margin-bottom: 12px;
+  margin: var(--space-3) 0 var(--section-gap);
 }
 .photo-fields > .status {
   display: block;
@@ -94,7 +66,7 @@ main:has(#editor-view:not(.hidden)) {
   width: 100%;
   height: 160px;
   overflow: hidden;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
   background: var(--surface-2);
 }
 .inspector-preview img {
@@ -107,11 +79,11 @@ main:has(#editor-view:not(.hidden)) {
   align-content: start;
 }
 #photos .photo-card {
+  container-type: inline-size;
   margin-bottom: 10px;
 }
 #photos.grid-mode .photo-card {
   margin: 0;
-  padding-bottom: 22px;
   cursor: default;
 }
 #photos .photo-card.photo-focused {
@@ -206,4 +178,35 @@ main:has(#editor-view:not(.hidden)) {
   .gallery-tools > div {
     flex-basis: 100%;
   }
+}
+
+/* Reserve two caption lines; optional coverage badges follow the readout so
+   neither a missing badge nor a longer caption shifts the EXIF baseline. */
+#photos.grid-mode .photo-caption {
+  line-height: 1.55;
+  height: 3.1em;
+}
+#photos .photo-meta {
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+#photos .exif-readout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1) var(--space-2);
+  width: 100%;
+}
+#photos .exif-readout > span {
+  min-width: 0;
+}
+
+/* Keep complete values readable when a photo card is too narrow for two columns. */
+@container (max-width: 180px) {
+  #photos .exif-readout {
+    grid-template-columns: 1fr;
+  }
+}
+
+#gallery-coverage-summary:empty {
+  display: none;
 }

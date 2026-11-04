@@ -309,6 +309,26 @@ describe("gallery editing integration", () => {
     expect(document.querySelector(".photo-fields .status.err")).toBeNull();
   });
 
+  it("updates coverage badges when alt text is saved or removed, without presenting drafts as saved metadata", async () => {
+    await openGallery(GALLERY);
+    openPhoto(1);
+    const card = document.querySelectorAll(".photo-card")[1];
+    const alt = document.querySelectorAll(".photo-fields")[1].querySelector("textarea");
+    expect(card.querySelector(".badge")).toBeNull();
+    edit(alt, "A newly described photo");
+    expect(card.querySelector(".badge")).toBeNull();
+    await saveAllDirty();
+    expect(card.querySelector(".badge").textContent).toBe("alt");
+    expect(card.querySelector(".photo-caption").textContent).toBe("A newly described photo");
+    expect(document.querySelector("#gallery-coverage-summary").textContent).toContain("2 with alt text");
+    edit(alt, "");
+    expect(card.querySelector(".badge").textContent).toBe("alt");
+    await saveAllDirty();
+    expect(card.querySelector(".badge")).toBeNull();
+    expect(card.querySelector(".photo-caption").textContent).toBe("Missing alt text");
+    expect(document.querySelector("#gallery-coverage-summary").textContent).toContain("1 with alt text");
+  });
+
   it("reveals invalid fields in another photo and keeps failed edits available for retry", async () => {
     await openGallery(GALLERY);
     openPhoto(0);

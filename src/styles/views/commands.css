@@ -133,10 +133,8 @@ button:not(.ghost):not(.danger-solid):not(.tab-btn):hover {
 
 /* density: compact tightens spacing */
 :root[data-density="compact"] {
-  --pad-card: 14px;
-}
-:root[data-density="compact"] .card {
-  padding: var(--pad-card);
+  --panel-padding: 14px;
+  --page-top-space: 18px;
 }
 :root[data-density="compact"] .gear-row {
   padding: 6px 0;
@@ -144,9 +142,6 @@ button:not(.ghost):not(.danger-solid):not(.tab-btn):hover {
 :root[data-density="compact"] .field,
 :root[data-density="compact"] .exif-field {
   margin: 9px 0;
-}
-:root[data-density="compact"] main {
-  padding-top: 18px;
 }
 
 /* keyboard shortcuts modal + focused photo + copy button */
