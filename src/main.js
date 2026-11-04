@@ -547,18 +547,13 @@ async function loadGalleries() {
   return galleryList.load();
 }
 
-let photoIdx = -1;
 function navigatePhotos(dir) {
-  const cards = [...document.querySelectorAll("#editor-body .photo-card")];
-  if (!cards.length) return;
-  photoIdx = photoIdx < 0 ? 0 : Math.max(0, Math.min(cards.length - 1, photoIdx + dir));
-  cards.forEach((c, i) => c.classList.toggle("photo-focused", i === photoIdx));
-  cards[photoIdx].scrollIntoView({ behavior: "smooth", block: "center" });
+  document.querySelector("#photos")?.dispatchEvent(new CustomEvent("navigate-photo", { detail: dir }));
 }
 
 /* ---------- unsaved-changes guard ---------- */
 function guardLeave() {
-  return !hasUnsavedChanges() || confirm("You have unsaved photo edits. Leave without saving?");
+  return !hasUnsavedChanges() || confirm("You have unsaved gallery edits. Leave without saving?");
 }
 window.addEventListener("beforeunload", (e) => {
   if (hasUnsavedChanges()) {

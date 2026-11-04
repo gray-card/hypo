@@ -56,6 +56,8 @@ import { distinctTerms, lookupGroundings, applyGroundings } from "../grounding.j
 import { locationField } from "./mapView.js";
 import { imageAlt, lazyThumb } from "./lazy.js";
 import { icon } from "./icons.js";
+import { scopeGalleryRule } from "../../apps/web/src/views/galleries/batch-scope.ts";
+import { createPhotoInspector } from "../../apps/web/src/views/galleries/photo-inspector.ts";
 import { createFilterStackControl } from "./filterStack.js";
 
 import { instanceSelect, shootSelect, refreshStore, openAddGear } from "./library.js";
@@ -98,7 +100,7 @@ type WorkflowStep = {
 };
 type GroundingCandidate = { id: string; label: string; description?: string };
 type GroundingSelect = HTMLSelectElement & { _byId: Map<string, GroundingCandidate> };
-type PhotoCard = HTMLDivElement & { _photo?: GalleryPhoto };
+type PhotoCard = HTMLDivElement & { _photo?: GalleryPhoto; _editor?: HTMLDivElement };
 type StoredRecord = {
   uri: string;
   cid?: string | null;
@@ -136,6 +138,7 @@ export async function replacePhotoImage(
 
 interface CardController {
   dirty: boolean;
+  reveal?: () => void;
   save: (() => Promise<void>) | null;
 }
 
@@ -212,6 +215,35 @@ function collapseCard(title: string, children: Array<Node | string | null>): HTM
   ]);
 }
 
+// Serialize saves per editor and lock its inputs until the write settles.
+function guardControllerSave(ctl: CardController, root: HTMLElement): void {
+  const save = ctl.save;
+  let pending: Promise<void> | undefined;
+  ctl.save = () => {
+    if (pending) return pending;
+    const controls = [
+      ...root.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLTextAreaElement>(
+        "input,select,button,textarea",
+      ),
+    ];
+    const disabled = controls.map((control) => control.disabled);
+    controls.forEach((control) => {
+      control.disabled = true;
+    });
+    root.setAttribute("aria-busy", "true");
+    pending = Promise.resolve()
+      .then(() => save?.())
+      .finally(() => {
+        controls.forEach((control, index) => {
+          control.disabled = disabled[index];
+        });
+        root.removeAttribute("aria-busy");
+        pending = undefined;
+      });
+    return pending;
+  };
+}
+
 // ---- per-photo dirty tracking + sticky save bar ----
 let cardCtls: CardController[] = [];
 let saveBarEl: HTMLDivElement | null = null,
@@ -220,9 +252,11 @@ let saveBarEl: HTMLDivElement | null = null,
 
 // ---- bulk selection ----
 let selected = new Set<string>();
+let selectionChanged = () => {};
 let selectBarEl: HTMLDivElement | null = null,
   selectCount: HTMLSpanElement | null = null;
 function refreshSelectBar(): void {
+  selectionChanged();
   if (!selectBarEl) return;
   const n = selected.size;
   if (!n) {
@@ -233,11 +267,11 @@ function refreshSelectBar(): void {
   if (selectCount) selectCount.textContent = `${n} selected`;
 }
 function ensureSelectBar(): void {
-  const view = $("#editor-view");
+  const view = $("#gallery-batch-tools");
   if (!view) return;
   if (!view.querySelector(".select-bar")) {
     selectCount = el("span", { class: "save-count" });
-    selectBarEl = el("div", { class: "select-bar save-bar", hidden: "" }, [
+    selectBarEl = el("div", { class: "select-bar", hidden: "" }, [
       el("div", { class: "save-bar-inner" }, [
         selectCount,
         el("div", { class: "row" }, [
@@ -255,16 +289,42 @@ function ensureSelectBar(): void {
             },
             "Clear",
           ),
-          el("button", { class: "ghost small-btn", onclick: openBulkAnalyze }, "Analyze…"),
+          el("button", { class: "ghost small-btn", onclick: openBulkAnalyze }, "Analyze and save…"),
           el("button", { onclick: openBulkGear }, "Set gear…"),
+          el(
+            "button",
+            {
+              class: "ghost small-btn",
+              onclick: () => {
+                const rules = $<HTMLDetailsElement>("#gallery-batch-rules");
+                if (rules) {
+                  rules.open = !rules.open;
+                  rules.querySelector<HTMLElement>("select")?.focus();
+                }
+              },
+            },
+            "Use a rule…",
+          ),
         ]),
       ]),
     ]);
-    view.append(selectBarEl);
+    view.prepend(selectBarEl);
   } else selectBarEl = view.querySelector(".select-bar");
   refreshSelectBar();
 }
+function requireSavedDrafts(action = "applying a batch operation"): boolean {
+  if (!hasUnsavedChanges()) return true;
+  toast(`Save your pending changes before ${action}.`, "info");
+  return false;
+}
+
+function openGalleryGear(kind: string, prefill: { make?: string; model?: string } = {}): void {
+  if (!requireSavedDrafts("adding gear")) return;
+  openAddGear(kind, () => openGallery(ctx.galleryUri), prefill);
+}
+
 function openBulkGear(): void {
+  if (!requireSavedDrafts()) return;
   const camSel = instanceSelect("camera", "");
   const backSel = instanceSelect("filmBack", "");
   const lensSel = instanceSelect("lens", "");
@@ -301,6 +361,7 @@ function openBulkGear(): void {
       refreshSelectBar();
       openGallery(ctx.galleryUri);
     },
+    { saveLabel: "Apply and save" },
   );
 }
 
@@ -423,7 +484,7 @@ const analyzeAndSaveWithProgress = async (
 
 let bulkAnalyzing = false;
 async function openBulkAnalyze(): Promise<void> {
-  if (bulkAnalyzing) return;
+  if (bulkAnalyzing || !requireSavedDrafts()) return;
   const cfg = getVisionConfig();
   if (!cfg?.apiKey) {
     toast("Connect an image-analysis provider first (Settings → Image analysis).", "info", 5000);
@@ -435,7 +496,7 @@ async function openBulkAnalyze(): Promise<void> {
   const provider = getProvider(cfg);
   const ok = await confirmModal(
     `Analyze ${n} photo${n > 1 ? "s" : ""} with ${provider.label}? Each image is sent to the provider and may incur cost. This replaces any existing scene graph.`,
-    { confirmLabel: "Analyze", danger: false },
+    { confirmLabel: "Analyze and save", danger: false },
   );
   if (!ok) return;
 
@@ -497,7 +558,7 @@ function refreshSaveBar(): void {
     return;
   }
   saveBarEl.removeAttribute("hidden");
-  if (saveBarCount) saveBarCount.textContent = `${n} unsaved photo${n > 1 ? "s" : ""}`;
+  if (saveBarCount) saveBarCount.textContent = `${n} unsaved ${n === 1 ? "edit" : "edits"}`;
 }
 
 export async function saveAllDirty(): Promise<void> {
@@ -506,7 +567,7 @@ export async function saveAllDirty(): Promise<void> {
 
 async function saveAll(): Promise<void> {
   const dirty = cardCtls.filter((c) => c.dirty);
-  if (!dirty.length) return;
+  if (!dirty.length || saveAllBtn?.disabled) return;
   const saveButton = saveAllBtn;
   if (!saveButton) throw new Error("Save controls are unavailable");
   saveButton.disabled = true;
@@ -520,16 +581,17 @@ async function saveAll(): Promise<void> {
       await c.save();
       done++;
     } catch {
+      if (!failed) c.reveal?.();
       failed++;
     }
     saveButton.textContent = `Saving ${done + failed} / ${total}…`;
     refreshSaveBar();
   }
   saveButton.disabled = false;
-  saveButton.textContent = "Save all";
+  saveButton.textContent = "Save changes";
   ctx.store = await refreshStore();
   toast(
-    failed ? `Saved ${done}, ${failed} failed` : `Saved ${done} photo${done > 1 ? "s" : ""}`,
+    failed ? `Saved ${done}, ${failed} failed` : `Saved ${done} ${done === 1 ? "edit" : "edits"}`,
     failed ? "err" : "ok",
   );
   refreshSaveBar();
@@ -540,7 +602,7 @@ function ensureSaveBar(): void {
   if (!view) return;
   if (!view.querySelector(".save-bar")) {
     saveBarCount = el("span", { class: "save-count" });
-    saveAllBtn = el("button", { onclick: saveAll }, "Save all");
+    saveAllBtn = el("button", { onclick: saveAll }, "Save changes");
     saveBarEl = el("div", { class: "save-bar", hidden: "" }, [
       el("div", { class: "save-bar-inner" }, [saveBarCount, saveAllBtn]),
     ]);
@@ -628,6 +690,7 @@ export async function openGallery(galleryUri: string): Promise<void> {
   ctx.galleryUri = galleryUri;
   cardCtls = [];
   selected = new Set();
+  selectionChanged = () => {};
   const body = $("#editor-body");
   if (!body) throw new Error("Editor body is unavailable");
   const phase = loadPhase("Loading gallery from your PDS…");
@@ -640,11 +703,15 @@ export async function openGallery(galleryUri: string): Promise<void> {
     phase.clear();
   }
   body.replaceChildren();
-  body.append(buildGalleryHeader());
-  body.append(buildDefaultsCard());
-  body.append(buildBatchCard());
+  const galleryHeader = buildGalleryHeader();
+  body.append(galleryHeader);
+  const galleryTools = el("div", { class: "gallery-tools" }, [
+    galleryHeader.querySelector("details"),
+    buildDefaultsCard(),
+  ]);
+  galleryHeader.append(galleryTools);
   const workflowMount = el("div", { "data-editor-section": "workflow-templates" });
-  body.append(workflowMount);
+  galleryTools.append(workflowMount);
   const signals = ctx.signals || recordStore(ctx.did);
   signals.replaceRemote(NS.workflow.template, ctx.store.workflowTemplates || []);
   disposeEditorSignals = renderEditorTemplatesOn(signals, (records) => {
@@ -663,9 +730,9 @@ export async function openGallery(galleryUri: string): Promise<void> {
     .filter(Boolean)
     .join(" · ");
   const photosWrap = el("div", { id: "photos" });
-  let gridMode = false;
+  let gridMode = true;
   try {
-    gridMode = localStorage.getItem("hypo:photoview") === "grid";
+    gridMode = localStorage.getItem("hypo:photoview") !== "list";
   } catch {
     /* ignore */
   }
@@ -683,123 +750,150 @@ export async function openGallery(galleryUri: string): Promise<void> {
     gridSeg.classList.toggle("active", g);
     listSeg.setAttribute("aria-pressed", String(!g));
     gridSeg.setAttribute("aria-pressed", String(g));
-    photosWrap.querySelectorAll<HTMLElement>("[data-grid-photo-control]").forEach((control) => {
-      if (g) {
-        control.setAttribute("role", "button");
-        control.setAttribute("tabindex", "0");
-        control.setAttribute("aria-label", `Edit ${control.dataset.gridPhotoLabel || "photo"}`);
-      } else {
-        control.removeAttribute("role");
-        control.removeAttribute("tabindex");
-        control.removeAttribute("aria-label");
-      }
-    });
   };
   listSeg.addEventListener("click", () => setMode(false));
   gridSeg.addEventListener("click", () => setMode(true));
-  const openGridPhoto = (target: Element, controlOnly = false): void => {
-    if (!photosWrap.classList.contains("grid-mode")) return;
-    const control = target.closest("[data-grid-photo-control]");
-    const card = control?.closest(".photo-card") || (!controlOnly ? target.closest(".photo-card") : null);
-    if (!card) return;
-    setMode(false);
-    card.scrollIntoView({ block: "center" });
-  };
-  photosWrap.addEventListener("click", (e) => openGridPhoto(eventElement(e)));
-  photosWrap.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter" && e.key !== " ") return;
-    const target = eventElement(e);
-    if (!target.closest("[data-grid-photo-control]")) return;
-    e.preventDefault();
-    openGridPhoto(target, true);
-  });
+  const reorder = el(
+    "button",
+    {
+      class: "ghost small-btn",
+      "aria-pressed": "false",
+      onclick: () => {
+        const enabled = photosWrap.classList.toggle("reordering");
+        reorder.setAttribute("aria-pressed", String(enabled));
+      },
+    },
+    "Reorder",
+  );
+  const selectAll = el(
+    "button",
+    {
+      class: "ghost small-btn",
+      onclick: () => {
+        photosWrap.querySelectorAll<HTMLInputElement>(".photo-select").forEach((checkbox) => {
+          checkbox.checked = true;
+          checkbox.dispatchEvent(new Event("change"));
+        });
+      },
+    },
+    "Select all",
+  );
   body.append(
     el("div", { class: "row between section-head" }, [
       el("h2", { class: "section" }, `Photos (${photos.length})`),
       el("div", { class: "row" }, [
         summary ? el("span", { class: "mono muted small" }, summary) : null,
+        selectAll,
+        reorder,
         el("div", { class: "segmented", role: "group", "aria-label": "Photo layout" }, [listSeg, gridSeg]),
       ]),
     ]),
   );
-  photos.map((p, i) => buildPhotoCard(p, i)).forEach((c) => photosWrap.append(c));
+  const cards = photos.map((p, i) => buildPhotoCard(p, i));
+  cards.forEach((card) => photosWrap.append(card));
+  const inspector = createPhotoInspector(
+    photosWrap,
+    cards.map((card) => ({
+      card,
+      fields: card._editor!,
+      control: card.querySelector<HTMLElement>("[data-grid-photo-control]")!,
+    })),
+  );
+  galleryHeader.addEventListener("reveal-gallery-settings", () => inspector.close(false));
+  const rules = buildBatchCard();
+  rules.id = "gallery-batch-rules";
+  rules.hidden = true;
+  const batchTools = el("div", { id: "gallery-batch-tools" }, [rules]);
+  selectionChanged = () => {
+    rules.hidden = selected.size === 0;
+    rules.open = false;
+    rules.querySelector(".batch-preview")!.textContent = "Preview batch changes.";
+    rules.querySelector("summary h2")!.textContent = `Batch edit (${selected.size} selected)`;
+  };
+  body.append(batchTools);
   setMode(gridMode);
   wireReorder(photosWrap);
-  body.append(photosWrap);
+  body.append(el("div", { class: "gallery-workspace" }, [photosWrap, inspector.node]));
+  if (!photos.length) photosWrap.append(el("p", { class: "muted" }, "This gallery has no photos."));
   ensureSaveBar();
   ensureSelectBar();
-  setEditorHero(photos[0]?.photo?.value?.photo);
-}
-
-async function setEditorHero(blobRef: Parameters<typeof blobUrl>[2] | undefined): Promise<void> {
   const hero = $("#editor-hero");
-  if (!hero) return;
-  if (!blobRef) {
+  if (hero) {
     hero.classList.add("hidden");
     hero.style.backgroundImage = "";
-    return;
-  }
-  try {
-    const u = await blobUrl(ctx.agent, ctx.did, blobRef);
-    if (u) {
-      hero.style.backgroundImage = `url("${u}")`;
-      hero.classList.remove("hidden");
-    }
-  } catch {
-    hero.classList.add("hidden");
   }
 }
 
 function buildGalleryHeader(): HTMLDivElement {
-  const g = ctx.detail.gallery;
-  const titleInput = el("input", { type: "text", value: g.value.title || "" });
-  const descInput = el("textarea", { rows: "3" }, g.value.description || "");
-  const status = el("span", { class: "status" });
-  const card = el("div", { class: "card" }, [
-    el("div", { class: "row between" }, [
-      el("h2", {}, "Gallery"),
+  let gallery = ctx.detail.gallery;
+  const title = el("h1", { class: "gallery-title" }, gallery.value.title || "Untitled gallery");
+  const titleInput = el("input", { type: "text", value: gallery.value.title || "" });
+  const descInput = el("textarea", { rows: "3" }, gallery.value.description || "");
+  const status = el("span", { class: "status", role: "status" });
+  const ctl: CardController = { dirty: false, save: null };
+  cardCtls.push(ctl);
+  const markDirty = () => {
+    ctl.dirty = true;
+    status.className = "status";
+    status.textContent = "Unsaved changes";
+    refreshSaveBar();
+  };
+  titleInput.addEventListener("input", markDirty);
+  descInput.addEventListener("input", markDirty);
+  const details = collapseCard("Gallery details", [
+    field("Title", titleInput),
+    field("Description", descInput),
+    el("div", { class: "row wrap" }, [
       el(
         "button",
         {
-          class: "ghost small-btn",
-          title: "Inspect record",
-          "aria-label": "Inspect record",
-          onclick: () => openInspector(g),
+          onclick: async (event) => {
+            await withButton(eventButton(event), status, () => ctl.save?.());
+          },
         },
-        "{ }",
+        "Save gallery details",
       ),
+      el("button", { class: "ghost small-btn", onclick: () => openInspector(gallery) }, "Inspect record"),
+      status,
     ]),
-    field("Title", titleInput),
-    field("Description", descInput),
-    el("div", { class: "row" }, [el("span", { class: "muted small" }, "Autosaves when you click away."), status]),
   ]);
-
-  let prevT = titleInput.value,
-    prevD = descInput.value;
-  const autosave = async () => {
-    if (titleInput.value === prevT && descInput.value === prevD) return;
-    prevT = titleInput.value;
-    prevD = descInput.value;
-    status.className = "status";
-    status.textContent = "Saving…";
+  details.classList.add("gallery-details");
+  ctl.reveal = () => {
+    details.dispatchEvent(new Event("reveal-gallery-settings", { bubbles: true }));
+    details.open = true;
+    titleInput.focus();
+  };
+  ctl.save = async () => {
+    if (!ctl.dirty) return;
     try {
-      await saveGallery(ctx.agent, ctx.did, g, { title: titleInput.value, description: descInput.value });
-      ctx.detail = await getGalleryDetail(ctx.agent, ctx.did, ctx.galleryUri);
-      status.classList.add("ok");
-      status.textContent = "Saved ✓";
-    } catch (e: unknown) {
+      await saveGallery(ctx.agent, ctx.did, gallery, { title: titleInput.value, description: descInput.value });
+      gallery = (await getGalleryDetail(ctx.agent, ctx.did, ctx.galleryUri)).gallery;
+      ctx.detail.gallery = gallery;
+      title.textContent = titleInput.value || "Untitled gallery";
+      ctl.dirty = false;
+      status.className = "status ok";
+      status.textContent = "Saved";
+      refreshSaveBar();
+    } catch (error) {
+      status.textContent = errorMessage(error);
       status.classList.add("err");
-      status.textContent = errorMessage(e);
-      toast(errorMessage(e), "err");
+      throw error;
     }
   };
-  titleInput.addEventListener("blur", autosave);
-  descInput.addEventListener("blur", autosave);
-  return card;
+  guardControllerSave(ctl, details);
+  return el("div", { class: "gallery-header" }, [
+    title,
+    el(
+      "p",
+      { class: "muted small" },
+      "Edits stay on this page until you save. Batch actions have a separate Apply and save step.",
+    ),
+    details,
+  ]);
 }
 
 function buildDefaultsCard(): HTMLDetailsElement {
-  const defs = ctx.store.galleryDefaultsByGallery.get(ctx.galleryUri);
+  let defs = ctx.store.galleryDefaultsByGallery.get(ctx.galleryUri);
   const camSel = instanceSelect("camera", defs?.value?.camera);
   const backSel = instanceSelect("filmBack", defs?.value?.filmBack);
   const lensSel = instanceSelect("lens", defs?.value?.lens);
@@ -812,8 +906,14 @@ function buildDefaultsCard(): HTMLDetailsElement {
   const shootSel = shootSelect(defs?.value?.shoot);
   const locF = locationField(defs?.value?.location);
   const status = el("span", { class: "status" });
-  return collapseCard("Gallery defaults", [
-    el("p", { class: "muted small" }, "Applied when a photo has no explicit capture set."),
+  const ctl: CardController = { dirty: false, save: null };
+  cardCtls.push(ctl);
+  const card = collapseCard("Shared gear", [
+    el(
+      "p",
+      { class: "muted small" },
+      "Used where a photo has no value of its own. Save shared gear to update those photos.",
+    ),
     field("Camera", camSel),
     field("Film back", backSel),
     field("Lens", lensSel),
@@ -826,30 +926,60 @@ function buildDefaultsCard(): HTMLDetailsElement {
       {
         class: "ghost",
         onclick: async (e) => {
-          await withButton(eventButton(e), status, async () => {
-            await saveGalleryDefaults(
-              ctx.agent,
-              ctx.did,
-              ctx.galleryUri,
-              {
-                camera: camSel.value || undefined,
-                filmBack: backSel.value || undefined,
-                lens: lensSel.value || undefined,
-                filters: filterStack.getSelected(),
-                filmRoll: rollSel.value || undefined,
-                shoot: shootSel.value || undefined,
-                location: locF.get(),
-              },
-              defs,
-            );
-            ctx.store = await refreshStore();
-          });
+          await withButton(eventButton(e), status, () => ctl.save?.());
         },
       },
-      "Save defaults",
+      "Save shared gear",
     ),
     status,
   ]);
+  card.classList.add("shared-gear");
+  card.addEventListener("change", () => {
+    ctl.dirty = true;
+    status.className = "status";
+    status.textContent = "Unsaved changes";
+    refreshSaveBar();
+  });
+  ctl.reveal = () => {
+    card.dispatchEvent(new Event("reveal-gallery-settings", { bubbles: true }));
+    card.open = true;
+    camSel.focus();
+  };
+  ctl.save = async () => {
+    if (!ctl.dirty) return;
+    try {
+      await saveGalleryDefaults(
+        ctx.agent,
+        ctx.did,
+        ctx.galleryUri,
+        {
+          camera: camSel.value || undefined,
+          filmBack: backSel.value || undefined,
+          lens: lensSel.value || undefined,
+          filters: filterStack.getSelected(),
+          filmRoll: rollSel.value || undefined,
+          shoot: shootSel.value || undefined,
+          location: locF.get(),
+        },
+        defs,
+      );
+      ctx.store = await refreshStore();
+      defs = ctx.store.galleryDefaultsByGallery.get(ctx.galleryUri);
+      ctl.dirty = false;
+      status.className = "status ok";
+      status.textContent = "Saved";
+      document
+        .querySelectorAll(".photo-fields")
+        .forEach((fields) => fields.dispatchEvent(new Event("gallery-defaults-saved")));
+      refreshSaveBar();
+    } catch (error) {
+      status.textContent = errorMessage(error);
+      status.classList.add("err");
+      throw error;
+    }
+  };
+  guardControllerSave(ctl, card);
+  return card;
 }
 
 type BatchRule = { id: string; name: string; when: any; actions: readonly any[] };
@@ -877,9 +1007,16 @@ function buildBatchCard(): HTMLDetailsElement {
   );
   const previewBox = el("pre", { class: "batch-preview muted" }, "Preview batch changes.");
   const status = el("span", { class: "status" });
+  const scopedRule = () =>
+    scopeGalleryRule(
+      rule,
+      ctx.detail.photos.map((photo) => photo.photo.uri),
+      selected,
+    );
   let rule = allRules[0];
   presetSel.onchange = () => {
     rule = allRules.find((r) => r.id === presetSel.value) || allRules[0];
+    previewBox.textContent = "Preview batch changes.";
   };
   return collapseCard("Batch edit", [
     field("Rule", presetSel),
@@ -889,10 +1026,15 @@ function buildBatchCard(): HTMLDetailsElement {
         {
           class: "ghost",
           onclick: () => {
-            const result = previewBatch(ctx.detail, ctx.store, rule);
-            previewBox.textContent = result.matched.length
-              ? result.matched.map((m) => `#${m.index}: ${m.changes.map((c) => c.kind).join(", ")}`).join("\n")
-              : "No matches.";
+            try {
+              const result = previewBatch(ctx.detail, ctx.store, scopedRule());
+              previewBox.textContent = result.matched.length
+                ? result.matched.map((m) => `#${m.index}: ${m.changes.map((c) => c.kind).join(", ")}`).join("\n")
+                : "No matches.";
+              if (result.galleryDescriptionChange) previewBox.textContent += "\nAlso updates the gallery description.";
+            } catch (error) {
+              previewBox.textContent = errorMessage(error);
+            }
           },
         },
         "Preview",
@@ -901,26 +1043,38 @@ function buildBatchCard(): HTMLDetailsElement {
         "button",
         {
           onclick: async (e) => {
+            if (!selected.size || !requireSavedDrafts()) return;
             if (
-              !(await confirmModal("Apply this rule to all matching photos?", { confirmLabel: "Apply", danger: false }))
+              !(await confirmModal(
+                `Apply and save this rule for matching photos in the selection (${selected.size} selected)?${rule.actions.some((action) => action.op === "setGalleryDescription") ? " This also updates the gallery description." : ""}`,
+                { confirmLabel: "Apply and save", danger: false },
+              ))
             )
               return;
             await withButton(eventButton(e), status, async () => {
-              await applyBatch(ctx.agent, ctx.did, ctx.detail, ctx.store, rule, (done: number, total: number) => {
-                status.textContent = `Applying ${done} / ${total}…`;
-              });
+              await applyBatch(
+                ctx.agent,
+                ctx.did,
+                ctx.detail,
+                ctx.store,
+                scopedRule(),
+                (done: number, total: number) => {
+                  status.textContent = `Applying ${done} / ${total}…`;
+                },
+              );
               ctx.store = await refreshStore();
               openGallery(ctx.galleryUri);
             });
           },
         },
-        "Apply",
+        "Apply and save",
       ),
       el(
         "button",
         {
           class: "ghost",
           onclick: () =>
+            requireSavedDrafts("creating a rule") &&
             openRuleBuilderWithSave(
               ctx,
               () => openGallery(ctx.galleryUri),
@@ -1144,6 +1298,7 @@ function readyWorkflowIndexes(
 
 function focusWorkflowBuilder(): void {
   const builder = document.querySelector<HTMLElement>('[data-editor-section="workflow-templates"] details');
+  builder?.dispatchEvent(new Event("reveal-gallery-settings", { bubbles: true }));
   if (builder instanceof HTMLDetailsElement) builder.open = true;
   builder?.scrollIntoView({ block: "center", behavior: "smooth" });
   builder?.querySelector<HTMLElement>("select,button")?.focus();
@@ -1307,6 +1462,7 @@ function buildWorkflowBuilderCard(): HTMLDetailsElement {
   }
 
   async function saveWorkflow(photos: GalleryPhoto[], label: string): Promise<void> {
+    if (hasUnsavedChanges()) throw new Error("Save your pending changes before applying a workflow.");
     if (!photos.length) throw new Error("Gallery has no photos");
     const steps = stepEditor.getItems();
     if (!steps.length) throw new Error("Add at least one workflow step");
@@ -1369,7 +1525,7 @@ function buildWorkflowBuilderCard(): HTMLDetailsElement {
             });
           },
         },
-        "Apply to all photos",
+        "Apply and save for all photos",
       ),
       el(
         "button",
@@ -1444,7 +1600,7 @@ function gearSuggestion(
           {
             class: "ghost small-btn",
             onclick: () =>
-              openAddGear(kind, () => openGallery(ctx.galleryUri), {
+              openGalleryGear(kind, {
                 make: suggestion.make,
                 model: suggestion.model,
               }),
@@ -1461,27 +1617,15 @@ function gearSuggestion(
 
 // -- gallery photo reordering (drag handle + up/down, mobile-first) -----------
 
-// after any reorder, renumber the cards and persist changed gallery.item positions.
-function persistOrder(container: HTMLDivElement): void {
-  const cards = [...container.children].filter(
-    (element): element is PhotoCard => element instanceof HTMLDivElement && "_photo" in element,
-  );
-  const writes: Array<ReturnType<typeof setGalleryItemPosition>> = [];
-  cards.forEach((card, i) => {
-    const p = card._photo;
-    if (!p) return;
-    const num = card.querySelector(".photo-meta > div:first-child");
-    if (num) num.textContent = `#${i + 1}`;
-    card.setAttribute("data-frame", String(i + 1));
-    if ((p.item?.value?.position ?? 0) !== i && p.item?.uri && p.item?.cid) {
-      p.item.value.position = i;
-      writes.push(setGalleryItemPosition(ctx.agent, ctx.did, p.item, i));
-    }
+// Renumber the contact sheet immediately; the save controller persists the order.
+function stageOrder(container: HTMLDivElement): void {
+  [...container.children].forEach((element, index) => {
+    if (!(element instanceof HTMLDivElement) || !("_photo" in element)) return;
+    const num = element.querySelector(".photo-meta > div:first-child");
+    if (num) num.textContent = `#${index + 1}`;
+    element.dataset.frame = String(index + 1);
   });
-  if (writes.length)
-    Promise.all(writes)
-      .then(() => toast("Order saved", "ok"))
-      .catch(() => toast("Couldn't save order", "err"));
+  container.dispatchEvent(new Event("photo-order-changed"));
 }
 
 function moveCard(container: HTMLDivElement, card: PhotoCard, dir: -1 | 1): void {
@@ -1493,10 +1637,37 @@ function moveCard(container: HTMLDivElement, card: PhotoCard, dir: -1 | 1): void
     if (next?.classList.contains("photo-card")) container.insertBefore(next, card);
   }
   card.scrollIntoView({ block: "nearest" });
-  persistOrder(container);
+  stageOrder(container);
 }
 
 function wireReorder(container: HTMLDivElement): void {
+  const cards = () =>
+    [...container.children].filter(
+      (element): element is PhotoCard => element instanceof HTMLDivElement && "_photo" in element,
+    );
+  const ctl: CardController = {
+    dirty: false,
+    save: null,
+    reveal: () => container.querySelector<HTMLElement>("[data-grid-photo-control]")?.focus(),
+  };
+  cardCtls.push(ctl);
+  container.addEventListener("photo-order-changed", () => {
+    ctl.dirty = cards().some((card, index) => card._photo?.item?.value.position !== index);
+    refreshSaveBar();
+  });
+  ctl.save = async () => {
+    for (const [index, card] of cards().entries()) {
+      const item = card._photo?.item;
+      if (!item || item.value.position === index) continue;
+      const cid = await setGalleryItemPosition(ctx.agent, ctx.did, item, index);
+      item.value.position = index;
+      if (cid) item.cid = cid;
+    }
+    ctx.detail.photos = cards().map((card) => card._photo!);
+    ctl.dirty = false;
+    refreshSaveBar();
+  };
+  guardControllerSave(ctl, container);
   container.addEventListener("click", (e) => {
     const target = eventElement(e);
     const card = target.closest<HTMLDivElement>(".photo-card") as PhotoCard | null;
@@ -1516,7 +1687,10 @@ function wireReorder(container: HTMLDivElement): void {
       let before: HTMLDivElement | null = null;
       for (const c of others) {
         const r = c.getBoundingClientRect();
-        if (ev.clientY < r.top + r.height / 2) {
+        const beforeCard = container.classList.contains("grid-mode")
+          ? ev.clientY < r.top || (ev.clientY <= r.bottom && ev.clientX < r.left + r.width / 2)
+          : ev.clientY < r.top + r.height / 2;
+        if (beforeCard) {
           before = c;
           break;
         }
@@ -1528,7 +1702,7 @@ function wireReorder(container: HTMLDivElement): void {
       document.removeEventListener("pointermove", move);
       document.removeEventListener("pointerup", up);
       card.classList.remove("dragging");
-      persistOrder(container);
+      stageOrder(container);
     };
     document.addEventListener("pointermove", move);
     document.addEventListener("pointerup", up);
@@ -1537,8 +1711,7 @@ function wireReorder(container: HTMLDivElement): void {
 
 // copy the gear selections from the photo card directly above this one, so
 // tagging a roll of same-gear frames is one tap each.
-function sameGearAsAbove(btn: HTMLButtonElement): void {
-  const card = btn.closest(".photo-card");
+function sameGearAsAbove(card: PhotoCard): void {
   if (!card) {
     toast("Photo card is unavailable", "err");
     return;
@@ -1554,16 +1727,16 @@ function sameGearAsAbove(btn: HTMLButtonElement): void {
       ?.querySelector<HTMLSelectElement>("select") ?? null;
   let copied = 0;
   for (const label of ["Camera", "Film back", "Lens", "Film roll", "Shoot"]) {
-    const from = sel(prev, label),
-      to = sel(card, label);
+    const from = sel((prev as PhotoCard)._editor || prev, label),
+      to = sel(card._editor || card, label);
     if (from && to && from.value) {
       to.value = from.value;
       to.dispatchEvent(new Event("change"));
       copied++;
     }
   }
-  const fromStack = prev.querySelector<HTMLElement>(".filter-stack-control");
-  const toStack = card.querySelector<HTMLElement>(".filter-stack-control");
+  const fromStack = ((prev as PhotoCard)._editor || prev).querySelector<HTMLElement>(".filter-stack-control");
+  const toStack = (card._editor || card).querySelector<HTMLElement>(".filter-stack-control");
   if (fromStack && toStack) {
     const filters = JSON.parse(fromStack.dataset.selected || "[]");
     toStack.dispatchEvent(new CustomEvent("filter-stack-set", { detail: filters }));
@@ -1593,7 +1766,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
   thumb.dataset.gridPhotoControl = "";
   thumb.dataset.gridPhotoLabel = photoName;
 
-  const capture = ctx.store.photoCaptureByPhoto.get(p.photo.uri);
+  let capture = ctx.store.photoCaptureByPhoto.get(p.photo.uri);
   const defaults = ctx.store.galleryDefaultsByGallery.get(ctx.galleryUri);
   const refs = resolvePhotoCapture(capture, defaults);
   const wf = getRunForPhoto(ctx.store, p.photo.uri);
@@ -1617,17 +1790,41 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
   });
 
   const ctl: CardController = { dirty: false, save: null };
+  const gearFieldsChanged = new Set<string>();
+  const resetGearFields = new Set<string>();
+  let gearDirty = false;
+  let exifDirty = false;
+  let altDirty = false;
   cardCtls.push(ctl);
   const markDirty = () => {
+    status.className = "status";
+    status.textContent = "Unsaved changes";
     if (!ctl.dirty) {
       ctl.dirty = true;
       refreshSaveBar();
     }
   };
-  for (const sel of [camSel, backSel, lensSel, rollSel, shootSel]) sel.addEventListener("change", markDirty);
-  for (const input of filterStack.inputs) input.addEventListener("change", markDirty);
-  frameInput.addEventListener("input", markDirty);
-  locF.node.querySelector("button")?.addEventListener("click", () => setTimeout(markDirty, 0));
+  const markGearDirty = () => {
+    gearDirty = true;
+    markDirty();
+  };
+  const trackGear = (key: string) => {
+    gearFieldsChanged.add(key);
+    resetGearFields.delete(key);
+    markGearDirty();
+  };
+  for (const [key, control] of Object.entries({
+    camera: camSel,
+    filmBack: backSel,
+    lens: lensSel,
+    filmRoll: rollSel,
+    shoot: shootSel,
+  })) {
+    control.addEventListener("change", () => trackGear(key));
+  }
+  for (const input of filterStack.inputs) input.addEventListener("change", () => trackGear("filters"));
+  frameInput.addEventListener("input", () => trackGear("frameIndex"));
+  locF.node.addEventListener("change", () => trackGear("location"));
 
   let form = exifToForm(p.exif?.value);
   const gearMatch = matchGear(form, ctx.store);
@@ -1635,7 +1832,12 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
   const exifValidators: Array<() => boolean> = [];
   const exifGrid = el("div", { class: "exif-grid" });
   for (const f of EXIF_FIELDS) {
-    const input = el("input", { type: "text", value: form[f.key] || "", placeholder: f.placeholder || "" });
+    const input = el("input", {
+      type: "text",
+      "aria-label": f.label,
+      value: form[f.key] || "",
+      placeholder: f.placeholder || "",
+    });
     const hint = el("span", { class: "field-hint" });
     const validate = (): boolean => {
       const v = input.value.trim();
@@ -1644,16 +1846,19 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
         const r = rule(v);
         if (r !== true) {
           input.classList.add("invalid");
+          input.setAttribute("aria-invalid", "true");
           hint.textContent = r;
           return false;
         }
       }
       input.classList.remove("invalid");
+      input.removeAttribute("aria-invalid");
       hint.textContent = "";
       return true;
     };
     input.addEventListener("input", () => {
       validate();
+      exifDirty = true;
       markDirty();
     });
     exifInputs[f.key] = input;
@@ -1669,8 +1874,15 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
   };
   refreshReadout();
 
-  const altArea = el("textarea", { rows: "2" }, p.photo?.value?.alt || "");
-  altArea.addEventListener("input", markDirty);
+  const altArea = el(
+    "textarea",
+    { id: `photo-alt-${idx}`, rows: "2", "aria-label": "Alt text" },
+    p.photo?.value?.alt || "",
+  );
+  altArea.addEventListener("input", () => {
+    altDirty = true;
+    markDirty();
+  });
 
   const fileIn = el("input", {
     type: "file",
@@ -1683,10 +1895,14 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
     const file = fileIn.files?.[0];
     fileIn.value = "";
     if (!file || !p.photo?.value) return;
+    if (ctl.dirty) {
+      toast("Save this photo’s pending edits before replacing its image.", "info");
+      return;
+    }
     const decision = await confirmModal(
       "Replace this photo’s image? The gallery ID stays the same, and gear and workflows stay linked.",
       {
-        confirmLabel: "Replace",
+        confirmLabel: "Replace and save",
         danger: false,
         checks: [
           {
@@ -1708,6 +1924,9 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
       try {
         const u = await blobUrl(ctx.agent, ctx.did, value.photo);
         thumb.replaceChildren(...(u ? [el("img", { src: u, alt: photoName })] : []));
+        fields
+          .querySelector(".inspector-preview")
+          ?.replaceChildren(...(u ? [el("img", { src: u, alt: photoName })] : []));
       } catch {
         /* thumb refresh is best-effort */
       }
@@ -1732,32 +1951,64 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
   });
 
   ctl.save = async () => {
-    if (!exifValidators.every((v) => v())) throw new Error("Some EXIF fields are invalid");
-    if (p.photo?.value) {
+    if (!ctl.dirty) return;
+    const valid = exifValidators.map((validate) => validate()).every(Boolean);
+    if (exifDirty && !valid) {
+      const invalid = exifGrid.querySelector<HTMLElement>(".invalid");
+      invalid?.dispatchEvent(new Event("reveal-photo-field", { bubbles: true }));
+      throw new Error("Some EXIF fields are invalid");
+    }
+    if (altDirty && p.photo?.value) {
       const photoCid = await savePhotoAlt(ctx.agent, ctx.did, p.photo, altArea.value);
       if (photoCid) p.photo.cid = photoCid;
+      p.photo.value.alt = altArea.value;
     }
-    const captureSaved = await savePhotoCapture(
-      ctx.agent,
-      ctx.did,
-      p.photo.uri,
-      {
-        camera: camSel.value || undefined,
-        filmBack: backSel.value || undefined,
-        lens: lensSel.value || undefined,
-        filters: filterStack.getSelected(),
-        filmRoll: rollSel.value || undefined,
-        frameIndex: frameInput.value ? parseInt(frameInput.value, 10) : undefined,
-        shoot: shootSel.value || undefined,
-        location: locF.get(),
-      },
-      capture,
-    );
-    if (captureSaved) ctx.store.photoCaptureByPhoto.set(p.photo.uri, captureSaved);
+    const captureSaved = gearDirty
+      ? await savePhotoCapture(
+          ctx.agent,
+          ctx.did,
+          p.photo.uri,
+          Object.fromEntries(
+            Object.entries({
+              camera: camSel.value || undefined,
+              filmBack: backSel.value || undefined,
+              lens: lensSel.value || undefined,
+              filters: filterStack.getSelected(),
+              filmRoll: rollSel.value || undefined,
+              frameIndex: frameInput.value ? parseInt(frameInput.value, 10) : undefined,
+              shoot: shootSel.value || undefined,
+              location: locF.get(),
+            })
+              .filter(([key]) => gearFieldsChanged.has(key))
+              .map(([key, value]) => [key, resetGearFields.has(key) ? undefined : value]),
+          ),
+          capture,
+        )
+      : null;
+    if (captureSaved) {
+      capture = captureSaved;
+      ctx.store.photoCaptureByPhoto.set(p.photo.uri, captureSaved);
+    }
     const formValues = {} as Record<ExifKey, string>;
     for (const f of EXIF_FIELDS) formValues[f.key] = exifInputs[f.key].value;
-    p.exif = await saveExif(ctx.agent, ctx.did, p.photo.uri, p.exif, formValues);
+    if (exifDirty) {
+      p.exif = await saveExif(ctx.agent, ctx.did, p.photo.uri, p.exif, formValues);
+      form = formValues;
+      refreshReadout();
+    }
+    gearFieldsChanged.clear();
+    resetGearFields.clear();
+    gearDirty = exifDirty = altDirty = false;
     ctl.dirty = false;
+    status.className = "status ok";
+    status.textContent = "Saved";
+    const name = imageAlt(p.photo.value.alt, `Photo ${card.dataset.frame}`);
+    card.querySelector(".photo-caption")!.textContent = p.photo.value.alt || "Missing alt text";
+    thumb.dataset.gridPhotoLabel = name;
+    thumb.setAttribute("aria-label", `Edit ${name}`);
+    thumb.querySelector("img")?.setAttribute("alt", name);
+    card.querySelector(".photo-select")?.setAttribute("aria-label", `Select ${name}`);
+    fields.dispatchEvent(new Event("gallery-defaults-saved"));
     refreshSaveBar();
   };
 
@@ -1779,17 +2030,22 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
       thumb,
       el("div", { class: "photo-meta" }, [
         el("div", {}, `#${idx + 1}`),
-        wfSummary,
+        el("div", { class: "photo-caption muted small" }, p.photo.value.alt || "Missing alt text"),
         coverageBadges(p, capture, wf),
         readoutHost,
       ]),
     ]),
-    el("details", { open: true }, [
-      el("summary", {}, "Gear"),
-      gearSuggestion("camera", gearMatch.camera, camSel, markDirty),
+    el("details", { "data-photo-section": "gear" }, [
+      el("summary", {}, "Capture and gear"),
+      el(
+        "p",
+        { class: "muted small gear-source" },
+        capture ? "Photo values override shared gallery gear." : "Using shared gallery gear where available.",
+      ),
+      gearSuggestion("camera", gearMatch.camera, camSel, markGearDirty),
       gearField("Camera", "camera", camSel),
       gearField("Film back", "filmBack", backSel),
-      gearSuggestion("lens", gearMatch.lens, lensSel, markDirty),
+      gearSuggestion("lens", gearMatch.lens, lensSel, markGearDirty),
       gearField("Lens", "lens", lensSel),
       field("Filter stack", filterStack.node),
       gearField("Film roll", "filmRoll", rollSel),
@@ -1797,37 +2053,46 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
       field("Shoot", shootSel),
       field("Location", locF.node),
       el("div", { class: "row wrap subtle-actions" }, [
+        el(
+          "button",
+          {
+            class: "ghost small-btn",
+            onclick: () => {
+              const inherited = resolvePhotoCapture(null, ctx.store.galleryDefaultsByGallery.get(ctx.galleryUri));
+              for (const [key, control] of Object.entries({
+                camera: camSel,
+                filmBack: backSel,
+                lens: lensSel,
+                filmRoll: rollSel,
+                shoot: shootSel,
+              })) {
+                control.value = (inherited[key as keyof typeof inherited] as string) || "";
+                gearFieldsChanged.add(key);
+                resetGearFields.add(key);
+              }
+              filterStack.node.dispatchEvent(new CustomEvent("filter-stack-set", { detail: inherited.filters }));
+              gearFieldsChanged.add("filters");
+              resetGearFields.add("filters");
+              markGearDirty();
+            },
+          },
+          "Use shared gear",
+        ),
         idx > 0
           ? el(
               "button",
               {
                 class: "ghost small-btn",
                 title: "Copy gear from the photo above",
-                onclick: (e) => sameGearAsAbove(eventButton(e)),
+                onclick: () => sameGearAsAbove(card),
               },
               "Same as above",
             )
           : null,
-        el(
-          "button",
-          { class: "ghost small-btn", onclick: () => openAddGear("camera", () => openGallery(ctx.galleryUri)) },
-          "+ Camera",
-        ),
-        el(
-          "button",
-          { class: "ghost small-btn", onclick: () => openAddGear("filmBack", () => openGallery(ctx.galleryUri)) },
-          "+ Film back",
-        ),
-        el(
-          "button",
-          { class: "ghost small-btn", onclick: () => openAddGear("lens", () => openGallery(ctx.galleryUri)) },
-          "+ Lens",
-        ),
-        el(
-          "button",
-          { class: "ghost small-btn", onclick: () => openAddGear("filter", () => openGallery(ctx.galleryUri)) },
-          "+ Filter",
-        ),
+        el("button", { class: "ghost small-btn", onclick: () => openGalleryGear("camera") }, "+ Camera"),
+        el("button", { class: "ghost small-btn", onclick: () => openGalleryGear("filmBack") }, "+ Film back"),
+        el("button", { class: "ghost small-btn", onclick: () => openGalleryGear("lens") }, "+ Lens"),
+        el("button", { class: "ghost small-btn", onclick: () => openGalleryGear("filter") }, "+ Filter"),
         el(
           "button",
           {
@@ -1846,6 +2111,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
               for (const f of EXIF_FIELDS) exifInputs[f.key].value = form[f.key] || "";
               exifValidators.forEach((v) => v());
               refreshReadout();
+              exifDirty = true;
               markDirty();
               status.textContent = "Filled EXIF from gear (save to persist)";
             },
@@ -1854,9 +2120,9 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
         ),
       ]),
     ]),
-    el("label", { class: "field" }, [
+    el("div", { class: "field" }, [
       el("div", { class: "row between" }, [
-        el("span", {}, "Alt text"),
+        el("label", { for: `photo-alt-${idx}` }, "Alt text"),
         p.photo?.value
           ? el(
               "button",
@@ -1882,6 +2148,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
                       });
                       if (alt) {
                         altArea.value = alt;
+                        altDirty = true;
                         markDirty();
                       }
                     },
@@ -1895,7 +2162,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
       ]),
       altArea,
     ]),
-    el("details", {}, [el("summary", {}, "EXIF"), exifGrid]),
+    el("details", { "data-photo-section": "exif" }, [el("summary", {}, "Exposure and EXIF"), exifGrid]),
     el("div", { class: "row wrap subtle-actions" }, [
       p.photo?.value
         ? el(
@@ -1957,6 +2224,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
           if (!ctl.save) throw new Error("Photo save control is unavailable");
           const ok = await withButton(eventButton(e), status, ctl.save);
           if (ok) ctx.store = await refreshStore();
+          else ctl.reveal?.();
         },
       },
       "Save photo",
@@ -1964,6 +2232,79 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
     status,
   ]) as PhotoCard;
   card._photo = p;
+  const fields = el("div", { class: "photo-fields" });
+  const children = [...card.children].slice(1);
+  fields.append(...children);
+  const altField = altArea.closest(".field")!;
+  fields.prepend(lazyThumb(ctx.agent, ctx.did, p.photo?.value?.photo, "inspector-preview", photoName), altField);
+  const workflow = el("details", { "data-photo-section": "workflow" }, [el("summary", {}, "Workflow"), wfSummary]);
+  const actions = [...fields.children].find((child) => child.classList.contains("subtle-actions"));
+  fields.insertBefore(workflow, actions || fields.querySelector(".photo-save"));
+  if (actions) {
+    const more = el("details", { "data-photo-section": "actions" }, [el("summary", {}, "More photo actions")]);
+    actions.before(more);
+    more.append(actions);
+  }
+  card._editor = fields;
+  const saveFields = ctl.save;
+  ctl.save = async () => {
+    try {
+      await saveFields();
+    } catch (error) {
+      status.textContent = errorMessage(error);
+      status.classList.add("err");
+      throw error;
+    }
+  };
+  ctl.reveal = () => {
+    const target = fields.querySelector<HTMLElement>(".invalid") || altArea;
+    target.dispatchEvent(new Event("reveal-photo-field", { bubbles: true }));
+  };
+  const gearSources = Object.entries({
+    camera: camSel,
+    filmBack: backSel,
+    lens: lensSel,
+    filmRoll: rollSel,
+    shoot: shootSel,
+  }).map(([key, control]) => {
+    const source = el("span", { id: `photo-${idx}-${key}-source`, class: "muted small", "aria-hidden": "true" });
+    control.setAttribute("aria-describedby", source.id);
+    control.closest("label")?.append(source);
+    return { key, control, source };
+  });
+  const refreshSources = () => {
+    const shared = ctx.store.galleryDefaultsByGallery.get(ctx.galleryUri)?.value || {};
+    gearSources.forEach(({ key, control, source }) => {
+      source.textContent = gearFieldsChanged.has(key)
+        ? resetGearFields.has(key) || !control.value
+          ? "Will use shared gear after saving"
+          : "Unsaved photo override"
+        : capture?.value?.[key]
+          ? "Photo override"
+          : shared[key]
+            ? "From shared gear"
+            : "";
+    });
+  };
+  fields.addEventListener("change", refreshSources);
+  fields.addEventListener("click", refreshSources);
+  refreshSources();
+  fields.addEventListener("gallery-defaults-saved", () => {
+    if (gearDirty) return;
+    const inherited = resolvePhotoCapture(capture, ctx.store.galleryDefaultsByGallery.get(ctx.galleryUri));
+    for (const [key, control] of Object.entries({
+      camera: camSel,
+      filmBack: backSel,
+      lens: lensSel,
+      filmRoll: rollSel,
+      shoot: shootSel,
+    })) {
+      control.value = (inherited[key as keyof typeof inherited] as string) || "";
+    }
+    filterStack.node.dispatchEvent(new CustomEvent("filter-stack-set", { detail: inherited.filters }));
+    refreshSources();
+  });
+  guardControllerSave(ctl, fields);
   return card;
 }
 

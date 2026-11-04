@@ -1,5 +1,11 @@
 # @hypo/web
 
+## 1.11.0
+
+### Minor Changes
+
+- Add a gallery contact sheet with a persistent photo inspector, compact gallery settings, selection-scoped batch controls, and shared gear overrides. Keep drafts when navigating photos and reveal invalid fields on save. Replace gallery autosaving and immediate reordering writes with explicit saving, retain pending changes after failures, and keep mobile save controls above navigation.
+
 ## 1.10.0
 
 ### Minor Changes

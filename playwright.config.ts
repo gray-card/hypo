@@ -4,6 +4,7 @@ const appPort = process.env.HYPO_E2E_APP_PORT || "5173";
 const appUrl = `http://127.0.0.1:${appPort}`;
 const fixtureUrl = "http://127.0.0.1:2584";
 const mobileReleaseTests = [
+  "**/gallery-editing.spec.js",
   "**/hypo.spec.js",
   "**/offline-flows.spec.js",
   "**/modal-scroll.spec.js",
