@@ -123,7 +123,7 @@ jobs:
       - name: Install mobile browsers
         run: npx playwright install --with-deps chromium webkit
       - name: Run release-critical mobile tests
-        run: npx playwright test --config .github/playwright.mobile.config.ts
+        run: npx playwright test --project=mobile-chromium --project=mobile-webkit
       - name: Upload mobile-test diagnostics
         if: failure()
         uses: actions/upload-artifact@v4

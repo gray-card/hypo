@@ -201,9 +201,13 @@ for (const theme of ["dark", "light"]) {
     await expect(stop.locator(".chemistry-role-chip")).toHaveText("Stop bath");
     const monobath = page.locator(".chemistry-status-row").filter({ hasText: "Df96" });
     await expect(monobath.locator(".chemistry-role-chip")).toHaveText(["Film developer", "Fixer"]);
+    // Linux desktop font rasterization and wrapping differ from macOS in this
+    // text-heavy component. Keep reviewed references for both without increasing
+    // the screenshot tolerance or masking the labels under test.
+    const snapshotPlatform = process.platform === "linux" && testInfo.project.name === "chromium" ? "-linux" : "";
     await expect(
       page.locator(".card").filter({ has: page.getByRole("heading", { name: "Chemistry status", exact: true }) }),
-    ).toHaveScreenshot(`chemistry-status-${theme}.png`, {
+    ).toHaveScreenshot(`chemistry-status-${theme}${snapshotPlatform}.png`, {
       // Isolate the component; fixed navigation otherwise crosses tall captures.
       stylePath: "tests/e2e/component-snapshot.css",
     });

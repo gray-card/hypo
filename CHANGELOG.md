@@ -13,6 +13,9 @@ Notable changes to Hypo are recorded here.
 
 ### Changed
 
+- Run the same mobile browser suite locally and in CI, including gallery editing
+  and spacing checks. Use reviewed Linux chemistry screenshots and allow longer
+  WebKit workflows enough total time without relaxing their assertions.
 - Show chemistry roles as separate category chips in lists and status cards,
   avoiding repeated terms such as "Rapid Fixer fixer" in product labels.
 - Save gallery details, shared gear, photo edits, and photo order only through an

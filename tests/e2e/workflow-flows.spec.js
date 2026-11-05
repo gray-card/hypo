@@ -49,7 +49,14 @@ test.beforeEach(async ({ request }) => {
   await resetFixture(request);
 });
 
-test("a rich workflow can be authored, launched, advanced, and used on mobile", async ({ page, request }) => {
+test("a rich workflow can be authored, launched, advanced, and used on mobile", async ({
+  page,
+  request,
+  browserName,
+}) => {
+  // Authoring, launching, and advancing a workflow involves many real clicks.
+  // Allow WebKit time for the complete journey without relaxing assertions.
+  test.slow(browserName === "webkit");
   const sequenceResponse = await request.post(`${PDS_ORIGIN}/xrpc/com.atproto.repo.createRecord`, {
     data: {
       repo: REPO,
