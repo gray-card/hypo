@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { setBrowserOffline } from "./network.js";
 
 const PDS_ORIGIN = "http://127.0.0.1:2584";
 const REPO = "did:plc:alice";
@@ -100,17 +101,18 @@ test("an offline shot stays queued and flushes after reconnect", async ({ page, 
   await expect(sessions.getByRole("heading", { name: "Sessions", exact: true })).toBeVisible();
   const shoot = sessions.locator(".session-card[data-kind='capture']").filter({ hasText: "Fixture photo walk" });
   await expect(shoot).toBeVisible();
-  await expect(shoot).toBeVisible();
 
-  await context.setOffline(true);
+  await setBrowserOffline(page, context, true);
   await shoot.getByRole("button", { name: "Log frames", exact: true }).click();
   await page.getByRole("button", { name: "Log frame", exact: true }).click();
   await expect(page.getByRole("status").filter({ hasText: "Logged offline — will sync" })).toBeVisible();
+  await expect(page.locator(".logger-recent-row.pending")).toHaveCount(1);
   await expect.poll(async () => (await listRecords(request, EXPOSURE_COLLECTION)).length).toBe(0);
 
-  await context.setOffline(false);
+  await setBrowserOffline(page, context, false);
   await expect.poll(async () => (await listRecords(request, EXPOSURE_COLLECTION)).length).toBe(1);
   await expect(page.getByRole("status").filter({ hasText: "Synced 1 offline shot" })).toBeVisible();
+  await expect(page.locator(".logger-recent-row.pending")).toHaveCount(0);
 
   await page.getByRole("button", { name: "Done", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Sessions", exact: true })).toBeVisible();

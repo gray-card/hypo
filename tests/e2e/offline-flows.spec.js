@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { setBrowserOffline } from "./network.js";
 
 const PDS_ORIGIN = "http://127.0.0.1:2584";
 const REPO = "did:plc:alice";
@@ -125,11 +126,6 @@ async function waitForDialogSave(dialog) {
       }),
     )
     .toMatch(/^(closed|Saved ✓|Error:)/);
-}
-
-async function setBrowserOffline(page, context, offline) {
-  await context.setOffline(offline);
-  await page.evaluate((value) => window.dispatchEvent(new Event(value ? "offline" : "online")), offline);
 }
 
 test.beforeEach(async ({ request }) => {
