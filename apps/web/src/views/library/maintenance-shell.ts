@@ -82,6 +82,7 @@ export async function renderLibraryShell(
   services: LibraryShellServices,
 ): Promise<void> {
   const body = bodyElement || ($("#library-body") as HTMLElement);
+  const navigationOpen = body.querySelector<HTMLDetailsElement>(".library-navigation-mobile")?.open || false;
   if (!services.hasStore()) {
     const phase = loadPhase("Loading your library from your PDS…");
     body.replaceChildren(...librarySkeleton(), phase.node);
@@ -99,12 +100,13 @@ export async function renderLibraryShell(
   body.dataset.tab = tab;
 
   const select = (next: string) => {
+    mobileNavigation.open = false;
     body.dataset.tab = next;
     void renderLibraryShell(body, services);
   };
   const currentLabel = items.find((item) => item.id === tab)?.label || "Library";
   const desktopNavigation = libraryNavigation(services.navigationGroups, tab, select, "library-navigation");
-  const mobileNavigation = el("details", { class: "library-navigation-mobile" }, [
+  const mobileNavigation = el("details", { class: "library-navigation-mobile", open: navigationOpen }, [
     el("summary", {}, [el("span", { class: "muted small" }, "Library section"), el("strong", {}, currentLabel)]),
     libraryNavigation(services.navigationGroups, tab, select, "library-navigation library-navigation-menu"),
   ]);
