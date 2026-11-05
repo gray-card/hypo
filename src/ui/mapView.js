@@ -297,6 +297,7 @@ export function locationField(initial) {
         if (r === undefined) return; // cancelled — leave as-is
         loc = r;
         render(); // geoLocation, or null when cleared
+        btn.dispatchEvent(new Event("change", { bubbles: true }));
       },
     },
     "Set on map",

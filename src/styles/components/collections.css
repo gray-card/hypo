@@ -133,13 +133,42 @@
   padding: 14px 0;
 }
 .chemistry-status-copy,
-.chemistry-capacity {
+.chemistry-capacity,
+.chemistry-roll-usage {
   display: grid;
   min-width: 0;
   gap: 4px;
 }
+.chemistry-measures {
+  display: grid;
+  min-width: 0;
+  width: 100%;
+  gap: var(--space-3);
+  font-variant-numeric: tabular-nums;
+}
+.chemistry-measure-heading {
+  font-weight: 600;
+}
+.chemistry-limit-status {
+  color: var(--danger);
+}
 .chemistry-status-copy strong {
   overflow-wrap: anywhere;
+}
+.chemistry-role-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding-block: var(--space-1);
+}
+.chip.chemistry-role-chip {
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  letter-spacing: normal;
+  text-transform: none;
 }
 .chemistry-capacity-label {
   text-align: left;
@@ -147,6 +176,7 @@
 }
 .chemistry-capacity-track {
   display: block;
+  width: 100%;
   height: 7px;
   overflow: hidden;
   border-radius: 999px;
@@ -156,19 +186,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--muted);
-}
-.chemistry-capacity-track.healthy .chemistry-capacity-fill {
-  background: #4f755e;
-}
-.chemistry-capacity-track.caution .chemistry-capacity-fill {
-  background: #a96b23;
-}
-.chemistry-capacity-track.critical .chemistry-capacity-fill {
-  background: var(--danger);
-}
-.chemistry-capacity-untracked {
-  justify-self: start;
+  background: var(--accent);
 }
 
 @media (max-width: 640px) {
@@ -289,11 +307,15 @@
   align-items: end;
 }
 .library-filter-bar .field,
-.library-filter-bar .library-filter-input {
+.library-filter-bar .library-filter-input,
+.library-filter-bar .search-input {
   margin: 0;
 }
 .library-filter-bar .field {
   min-width: 0;
+}
+.modal .library-filter-bar {
+  margin-bottom: var(--space-3);
 }
 .library-result-summary {
   margin: 10px 0 2px;

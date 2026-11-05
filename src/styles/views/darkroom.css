@@ -427,6 +427,9 @@
 .development-sequence-tools .field {
   margin: 0;
 }
+.development-add-stage > button {
+  min-height: 42px;
+}
 .development-stage-card {
   min-width: 0;
   max-width: 100%;
@@ -496,9 +499,15 @@
   max-width: 100%;
   width: 100%;
 }
+.development-stage-core {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.development-stage-core .field {
+  grid-column: span 2;
+}
 .development-stage-core .field:nth-child(1),
 .development-stage-core .field:nth-child(2) {
-  grid-column: span 2;
+  grid-column: span 3;
 }
 .development-stage-details {
   margin-top: 12px;
@@ -705,6 +714,7 @@ button.development-activity-row:focus-visible {
   }
   .development-stage-core .field,
   .development-stage-detail-grid .field {
+    grid-column: auto;
     grid-template-rows: auto auto;
   }
   .development-stage-card {

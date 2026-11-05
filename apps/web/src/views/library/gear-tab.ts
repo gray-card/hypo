@@ -1,6 +1,7 @@
 import { confirmModal, el, toast } from "@hypo/ui";
 import { MAINTAINABLE } from "./gear-config.ts";
 import type { GearRecord, GearServices, GearValue } from "./gear-types.ts";
+import { chemistryRoleChips } from "./chemistry-role-chips.ts";
 
 export interface GearTabActions {
   addGear(kind: string, onDone: () => void): void;
@@ -65,7 +66,12 @@ export function renderGearTabView(
           el("li", { class: "gear-row row between" }, [
             el("span", { class: "row type-label" }, [
               createGearThumb(kind, item.value, services),
-              el("span", {}, services.instanceLabel(kind, item.value)),
+              kind === "chemistry"
+                ? el("span", { class: "chemistry-status-copy" }, [
+                    el("span", {}, services.instanceLabel(kind, item.value, { includeRoles: false })),
+                    chemistryRoleChips(item.value, services.getStore()),
+                  ])
+                : el("span", {}, services.instanceLabel(kind, item.value)),
               processChip(item.value, services),
             ]),
             el("span", { class: "row" }, [

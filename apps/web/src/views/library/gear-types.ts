@@ -39,7 +39,7 @@ export interface GearServices {
   catalogImageUrl(typeKind: string, value: GearValue): Promise<string | null | undefined>;
   instanceImageUrl(kind: string, value: GearValue): Promise<string | null | undefined>;
   catalogLabel(kind: string, value: GearValue): string;
-  instanceLabel(kind: string, value: GearValue): string;
+  instanceLabel(kind: string, value: GearValue, options?: { includeRoles?: boolean }): string;
   kindLabel(kind: string): string;
   kindLabelPlural(kind: string): string;
   enumLabel(value: string): string;

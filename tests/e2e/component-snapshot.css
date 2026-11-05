@@ -1,0 +1,5 @@
+/* Component captures exclude navigation fixed over the document. */
+.topbar,
+#bottom-nav {
+  visibility: hidden !important;
+}

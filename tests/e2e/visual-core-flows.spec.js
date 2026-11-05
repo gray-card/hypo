@@ -363,12 +363,19 @@ test("core flow 3/5 — edit a gallery", async ({ page }) => {
   await expect(gallery).toBeVisible();
   await gallery.click();
   await expect(page.getByRole("heading", { name: "Photos (1)" })).toBeVisible();
+  await page.locator(".gallery-details > summary").click();
   const galleryCard = page
     .locator("#editor-body .card")
-    .filter({ has: page.getByRole("heading", { name: "Gallery" }) });
+    .filter({ has: page.getByRole("heading", { name: "Gallery details" }) });
   await galleryCard.getByLabel("Title").fill("Winter light studies · edited");
+  await galleryCard.getByRole("button", { name: "Save gallery details" }).click();
+  await expect(galleryCard.locator(".status")).toContainText("Saved");
+  await page.locator(".gallery-details > summary").click();
+  await page.getByRole("button", { name: "Edit Gray card in winter light" }).click();
   await stabilize(page);
 
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await expect(page).toHaveScreenshot("core-flow-edit-gallery.png");
 });
 

@@ -9,7 +9,7 @@ type OpenModal = (
 
 export const SHORTCUT_ROWS = [
   ["⌘/Ctrl K", "Command palette"],
-  ["⌘/Ctrl S", "Save all (editor)"],
+  ["⌘/Ctrl S", "Save changes (gallery editor)"],
   ["/", "Focus search"],
   ["J / K", "Next / previous photo"],
   ["? ", "This help"],

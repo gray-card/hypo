@@ -12,18 +12,30 @@ vi.mock("../src/grain.js", async (importOriginal) => ({
   ...(await importOriginal()),
   blobUrl: vi.fn(async () => "blob:photo"),
   getGalleryDetail: vi.fn(async () => harness.detail),
+  saveGallery: vi.fn(async (_agent, _did, _gallery, fields) => {
+    Object.assign(harness.detail.gallery.value, fields);
+  }),
+  savePhotoAlt: vi.fn(async () => "saved-photo-cid"),
+  saveExif: vi.fn(async () => ({ uri: "at://exif", value: {} })),
+  setGalleryItemPosition: vi.fn(async () => "new-item-cid"),
 }));
 
 vi.mock("../src/ui/library.js", () => ({
   refreshStore: vi.fn(async () => harness.store),
-  instanceSelect: vi.fn(() => document.createElement("select")),
+  instanceSelect: vi.fn((_kind, value = "") => {
+    const select = document.createElement("select");
+    for (const item of new Set(["", "camera-a", "camera-b", "lens-a", value || ""])) select.add(new Option(item, item));
+    select.value = value || "";
+    return select;
+  }),
   shootSelect: vi.fn(() => document.createElement("select")),
   openAddGear: vi.fn(),
 }));
 
 vi.mock("../src/graycard.js", async (importOriginal) => ({
   ...(await importOriginal()),
-  resolvePhotoCapture: vi.fn(() => ({})),
+  savePhotoCapture: vi.fn(async () => null),
+  saveGalleryDefaults: vi.fn(async () => null),
   matchGear: vi.fn(() => ({ camera: null, lens: null })),
 }));
 
@@ -43,7 +55,7 @@ vi.mock("../src/workflow.js", async (importOriginal) => ({
   getRunForPhoto: vi.fn((_store, photoUri) => harness.workflowByPhoto.get(photoUri) || null),
 }));
 
-const { initEditor, openGallery } = await import("../src/ui/editor.ts");
+const { initEditor, openGallery, saveAllDirty, hasUnsavedChanges } = await import("../src/ui/editor.ts");
 
 const GALLERY = "at://did:plc:test/social.grain.gallery/gallery";
 
@@ -60,6 +72,8 @@ function photo(rkey, alt, position) {
 }
 
 beforeEach(() => {
+  vi.clearAllMocks();
+  vi.spyOn(window, "scrollTo").mockImplementation(() => {});
   document.body.innerHTML = `
     <section id="editor-view">
       <div id="editor-hero"></div>
@@ -107,8 +121,8 @@ describe("editor photo grid accessibility", () => {
     const list = document.querySelector('button[aria-label="List view"]');
     const grid = document.querySelector('button[aria-label="Grid view"]');
     expect(grid.closest('[role="group"]').getAttribute("aria-label")).toBe("Photo layout");
-    expect(list.getAttribute("aria-pressed")).toBe("true");
-    expect(grid.getAttribute("aria-pressed")).toBe("false");
+    expect(list.getAttribute("aria-pressed")).toBe("false");
+    expect(grid.getAttribute("aria-pressed")).toBe("true");
 
     grid.click();
     expect(list.getAttribute("aria-pressed")).toBe("false");
@@ -121,8 +135,9 @@ describe("editor photo grid accessibility", () => {
     expect(controls.every((control) => control.getAttribute("role") === "button" && control.tabIndex === 0)).toBe(true);
 
     controls[1].dispatchEvent(new KeyboardEvent("keydown", { key: " ", bubbles: true, cancelable: true }));
-    expect(document.querySelector("#photos").classList.contains("grid-mode")).toBe(false);
-    expect(harness.scrollIntoView).toHaveBeenCalledWith({ block: "center" });
+    expect(document.querySelector("#photos").classList.contains("grid-mode")).toBe(true);
+    expect(document.querySelector("#photo-inspector").hidden).toBe(false);
+    expect(document.activeElement.id).toBe("photo-inspector-title");
 
     grid.click();
     const results = await axe.run(document.querySelector("#photos"), {
@@ -245,4 +260,212 @@ describe("editor photo grid accessibility", () => {
       expect.arrayContaining([expect.stringContaining("occurrence 2")]),
     );
   });
+});
+
+const grain = await import("../src/grain.js");
+const graycard = await import("../src/graycard.js");
+const button = (label, root = document) =>
+  [...root.querySelectorAll("button")].find((node) => node.textContent === label);
+const edit = (input, value) => {
+  input.value = value;
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+};
+const openPhoto = (index) => document.querySelectorAll("[data-grid-photo-control]")[index].click();
+
+describe("gallery editing integration", () => {
+  it("stages gallery changes on blur and writes only after explicit saving", async () => {
+    await openGallery(GALLERY);
+    const title = document.querySelector(".gallery-header input");
+    edit(title, "A new title");
+    title.dispatchEvent(new Event("blur"));
+    expect(grain.saveGallery).not.toHaveBeenCalled();
+    expect(hasUnsavedChanges()).toBe(true);
+    await saveAllDirty();
+    expect(grain.saveGallery).toHaveBeenCalledWith({}, "did:plc:test", expect.anything(), {
+      title: "A new title",
+      description: "",
+    });
+    expect(document.querySelector(".gallery-title").textContent).toBe("A new title");
+    expect(hasUnsavedChanges()).toBe(false);
+  });
+
+  it("preserves drafts across navigation and saves only edited records", async () => {
+    await openGallery(GALLERY);
+    openPhoto(0);
+    const first = document.querySelectorAll(".photo-fields")[0];
+    edit(first.querySelector("textarea"), "Revised description");
+    first.querySelector('[data-photo-section="exif"]').open = true;
+    button("Next photo").click();
+    const second = document.querySelectorAll(".photo-fields")[1];
+    expect(second.querySelector('[data-photo-section="exif"]').open).toBe(true);
+    button("Previous photo").click();
+    expect(first.querySelector("textarea").value).toBe("Revised description");
+    expect(grain.savePhotoAlt).not.toHaveBeenCalled();
+    await saveAllDirty();
+    expect(grain.savePhotoAlt).toHaveBeenCalledTimes(1);
+    expect(graycard.savePhotoCapture).not.toHaveBeenCalled();
+    expect(grain.saveExif).not.toHaveBeenCalled();
+    expect(hasUnsavedChanges()).toBe(false);
+    expect(document.querySelector(".photo-fields .status.err")).toBeNull();
+  });
+
+  it("updates coverage badges when alt text is saved or removed, without presenting drafts as saved metadata", async () => {
+    await openGallery(GALLERY);
+    openPhoto(1);
+    const card = document.querySelectorAll(".photo-card")[1];
+    const alt = document.querySelectorAll(".photo-fields")[1].querySelector("textarea");
+    expect(card.querySelector(".badge")).toBeNull();
+    edit(alt, "A newly described photo");
+    expect(card.querySelector(".badge")).toBeNull();
+    await saveAllDirty();
+    expect(card.querySelector(".badge").textContent).toBe("alt");
+    expect(card.querySelector(".photo-caption").textContent).toBe("A newly described photo");
+    expect(document.querySelector("#gallery-coverage-summary").textContent).toContain("2 with alt text");
+    edit(alt, "");
+    expect(card.querySelector(".badge").textContent).toBe("alt");
+    await saveAllDirty();
+    expect(card.querySelector(".badge")).toBeNull();
+    expect(card.querySelector(".photo-caption").textContent).toBe("Missing alt text");
+    expect(document.querySelector("#gallery-coverage-summary").textContent).toContain("1 with alt text");
+  });
+
+  it("reveals invalid fields in another photo and keeps failed edits available for retry", async () => {
+    await openGallery(GALLERY);
+    openPhoto(0);
+    const first = document.querySelectorAll(".photo-fields")[0];
+    const aperture = [...first.querySelectorAll("label")]
+      .find((label) => label.textContent.includes("Aperture"))
+      .querySelector("input");
+    edit(aperture, "invalid");
+    openPhoto(1);
+    await saveAllDirty();
+    expect(first.hidden).toBe(false);
+    expect(first.querySelector('[data-photo-section="exif"]').open).toBe(true);
+    expect(document.activeElement).toBe(aperture);
+    expect(grain.saveExif).not.toHaveBeenCalled();
+    expect(hasUnsavedChanges()).toBe(true);
+    edit(aperture, "2.8");
+    await saveAllDirty();
+    expect(grain.saveExif).toHaveBeenCalledTimes(1);
+    expect(hasUnsavedChanges()).toBe(false);
+  });
+
+  it("keeps a failed gallery write dirty and retries without losing the draft", async () => {
+    await openGallery(GALLERY);
+    edit(document.querySelector(".gallery-header input"), "Keep this draft");
+    grain.saveGallery.mockRejectedValueOnce(new Error("Connection failed"));
+    await saveAllDirty();
+    expect(hasUnsavedChanges()).toBe(true);
+    expect(document.querySelector(".gallery-header details").open).toBe(true);
+    expect(document.querySelector(".gallery-header input").value).toBe("Keep this draft");
+    await saveAllDirty();
+    expect(hasUnsavedChanges()).toBe(false);
+    expect(grain.saveGallery).toHaveBeenCalledTimes(2);
+    expect(document.querySelector(".gallery-header .status").classList.contains("err")).toBe(false);
+  });
+
+  it("reveals batch tools only for selection without opening the inspector", async () => {
+    await openGallery(GALLERY);
+    expect(document.querySelector(".select-bar").hidden).toBe(true);
+    document.querySelector(".photo-select").click();
+    expect(document.querySelector(".select-bar").hidden).toBe(false);
+    expect(document.querySelector("#photo-inspector").hidden).toBe(true);
+    button("Use a rule…").click();
+    expect(document.querySelector("#gallery-batch-rules").open).toBe(true);
+    button("Clear").click();
+    expect(document.querySelector("#gallery-batch-rules").hidden).toBe(true);
+    expect(document.querySelector(".select-bar").hidden).toBe(true);
+  });
+
+  it("stages reordering until Save changes and updates swap CIDs for subsequent reorders", async () => {
+    await openGallery(GALLERY);
+    document.querySelector(".move-down").click();
+    expect(grain.setGalleryItemPosition).not.toHaveBeenCalled();
+    expect(hasUnsavedChanges()).toBe(true);
+    await saveAllDirty();
+    expect(grain.setGalleryItemPosition).toHaveBeenCalledTimes(2);
+    expect(harness.detail.photos[0].photo.uri).toContain("unlabelled");
+    document.querySelector(".move-down").click();
+    await saveAllDirty();
+    expect(grain.setGalleryItemPosition.mock.calls[2][2].cid).toBe("new-item-cid");
+    expect(hasUnsavedChanges()).toBe(false);
+  });
+
+  it("tracks shared gear and includes it in Save changes", async () => {
+    await openGallery(GALLERY);
+    const shared = document.querySelector(".shared-gear");
+    shared.querySelector("select").dispatchEvent(new Event("change", { bubbles: true }));
+    expect(graycard.saveGalleryDefaults).not.toHaveBeenCalled();
+    expect(hasUnsavedChanges()).toBe(true);
+    await saveAllDirty();
+    expect(graycard.saveGalleryDefaults).toHaveBeenCalledTimes(1);
+    expect(hasUnsavedChanges()).toBe(false);
+  });
+});
+
+describe("gallery save boundaries", () => {
+  it("does not freeze inherited fields when overriding just one piece of gear", async () => {
+    harness.store.galleryDefaultsByGallery.set(GALLERY, { value: { camera: "camera-a", lens: "lens-a" } });
+    await openGallery(GALLERY);
+    openPhoto(0);
+    const fields = document.querySelector(".photo-fields");
+    const camera = [...fields.querySelectorAll("label")]
+      .find((label) => label.querySelector("span")?.textContent === "Camera")
+      .querySelector("select");
+    expect(camera.value).toBe("camera-a");
+    camera.value = "camera-b";
+    camera.dispatchEvent(new Event("change"));
+    await saveAllDirty();
+    expect(graycard.savePhotoCapture.mock.calls[0][3]).toEqual({ camera: "camera-b" });
+  });
+
+  it("stages returning to shared gear without clearing frame or location metadata", async () => {
+    await openGallery(GALLERY);
+    openPhoto(0);
+    button("Use shared gear", document.querySelector(".photo-fields")).click();
+    expect(graycard.savePhotoCapture).not.toHaveBeenCalled();
+    await saveAllDirty();
+    const patch = graycard.savePhotoCapture.mock.calls[0][3];
+    expect(patch).toHaveProperty("camera", undefined);
+    expect(patch).toHaveProperty("filters", undefined);
+    expect(patch).not.toHaveProperty("frameIndex");
+    expect(patch).not.toHaveProperty("location");
+  });
+
+  it("serializes overlapping saves and locks the edited form while writing", async () => {
+    let finish;
+    grain.savePhotoAlt.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    await openGallery(GALLERY);
+    openPhoto(0);
+    const alt = document.querySelector(".photo-fields textarea");
+    edit(alt, "Keep this edit");
+    const first = saveAllDirty();
+    await vi.waitFor(() => expect(grain.savePhotoAlt).toHaveBeenCalledTimes(1));
+    expect(alt.disabled).toBe(true);
+    await saveAllDirty();
+    expect(grain.savePhotoAlt).toHaveBeenCalledTimes(1);
+    finish("updated-cid");
+    await first;
+    expect(alt.disabled).toBe(false);
+    expect(hasUnsavedChanges()).toBe(false);
+  });
+});
+
+it("protects pending edits before opening gear creation", async () => {
+  const library = await import("../src/ui/library.js");
+  await openGallery(GALLERY);
+  openPhoto(0);
+  const fields = document.querySelector(".photo-fields");
+  edit(fields.querySelector("textarea"), "A pending description");
+  button("+ Camera", fields).click();
+  expect(library.openAddGear).not.toHaveBeenCalled();
+  expect(fields.querySelector("textarea").value).toBe("A pending description");
+  await saveAllDirty();
+  button("+ Camera", fields).click();
+  expect(library.openAddGear).toHaveBeenCalledTimes(1);
 });

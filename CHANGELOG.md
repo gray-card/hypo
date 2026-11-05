@@ -2,6 +2,39 @@
 
 Notable changes to Hypo are recorded here.
 
+## [1.11.0] - 2026-11-04
+
+### Added
+
+- Add a gallery contact sheet with a persistent photo inspector, keyboard photo
+  navigation, compact settings, and batch tools shown for selected photos.
+- Keep photo drafts and expanded sections when moving between photos. Show shared
+  gear sources and let individual fields override or return to gallery defaults.
+
+### Changed
+
+- Run the same mobile browser suite locally and in CI, including gallery editing
+  and spacing checks. Use reviewed Linux chemistry screenshots and allow longer
+  WebKit workflows enough total time without relaxing their assertions.
+- Show chemistry roles as separate category chips in lists and status cards,
+  avoiding repeated terms such as "Rapid Fixer fixer" in product labels.
+- Save gallery details, shared gear, photo edits, and photo order only through an
+  explicit save action. Leaving a field keeps the draft without writing records.
+- Scope batch previews and writes to selected photos while retaining gallery frame
+  numbers. Label the committing action "Apply and save".
+- Reveal invalid fields, preserve failed edits for retry, serialize overlapping
+  saves, and keep mobile save controls above the bottom navigation.
+- Align gallery and session headings, page margins, panel density, and editor
+  disclosures with the shared interface. Keep photo EXIF rows aligned across
+  missing or wrapped captions, refresh coverage badges after saves, and use theme
+  colors for gallery surfaces.
+- Separate photo toolbars from their grids, keep checkbox labels beside their
+  controls, and align chemistry columns, development filters, and stage timing
+  fields across desktop and mobile layouts.
+- Give chemistry volume meters equal widths and a consistent remaining-volume
+  meaning. Show roll usage separately, including recommended-limit warnings,
+  without substituting count bars for missing volume data.
+
 ## [1.10.0] - 2026-11-01
 
 ### Added

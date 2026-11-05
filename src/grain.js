@@ -419,7 +419,8 @@ export async function setGalleryItemPosition(agent, did, item, position) {
     record: value,
     swapRecord: item.cid,
   });
-  await flushRecordOperation(agent, did, operation);
+  const settled = await flushRecordOperation(agent, did, operation);
+  return settled.acknowledgement?.cid || item.cid;
 }
 
 export async function saveGallery(agent, did, gallery, { title, description }) {

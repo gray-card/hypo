@@ -412,20 +412,7 @@
   margin-top: 0;
 }
 .resource-editor-more {
-  margin-top: 16px;
-  padding-top: 2px;
-  border-top: 1px solid var(--border);
-}
-.resource-editor-more > summary {
-  min-height: 42px;
-  padding: 12px 2px 8px;
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.resource-editor-more[open] > summary {
-  color: var(--accent);
+  margin-top: var(--space-4);
 }
 .resource-editor-more > .modal-sub:first-of-type {
   margin-top: 12px;

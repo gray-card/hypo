@@ -296,7 +296,12 @@ export function openGearForm(
       (node) =>
         node instanceof HTMLElement && node.matches(".modal-sub") && node.textContent === "Picture and datasheet",
     );
-    const productCore = productDetailsAt >= 0 ? productNodes.slice(0, productDetailsAt) : productNodes;
+    const productStatus = productNodes.filter(
+      (node) => node instanceof HTMLElement && node.classList.contains("catalog-load-status"),
+    );
+    const productCore = (productDetailsAt >= 0 ? productNodes.slice(0, productDetailsAt) : productNodes).filter(
+      (node) => !productStatus.includes(node),
+    );
     const productDetails = productDetailsAt >= 0 ? productNodes.slice(productDetailsAt) : [];
     const primaryInstanceKeys = new Set([
       "nickname",
@@ -321,13 +326,14 @@ export function openGearForm(
       el(
         "p",
         { class: "resource-editor-intro muted small" },
-        "Describe the product on the left and this physical bottle or mixed bath on the right. Capacity and dates belong to the physical chemistry you actually use.",
+        "Describe the chemistry product and this physical bottle or mixed bath. Capacity and dates belong to the chemistry you use.",
       ),
+      ...productStatus,
       el("div", { class: "resource-editor-grid chemistry-editor-grid" }, [
         el("section", { class: "resource-editor-section" }, [
           ...productCore,
           productDetails.length
-            ? el("details", { class: "resource-editor-more" }, [
+            ? el("details", { class: "resource-editor-more form-disclosure" }, [
                 el("summary", {}, "Image and technical details"),
                 ...productDetails,
               ])
@@ -336,7 +342,7 @@ export function openGearForm(
         el("section", { class: "resource-editor-section" }, [
           instanceSectionHeading,
           ...primaryInstanceNodes,
-          el("details", { class: "resource-editor-more" }, [
+          el("details", { class: "resource-editor-more form-disclosure" }, [
             el("summary", {}, "Dates, usage, and photo"),
             ...additionalInstanceNodes,
           ]),

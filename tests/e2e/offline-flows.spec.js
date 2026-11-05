@@ -280,15 +280,17 @@ test("an offline gallery metadata edit flushes one swap-protected write", async 
   await expect(galleryRow).toBeVisible();
   await galleryRow.click();
 
+  await page.locator(".gallery-details > summary").click();
   const galleryCard = page
     .locator("#editor-body .card")
-    .filter({ has: page.getByRole("heading", { name: "Gallery" }) });
+    .filter({ has: page.getByRole("heading", { name: "Gallery details" }) });
   const title = galleryCard.getByLabel("Title");
   await expect(title).toHaveValue("Offline metadata fixture");
 
   await setBrowserOffline(page, context, true);
   await title.fill("Edited while offline");
   await title.press("Tab");
+  await galleryCard.getByRole("button", { name: "Save gallery details" }).click();
   await expect.poll(() => writes.length).toBe(0);
   expect((await getRecord(request, GALLERY_COLLECTION, "offline-gallery")).value.title).toBe(
     "Offline metadata fixture",

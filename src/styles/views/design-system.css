@@ -45,42 +45,29 @@ button:active {
   margin-top: 7px;
   padding: 5px 10px;
   border-radius: 6px;
-  background: oklch(0.13 0.01 60);
-  border: 1px solid oklch(0.3 0.01 60);
-  color: oklch(0.78 0.15 58);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--accent);
   font-size: 11.5px;
   letter-spacing: 0.02em;
-  text-shadow: 0 0 6px oklch(0.78 0.15 58 / 0.4);
 }
 .exif-readout .rd-dim {
-  color: oklch(0.66 0.03 58);
+  color: var(--muted);
   text-shadow: none;
 }
 
 /* contact-sheet grid */
 #photos.grid-mode {
-  background: oklch(0.12 0.006 55);
+  background: var(--surface-2);
   border-radius: var(--radius);
   padding: 14px;
   gap: 10px;
 }
 #photos.grid-mode .photo-card {
   position: relative;
-  background: oklch(0.1 0.005 50);
+  background: var(--surface);
   border-radius: 3px;
-  border-color: oklch(0.26 0.008 55);
-}
-#photos.grid-mode .photo-card::after {
-  content: attr(data-frame);
-  position: absolute;
-  bottom: 6px;
-  left: 8px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: oklch(0.78 0.15 58);
-  background: oklch(0 0 0 / 0.5);
-  padding: 0 5px;
-  border-radius: 3px;
+  border-color: var(--border);
 }
 #photos.grid-mode .thumb {
   border-radius: 2px;

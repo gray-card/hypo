@@ -349,8 +349,9 @@ test("editor photo grid is named and keyboard-operable", async ({ page }) => {
   await tabTo(page, photo, 10);
   await expectVisibleKeyboardFocus(photo);
   await page.keyboard.press("Space");
-  await expect(page.locator("#photos")).not.toHaveClass(/grid-mode/);
-  await expect(page.getByRole("button", { name: "List view" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#photos")).toHaveClass(/grid-mode/);
+  await expect(page.getByRole("button", { name: "Grid view" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#photo-inspector")).toBeVisible();
 
   await expect(page.getByRole("main")).toBeVisible();
   await expect(page.locator('nav[aria-label="Primary"]:visible')).toHaveCount(1);

@@ -80,6 +80,12 @@
 
 /* spacing, type, and motion scale */
 :root {
+  /* Shared page frame and panels; all views use the same content edges. */
+  --page-width: 880px;
+  --page-gutter: 26px;
+  --page-top-space: 30px;
+  --panel-padding: 22px;
+  --section-gap: 18px;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;

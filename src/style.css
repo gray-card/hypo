@@ -6,6 +6,7 @@
 /* Shared components and view modules intentionally occupy one layer: their
    import order preserves the legacy stylesheet's specificity and refinements. */
 @import url("./styles/components/chrome-and-controls.css") layer(ui);
+@import url("./styles/components/editor-layout.css") layer(ui);
 @import url("./styles/components/collections.css") layer(ui);
 @import url("./styles/components/workflows-and-dialogs.css") layer(ui);
 @import url("./styles/views/interactions.css") layer(ui);
@@ -19,6 +20,7 @@
 @import url("./styles/views/onboarding.css") layer(ui);
 @import url("./styles/views/catalog.css") layer(ui);
 @import url("./styles/views/sessions.css") layer(ui);
+@import url("./styles/views/gallery-workspace.css") layer(ui);
 
 /*
  * Static selector index retained for tests that verify the responsive

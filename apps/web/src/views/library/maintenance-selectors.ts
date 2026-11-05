@@ -41,7 +41,7 @@ export function createChemistrySelect(
     if (roles?.length && !roles.some((role) => chemistryRoles.includes(role))) continue;
     options.push({
       uri: chemistry.uri,
-      label: `${chemistryRoles.length ? `[${chemistryRoles.join(" + ")}] ` : ""}${services.instanceLabel("chemistry", chemistry.value)}`,
+      label: `${chemistryRoles.length ? `[${chemistryRoles.map((role) => services.enumLabel(role)).join(" + ")}] ` : ""}${services.instanceLabel("chemistry", chemistry.value, { includeRoles: false })}`,
     });
   }
   const select = el("select", {}, [

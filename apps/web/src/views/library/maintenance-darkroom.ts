@@ -542,7 +542,7 @@ export function openManualDevelopment(
             "Add your working chemistry under Library → Chemistry before logging this session.",
           ),
       el("h3", { class: "modal-sub" }, "Rolls and session"),
-      el("div", { class: "library-filter-bar" }, [rollSearch, field("Show", rollScope)]),
+      el("div", { class: "library-filter-bar" }, [field("Search rolls", rollSearch), field("Show", rollScope)]),
       rollList.node,
       field("Process", processSelect),
       field("Film-processing sequence", planSelect),

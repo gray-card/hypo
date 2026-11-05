@@ -53,7 +53,7 @@ export interface ActivityServices {
   saveRecord(collection: string, value: LibraryValue, existing: LibraryRecord | null): Promise<string>;
   deleteRecord(uri: string): Promise<void>;
   saveWorkflowTemplate(value: LibraryValue, existing: LibraryRecord | null): Promise<string>;
-  instanceLabel(kind: string, value: LibraryValue | undefined): string;
+  instanceLabel(kind: string, value: LibraryValue | undefined, options?: { includeRoles?: boolean }): string;
   catalogLabel(kind: string, value: LibraryValue): string;
   chemistryRoles(value: LibraryValue): readonly string[];
   enumLabel(value: string): string;

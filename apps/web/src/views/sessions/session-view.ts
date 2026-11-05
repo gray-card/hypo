@@ -607,12 +607,12 @@ export function renderSessionsView(
   ]);
   const activeDevelopment = services.activeDevelopment();
   body.replaceChildren(
-    el("div", { class: "session-hero" }, [
+    el("div", { class: "row between view-head session-hero" }, [
       el("div", { class: "session-hero-copy" }, [
         el("h2", {}, "Sessions"),
         el(
           "p",
-          { class: "muted" },
+          { class: "view-sub muted small" },
           "Start work, resume what is active, or review what you shot, developed, digitized, edited, and printed.",
         ),
       ]),
@@ -800,7 +800,7 @@ export function renderSessionDetail(body: HTMLElement, entry: SessionEntry, serv
             el("p", { class: "session-notes" }, String(entry.record.value.notes)),
           ])
         : null,
-      el("details", { class: "card session-evidence" }, [
+      el("details", { class: "card session-evidence form-disclosure" }, [
         el("summary", {}, [el("span", {}, "Evidence and provenance"), provenanceChip(entry)]),
         el("dl", { class: "session-definition-list" }, [
           el("dt", {}, "Source"),
