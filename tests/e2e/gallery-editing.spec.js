@@ -207,6 +207,60 @@ test("shared gear saves explicitly and individual overrides preserve inheritance
   );
 });
 
+test("film-back labels stay readable in shared gear and inherited photo gear", async ({ page, request }, testInfo) => {
+  const typeUri = `at://${REPO}/app.graycard.catalog.filmBackType/sq-120`;
+  for (const [collection, rkey, value] of [
+    [
+      "app.graycard.catalog.filmBackType",
+      "sq-120",
+      { make: "Bronica", model: "SQ 120 Film Back", backInterface: "Bronica SQ" },
+    ],
+    ["app.graycard.instance.filmBack", "color", { type: typeUri, nickname: "Color", serialNumber: "123" }],
+    ["app.graycard.instance.filmBack", "spare", { type: `${typeUri}-missing`, nickname: "Spare" }],
+  ]) {
+    const response = await request.post(`${PDS}/xrpc/com.atproto.repo.createRecord`, {
+      data: {
+        repo: REPO,
+        collection,
+        rkey,
+        record: { $type: collection, createdAt: "2026-01-01T00:00:00.000Z", ...value },
+      },
+    });
+    expect(response.ok()).toBe(true);
+  }
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Photos (3)" })).toBeVisible();
+  const shared = page
+    .locator(".gallery-tools details")
+    .filter({ has: page.getByRole("heading", { name: "Shared gear", exact: true }) });
+  const fields = page.locator(".photo-fields:not([hidden])");
+  const inherited = fields.getByRole("combobox", { name: "Film back", exact: true });
+  for (const [rkey, label] of [
+    ["color", "Color · Bronica SQ 120 Film Back · 123"],
+    ["spare", "Spare · Film back (details unavailable)"],
+  ]) {
+    const uri = `at://${REPO}/app.graycard.instance.filmBack/${rkey}`;
+    await shared.locator("summary").click();
+    const picker = shared.getByRole("combobox", { name: "Film back", exact: true });
+    await picker.selectOption(uri);
+    await expect(picker.locator("option:checked")).toHaveText(label);
+    await page.getByRole("button", { name: "Save changes", exact: true }).click();
+    await expect(page.locator(".save-bar")).toBeHidden();
+    await page.reload();
+    await page.getByRole("button", { name: "Edit First frame", exact: true }).click();
+    await fields.locator("summary", { hasText: "Capture and gear" }).click();
+    await expect(inherited).toHaveValue(uri);
+    await expect(inherited.locator("option:checked")).toHaveText(label);
+    await expect(inherited).toHaveAccessibleDescription("From shared gear");
+    await inherited.evaluate((control) => control.scrollIntoView({ block: "center", behavior: "instant" }));
+    const screenshot = testInfo.outputPath(`film-back-${rkey}.png`);
+    await page.screenshot({ path: screenshot });
+    await testInfo.attach(`film-back-${rkey}`, { path: screenshot, contentType: "image/png" });
+    await page.getByRole("button", { name: "Back to photos" }).click();
+    await page.reload();
+  }
+});
+
 test("contact sheet and inspector fit the viewport", async ({ page }) => {
   await expect(page).toHaveScreenshot("gallery-contact-sheet.png");
   await page.getByRole("button", { name: "Edit First frame", exact: true }).click();

@@ -79,6 +79,9 @@ describe("catalogLabel", () => {
   });
   it("labels cameras, film, and multi-role chemistry", () => {
     expect(catalogLabel("cameraType", { make: "Leica", model: "M6" })).toBe("Leica M6");
+    expect(catalogLabel("filmBackType", { make: "Bronica", model: "SQ 120 Film Back" })).toBe(
+      "Bronica SQ 120 Film Back",
+    );
     expect(catalogLabel("filmStock", { brand: "Kodak", name: "Portra 400" })).toBe("Kodak Portra 400");
     expect(
       catalogLabel("chemistryType", { brand: "CineStill", name: "Df96", roles: ["film-developer", "fixer"] }),
@@ -87,6 +90,22 @@ describe("catalogLabel", () => {
 });
 
 describe("instanceLabel", () => {
+  it("labels film backs with make, model, nickname, and serial number", () => {
+    const store = {
+      catalog: { filmBackType: [{ uri: "at://back-type", value: { make: "Bronica", model: "SQ 120" } }] },
+    };
+    expect(instanceLabel("filmBack", { type: "at://back-type", nickname: "Color", serialNumber: "123" }, store)).toBe(
+      "Color · Bronica SQ 120 · 123",
+    );
+  });
+  it.each(["filmBack", "camera", "lens"])("uses a readable fallback for an unavailable %s type", (kind) => {
+    const labels = { filmBack: "Film back", camera: "Camera", lens: "Lens" };
+    const store = { catalog: {} };
+    expect(instanceLabel(kind, { type: "at://missing-type" }, store)).toBe(`${labels[kind]} (details unavailable)`);
+    expect(instanceLabel(kind, { type: "at://missing-type", nickname: "Spare", serialNumber: "123" }, store)).toBe(
+      `Spare · ${labels[kind]} (details unavailable) · 123`,
+    );
+  });
   it("combines nickname, type, and serial", () => {
     const { store, cam } = makeStore();
     expect(instanceLabel("camera", cam.value, store)).toBe("black M6 · Leica M6 · 123");
