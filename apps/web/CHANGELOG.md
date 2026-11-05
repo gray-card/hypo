@@ -1,5 +1,12 @@
 # @hypo/web
 
+## 1.11.1
+
+### Patch Changes
+
+- Keep the mobile Library section menu open across refreshes so a section can still be selected while refreshed data arrives.
+- 9aef5f3: Treat an absent saved OAuth session as a normal signed-out state. First-time visitors no longer see a session-restoration error before signing in.
+
 ## 1.11.0
 
 ### Minor Changes

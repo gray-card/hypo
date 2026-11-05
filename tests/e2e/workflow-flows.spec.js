@@ -170,7 +170,17 @@ test("a rich workflow can be authored, launched, advanced, and used on mobile", 
   expect(mobileLayout.scrollWidth).toBeLessThanOrEqual(mobileLayout.clientWidth + 1);
   expect(mobileLayout.actionHeights.length).toBeGreaterThan(0);
   expect(mobileLayout.actionHeights.every((height) => height >= 44)).toBe(true);
-  const bottomNavBox = await page.locator("#bottom-nav").boundingBox();
-  expect(bottomNavBox?.y).toBeGreaterThanOrEqual(780);
-  expect(bottomNavBox?.y + bottomNavBox?.height).toBeLessThanOrEqual(845);
+  // Mobile WebKit can retain a smaller visual viewport after the layout viewport
+  // resizes. The fixed navigation must sit at the bottom of the visible area.
+  const bottomNav = await page.locator("#bottom-nav").evaluate((navigation) => {
+    const rect = navigation.getBoundingClientRect();
+    const viewport = window.visualViewport;
+    return {
+      top: rect.top,
+      bottom: rect.bottom,
+      viewportBottom: viewport ? viewport.offsetTop + viewport.height : window.innerHeight,
+    };
+  });
+  expect(bottomNav.top).toBeGreaterThanOrEqual(bottomNav.viewportBottom - 64);
+  expect(bottomNav.bottom).toBeCloseTo(bottomNav.viewportBottom, 0);
 });

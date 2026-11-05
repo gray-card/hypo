@@ -28,7 +28,7 @@ jobs:
       - uses: changesets/action@v1
         with:
           version: npm run version-packages
-          title: "chore: prepare release"
-          commit: "chore: prepare release"
+          title: "chore(release): prepare release"
+          commit: "chore(release): prepare release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

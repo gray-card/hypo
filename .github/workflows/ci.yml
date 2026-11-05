@@ -61,6 +61,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -72,6 +74,14 @@ jobs:
         run: npm run lint
       - name: Check formatting
         run: npm run format:check
+      - name: Validate release metadata
+        run: |
+          for changeset in .changeset/*.md; do
+            if [[ -f "$changeset" && "$changeset" != ".changeset/README.md" ]]; then
+              npx changeset status --since=origin/main
+              break
+            fi
+          done
 
   unit-tests:
     name: Unit and integration tests
