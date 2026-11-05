@@ -53,7 +53,15 @@ export default defineConfig({
     {
       name: "mobile-webkit",
       testMatch: mobileReleaseTests,
-      use: { ...devices["iPhone 13"], browserName: "webkit" },
+      // Linux WebKit spends substantially longer on page setup and rendering.
+      // Budget for complete journeys while bounding each interaction separately.
+      timeout: 90_000,
+      use: {
+        ...devices["iPhone 13"],
+        browserName: "webkit",
+        actionTimeout: 10_000,
+        navigationTimeout: 15_000,
+      },
     },
   ],
   webServer: [

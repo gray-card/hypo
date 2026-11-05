@@ -168,7 +168,10 @@ test.beforeEach(async ({ request }) => {
 });
 
 for (const theme of ["dark", "light"]) {
-  test(`${theme}: resource, roll, and session surfaces stay inside the viewport`, async ({ page }, testInfo) => {
+  test(`${theme}: resource, roll, and session surfaces stay inside the viewport`, async ({
+    page,
+    browserName,
+  }, testInfo) => {
     await page.clock.setFixedTime(new Date("2026-11-04T12:00:00.000Z"));
     await login(page);
     await page.evaluate((value) => {
@@ -201,10 +204,10 @@ for (const theme of ["dark", "light"]) {
     await expect(stop.locator(".chemistry-role-chip")).toHaveText("Stop bath");
     const monobath = page.locator(".chemistry-status-row").filter({ hasText: "Df96" });
     await expect(monobath.locator(".chemistry-role-chip")).toHaveText(["Film developer", "Fixer"]);
-    // Linux desktop font rasterization and wrapping differ from macOS in this
+    // Linux Chromium font rasterization and wrapping differ from macOS in this
     // text-heavy component. Keep reviewed references for both without increasing
     // the screenshot tolerance or masking the labels under test.
-    const snapshotPlatform = process.platform === "linux" && testInfo.project.name === "chromium" ? "-linux" : "";
+    const snapshotPlatform = process.platform === "linux" && browserName === "chromium" ? "-linux" : "";
     await expect(
       page.locator(".card").filter({ has: page.getByRole("heading", { name: "Chemistry status", exact: true }) }),
     ).toHaveScreenshot(`chemistry-status-${theme}${snapshotPlatform}.png`, {

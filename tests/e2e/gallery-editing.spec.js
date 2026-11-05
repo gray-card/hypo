@@ -368,9 +368,8 @@ test("photo captions, optional badges, and EXIF values keep aligned rows after e
   const checkAlignment = async () => {
     const geometry = await page.locator("#photos .photo-card").evaluateAll((cards) =>
       cards.map((card) => ({
-        readoutOffset: Math.round(
+        readoutOffset:
           card.querySelector(".photo-readout").getBoundingClientRect().top - card.getBoundingClientRect().top,
-        ),
         captionHeight: card.querySelector(".photo-caption").getBoundingClientRect().height,
         overflow: card.scrollWidth - card.clientWidth,
         readoutHeight: card.querySelector(".exif-readout").getBoundingClientRect().height,
@@ -378,8 +377,9 @@ test("photo captions, optional badges, and EXIF values keep aligned rows after e
           card.querySelector(".exif-readout").scrollWidth - card.querySelector(".exif-readout").clientWidth,
       })),
     );
-    expect(new Set(geometry.map((card) => card.readoutOffset)).size).toBe(1);
-    for (const dimension of ["captionHeight", "readoutHeight"]) {
+    // Compare raw CSS pixels: rounding each offset first can put subpixel
+    // differences on opposite sides of an integer boundary in WebKit.
+    for (const dimension of ["readoutOffset", "captionHeight", "readoutHeight"]) {
       const sizes = geometry.map((card) => card[dimension]);
       expect(Math.max(...sizes) - Math.min(...sizes)).toBeLessThanOrEqual(1);
     }

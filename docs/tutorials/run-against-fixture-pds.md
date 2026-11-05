@@ -66,12 +66,13 @@ The suite verifies seeded login, offline shot replay, and a stale `swapRecord` c
 CI and local runs share `playwright.config.ts`. Run the mobile release suite with
 `npx playwright test --project=mobile-chromium --project=mobile-webkit`; this includes
 the gallery editing and responsive layout checks as well as the record workflows.
-The two longer WebKit scenarios use Playwright's slow-test budget for the complete
-journey; their assertion timeouts stay unchanged.
+WebKit uses a 90-second budget for the complete journey, including page setup.
+Assertions and individual actions are limited to 10 seconds, and navigations to
+15 seconds, so a stalled operation still fails promptly.
 
-Review screenshot differences before updating references. The text-heavy desktop
-chemistry card has separate `-linux.png` references because Linux and macOS render
-its fonts differently. Keep both platform references when changing that card;
+Review screenshot differences before updating references. The text-heavy
+chemistry card has separate Chromium `-linux.png` references because Linux and
+macOS render its fonts differently. Keep both platform references when changing that card;
 do not raise the shared comparison tolerance to absorb text or alignment changes.
 
 The fixture has no production OAuth, commit history, federation, persistence, or server-side lexicon validation. Use the [Fixture PDS API](../reference/fixture-pds-api.md) as its complete contract.

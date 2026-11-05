@@ -63,13 +63,7 @@ test("session routes stay first-class across list, detail, history, and mobile n
   await expect(page.getByRole("heading", { name: "Sessions", exact: true })).toBeVisible();
 });
 
-test("gear deep links preserve Library context across close, Back, Forward, and record changes", async ({
-  page,
-  browserName,
-}) => {
-  // This scenario reopens several record dialogs; Linux WebKit needs more total
-  // time for the full sequence, while individual assertions keep their timeout.
-  test.slow(browserName === "webkit");
+test("gear deep links preserve Library context across close, Back, Forward, and record changes", async ({ page }) => {
   await login(page);
   await page.goto("/gear/camera/camera-a");
 
