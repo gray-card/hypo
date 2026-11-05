@@ -1,5 +1,4 @@
 ---
-"hypo": patch
 "@hypo/web": patch
 ---
 
