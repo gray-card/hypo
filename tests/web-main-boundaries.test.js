@@ -17,6 +17,36 @@ beforeEach(() => {
 });
 
 describe("session app boundary", () => {
+  it.each([undefined, {}])(
+    "treats an empty OAuth init result (%j) as signed out and permits sign-in",
+    async (result) => {
+      const oauthClient = { init: vi.fn(async () => result), signIn: vi.fn(async () => undefined) };
+      const onAuthenticated = vi.fn();
+      const onLoggedOut = vi.fn();
+      const logger = { warn: vi.fn() };
+      const controller = createSessionController({
+        location: {
+          hostname: "hypo.graycard.app",
+          href: "https://hypo.graycard.app/",
+          origin: "https://hypo.graycard.app",
+          reload: vi.fn(),
+        },
+        loadScope: async () => "repo:one",
+        loadBrowserClient: async () => oauthClient,
+        onAuthenticated,
+        onLoggedOut,
+        logger,
+      });
+
+      await expect(controller.bootstrap()).resolves.toBeUndefined();
+      expect(onLoggedOut).toHaveBeenCalledOnce();
+      expect(onAuthenticated).not.toHaveBeenCalled();
+      expect(logger.warn).not.toHaveBeenCalled();
+      await controller.signIn("alice.test");
+      expect(oauthClient.signIn).toHaveBeenCalledWith("alice.test", { scope: "repo:one" });
+    },
+  );
+
   it("strips only OAuth callback parameters while retaining the route", () => {
     expect(
       stripOAuthCallbackParams("https://hypo.graycard.app/profile/alice.test?code=abc&view=gear&state=xyz#cameras"),
