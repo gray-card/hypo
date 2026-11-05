@@ -15,6 +15,7 @@ import { migrateLegacyDeveloperRecords } from "./legacyDeveloperMigration.ts";
 import { migrateDevelopSessions } from "./developSessionMigration.ts";
 import { migrateFilterStacks } from "./filterStackMigration.ts";
 import { migrateLegacyShapes } from "./legacyShapeMigration.ts";
+import { kindLabel } from "./ui/labels.js";
 
 export { NS, CATALOG_KINDS, INSTANCE_KINDS };
 
@@ -245,6 +246,7 @@ export function catalogLabel(kind, value, { includeRoles = true } = {}) {
   if (!value) return "(unknown)";
   switch (kind) {
     case "cameraType":
+    case "filmBackType":
     case "lensType":
     case "scannerType":
     case "enlargerType":
@@ -284,7 +286,7 @@ export function instanceLabel(kind, value, store, options = {}) {
     const t =
       store.catalog[typeKey]?.find((x) => x.uri === value.type)?.value ||
       store.catalog.filmStock?.find((x) => x.uri === value.stock)?.value;
-    const base = t ? catalogLabel(typeKey === "filmStock" ? "filmStock" : typeKey, t, options) : value.type;
+    const base = t ? catalogLabel(typeKey, t, options) : `${kindLabel(kind)} (details unavailable)`;
     return [nick, base, value.serialNumber].filter(Boolean).join(" · ");
   }
   if (kind === "filmRoll" && value.stock) {

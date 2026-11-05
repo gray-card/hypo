@@ -179,6 +179,25 @@ describe("extracted library activity views", () => {
     expect(createShootSelect("at://shoot", services).selectedOptions[0].textContent).toBe("Walk");
   });
 
+  it("keeps film-back reference values while displaying resolved or unavailable catalog labels", () => {
+    const store = emptyStore({
+      catalog: { filmBackType: [item("at://back-type", { make: "Bronica", model: "SQ 120" })] },
+      instance: {
+        filmBack: [
+          item("at://known-back", { type: "at://back-type", nickname: "Color" }),
+          item("at://missing-back", { type: "at://missing-type", serialNumber: "123" }),
+        ],
+      },
+    });
+    const services = createServices(store, { instanceLabel: (kind, value) => instanceLabel(kind, value, store) });
+    const select = createInstanceSelect("filmBack", "at://known-back", services);
+    expect(select.selectedOptions[0].textContent).toBe("Color · Bronica SQ 120");
+    select.value = "at://missing-back";
+    expect(select.selectedOptions[0].textContent).toBe("Film back (details unavailable) · 123");
+    expect(select.value).toBe("at://missing-back");
+    expect(select.textContent).not.toContain("at://");
+  });
+
   it("saves workflow templates with ordered stages and injected selectors", async () => {
     const store = emptyStore({
       instance: { camera: [], lens: [], filmRoll: [], chemistry: [], scanner: [] },
