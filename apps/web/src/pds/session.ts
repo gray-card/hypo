@@ -13,7 +13,7 @@ interface OAuthSession {
 }
 
 interface OAuthClient {
-  init(): Promise<{ session?: OAuthSession }>;
+  init(): Promise<{ session?: OAuthSession } | undefined>;
   signIn(handle: string, options: { scope: string }): Promise<unknown>;
   revoke?(did: string): Promise<unknown>;
 }
@@ -208,7 +208,7 @@ export function createSessionController(options: SessionControllerOptions) {
       scope = E2E_SCOPE;
       oauthClient = runtime.oauthClient;
       const result = await oauthClient.init();
-      if (result.session) await acceptSession(result.session, runtime.agent);
+      if (result?.session) await acceptSession(result.session, runtime.agent);
       else await options.onLoggedOut();
       return;
     }
@@ -222,7 +222,7 @@ export function createSessionController(options: SessionControllerOptions) {
       handleResolver: options.handleResolver || HANDLE_RESOLVER,
     });
 
-    let result: { session?: OAuthSession };
+    let result: { session?: OAuthSession } | undefined;
     try {
       result = await oauthClient.init();
     } catch (error) {
@@ -231,7 +231,7 @@ export function createSessionController(options: SessionControllerOptions) {
       await options.onLoggedOut();
       return;
     }
-    if (result.session) await acceptSession(result.session);
+    if (result?.session) await acceptSession(result.session);
     else await options.onLoggedOut();
   };
 
