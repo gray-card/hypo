@@ -40,10 +40,11 @@ function createOAuthClient(pdsOrigin) {
     async init() {
       try {
         const stored = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-        return stored?.did ? { session: sessionFor(stored) } : {};
+        // Match BrowserOAuthClient.init(): no saved session returns undefined.
+        return stored?.did ? { session: sessionFor(stored) } : undefined;
       } catch {
         localStorage.removeItem(SESSION_KEY);
-        return {};
+        return undefined;
       }
     },
     async signIn(handle) {
