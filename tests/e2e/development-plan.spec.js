@@ -47,7 +47,9 @@ test("reuses a film-processing sequence while keeping actual session steps and a
   await page.goto("/");
   await page.getByRole("combobox").fill("alice.test");
   await page.getByRole("button", { name: "Sign in" }).click();
-  await page.getByRole("button", { name: "Sessions", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Library", exact: true })).toBeVisible();
+  await expect(page.locator("#bottom-nav")).toBeHidden();
+  await page.locator("#primary-nav").getByRole("button", { name: "Sessions", exact: true }).click();
   await page.getByRole("button", { name: /^Development/ }).click();
   await page.getByRole("button", { name: "New sequence" }).click();
   const planDialog = page.getByRole("dialog", { name: "New film-processing sequence" });
