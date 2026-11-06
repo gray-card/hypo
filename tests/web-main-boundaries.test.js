@@ -121,6 +121,58 @@ describe("session app boundary", () => {
 });
 
 describe("gallery-list boundary", () => {
+  it.each(["camera", "filmBack", "lens", "filmRoll", "filters"])(
+    "counts inherited %s gear without requiring a photo capture record",
+    (field) => {
+      const gallery = "at://gallery/shared";
+      const photo = "at://photo/one";
+      const gear = field === "filters" ? ["at://gear/one"] : "at://gear/one";
+      const result = deriveGalleryPresentation(
+        [{ uri: "at://item/one", value: { gallery, item: photo } }],
+        [],
+        [],
+        [],
+        [],
+        [{ uri: "at://defaults/one", value: { gallery, [field]: gear } }],
+      );
+      expect(result.coverage.get(gallery).gear).toBe(1);
+    },
+  );
+
+  it("counts film-back-only photo gear", () => {
+    const result = deriveGalleryPresentation(
+      [{ uri: "at://item/one", value: { gallery: "at://gallery", item: "at://photo" } }],
+      [],
+      [{ uri: "at://capture", value: { photo: "at://photo", filmBack: "at://back" } }],
+      [],
+      [],
+    );
+    expect(result.coverage.get("at://gallery").gear).toBe(1);
+  });
+
+  it("resolves shared gear per gallery and respects an explicitly empty photo filter stack", () => {
+    const result = deriveGalleryPresentation(
+      [
+        { uri: "at://item/1", value: { gallery: "at://gallery/camera", item: "at://photo/1" } },
+        { uri: "at://item/2", value: { gallery: "at://gallery/filters", item: "at://photo/1" } },
+        { uri: "at://item/3", value: { gallery: "at://gallery/filters", item: "at://photo/2" } },
+        { uri: "at://item/4", value: { gallery: "at://gallery/shoot", item: "at://photo/2" } },
+      ],
+      [],
+      [{ uri: "at://capture/1", value: { photo: "at://photo/1", filters: [] } }],
+      [],
+      [],
+      [
+        { uri: "at://defaults/1", value: { gallery: "at://gallery/camera", camera: "at://camera" } },
+        { uri: "at://defaults/2", value: { gallery: "at://gallery/filters", filters: ["at://filter"] } },
+        { uri: "at://defaults/3", value: { gallery: "at://gallery/shoot", shoot: "at://shoot" } },
+      ],
+    );
+    expect(result.coverage.get("at://gallery/camera").gear).toBe(1);
+    expect(result.coverage.get("at://gallery/filters").gear).toBe(1);
+    expect(result.coverage.get("at://gallery/shoot").gear).toBe(0);
+  });
+
   it("derives the ordered cover and Gray Card coverage independently of the DOM", () => {
     const gallery = "at://did/social.grain.gallery/summer";
     const first = "at://did/social.grain.photo/first";
@@ -162,11 +214,15 @@ describe("gallery-list boundary", () => {
       listRecords: vi.fn(async (_agent, _did, collection) => {
         if (collection === "gallery.item") return [{ uri: "at://item/1", value: { gallery, item: photo } }];
         if (collection === "photo") return [{ uri: photo, value: { photo: { ref: "cover" } } }];
-        if (collection === "capture") return [{ uri: "at://capture/1", value: { photo, camera: "camera" } }];
+        if (collection === "defaults") return [{ uri: "at://defaults/1", value: { gallery, camera: "camera" } }];
         return [];
       }),
       collections: { galleryItem: "gallery.item", photo: "photo" },
-      ns: { photo: { capture: "capture", workflow: "workflow" }, scene: { graph: "scene" } },
+      ns: {
+        photo: { capture: "capture", workflow: "workflow" },
+        scene: { graph: "scene" },
+        gallery: { defaults: "defaults" },
+      },
       lazyThumb: vi.fn(() => {
         const thumb = document.createElement("div");
         thumb.className = "gallery-thumb";
@@ -189,7 +245,7 @@ describe("gallery-list boundary", () => {
 
     expect(document.querySelector(".g-title").textContent).toBe("Summer");
     expect(document.querySelector(".cov-row").textContent).toContain("gear 1/1");
-    expect(providers.listRecords).toHaveBeenCalledTimes(5);
+    expect(providers.listRecords).toHaveBeenCalledTimes(6);
     for (const call of providers.listRecords.mock.calls) expect(call[3]).toEqual({ refresh: true });
     document.querySelector(".gallery-row").click();
     expect(activate).toHaveBeenCalledOnce();

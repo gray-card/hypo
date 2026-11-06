@@ -171,6 +171,50 @@ test("reordering is staged and can be saved repeatedly", async ({ page, request 
   await expect.poll(async () => (await record(request, ITEM, "item-1")).position).toBe(0);
 });
 
+test("gallery gear coverage includes shared gear and retains photo overrides", async ({ page, request }, testInfo) => {
+  const galleryRow = page.locator("#gallery-list .gallery-row").filter({ hasText: "Contact sheet" });
+  const shared = page
+    .locator(".gallery-tools details")
+    .filter({ has: page.getByRole("heading", { name: "Shared gear", exact: true }) });
+  await page.getByRole("button", { name: "Back to galleries" }).click();
+  await expect(galleryRow).toContainText("gear 0/3");
+  await galleryRow.click();
+  await shared.locator("summary").click();
+  await shared
+    .getByRole("combobox", { name: "Camera", exact: true })
+    .selectOption(`at://${REPO}/app.graycard.instance.camera/camera-a`);
+  await page.getByRole("button", { name: "Save changes", exact: true }).click();
+  await expect(page.locator(".save-bar")).toBeHidden();
+  const captures = await request.get(`${PDS}/xrpc/com.atproto.repo.listRecords`, {
+    params: { repo: REPO, collection: "app.graycard.photo.capture" },
+  });
+  expect((await captures.json()).records).toHaveLength(0);
+  await page.getByRole("button", { name: "Back to galleries" }).click();
+  await expect(galleryRow).toContainText("gear 3/3");
+  await page.reload();
+  await expect(galleryRow).toContainText("gear 3/3");
+  const screenshot = testInfo.outputPath("shared-gear-coverage.png");
+  await page.screenshot({ path: screenshot });
+  await testInfo.attach("shared-gear-coverage", { path: screenshot, contentType: "image/png" });
+
+  await galleryRow.click();
+  await page.getByRole("button", { name: "Edit First frame", exact: true }).click();
+  const fields = page.locator(".photo-fields:not([hidden])");
+  await fields.locator("summary", { hasText: "Capture and gear" }).click();
+  await fields
+    .getByRole("combobox", { name: "Camera", exact: true })
+    .selectOption(`at://${REPO}/app.graycard.instance.camera/camera-b`);
+  await page.getByRole("button", { name: "Save changes", exact: true }).click();
+  await expect(page.locator(".save-bar")).toBeHidden();
+  await page.getByRole("button", { name: "Back to photos" }).click();
+  await shared.locator("summary").click();
+  await shared.getByRole("combobox", { name: "Camera", exact: true }).selectOption("");
+  await page.getByRole("button", { name: "Save changes", exact: true }).click();
+  await expect(page.locator(".save-bar")).toBeHidden();
+  await page.getByRole("button", { name: "Back to galleries" }).click();
+  await expect(galleryRow).toContainText("gear 1/3");
+});
+
 test("shared gear saves explicitly and individual overrides preserve inheritance", async ({ page, request }) => {
   const shared = page
     .locator(".gallery-tools details")

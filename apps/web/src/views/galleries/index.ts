@@ -1,4 +1,5 @@
 import { $, el, loadPhase } from "@hypo/ui";
+import { resolvePhotoCapture } from "@hypo/domain/photo-capture";
 
 export interface GalleryRecord {
   uri: string;
@@ -30,7 +31,7 @@ interface GalleryProviders {
     options?: { refresh?: boolean },
   ): Promise<RepositoryRecord[]>;
   collections: { galleryItem: string; photo: string };
-  ns: { photo: { capture: string; workflow: string }; scene: { graph: string } };
+  ns: { photo: { capture: string; workflow: string }; scene: { graph: string }; gallery: { defaults: string } };
   lazyThumb(agent: unknown, did: string, blob: unknown, className: string): HTMLElement;
 }
 
@@ -56,19 +57,11 @@ export function deriveGalleryPresentation(
   captures: RepositoryRecord[],
   workflows: RepositoryRecord[],
   scenes: RepositoryRecord[],
+  defaults: RepositoryRecord[] = [],
 ): { covers: Map<string, unknown>; coverage: Map<string, GalleryCoverage> } {
   const blobByPhoto = new Map(photos.map((record) => [record.uri, record.value.photo]));
-  const gearPhotos = new Set(
-    captures
-      .filter(
-        (record) =>
-          record.value.camera ||
-          record.value.lens ||
-          record.value.filmRoll ||
-          (Array.isArray(record.value.filters) && record.value.filters.length > 0),
-      )
-      .map((record) => record.value.photo),
-  );
+  const captureByPhoto = new Map(captures.map((record) => [record.value.photo, record]));
+  const defaultsByGallery = new Map(defaults.map((record) => [record.value.gallery, record]));
   const workflowPhotos = new Set(workflows.map((record) => record.value.photo));
   const scenePhotos = new Set(scenes.map((record) => record.value.subject).filter(Boolean));
   const covers = new Map<string, unknown>();
@@ -88,7 +81,10 @@ export function deriveGalleryPresentation(
   for (const [gallery, members] of photosByGallery) {
     coverage.set(gallery, {
       total: members.length,
-      gear: members.filter((uri) => gearPhotos.has(uri)).length,
+      gear: members.filter((uri) => {
+        const refs = resolvePhotoCapture(captureByPhoto.get(uri), defaultsByGallery.get(gallery));
+        return refs.camera || refs.filmBack || refs.lens || refs.filmRoll || refs.filters.length > 0;
+      }).length,
       wf: members.filter((uri) => workflowPhotos.has(uri)).length,
       sc: members.filter((uri) => scenePhotos.has(uri)).length,
     });
@@ -230,14 +226,15 @@ export function createGalleryListView(options: GalleryListOptions) {
       search.classList.toggle("hidden", galleries.length < 6);
       phase.set("Checking coverage from your PDS…");
       try {
-        const [items, photos, captures, workflows, scenes] = await Promise.all([
+        const [items, photos, captures, workflows, scenes, defaults] = await Promise.all([
           providers.listRecords(session.agent, session.did, providers.collections.galleryItem, { refresh: true }),
           providers.listRecords(session.agent, session.did, providers.collections.photo, { refresh: true }),
           providers.listRecords(session.agent, session.did, providers.ns.photo.capture, { refresh: true }),
           providers.listRecords(session.agent, session.did, providers.ns.photo.workflow, { refresh: true }),
           providers.listRecords(session.agent, session.did, providers.ns.scene.graph, { refresh: true }),
+          providers.listRecords(session.agent, session.did, providers.ns.gallery.defaults, { refresh: true }),
         ]);
-        ({ covers, coverage } = deriveGalleryPresentation(items, photos, captures, workflows, scenes));
+        ({ covers, coverage } = deriveGalleryPresentation(items, photos, captures, workflows, scenes, defaults));
       } catch {
         covers = new Map();
         coverage = new Map();
