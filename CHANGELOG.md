@@ -2,6 +2,12 @@
 
 Notable changes to Hypo are recorded here.
 
+## 1.11.3
+
+### Patch Changes
+
+- 81d3b7a: Count shared gallery gear and film backs in gallery coverage badges using the same inheritance rules as the photo inspector. Preserve photo-specific overrides, including explicitly empty filter stacks.
+
 ## 1.11.2
 
 ### Patch Changes
