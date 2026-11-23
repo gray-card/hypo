@@ -1,7 +1,7 @@
 {
   "_source": "enlarger models and specifications transcribed from manufacturer manuals, catalogs, and product pages in data/curated-enlargers/*.jsonl",
   "_license": "Hypo's original compilation: CC-BY-SA 4.0; individual product specifications may be non-copyrightable facts. See data/LICENSE.md",
-  "_generated": "2026-10-30T20:23:36.052Z",
+  "_generated": "2026-11-23T16:56:54.583Z",
   "enlargers": [
     {
       "make": "Beseler",

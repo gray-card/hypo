@@ -1,7 +1,7 @@
 {
   "_source": "lensfun (https://github.com/lensfun/lensfun), data/db, vendored in data/lensfun-db/",
   "_license": "CC-BY-SA 3.0. See src/data/CATALOG_ATTRIBUTION.md and data/lensfun-db/NOTICE.md",
-  "_generated": "2026-08-10T07:22:51.531Z",
+  "_generated": "2026-11-23T16:56:54.567Z",
   "_wikidata": "QIDs resolved best-effort via Wikidata wbsearchentities (CC0); review before trusting.",
   "cameras": [
     {
@@ -1150,6 +1150,17 @@
     },
     {
       "make": "Canon",
+      "model": "EOS R8 Mark II",
+      "exifModel": "EOS R8 Mark II",
+      "category": "digital",
+      "format": "full-frame-digital",
+      "cropFactor": 1,
+      "mount": "Canon RF",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Canon",
       "model": "EOS REBEL SL1",
       "exifModel": "EOS REBEL SL1",
       "category": "digital",
@@ -1937,6 +1948,17 @@
       "format": "other",
       "cropFactor": 6.5,
       "mount": "canonA70",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Canon",
+      "model": "PowerShot A710 IS",
+      "exifModel": "PowerShot A710 IS",
+      "category": "digital",
+      "format": "other",
+      "cropFactor": 6.03,
+      "mount": "canonA720IS",
       "wikidata": null,
       "image": null
     },
@@ -3147,7 +3169,7 @@
       "format": "other",
       "cropFactor": 4.5,
       "mount": "fuji810",
-      "wikidata": "Q140478039",
+      "wikidata": null,
       "image": null
     },
     {
@@ -3180,7 +3202,7 @@
       "format": "other",
       "cropFactor": 4.341,
       "mount": "fujiF200exr",
-      "wikidata": "Q20889084",
+      "wikidata": null,
       "image": null
     },
     {
@@ -3345,7 +3367,7 @@
       "format": "other",
       "cropFactor": 4.487,
       "mount": "fuji602",
-      "wikidata": "Q5507399",
+      "wikidata": null,
       "image": null
     },
     {
@@ -3367,7 +3389,7 @@
       "format": "other",
       "cropFactor": 4.48,
       "mount": "fujiS9000",
-      "wikidata": null,
+      "wikidata": "Q140486068",
       "image": null
     },
     {
@@ -3389,7 +3411,7 @@
       "format": "other",
       "cropFactor": 4.48,
       "mount": "fujiS9000",
-      "wikidata": "Q5450031",
+      "wikidata": null,
       "image": null
     },
     {
@@ -3400,7 +3422,7 @@
       "format": "aps-c-digital",
       "cropFactor": 1.523,
       "mount": "fujix100",
-      "wikidata": null,
+      "wikidata": "Q125023065",
       "image": null
     },
     {
@@ -3477,7 +3499,7 @@
       "format": "medium-format-digital",
       "cropFactor": 0.79,
       "mount": "Fujifilm G",
-      "wikidata": null,
+      "wikidata": "Q122731264",
       "image": null
     },
     {
@@ -3521,7 +3543,7 @@
       "format": "medium-format-digital",
       "cropFactor": 0.79,
       "mount": "Fujifilm G",
-      "wikidata": null,
+      "wikidata": "Q108403237",
       "image": null
     },
     {
@@ -3554,7 +3576,7 @@
       "format": "aps-c-digital",
       "cropFactor": 1.529,
       "mount": "Fujifilm X",
-      "wikidata": null,
+      "wikidata": "Q126029458",
       "image": null
     },
     {
@@ -6188,6 +6210,17 @@
     },
     {
       "make": "Nikon",
+      "model": "Z5_2C",
+      "exifModel": "Z5_2C",
+      "category": "digital",
+      "format": "full-frame-digital",
+      "cropFactor": 1,
+      "mount": "Nikon Z",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Nikon",
       "model": "Z50",
       "exifModel": "Z 50",
       "category": "digital",
@@ -7199,6 +7232,17 @@
       "image": null
     },
     {
+      "make": "OM Digital Solutions",
+      "model": "PEN",
+      "exifModel": "PEN",
+      "category": "digital",
+      "format": "other",
+      "cropFactor": 2,
+      "mount": "Micro 4/3 System",
+      "wikidata": null,
+      "image": null
+    },
+    {
       "make": "Panasonic",
       "model": "FX150",
       "exifModel": "DMC-FX150",
@@ -7932,7 +7976,7 @@
       "format": "other",
       "cropFactor": 2,
       "mount": "Micro 4/3 System",
-      "wikidata": "Q28456857",
+      "wikidata": null,
       "image": null
     },
     {
@@ -7976,7 +8020,7 @@
       "format": "other",
       "cropFactor": 2,
       "mount": "Micro 4/3 System",
-      "wikidata": "Q126387724",
+      "wikidata": null,
       "image": null
     },
     {
@@ -8092,11 +8136,11 @@
     {
       "make": "Panasonic",
       "model": "L10",
-      "exifModel": "DMC-L10",
+      "exifModel": "DC-L10",
       "category": "digital",
       "format": "other",
-      "cropFactor": 2,
-      "mount": "4/3 System",
+      "cropFactor": 2.21,
+      "mount": "panasonicDMCLX100",
       "wikidata": null,
       "image": null
     },
@@ -8443,6 +8487,17 @@
     },
     {
       "make": "Panasonic",
+      "model": "TZ300",
+      "exifModel": "DC-TZ300",
+      "category": "digital",
+      "format": "other",
+      "cropFactor": 2.73,
+      "mount": "panasonicZS200",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Panasonic",
       "model": "TZ60",
       "exifModel": "DMC-TZ60",
       "category": "digital",
@@ -8608,6 +8663,17 @@
     },
     {
       "make": "Panasonic",
+      "model": "ZS300",
+      "exifModel": "DC-ZS300",
+      "category": "digital",
+      "format": "other",
+      "cropFactor": 2.73,
+      "mount": "panasonicZS200",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Panasonic",
       "model": "ZS40",
       "exifModel": "DMC-ZS40",
       "category": "digital",
@@ -8658,7 +8724,7 @@
       "format": "aps-c-digital",
       "cropFactor": 1.531,
       "mount": "Pentax KAF2",
-      "wikidata": null,
+      "wikidata": "Q907192",
       "image": null
     },
     {
@@ -8702,7 +8768,7 @@
       "format": "aps-c-digital",
       "cropFactor": 1.531,
       "mount": "Pentax KAF2",
-      "wikidata": null,
+      "wikidata": "Q4046597",
       "image": null
     },
     {
@@ -8735,7 +8801,7 @@
       "format": "aps-c-digital",
       "cropFactor": 1.526,
       "mount": "Pentax KAF2",
-      "wikidata": null,
+      "wikidata": "Q1384314",
       "image": null
     },
     {
@@ -9807,6 +9873,17 @@
     },
     {
       "make": "Sigma",
+      "model": "FP2",
+      "exifModel": "FP2",
+      "category": "digital",
+      "format": "full-frame-digital",
+      "cropFactor": 1,
+      "mount": "Leica L",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Sigma",
       "model": "sd Quattro",
       "exifModel": "sd Quattro",
       "category": "digital",
@@ -10649,6 +10726,17 @@
       "format": "other",
       "cropFactor": 6,
       "mount": "sonyH1",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Sony",
+      "model": "HX200V",
+      "exifModel": "DSC-HX200V",
+      "category": "digital",
+      "format": "other",
+      "cropFactor": 5.58,
+      "mount": "sonyHX300",
       "wikidata": null,
       "image": null
     },

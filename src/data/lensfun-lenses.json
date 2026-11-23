@@ -1,7 +1,7 @@
 {
   "_source": "lensfun (https://github.com/lensfun/lensfun), data/db, vendored in data/lensfun-db/",
   "_license": "CC-BY-SA 3.0. See src/data/CATALOG_ATTRIBUTION.md and data/lensfun-db/NOTICE.md",
-  "_generated": "2026-08-10T07:22:51.531Z",
+  "_generated": "2026-11-23T16:56:54.567Z",
   "_wikidata": "QIDs resolved best-effort via Wikidata wbsearchentities (CC0); review before trusting.",
   "lenses": [
     {
@@ -3572,6 +3572,20 @@
     },
     {
       "make": "Canon",
+      "model": "Canon RF 50mm F1.4 L VCM",
+      "mount": "Canon RF",
+      "mounts": [
+        "Canon RF"
+      ],
+      "focalLengthMin": 50,
+      "focalLengthMax": 50,
+      "maxAperture": 1.4,
+      "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Canon",
       "model": "Canon RF 50mm F1.8 STM",
       "mount": "Canon RF",
       "mounts": [
@@ -4886,6 +4900,20 @@
       "focalLengthMin": 55,
       "focalLengthMax": 55,
       "maxAperture": 55,
+      "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Fujifilm",
+      "model": "GF63mmF2.8 R WR",
+      "mount": "Fujifilm G",
+      "mounts": [
+        "Fujifilm G"
+      ],
+      "focalLengthMin": 63,
+      "focalLengthMax": 63,
+      "maxAperture": 63,
       "lensTypeKind": "prime",
       "wikidata": null,
       "image": null
@@ -7333,6 +7361,20 @@
     },
     {
       "make": "Minolta",
+      "model": "Minolta AF 50mm F1.4 [New]",
+      "mount": "Minolta AF",
+      "mounts": [
+        "Minolta AF"
+      ],
+      "focalLengthMin": 50,
+      "focalLengthMax": 50,
+      "maxAperture": 1.4,
+      "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Minolta",
       "model": "Minolta AF 70-210mm f/4 Macro",
       "mount": "Minolta AF",
       "mounts": [
@@ -8220,6 +8262,20 @@
     },
     {
       "make": "Nikon",
+      "model": "Nikkor Z 24-70mm f/2.8 S II",
+      "mount": "Nikon Z",
+      "mounts": [
+        "Nikon Z"
+      ],
+      "focalLengthMin": 24,
+      "focalLengthMax": 70,
+      "maxAperture": 2.8,
+      "lensTypeKind": "zoom",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Nikon",
       "model": "Nikkor Z 24-70mm f/4 S",
       "mount": "Nikon Z",
       "mounts": [
@@ -8229,6 +8285,20 @@
       "focalLengthMax": 70,
       "maxAperture": 4,
       "lensTypeKind": "zoom",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikkor Z 24mm f/1.8 S",
+      "mount": "Nikon Z",
+      "mounts": [
+        "Nikon Z"
+      ],
+      "focalLengthMin": 24,
+      "focalLengthMax": 24,
+      "maxAperture": 1.8,
+      "lensTypeKind": "prime",
       "wikidata": null,
       "image": null
     },
@@ -8466,6 +8536,20 @@
       "focalLengthMin": 12,
       "focalLengthMax": 28,
       "maxAperture": 3.5,
+      "lensTypeKind": "zoom",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikkor Z DX 16-50mm f/2.8 VR",
+      "mount": "Nikon Z",
+      "mounts": [
+        "Nikon Z"
+      ],
+      "focalLengthMin": 16,
+      "focalLengthMax": 50,
+      "maxAperture": 2.8,
       "lensTypeKind": "zoom",
       "wikidata": null,
       "image": null
@@ -8859,6 +8943,20 @@
       "focalLengthMax": 85,
       "maxAperture": 1.8,
       "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Nikon",
+      "model": "Nikon AF VR Zoom-Nikkor 80-400mm f/4.5-5.6D ED",
+      "mount": "Nikon F",
+      "mounts": [
+        "Nikon F"
+      ],
+      "focalLengthMin": 80,
+      "focalLengthMax": 400,
+      "maxAperture": 4.5,
+      "lensTypeKind": "zoom",
       "wikidata": null,
       "image": null
     },
@@ -13423,6 +13521,20 @@
     },
     {
       "make": "OM Digital Solutions",
+      "model": "OM 14-42mm F3.5-5.6 EZ",
+      "mount": "Micro 4/3 System",
+      "mounts": [
+        "Micro 4/3 System"
+      ],
+      "focalLengthMin": 14,
+      "focalLengthMax": 42,
+      "maxAperture": 3.5,
+      "lensTypeKind": "zoom",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "OM Digital Solutions",
       "model": "OM 20mm F1.4",
       "mount": "Micro 4/3 System",
       "mounts": [
@@ -13445,6 +13557,34 @@
       "focalLengthMin": 40,
       "focalLengthMax": 150,
       "maxAperture": 4,
+      "lensTypeKind": "zoom",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "OM Digital Solutions",
+      "model": "OM 40-150mm F4.0-5.6 R",
+      "mount": "Micro 4/3 System",
+      "mounts": [
+        "Micro 4/3 System"
+      ],
+      "focalLengthMin": 40,
+      "focalLengthMax": 150,
+      "maxAperture": 4,
+      "lensTypeKind": "zoom",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "OM Digital Solutions",
+      "model": "OM 75-300mm F4.8-6.7 II",
+      "mount": "Micro 4/3 System",
+      "mounts": [
+        "Micro 4/3 System"
+      ],
+      "focalLengthMin": 75,
+      "focalLengthMax": 300,
+      "maxAperture": 4.8,
       "lensTypeKind": "zoom",
       "wikidata": null,
       "image": null
@@ -14230,6 +14370,20 @@
       "focalLengthMin": null,
       "focalLengthMax": null,
       "maxAperture": 1.8,
+      "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Panasonic",
+      "model": "Lumix S 40/F2",
+      "mount": "Leica L",
+      "mounts": [
+        "Leica L"
+      ],
+      "focalLengthMin": null,
+      "focalLengthMax": null,
+      "maxAperture": 2,
       "lensTypeKind": "prime",
       "wikidata": null,
       "image": null
@@ -15407,6 +15561,20 @@
       "focalLengthMin": 50,
       "focalLengthMax": 50,
       "maxAperture": null,
+      "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Pentax",
+      "model": "Super-Multi-Coated Takumar 28mm f/3.5",
+      "mount": "M42",
+      "mounts": [
+        "M42"
+      ],
+      "focalLengthMin": 28,
+      "focalLengthMax": 28,
+      "maxAperture": 3.5,
       "lensTypeKind": "prime",
       "wikidata": null,
       "image": null
@@ -16860,6 +17028,21 @@
       "focalLengthMax": 17,
       "maxAperture": 4,
       "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Sigma",
+      "model": "20-200mm F3.5-6.3 DG | Contemporary 025",
+      "mount": "Sony E",
+      "mounts": [
+        "Sony E",
+        "Leica L"
+      ],
+      "focalLengthMin": 20,
+      "focalLengthMax": 200,
+      "maxAperture": 3.5,
+      "lensTypeKind": "zoom",
       "wikidata": null,
       "image": null
     },
@@ -18690,6 +18873,24 @@
     },
     {
       "make": "Sigma",
+      "model": "Sigma 70mm f/2.8 DG Macro | Art 018",
+      "mount": "Canon EF",
+      "mounts": [
+        "Canon EF",
+        "Sony E",
+        "Leica L",
+        "Nikon F",
+        "Sigma SA"
+      ],
+      "focalLengthMin": 70,
+      "focalLengthMax": 70,
+      "maxAperture": 2.8,
+      "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Sigma",
       "model": "Sigma 70mm f/2.8 EX DG Macro",
       "mount": "Sigma SA",
       "mounts": [
@@ -19214,7 +19415,7 @@
     },
     {
       "make": "Sony",
-      "model": "E PZ 16-50mm f/3.5-5.6 OSS",
+      "model": "E PZ 16-50mm f/3.5-5.6 OSS I/II",
       "mount": "Sony E",
       "mounts": [
         "Sony E"
@@ -20257,20 +20458,6 @@
     },
     {
       "make": "Tamron",
-      "model": "E 17-70mm F2.8 B070",
-      "mount": "Sony E",
-      "mounts": [
-        "Sony E"
-      ],
-      "focalLengthMin": 17,
-      "focalLengthMax": 70,
-      "maxAperture": 2.8,
-      "lensTypeKind": "zoom",
-      "wikidata": null,
-      "image": null
-    },
-    {
-      "make": "Tamron",
       "model": "E 18-300mm F3.5-6.3 B061",
       "mount": "Sony E",
       "mounts": [
@@ -20471,6 +20658,23 @@
     },
     {
       "make": "Tamron",
+      "model": "Tamron 17-70mm F2.8 B070 Z/RF/X/E",
+      "mount": "Nikon Z",
+      "mounts": [
+        "Nikon Z",
+        "Sony E",
+        "Fujifilm X",
+        "Canon RF"
+      ],
+      "focalLengthMin": 17,
+      "focalLengthMax": 70,
+      "maxAperture": 2.8,
+      "lensTypeKind": "zoom",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Tamron",
       "model": "Tamron 18-200mm f/3.5-6.3 Di II VC",
       "mount": "Canon EF",
       "mounts": [
@@ -20495,6 +20699,20 @@
       ],
       "focalLengthMin": 18,
       "focalLengthMax": 200,
+      "maxAperture": 3.5,
+      "lensTypeKind": "zoom",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Tamron",
+      "model": "Tamron 18-300mm F3.5-6.3 B061 RF",
+      "mount": "Canon RF",
+      "mounts": [
+        "Canon RF"
+      ],
+      "focalLengthMin": 18,
+      "focalLengthMax": 300,
       "maxAperture": 3.5,
       "lensTypeKind": "zoom",
       "wikidata": null,
@@ -20571,6 +20789,36 @@
       "focalLengthMin": 35,
       "focalLengthMax": 70,
       "maxAperture": 3.5,
+      "lensTypeKind": "zoom",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Tamron",
+      "model": "Tamron 70-180mm F2.8 A065 Z/E",
+      "mount": "Nikon Z",
+      "mounts": [
+        "Nikon Z",
+        "Sony E"
+      ],
+      "focalLengthMin": 70,
+      "focalLengthMax": 180,
+      "maxAperture": 2.8,
+      "lensTypeKind": "zoom",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Tamron",
+      "model": "Tamron 70-300mm F/4.5-6.3 Di III RXD A047Z/E",
+      "mount": "Nikon Z",
+      "mounts": [
+        "Nikon Z",
+        "Sony E"
+      ],
+      "focalLengthMin": 70,
+      "focalLengthMax": 300,
+      "maxAperture": null,
       "lensTypeKind": "zoom",
       "wikidata": null,
       "image": null
@@ -21853,6 +22101,26 @@
       "image": null
     },
     {
+      "make": "TTArtisan",
+      "model": "TTArtisan APS-C 35mm F1.4",
+      "mount": "Leica L",
+      "mounts": [
+        "Leica L",
+        "Sony E",
+        "Nikon Z",
+        "Fujifilm X",
+        "Canon RF",
+        "Canon EF-M",
+        "Micro 4/3 System"
+      ],
+      "focalLengthMin": 35,
+      "focalLengthMax": 35,
+      "maxAperture": 1.4,
+      "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
       "make": "Venus",
       "model": "Laowa 12mm f/2.8 Zero-D",
       "mount": "Canon EF",
@@ -22177,6 +22445,21 @@
       "focalLengthMin": 35,
       "focalLengthMax": 35,
       "maxAperture": 1.7,
+      "lensTypeKind": "prime",
+      "wikidata": null,
+      "image": null
+    },
+    {
+      "make": "Viltrox",
+      "model": "Viltrox AF 14mm f/4.0 Z/FE",
+      "mount": "Nikon Z",
+      "mounts": [
+        "Nikon Z",
+        "Sony E"
+      ],
+      "focalLengthMin": 14,
+      "focalLengthMax": 14,
+      "maxAperture": 4,
       "lensTypeKind": "prime",
       "wikidata": null,
       "image": null

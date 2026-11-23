@@ -1,7 +1,7 @@
 {
   "_source": "film-back models and compatibility transcribed from manufacturer manuals, catalogs, and product pages in data/curated-film-backs/*.jsonl",
   "_license": "Hypo's original compilation: CC-BY-SA 4.0; individual product specifications may be non-copyrightable facts. See data/LICENSE.md",
-  "_generated": "2026-10-29T19:38:53.646Z",
+  "_generated": "2026-11-23T16:56:54.582Z",
   "filmBacks": [
     {
       "make": "Bronica",
