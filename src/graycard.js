@@ -106,7 +106,7 @@ export const shootDateKey = (v) => v?.startedAt || v?.createdAt || "";
 export const compareShootsByDate = (a, b) => shootDateKey(b.value).localeCompare(shootDateKey(a.value));
 
 /** Assemble a store snapshot from the collection cache unless refresh is explicit. */
-export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
+export async function readStoreSnapshot(agent, did, { refresh = false, refreshCollections = [] } = {}) {
   const migration = await migrateLegacyDeveloperRecords(agent, did);
   const developSessionMigration = await migrateDevelopSessions(agent, did);
   const filterStackMigration = await migrateFilterStacks(agent, did);
@@ -126,9 +126,10 @@ export async function readStoreSnapshot(agent, did, { refresh = false } = {}) {
   // exhaustive list prevents a newly added or less-visible record type from
   // falling outside the shared store merely because no feature-specific array
   // was updated. Every collection is independent, so fetch them concurrently.
-  const options = { refresh };
   const collectionLists = await Promise.all(
-    RECORD_NSID_LIST.map((collection) => listRecords(agent, did, collection, options)),
+    RECORD_NSID_LIST.map((collection) =>
+      listRecords(agent, did, collection, { refresh: refresh || refreshCollections.includes(collection) }),
+    ),
   );
   const recordsByCollection = Object.fromEntries(
     RECORD_NSID_LIST.map((collection, index) => [collection, mapRecords(collectionLists[index])]),
@@ -316,7 +317,7 @@ export function instanceLabel(kind, value, store, options = {}) {
   return nick || kind;
 }
 
-export async function saveRecord(agent, did, collection, record, existing) {
+export async function prepareRecordWrite(collection, record, existing) {
   const prepared = await prepareSchemaWrite(collection, record, existing);
   // Workflow stages are a discriminated union, so their variant $type must
   // survive the generic record writer. Other records default to the collection.
@@ -324,6 +325,11 @@ export async function saveRecord(agent, did, collection, record, existing) {
   assertConsumableLifecycle(collection, value);
   assertFilmRollCarrier(collection, value);
   assertRecordTimeSpans(collection, value);
+  return value;
+}
+
+export async function saveRecord(agent, did, collection, record, existing) {
+  const value = await prepareRecordWrite(collection, record, existing);
   if (existing) {
     const operation = outbox.enqueuePut(did, {
       uri: existing.uri,
@@ -340,44 +346,9 @@ export async function saveRecord(agent, did, collection, record, existing) {
   return settled.acknowledgement?.uri || operation.tempUri;
 }
 
-export async function deleteRecord(agent, did, uri) {
-  const operation = outbox.enqueueDelete(did, uri);
+export async function deleteRecord(agent, did, uri, swapRecord) {
+  const operation = outbox.enqueueDelete(did, uri, swapRecord);
   await flushRecordOperation(agent, did, operation);
-}
-
-// split one physical roll off a reserve stockpile: decrement its quantity and
-// create a filmRoll (loaded into a camera or detachable back when one is
-// given). Returns the new
-// roll's at-uri. `stockpile` is a loaded {uri, cid, rkey, value} record.
-export async function splitRollFromStockpile(agent, did, stockpile, { camera, filmBack, label } = {}) {
-  const sv = stockpile.value;
-  const now = new Date().toISOString();
-  // We consider splitting a roll off the reserve to involve loading it,
-  // so the roll starts as `loaded`. The carrier is optional: you can load
-  // without recording a fixed-back camera or detachable back.
-  const roll = {
-    stock: sv.stock,
-    stockpile: stockpile.uri,
-    status: "loaded",
-    loadedAt: now,
-    createdAt: now,
-  };
-  // carry the reserve's identity onto the physical roll so batch/expiry/storage
-  // travel with it (the stockpile link keeps the provenance).
-  if (sv.format) roll.format = sv.format;
-  if (sv.expiresAt) roll.expiresAt = sv.expiresAt;
-  if (sv.emulsionBatch) roll.emulsionBatch = sv.emulsionBatch;
-  if (sv.storage) roll.storage = sv.storage;
-  if (label) roll.label = label;
-  if (filmBack) roll.filmBack = filmBack;
-  else if (camera) roll.camera = camera;
-
-  const rollUri = await saveRecord(agent, did, NS.instance.filmRoll, roll, null);
-
-  const nextQty = Math.max(0, (Number(sv.quantity) || 1) - 1);
-  await saveRecord(agent, did, NS.instance.filmStockpile, { ...sv, quantity: nextQty, updatedAt: now }, stockpile);
-
-  return rollUri;
 }
 
 function resolveTypeValue(store, kind, uri) {

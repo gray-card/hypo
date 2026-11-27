@@ -1,5 +1,11 @@
 # @hypo/web
 
+## 1.11.4
+
+### Patch Changes
+
+- Save a loaded roll, its reserve count, and any selected workflow together. If a save fails, retry from the same form without creating a duplicate roll. Loading from reserve requires a connection.
+
 ## 1.11.3
 
 ### Patch Changes
