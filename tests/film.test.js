@@ -97,8 +97,11 @@ describe("splitRollFromStockpile", () => {
     const stages = await list(NS.workflow.stage);
     expect(run.value.stages).toHaveLength(2);
     expect(
-      run.value.stages.map(({ stage }) => stages.find((record) => record.uri === stage).value.processDefaults.filmRoll),
+      run.value.stages.map(
+        ({ stage }) => stages.find((record) => record.uri === stage).value.stage.processDefaults.filmRoll,
+      ),
     ).toEqual([rollUri, rollUri]);
+    expect(stages.map(({ value }) => value.$type)).toEqual([NS.workflow.stage, NS.workflow.stage]);
     expect(agent.com.atproto.repo.applyWrites).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({ swapCommit: expect.any(String), validate: false, writes: expect.any(Array) }),
       expect.any(Object),

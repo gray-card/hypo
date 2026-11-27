@@ -35,6 +35,15 @@
       "projection": "lenses/canonical-shapes-v3/template-projection.json",
       "data": "lenses/canonical-shapes-v3/fixtures.json",
       "verify": "scripts/verify-canonical-shapes-transition.ts"
+    },
+    {
+      "id": "workflow-stage-record-v4",
+      "source": "lenses/workflow-stage-record-v4/source",
+      "target": "lexicons",
+      "lens": "lenses/workflow-stage-record-v4/lens.json",
+      "projection": "lenses/workflow-stage-record-v4/projection-lexicon.json",
+      "data": "lenses/workflow-stage-record-v4/fixtures.json",
+      "verify": "scripts/verify-workflow-stage-transition.ts"
     }
   ]
 }

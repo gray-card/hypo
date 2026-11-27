@@ -48,8 +48,8 @@ describe("publishSetup / unpublishSetup", () => {
   it("preserves schema-boundary metadata across an update", async () => {
     const agent = mockAgent();
     const schemaRuntime = {
-      nativeVersion: "lexicons-v3",
-      viewVersion: "lexicons-v3",
+      nativeVersion: "lexicons-v4",
+      viewVersion: "lexicons-v4",
       chainIds: [],
     };
     const existing = {

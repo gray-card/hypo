@@ -66,7 +66,7 @@ function typeFor(schema, currentNsid, indent = "") {
   if (!schema || typeof schema !== "object") return "unknown";
   switch (schema.type) {
     case "string":
-      return knownValueType(schema.knownValues);
+      return schema.const === undefined ? knownValueType(schema.knownValues) : JSON.stringify(schema.const);
     case "integer":
       return "number";
     case "boolean":

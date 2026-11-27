@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 
 import { validateRecord } from "../packages/lexicon/src/generated.ts";
+import { encodeWorkflowStage } from "../packages/lexicon/src/workflow-stage.ts";
 import { createCanonicalShapeTransforms } from "../src/canonicalShapePanproto.ts";
 import {
   migrateFilmRollValue,
@@ -52,6 +53,7 @@ try {
       collection = "app.graycard.workflow.stage";
       value = migrateWorkflowStageValue(record.value);
       if ("session" in value || "photo" in value) throw new Error("workflow stage retained a legacy alias");
+      value = encodeWorkflowStage(value);
     }
     const validation = validateRecord(collection, value);
     if (!validation.success) throw new Error(`${record.kind}: ${JSON.stringify(validation.issues)}`);

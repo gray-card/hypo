@@ -1,0 +1,11 @@
+{
+  "$type": "app.graycard.workflow.stage",
+  "stage": {
+    "$type": "app.graycard.workflow.stage#captureStage",
+    "input": { "kind": "scene" },
+    "output": { "kind": "film-roll-latent" },
+    "camera": "at://did:plc:example/app.graycard.instance.camera/panproto-fixture",
+    "plannedAt": "2026-08-12T00:00:00.000Z",
+    "status": "ready"
+  }
+}

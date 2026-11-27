@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { NS, SCHEMAS, validateRecord } from "@hypo/lexicon";
 import { STAGE_VARIANTS, defaultStagePayload } from "@hypo/domain";
+import { decodeWorkflowStage, encodeWorkflowStage } from "@hypo/lexicon/workflow-stage";
 
 const createdAt = "2026-08-13T12:00:00.000Z";
 
@@ -91,7 +92,7 @@ describe("rich workflow lexicons", () => {
   });
 
   it("allows a planned stage without a process session", () => {
-    const result = validateRecord(NS.workflow.stage, {
+    const value = {
       $type: STAGE_VARIANTS.develop,
       templateStepId: "develop-film",
       occurrence: 1,
@@ -109,8 +110,16 @@ describe("rich workflow lexicons", () => {
         { port: "contact-sheet", artifact: { kind: "contact-sheet" } },
       ],
       plannedAt: createdAt,
-    });
+    };
+    const encoded = encodeWorkflowStage(value);
+    const result = validateRecord(NS.workflow.stage, encoded);
     expect(result).toMatchObject({ success: true });
+    expect(encoded).toMatchObject({
+      $type: NS.workflow.stage,
+      stage: { $type: "app.graycard.workflow.stage#developStage" },
+    });
+    expect(decodeWorkflowStage(encoded)).toEqual(value);
+    expect(validateRecord(NS.workflow.stage, value).success).toBe(false);
   });
 
   it("exposes bindings and compatibility outputs on every stage variant", () => {
@@ -143,12 +152,15 @@ describe("rich workflow lexicons", () => {
   });
 
   it("validates custom stage kinds through the other-stage union member", () => {
-    const result = validateRecord(NS.workflow.stage, {
-      ...defaultStagePayload("selenium-tone"),
-      status: "planned",
-      processDefaults: { chemistry: "at://did:plc:test/app.graycard.instance.chemistry/toner" },
-      plannedAt: createdAt,
-    });
+    const result = validateRecord(
+      NS.workflow.stage,
+      encodeWorkflowStage({
+        ...defaultStagePayload("selenium-tone"),
+        status: "planned",
+        processDefaults: { chemistry: "at://did:plc:test/app.graycard.instance.chemistry/toner" },
+        plannedAt: createdAt,
+      }),
+    );
     expect(result).toMatchObject({ success: true });
   });
 });

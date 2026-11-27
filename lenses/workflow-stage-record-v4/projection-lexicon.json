@@ -1,0 +1,21 @@
+{
+  "lexicon": 1,
+  "id": "app.graycard.workflow.stage",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "properties": {
+          "input": { "type": "unknown" },
+          "output": { "type": "unknown" },
+          "stage": {
+            "type": "object",
+            "properties": { "input": { "type": "unknown" }, "output": { "type": "unknown" } }
+          }
+        }
+      }
+    }
+  }
+}
