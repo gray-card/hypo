@@ -1,4 +1,4 @@
-import { KNOWN_VALUES } from "@hypo/lexicon";
+import { legacyWorkflowStageTypes } from "@hypo/lexicon/workflow-stage";
 
 export type WorkflowStageKind = "capture" | "develop" | "digitize" | "digital" | "print" | "edit" | "output" | "other";
 export type WorkflowRunStatus = "planned" | "ready" | "in-progress" | "blocked" | "completed" | "failed" | "cancelled";
@@ -13,16 +13,7 @@ export const STAGE_PROCESS_KIND: Partial<Record<WorkflowStageKind, string>> = {
   edit: "editSession",
 };
 
-export const STAGE_VARIANTS: Record<WorkflowStageKind, string> = {
-  capture: KNOWN_VALUES["app.graycard.workflow.stage/defs/captureStage/properties/$type"][0],
-  develop: KNOWN_VALUES["app.graycard.workflow.stage/defs/developStage/properties/$type"][0],
-  digitize: KNOWN_VALUES["app.graycard.workflow.stage/defs/digitizeStage/properties/$type"][0],
-  digital: KNOWN_VALUES["app.graycard.workflow.stage/defs/digitalStage/properties/$type"][0],
-  print: KNOWN_VALUES["app.graycard.workflow.stage/defs/printStage/properties/$type"][0],
-  edit: KNOWN_VALUES["app.graycard.workflow.stage/defs/editStage/properties/$type"][0],
-  output: KNOWN_VALUES["app.graycard.workflow.stage/defs/outputStage/properties/$type"][0],
-  other: KNOWN_VALUES["app.graycard.workflow.stage/defs/otherStage/properties/$type"][0],
-};
+export const STAGE_VARIANTS: Record<WorkflowStageKind, string> = legacyWorkflowStageTypes;
 
 export const STAGE_LABELS: Record<string, string> = {
   capture: "Capture",

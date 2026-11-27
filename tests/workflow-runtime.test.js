@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { decodeWorkflowStage } from "@hypo/lexicon/workflow-stage";
 import {
   cancelWorkflowRun,
   completeWorkflowStageAndAdvance,
@@ -17,7 +18,7 @@ function recordsWritten(agent, collection) {
             uri: `at://did:plc:test/${collection}/rk${index + 1}`,
             cid: `cid${index + 1}`,
             rkey: `rk${index + 1}`,
-            value: write.record,
+            value: collection === NS.workflow.stage ? decodeWorkflowStage(write.record) : write.record,
           },
         ]
       : [],
@@ -132,11 +133,14 @@ describe("workflow runtime", () => {
     expect(completion.runStatus).toBe("in-progress");
     const stageUpdates = agent.put.filter((write) => write.collection === NS.workflow.stage);
     expect(stageUpdates[0].record).toMatchObject({
-      $type: "app.graycard.workflow#developStage",
-      status: "completed",
-      session: "at://did:plc:test/app.graycard.process.developSession/session",
+      $type: NS.workflow.stage,
+      stage: {
+        $type: "app.graycard.workflow.stage#developStage",
+        status: "completed",
+        session: "at://did:plc:test/app.graycard.process.developSession/session",
+      },
     });
-    expect(stageUpdates.slice(1).map((write) => write.record.status)).toEqual(["ready", "ready"]);
+    expect(stageUpdates.slice(1).map((write) => write.record.stage.status)).toEqual(["ready", "ready"]);
     const runUpdate = agent.put.find((write) => write.collection === NS.workflow.run)?.record;
     expect(runUpdate.status).toBe("in-progress");
     expect(runUpdate).not.toHaveProperty("startedAt");
@@ -215,7 +219,7 @@ describe("workflow runtime", () => {
     expect(next?.stage.value).toMatchObject({ optional: true, status: "ready" });
     const skipped = await skipWorkflowStageAndAdvance(agent, "did:plc:test", { store, ...next });
     expect(skipped.runStatus).toBe("completed");
-    expect(agent.put.find((write) => write.collection === NS.workflow.stage)?.record.status).toBe("skipped");
+    expect(agent.put.find((write) => write.collection === NS.workflow.stage)?.record.stage.status).toBe("skipped");
 
     const cancelAgent = mockAgent();
     await instantiateWorkflowTemplate(cancelAgent, "did:plc:test", {

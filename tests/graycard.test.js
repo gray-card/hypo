@@ -249,8 +249,8 @@ describe("savePhotoCapture — frame position on the roll", () => {
         createdAt: "2026-01-01T00:00:00Z",
       },
       schemaRuntime: {
-        nativeVersion: "lexicons-v3",
-        viewVersion: "lexicons-v3",
+        nativeVersion: "lexicons-v4",
+        viewVersion: "lexicons-v4",
         chainIds: [],
       },
     };

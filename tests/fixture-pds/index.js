@@ -94,9 +94,12 @@ function required(value, name) {
   return value;
 }
 
-function requiredRecord(value) {
+function requiredRecord(value, collection) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new XrpcError(400, "InvalidRequest", "record must be a JSON object");
+  }
+  if (value.$type !== undefined && value.$type !== collection) {
+    throw new XrpcError(400, "InvalidRequest", `Invalid $type: expected ${collection}, got ${value.$type}`);
   }
   return value;
 }
@@ -523,7 +526,7 @@ export class FixturePds {
           if (stagedEntry(collection, rkey)) {
             throw new XrpcError(400, "RecordAlreadyExists", "Record already exists");
           }
-          const entry = stageRecord(collection, rkey, requiredRecord(write.value));
+          const entry = stageRecord(collection, rkey, requiredRecord(write.value, collection));
           results.push({
             $type: "com.atproto.repo.applyWrites#createResult",
             uri: entry.uri,
@@ -536,7 +539,7 @@ export class FixturePds {
         const current = stagedEntry(collection, rkey);
         if (write.$type === "com.atproto.repo.applyWrites#update") {
           if (!current) throw new XrpcError(400, "RecordNotFound", "Record not found");
-          const entry = stageRecord(collection, rkey, requiredRecord(write.value));
+          const entry = stageRecord(collection, rkey, requiredRecord(write.value, collection));
           results.push({
             $type: "com.atproto.repo.applyWrites#updateResult",
             uri: entry.uri,
@@ -567,7 +570,7 @@ export class FixturePds {
       if (this.entry(repo, collection, rkey)) {
         throw new XrpcError(400, "RecordAlreadyExists", "Record already exists");
       }
-      const entry = this.storeRecord(repo, collection, rkey, requiredRecord(input.record));
+      const entry = this.storeRecord(repo, collection, rkey, requiredRecord(input.record, collection));
       json(response, 200, { uri: entry.uri, cid: entry.cid });
       return;
     }
@@ -578,7 +581,7 @@ export class FixturePds {
       if (input.swapRecord !== undefined && current?.cid !== input.swapRecord) {
         throw new XrpcError(400, "InvalidSwap", "swapRecord does not match the current CID");
       }
-      const entry = this.storeRecord(repo, collection, rkey, requiredRecord(input.record));
+      const entry = this.storeRecord(repo, collection, rkey, requiredRecord(input.record, collection));
       json(response, 200, { uri: entry.uri, cid: entry.cid });
       return;
     }

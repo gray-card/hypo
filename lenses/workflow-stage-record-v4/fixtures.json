@@ -1,0 +1,25 @@
+[
+  {
+    "$type": "app.graycard.workflow#captureStage",
+    "input": { "kind": "scene" },
+    "output": { "kind": "film-roll-latent" },
+    "camera": "at://did:plc:example/app.graycard.instance.camera/camera",
+    "notes": "First capture",
+    "customField": { "preserve": true }
+  },
+  {
+    "$type": "app.graycard.workflow#developStage",
+    "input": { "kind": "film-roll-latent" },
+    "output": { "kind": "film-negative" },
+    "status": "ready",
+    "templateStepId": "home-d76"
+  },
+  {
+    "$type": "app.graycard.workflow#otherStage",
+    "kind": "selenium-tone",
+    "input": { "kind": "print" },
+    "output": { "kind": "print" },
+    "occurrence": 2,
+    "params": { "minutes": 3 }
+  }
+]
