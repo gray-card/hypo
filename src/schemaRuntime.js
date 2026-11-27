@@ -1,9 +1,19 @@
 import { validateRecord } from "@hypo/lexicon/validators";
+import { decodeWorkflowStage, encodeWorkflowStage } from "@hypo/lexicon/workflow-stage";
 import { createSchemaRuntime } from "@hypo/schema-runtime";
 
-export const PINNED_SCHEMA_VERSION = "lexicons-v3";
+export const PINNED_SCHEMA_VERSION = "lexicons-v4";
 
 let runtimePromise;
+const workflowStage = "app.graycard.workflow.stage";
+
+function validateAppRecord(collection, value) {
+  const record = collection === workflowStage && value ? encodeWorkflowStage(value) : value;
+  if (record?.$type !== undefined && record.$type !== collection) {
+    return { success: false, issues: [{ path: "$.$type", message: `Expected ${collection}` }] };
+  }
+  return validateRecord(collection, record);
+}
 
 function runtime() {
   runtimePromise ??= createSchemaRuntime({
@@ -11,18 +21,18 @@ function runtime() {
     versions: [
       {
         id: PINNED_SCHEMA_VERSION,
-        order: 3,
+        order: 4,
         validate: (collection, value) => {
           // Internal projections and legacy fixtures may omit $type. With no
           // on-record version signal, interpret them as the pinned app view.
           if (value && typeof value === "object" && !("$type" in value)) return true;
-          return validateRecord(collection, value).success;
+          return validateAppRecord(collection, value).success;
         },
       },
     ],
     // Released transitions are added here with their vendored schemas and
     // reviewed chain documents. Repository migrations canonicalize supported
-    // v1/v2 records before decoding, so the browser exposes only the v3 view.
+    // v1/v2 records before decoding. The workflow codec also accepts v3 stages.
     transitions: [],
   });
   return runtimePromise;
@@ -42,7 +52,7 @@ export async function decodeSchemaRecord(record, collection) {
   );
   return {
     ...record,
-    value: decoded.value,
+    value: collection === workflowStage ? decodeWorkflowStage(decoded.value) : decoded.value,
     schemaRuntime: {
       nativeVersion: decoded.nativeVersion,
       viewVersion: decoded.viewVersion,
@@ -96,7 +106,7 @@ export class InvalidRecordInputError extends Error {
 export function validateSchemaRecordForWrite(collection, record) {
   if (!collection.startsWith("app.graycard.")) return record;
   const candidate = record?.$type ? record : { ...record, $type: collection };
-  const validation = validateRecord(collection, candidate);
+  const validation = validateAppRecord(collection, candidate);
   if (!validation.success) {
     console.error("Hypo refused an invalid record write", { collection, issues: validation.issues });
     throw new InvalidRecordInputError(collection, validation.issues);

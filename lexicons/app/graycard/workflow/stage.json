@@ -6,7 +6,7 @@
       "type": "object",
       "required": ["$type", "input", "output"],
       "properties": {
-        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#captureStage"] },
+        "$type": { "type": "string", "const": "app.graycard.workflow.stage#captureStage" },
         "templateStepId": { "type": "string", "maxLength": 64 },
         "occurrence": { "type": "integer", "minimum": 1 },
         "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
@@ -68,7 +68,7 @@
       "type": "object",
       "required": ["$type", "input", "output"],
       "properties": {
-        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#developStage"] },
+        "$type": { "type": "string", "const": "app.graycard.workflow.stage#developStage" },
         "templateStepId": { "type": "string", "maxLength": 64 },
         "occurrence": { "type": "integer", "minimum": 1 },
         "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
@@ -110,7 +110,7 @@
       "type": "object",
       "required": ["$type", "input", "output"],
       "properties": {
-        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#digitizeStage"] },
+        "$type": { "type": "string", "const": "app.graycard.workflow.stage#digitizeStage" },
         "templateStepId": { "type": "string", "maxLength": 64 },
         "occurrence": { "type": "integer", "minimum": 1 },
         "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
@@ -153,7 +153,7 @@
       "description": "A render or export stage that materializes a digital output artifact. digitalStage is the stable wire identifier; editing decisions belong in editStage.",
       "required": ["$type", "input", "output"],
       "properties": {
-        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#digitalStage"] },
+        "$type": { "type": "string", "const": "app.graycard.workflow.stage#digitalStage" },
         "templateStepId": { "type": "string", "maxLength": 64 },
         "occurrence": { "type": "integer", "minimum": 1 },
         "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
@@ -199,7 +199,7 @@
       "type": "object",
       "required": ["$type", "input", "output"],
       "properties": {
-        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#printStage"] },
+        "$type": { "type": "string", "const": "app.graycard.workflow.stage#printStage" },
         "templateStepId": { "type": "string", "maxLength": 64 },
         "occurrence": { "type": "integer", "minimum": 1 },
         "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
@@ -244,7 +244,7 @@
       "type": "object",
       "required": ["$type", "input", "output"],
       "properties": {
-        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#editStage"] },
+        "$type": { "type": "string", "const": "app.graycard.workflow.stage#editStage" },
         "templateStepId": { "type": "string", "maxLength": 64 },
         "occurrence": { "type": "integer", "minimum": 1 },
         "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
@@ -290,7 +290,7 @@
       "type": "object",
       "required": ["$type", "input"],
       "properties": {
-        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#outputStage"] },
+        "$type": { "type": "string", "const": "app.graycard.workflow.stage#outputStage" },
         "templateStepId": { "type": "string", "maxLength": 64 },
         "occurrence": { "type": "integer", "minimum": 1 },
         "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
@@ -335,7 +335,7 @@
       "description": "A stage whose operation is not represented by a built-in stage type, such as wet-plate collodion coating, toning, or mounting. kind names the operation and params stores operation-specific fields.",
       "required": ["$type", "kind", "input", "output"],
       "properties": {
-        "$type": { "type": "string", "knownValues": ["app.graycard.workflow#otherStage"] },
+        "$type": { "type": "string", "const": "app.graycard.workflow.stage#otherStage" },
         "templateStepId": { "type": "string", "maxLength": 64 },
         "occurrence": { "type": "integer", "minimum": 1 },
         "optional": { "type": "boolean", "description": "Whether this planned occurrence may be skipped." },
@@ -375,20 +375,27 @@
     },
     "main": {
       "type": "record",
-      "description": "One workflow step (discriminated union).",
+      "description": "One workflow step. The stage field identifies the operation and carries its payload.",
       "key": "tid",
       "record": {
-        "type": "union",
-        "refs": [
-          "#captureStage",
-          "#developStage",
-          "#digitizeStage",
-          "#digitalStage",
-          "#printStage",
-          "#editStage",
-          "#outputStage",
-          "#otherStage"
-        ]
+        "type": "object",
+        "required": ["stage"],
+        "properties": {
+          "stage": {
+            "type": "union",
+            "closed": true,
+            "refs": [
+              "#captureStage",
+              "#developStage",
+              "#digitizeStage",
+              "#digitalStage",
+              "#printStage",
+              "#editStage",
+              "#outputStage",
+              "#otherStage"
+            ]
+          }
+        }
       }
     }
   }

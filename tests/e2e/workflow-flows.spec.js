@@ -139,16 +139,16 @@ test("a rich workflow can be authored, launched, advanced, and used on mobile", 
   expect(run?.value).toMatchObject({ status: "in-progress", topology: "graph" });
   expect(run?.value.branches).toHaveLength(4);
   let stages = await listRecords(request, STAGE_COLLECTION);
-  expect(stages.filter((record) => record.value.status === "completed")).toHaveLength(1);
-  expect(stages.filter((record) => record.value.status === "ready")).toHaveLength(2);
-  expect(stages.filter((record) => record.value.status === "planned")).toHaveLength(1);
+  expect(stages.filter((record) => record.value.stage.status === "completed")).toHaveLength(1);
+  expect(stages.filter((record) => record.value.stage.status === "ready")).toHaveLength(2);
+  expect(stages.filter((record) => record.value.stage.status === "planned")).toHaveLength(1);
 
   await activeRun.getByRole("button", { name: "Skip Develop", exact: true }).click();
   await expect(activeRun).toContainText("2/4 complete");
   await expect(activeRun.getByRole("button", { name: "Log Develop", exact: true })).toHaveCount(1);
   await expect(activeRun.getByRole("button", { name: "Skip Develop", exact: true })).toHaveCount(0);
   stages = await listRecords(request, STAGE_COLLECTION);
-  expect(stages.filter((record) => record.value.status === "skipped")).toHaveLength(1);
+  expect(stages.filter((record) => record.value.stage.status === "skipped")).toHaveLength(1);
 
   await activeRun.getByRole("button", { name: "Log Develop", exact: true }).click();
   const developLogger = page.getByRole("dialog", { name: "Log Develop" });

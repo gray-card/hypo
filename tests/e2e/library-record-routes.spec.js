@@ -41,6 +41,87 @@ test.beforeEach(async ({ request }) => {
   await resetFixture(request);
 });
 
+test("a rejected reserve load keeps the roll, quantity, and workflow consistent through retry", async ({
+  page,
+  request,
+}) => {
+  const createdAt = "2026-01-08T00:00:00.000Z";
+  const stock = await createRecord(request, "app.graycard.catalog.filmStock", "tri-x", {
+    $type: "app.graycard.catalog.filmStock",
+    brand: "Kodak",
+    name: "Tri-X 400",
+    iso: 400,
+    createdAt,
+  });
+  const reserveCollection = "app.graycard.instance.filmStockpile";
+  const reserve = await createRecord(request, reserveCollection, "tri-x-reserve", {
+    $type: reserveCollection,
+    stock,
+    quantity: 10,
+    format: "135",
+    emulsionBatch: "2241",
+    createdAt,
+  });
+  const template = await createRecord(request, "app.graycard.workflow.template", "black-and-white", {
+    $type: "app.graycard.workflow.template",
+    name: "Black and white",
+    medium: "film",
+    steps: [
+      { id: "capture", kind: "capture" },
+      { id: "develop", kind: "develop" },
+    ],
+    createdAt,
+  });
+  const rollCollection = "app.graycard.instance.filmRoll";
+  const runCollection = "app.graycard.workflow.run";
+  const stageCollection = "app.graycard.workflow.stage";
+  await page.route(
+    "**/xrpc/com.atproto.repo.applyWrites",
+    async (route) => {
+      const input = route.request().postDataJSON();
+      input.writes.push({
+        $type: "com.atproto.repo.applyWrites#delete",
+        collection: stageCollection,
+        rkey: "missing-stage",
+      });
+      const response = await route.fetch({ postData: JSON.stringify(input) });
+      await route.fulfill({ response });
+    },
+    { times: 1 },
+  );
+  await login(page);
+  await page.goto("/library/film");
+
+  const row = page.locator("#library-body .gear-row").filter({ hasText: "batch 2241" });
+  await expect(row.locator(".qty-badge")).toHaveText("×10");
+  await row.getByRole("button", { name: "Load", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: /Load .*Tri-X 400/ });
+  const camera = `at://${REPO}/app.graycard.instance.camera/camera-a`;
+  await dialog.getByRole("combobox", { name: "Into camera", exact: true }).selectOption(camera);
+  await dialog.getByRole("combobox", { name: "Start a workflow", exact: true }).selectOption(template);
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(dialog.getByText(/Could not save the roll, reserve, and selected workflow/)).toBeVisible();
+  await expect(dialog.getByRole("combobox", { name: "Start a workflow", exact: true })).toHaveValue(template);
+  await expect(row.locator(".qty-badge")).toHaveText("×10");
+  expect((await listRecords(request, reserveCollection)).find((entry) => entry.uri === reserve).value.quantity).toBe(
+    10,
+  );
+  for (const collection of [rollCollection, runCollection, stageCollection]) {
+    expect(await listRecords(request, collection)).toEqual([]);
+  }
+
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(dialog).toBeHidden();
+  await expect(row.locator(".qty-badge")).toHaveText("×9");
+  const rolls = await listRecords(request, rollCollection);
+  expect(rolls).toHaveLength(1);
+  expect(rolls[0].value).toMatchObject({ stockpile: reserve, camera, status: "loaded" });
+  const runs = await listRecords(request, runCollection);
+  expect(runs).toHaveLength(1);
+  expect(runs[0].value).toMatchObject({ template, subjects: [{ ref: rolls[0].uri }] });
+  expect(await listRecords(request, stageCollection)).toHaveLength(2);
+});
+
 test("session routes stay first-class across list, detail, history, and mobile navigation", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await login(page);

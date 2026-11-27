@@ -79,6 +79,7 @@ function createAgent(pdsOrigin) {
           createRecord: procedure("com.atproto.repo.createRecord"),
           putRecord: procedure("com.atproto.repo.putRecord"),
           deleteRecord: procedure("com.atproto.repo.deleteRecord"),
+          applyWrites: procedure("com.atproto.repo.applyWrites"),
           async uploadBlob(bytes, options = {}) {
             const response = await fetch(new URL("/xrpc/com.atproto.repo.uploadBlob", pdsOrigin), {
               method: "POST",
@@ -96,6 +97,7 @@ function createAgent(pdsOrigin) {
           },
         },
         sync: {
+          getLatestCommit: query("com.atproto.sync.getLatestCommit"),
           async getBlob(input, options = {}) {
             const response = await fetch(
               `${pdsOrigin}/xrpc/com.atproto.sync.getBlob?${new URLSearchParams(input).toString()}`,

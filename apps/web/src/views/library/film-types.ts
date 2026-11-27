@@ -27,14 +27,21 @@ export interface FilmViewServices {
   readonly stageLabels?: Readonly<Record<string, string>>;
   readonly collections: FilmCollections;
   getStore(): FilmStore;
-  reloadStore(): Promise<void>;
+  reloadStore(options?: { refreshReserveLoad: boolean }): Promise<void>;
   renderLibrary(): void;
   saveRecord(collection: string, value: FilmValue, existing: FilmRecord | null): Promise<string>;
   uploadBlob(file: File, fallbackMime: string): Promise<unknown>;
-  deleteRecord(uri: string): Promise<void>;
+  deleteRecord(uri: string, swapRecord?: string): Promise<void>;
   splitRoll(
     stockpile: FilmRecord,
-    options: { camera: string | null; filmBack: string | null; label: string | null },
+    options: {
+      rkey: string;
+      camera: string | null;
+      filmBack: string | null;
+      label: string | null;
+      template?: FilmRecord;
+      occurrences?: Readonly<Record<string, number>>;
+    },
   ): Promise<string>;
   instantiateWorkflow?(
     template: FilmRecord,

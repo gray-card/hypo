@@ -1,4 +1,5 @@
-import { confirmModal, dateField, el, field, localInputToIso, openModal } from "@hypo/ui";
+import { TID } from "@atproto/common-web";
+import { confirmModal, dateField, el, field, localInputToIso, openModal, toast } from "@hypo/ui";
 import { openAddFrame, syncRollExposureCount } from "./film-frame.ts";
 import { filmStockLabel, framesForRoll, reserveQuantity } from "./film-helpers.ts";
 import type { FilmRecord, FilmValue, FilmViewServices } from "./film-types.ts";
@@ -43,6 +44,7 @@ async function refreshFilm(services: FilmViewServices): Promise<void> {
 export async function maybeRemoveDepletedStockpile(
   stockpile: FilmRecord,
   services: FilmViewServices,
+  swapRecord?: string,
 ): Promise<boolean> {
   const remove = await confirmModal(
     `${stockLabel(services, stockpile.value.stock)} is out of stock. Remove this reserve entry?`,
@@ -53,7 +55,7 @@ export async function maybeRemoveDepletedStockpile(
     },
   );
   if (!remove) return false;
-  await services.deleteRecord(stockpile.uri);
+  await services.deleteRecord(stockpile.uri, swapRecord);
   return true;
 }
 
@@ -75,6 +77,7 @@ export function openDuplicateReserve(stockpile: FilmRecord, services: FilmViewSe
 }
 
 export function openLoadRoll(stockpile: FilmRecord, services: FilmViewServices): void {
+  const rkey = TID.nextStr();
   const cameraSelect = services.instanceSelect("camera", "");
   const filmBackSelect = services.instanceSelect("filmBack", "");
   const hasFilmBacks = Boolean((services.getStore().instance.filmBack || []).length);
@@ -108,30 +111,36 @@ export function openLoadRoll(stockpile: FilmRecord, services: FilmViewServices):
       occurrences.node,
     ],
     async () => {
-      const previousQuantity = reserveQuantity(stockpile.value);
+      const template = (services.getStore().workflowTemplates || []).find((item) => item.uri === templateSelect.value);
+      if (templateSelect.value && !template)
+        throw new Error("The selected workflow is unavailable. Choose another workflow.");
       const rollUri = await services.splitRoll(stockpile, {
+        rkey,
         camera: cameraSelect.value || null,
         filmBack: filmBackSelect.value || null,
         label: labelInput.value.trim() || null,
+        template,
+        occurrences: template ? occurrences.read() : undefined,
       });
-      const template = (services.getStore().workflowTemplates || []).find((item) => item.uri === templateSelect.value);
-      if (template && services.instantiateWorkflow) {
-        await services.instantiateWorkflow(
-          template,
-          [{ kind: "film-roll-latent", ref: rollUri, label: labelInput.value.trim() || undefined }],
-          {
-            filmRoll: rollUri,
-            camera: cameraSelect.value || undefined,
-            filmBack: filmBackSelect.value || undefined,
-          },
-          occurrences.read(),
-        );
+      try {
+        await services.reloadStore({ refreshReserveLoad: true });
+        const store = services.getStore();
+        const roll = store.instance.filmRoll?.find((record) => record.uri === rollUri);
+        services.renderLibrary();
+        if (!roll) throw new Error("The loaded roll is missing from the refreshed Library.");
+
+        const reserve = store.instance.filmStockpile?.find((record) => record.uri === stockpile.uri);
+        if (reserve && reserveQuantity(reserve.value) === 0) {
+          try {
+            if (await maybeRemoveDepletedStockpile(reserve, services, reserve.cid)) await refreshFilm(services);
+          } catch {
+            toast("Roll loaded. The empty reserve could not be removed.", "err");
+          }
+        }
+        services.openRoll(roll);
+      } catch {
+        toast("Roll loaded. Refresh the Library to see the new roll and reserve count.", "err");
       }
-      if (previousQuantity <= 1) await maybeRemoveDepletedStockpile(stockpile, services);
-      await services.reloadStore();
-      const roll = (services.getStore().instance.filmRoll || []).find((record) => record.uri === rollUri);
-      services.renderLibrary();
-      if (roll) services.openRoll(roll);
     },
   );
 }

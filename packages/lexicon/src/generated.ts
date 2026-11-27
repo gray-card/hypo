@@ -1836,7 +1836,7 @@ export type AppGraycardWorkflowRunMain = {
 };
 
 export type AppGraycardWorkflowStageCaptureStage = {
-  "$type": KnownValue<"app.graycard.workflow#captureStage">;
+  "$type": "app.graycard.workflow.stage#captureStage";
   "templateStepId"?: string;
   "occurrence"?: number;
   "optional"?: boolean;
@@ -1869,7 +1869,7 @@ export type AppGraycardWorkflowStageCaptureStage = {
 };
 
 export type AppGraycardWorkflowStageDevelopStage = {
-  "$type": KnownValue<"app.graycard.workflow#developStage">;
+  "$type": "app.graycard.workflow.stage#developStage";
   "templateStepId"?: string;
   "occurrence"?: number;
   "optional"?: boolean;
@@ -1896,7 +1896,7 @@ export type AppGraycardWorkflowStageDevelopStage = {
 };
 
 export type AppGraycardWorkflowStageDigitizeStage = {
-  "$type": KnownValue<"app.graycard.workflow#digitizeStage">;
+  "$type": "app.graycard.workflow.stage#digitizeStage";
   "templateStepId"?: string;
   "occurrence"?: number;
   "optional"?: boolean;
@@ -1923,7 +1923,7 @@ export type AppGraycardWorkflowStageDigitizeStage = {
 };
 
 export type AppGraycardWorkflowStageDigitalStage = {
-  "$type": KnownValue<"app.graycard.workflow#digitalStage">;
+  "$type": "app.graycard.workflow.stage#digitalStage";
   "templateStepId"?: string;
   "occurrence"?: number;
   "optional"?: boolean;
@@ -1950,7 +1950,7 @@ export type AppGraycardWorkflowStageDigitalStage = {
 };
 
 export type AppGraycardWorkflowStagePrintStage = {
-  "$type": KnownValue<"app.graycard.workflow#printStage">;
+  "$type": "app.graycard.workflow.stage#printStage";
   "templateStepId"?: string;
   "occurrence"?: number;
   "optional"?: boolean;
@@ -1976,7 +1976,7 @@ export type AppGraycardWorkflowStagePrintStage = {
 };
 
 export type AppGraycardWorkflowStageEditStage = {
-  "$type": KnownValue<"app.graycard.workflow#editStage">;
+  "$type": "app.graycard.workflow.stage#editStage";
   "templateStepId"?: string;
   "occurrence"?: number;
   "optional"?: boolean;
@@ -2003,7 +2003,7 @@ export type AppGraycardWorkflowStageEditStage = {
 };
 
 export type AppGraycardWorkflowStageOutputStage = {
-  "$type": KnownValue<"app.graycard.workflow#outputStage">;
+  "$type": "app.graycard.workflow.stage#outputStage";
   "templateStepId"?: string;
   "occurrence"?: number;
   "optional"?: boolean;
@@ -2028,7 +2028,7 @@ export type AppGraycardWorkflowStageOutputStage = {
 };
 
 export type AppGraycardWorkflowStageOtherStage = {
-  "$type": KnownValue<"app.graycard.workflow#otherStage">;
+  "$type": "app.graycard.workflow.stage#otherStage";
   "templateStepId"?: string;
   "occurrence"?: number;
   "optional"?: boolean;
@@ -2054,7 +2054,10 @@ export type AppGraycardWorkflowStageOtherStage = {
   "updatedAt"?: string;
 };
 
-export type AppGraycardWorkflowStageMain = AppGraycardWorkflowStageCaptureStage | AppGraycardWorkflowStageDevelopStage | AppGraycardWorkflowStageDigitizeStage | AppGraycardWorkflowStageDigitalStage | AppGraycardWorkflowStagePrintStage | AppGraycardWorkflowStageEditStage | AppGraycardWorkflowStageOutputStage | AppGraycardWorkflowStageOtherStage;
+export type AppGraycardWorkflowStageMain = {
+  "stage": AppGraycardWorkflowStageCaptureStage | AppGraycardWorkflowStageDevelopStage | AppGraycardWorkflowStageDigitizeStage | AppGraycardWorkflowStageDigitalStage | AppGraycardWorkflowStagePrintStage | AppGraycardWorkflowStageEditStage | AppGraycardWorkflowStageOutputStage | AppGraycardWorkflowStageOtherStage;
+  $type?: "app.graycard.workflow.stage";
+};
 
 export type AppGraycardWorkflowTemplateMain = {
   "name": string;
@@ -2946,30 +2949,6 @@ export const KNOWN_VALUES = {
   "app.graycard.workflow.run/defs/main/record/properties/topology": [
     "graph",
     "legacy-linear"
-  ],
-  "app.graycard.workflow.stage/defs/captureStage/properties/$type": [
-    "app.graycard.workflow#captureStage"
-  ],
-  "app.graycard.workflow.stage/defs/developStage/properties/$type": [
-    "app.graycard.workflow#developStage"
-  ],
-  "app.graycard.workflow.stage/defs/digitizeStage/properties/$type": [
-    "app.graycard.workflow#digitizeStage"
-  ],
-  "app.graycard.workflow.stage/defs/digitalStage/properties/$type": [
-    "app.graycard.workflow#digitalStage"
-  ],
-  "app.graycard.workflow.stage/defs/printStage/properties/$type": [
-    "app.graycard.workflow#printStage"
-  ],
-  "app.graycard.workflow.stage/defs/editStage/properties/$type": [
-    "app.graycard.workflow#editStage"
-  ],
-  "app.graycard.workflow.stage/defs/outputStage/properties/$type": [
-    "app.graycard.workflow#outputStage"
-  ],
-  "app.graycard.workflow.stage/defs/otherStage/properties/$type": [
-    "app.graycard.workflow#otherStage"
   ]
 } as const;
 export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
@@ -12057,9 +12036,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "properties": {
           "$type": {
             "type": "string",
-            "knownValues": [
-              "app.graycard.workflow#captureStage"
-            ]
+            "const": "app.graycard.workflow.stage#captureStage"
           },
           "templateStepId": {
             "type": "string",
@@ -12211,9 +12188,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "properties": {
           "$type": {
             "type": "string",
-            "knownValues": [
-              "app.graycard.workflow#developStage"
-            ]
+            "const": "app.graycard.workflow.stage#developStage"
           },
           "templateStepId": {
             "type": "string",
@@ -12334,9 +12309,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "properties": {
           "$type": {
             "type": "string",
-            "knownValues": [
-              "app.graycard.workflow#digitizeStage"
-            ]
+            "const": "app.graycard.workflow.stage#digitizeStage"
           },
           "templateStepId": {
             "type": "string",
@@ -12457,9 +12430,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "properties": {
           "$type": {
             "type": "string",
-            "knownValues": [
-              "app.graycard.workflow#digitalStage"
-            ]
+            "const": "app.graycard.workflow.stage#digitalStage"
           },
           "templateStepId": {
             "type": "string",
@@ -12580,9 +12551,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "properties": {
           "$type": {
             "type": "string",
-            "knownValues": [
-              "app.graycard.workflow#printStage"
-            ]
+            "const": "app.graycard.workflow.stage#printStage"
           },
           "templateStepId": {
             "type": "string",
@@ -12699,9 +12668,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "properties": {
           "$type": {
             "type": "string",
-            "knownValues": [
-              "app.graycard.workflow#editStage"
-            ]
+            "const": "app.graycard.workflow.stage#editStage"
           },
           "templateStepId": {
             "type": "string",
@@ -12821,9 +12788,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "properties": {
           "$type": {
             "type": "string",
-            "knownValues": [
-              "app.graycard.workflow#outputStage"
-            ]
+            "const": "app.graycard.workflow.stage#outputStage"
           },
           "templateStepId": {
             "type": "string",
@@ -12935,9 +12900,7 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
         "properties": {
           "$type": {
             "type": "string",
-            "knownValues": [
-              "app.graycard.workflow#otherStage"
-            ]
+            "const": "app.graycard.workflow.stage#otherStage"
           },
           "templateStepId": {
             "type": "string",
@@ -13049,20 +13012,29 @@ export const SCHEMAS: Readonly<Record<string, LexiconSchema>> = {
       },
       "main": {
         "type": "record",
-        "description": "One workflow step (discriminated union).",
+        "description": "One workflow step. The stage field identifies the operation and carries its payload.",
         "key": "tid",
         "record": {
-          "type": "union",
-          "refs": [
-            "#captureStage",
-            "#developStage",
-            "#digitizeStage",
-            "#digitalStage",
-            "#printStage",
-            "#editStage",
-            "#outputStage",
-            "#otherStage"
-          ]
+          "type": "object",
+          "required": [
+            "stage"
+          ],
+          "properties": {
+            "stage": {
+              "type": "union",
+              "closed": true,
+              "refs": [
+                "#captureStage",
+                "#developStage",
+                "#digitizeStage",
+                "#digitalStage",
+                "#printStage",
+                "#editStage",
+                "#outputStage",
+                "#otherStage"
+              ]
+            }
+          }
         }
       }
     }

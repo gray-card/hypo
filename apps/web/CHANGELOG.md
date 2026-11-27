@@ -1,5 +1,12 @@
 # @hypo/web
 
+## 1.11.4
+
+### Patch Changes
+
+- Use the repository record type when saving workflow stages. Workflow starts, stage updates, and imports now use an encoding accepted by the account server.
+- Save a loaded roll, its reserve count, and any selected workflow together. If a save fails, retry from the same form without creating a duplicate roll. Loading from reserve requires a connection.
+
 ## 1.11.3
 
 ### Patch Changes

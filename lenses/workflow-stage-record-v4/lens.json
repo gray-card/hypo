@@ -1,0 +1,14 @@
+{
+  "id": "graycard.workflow-stage-payload.v4",
+  "source": "app.graycard.workflow.stage",
+  "target": "app.graycard.workflow.stage",
+  "steps": [
+    {
+      "compute_field": {
+        "target": "stage",
+        "kind": "object",
+        "expr": "{ input = input, output = output }"
+      }
+    }
+  ]
+}

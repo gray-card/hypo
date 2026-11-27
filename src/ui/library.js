@@ -13,8 +13,8 @@ import {
   chemistryRoles,
   matchGear,
   saveWorkflowTemplate,
-  splitRollFromStockpile,
 } from "../graycard.js";
+import { splitRollFromStockpile } from "../filmReserve.js";
 import { el, toast, isAdvanced, autocomplete, openModal, showView } from "./dom.js";
 import { locationField } from "./mapView.js";
 import { blobUrl, getPhotos, recordStore } from "../grain.js";
@@ -356,13 +356,17 @@ function filmViewServices(render = renderLibrary) {
       capture: NS.session.capture,
     },
     getStore: () => ctx.store,
-    reloadStore: async () => {
-      ctx.store = await loadStore(ctx.agent, ctx.did);
+    reloadStore: async ({ refreshReserveLoad = false } = {}) => {
+      ctx.store = await loadStore(ctx.agent, ctx.did, {
+        refreshCollections: refreshReserveLoad
+          ? [NS.instance.filmStockpile, NS.instance.filmRoll, NS.workflow.run, NS.workflow.stage]
+          : [],
+      });
     },
     renderLibrary: () => render?.(),
     saveRecord: (collection, value, existing) => saveRecord(ctx.agent, ctx.did, collection, value, existing),
     uploadBlob: uploadRecordBlob,
-    deleteRecord: (uri) => deleteRecord(ctx.agent, ctx.did, uri),
+    deleteRecord: (uri, swapRecord) => deleteRecord(ctx.agent, ctx.did, uri, swapRecord),
     splitRoll: (stockpile, options) => splitRollFromStockpile(ctx.agent, ctx.did, stockpile, options),
     instantiateWorkflow: (template, subjects, processDefaults, occurrences) =>
       instantiateWorkflowTemplate(ctx.agent, ctx.did, {

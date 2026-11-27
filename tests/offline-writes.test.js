@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { saveGallery } from "../src/grain.js";
-import { NS, loadStore, saveRecord, splitRollFromStockpile } from "../src/graycard.js";
+import { NS, loadStore, saveRecord } from "../src/graycard.js";
+import { splitRollFromStockpile } from "../src/filmReserve.js";
 import { flush, pending } from "../src/outbox.js";
 import { mockAgent } from "./setup.js";
 
@@ -56,7 +57,7 @@ describe("all-feature offline writes", () => {
     expect(pending(did, NS.instance.camera)).toHaveLength(0);
   });
 
-  it("queues both sides of a roll split without losing their order", async () => {
+  it("leaves the reserve and roll out of the outbox when loading offline", async () => {
     const did = "did:plc:offline-roll";
     const agent = mockAgent();
     const stockpile = {
@@ -70,17 +71,12 @@ describe("all-feature offline writes", () => {
       },
     };
 
-    const rollUri = await splitRollFromStockpile(agent, did, stockpile, { label: "Roll 3" });
-    expect(rollUri).toMatch(/^outbox:/);
-    expect(pending(did).map((operation) => operation.collection)).toEqual([
-      NS.instance.filmRoll,
-      NS.instance.filmStockpile,
-    ]);
-
-    setOnline(true);
-    await flush(agent, did);
-    expect(agent.created[0].collection).toBe(NS.instance.filmRoll);
-    expect(agent.put[0]).toMatchObject({ collection: NS.instance.filmStockpile, rkey: "reserve-a" });
+    await expect(splitRollFromStockpile(agent, did, stockpile, { label: "Roll 3" })).rejects.toThrow(
+      "Connect to the internet to load a roll from reserve",
+    );
+    expect(pending(did)).toEqual([]);
+    expect(agent.created).toHaveLength(0);
+    expect(agent.put).toHaveLength(0);
   });
 
   it("queues gallery metadata edits and preserves the remote swap CID", async () => {

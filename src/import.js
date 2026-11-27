@@ -4,6 +4,7 @@
 // using swapRecord for optimistic concurrency on updates.
 
 import { PublicRepoClient } from "@hypo/pds";
+import { decodeWorkflowStage, encodeWorkflowStage } from "@hypo/lexicon/workflow-stage";
 import { assertConsumableLifecycle, assertRecordTimeSpans } from "@hypo/domain";
 import { parseAtUri, listRecords, blobCid } from "./grain.js";
 import { NS } from "./graycard.js";
@@ -50,7 +51,11 @@ export async function diffBundle(agent, did, records) {
         const existing = await repoClient(agent).get({ repo: did, collection: r.collection, rkey: r.rkey });
         existingValue = existing.value;
         existingCid = existing.cid;
-        status = eq(existingValue, r.value) ? "unchanged" : "update";
+        const matches =
+          r.collection === NS.workflow.stage
+            ? eq(encodeWorkflowStage(existingValue), encodeWorkflowStage(r.value))
+            : eq(existingValue, r.value);
+        status = matches ? "unchanged" : "update";
       } catch {
         status = "create";
       }
@@ -141,7 +146,10 @@ export async function writeBundle(agent, did, plan, onProgress, sourceDid = null
       }
       let record = { ...item.value };
       assertConsumableLifecycle(item.collection, record);
-      assertRecordTimeSpans(item.collection, record);
+      assertRecordTimeSpans(
+        item.collection,
+        item.collection === NS.workflow.stage ? decodeWorkflowStage(record) : record,
+      );
       if (crossRepo && sourceClient) record = await rehydrateBlobs(agent, sourceClient, sourceDid, record);
       const validation = item.collection.startsWith("social.grain.") ? { validate: false } : {};
       if (item.rkey) {
