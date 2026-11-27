@@ -188,9 +188,9 @@ export async function createProcessSession(agent, did, processKind, fields = {})
   return saveRecord(agent, did, collection, { createdAt: new Date().toISOString(), ...fields }, null);
 }
 
-export async function saveWorkflowRun(agent, did, input) {
+function workflowRunValue(input) {
   const existing = input.existing || null;
-  const value = {
+  return {
     ...(existing?.value || {}),
     ...(input.value || {}),
     medium: input.medium || input.value?.medium || existing?.value?.medium || "digital",
@@ -207,7 +207,10 @@ export async function saveWorkflowRun(agent, did, input) {
     ...(input.plannedAt ? { plannedAt: input.plannedAt } : {}),
     createdAt: existing?.value?.createdAt || input.value?.createdAt || new Date().toISOString(),
   };
-  return saveRecord(agent, did, NS.workflow.run, value, existing);
+}
+
+export function saveWorkflowRun(agent, did, input) {
+  return saveRecord(agent, did, NS.workflow.run, workflowRunValue(input), input.existing || null);
 }
 
 export function saveWorkflowStage(agent, did, payload, existing) {
@@ -244,6 +247,7 @@ export async function instantiateWorkflowTemplate(
     occurrences = {},
     processDefaults = {},
     stepDefaults = {},
+    createRecord = (collection, value) => saveRecord(agent, did, collection, value, null),
   },
 ) {
   const record = templateRecord(template);
@@ -289,7 +293,7 @@ export async function instantiateWorkflowTemplate(
   const stageEntries = [];
   for (let position = 0; position < expanded.length; position += 1) {
     const entry = expanded[position];
-    const uri = await saveWorkflowStage(agent, did, entry.value, null);
+    const uri = await createRecord(NS.workflow.stage, entry.value);
     stageEntries.push({ ...entry, uri, position });
   }
   const branches = runtimeBranches(normalized.connections, stageEntries);
@@ -301,20 +305,22 @@ export async function instantiateWorkflowTemplate(
   }));
   const resolvedTemplateUri = templateUri || template?.uri;
   const resolvedTemplateCid = templateCid || template?.cid;
-  const runUri = await saveWorkflowRun(agent, did, {
-    medium: record.value.medium || "digital",
-    subjects: normalizedSubjects,
-    products: normalizedProducts,
-    stages: stageLinks,
-    branches,
-    template: resolvedTemplateUri,
-    templateRevision: resolvedTemplateCid,
-    templateName: record.value.name,
-    topology: "graph",
-    status: "ready",
-    plannedAt,
-    existing: null,
-  });
+  const runUri = await createRecord(
+    NS.workflow.run,
+    workflowRunValue({
+      medium: record.value.medium || "digital",
+      subjects: normalizedSubjects,
+      products: normalizedProducts,
+      stages: stageLinks,
+      branches,
+      template: resolvedTemplateUri,
+      templateRevision: resolvedTemplateCid,
+      templateName: record.value.name,
+      topology: "graph",
+      status: "ready",
+      plannedAt,
+    }),
+  );
   if (photo && linkPhoto) {
     const existingLink = store?.photoWorkflowByPhoto?.get(photo);
     await linkPhotoWorkflow(agent, did, photo, runUri, existingLink || null);

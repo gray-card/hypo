@@ -23,18 +23,18 @@ The repository pins `@panproto/core` and `panproto-cli` at 0.70.1. The `.panprot
 
 1. loading all 64 lexicon documents through the root manifest;
 2. checking ATProto theory diagnostics;
-3. staging the eight records under `fixtures/records`;
+3. staging the nine records under `fixtures/records`;
 4. exercising manifest-backed compatibility and diff loading;
 5. parsing the bundle through the TypeScript SDK; and
 6. confirming that the checked-in Panproto sidecar has committed the current lexicons and conformance corpus.
 
-The sidecar tags the 1.0 baseline as `lexicons-v1`, the ordered development-stage suite as `lexicons-v2`, and the canonical collection shapes introduced with Hypo 1.8.0 as `lexicons-v3`. Pull-request compatibility checks compare proposed changes with the latest released Git baseline reachable from `main`.
+The sidecar tags the 1.0 baseline as `lexicons-v1`, the ordered development-stage suite as `lexicons-v2`, the canonical collection shapes as `lexicons-v3`, and the workflow-stage record encoding as `lexicons-v4`. Pull-request compatibility checks compare proposed changes with the latest released Git baseline reachable from `main`.
 
 ## Browser record boundary
 
-The browser identifies the current application view as `lexicons-v3`. The generated ATProto validator is the fast path for current records. Panproto's WASM runtime loads for the reviewed repository migrations that lift supported legacy records into this view.
+The browser identifies the current application view as `lexicons-v4`. The generated ATProto validator is the fast path for current records. Panproto's WASM runtime loads for the reviewed repository migrations that lift supported legacy records into this view.
 
-The current runtime registers only `lexicons-v3`; repository migrations run before normal store reads and rewrite supported v1/v2 shapes atomically. A record that is neither current nor covered by a reviewed repository migration is rejected as an unknown schema version.
+The runtime reads legacy flat workflow stages and current stages with a nested `stage` payload. When Hypo saves a flat stage, it writes the nested payload at the same record key so existing run links continue to resolve. Other supported v1/v2 shapes are migrated before the store reads them.
 
 ## Repository migrations
 

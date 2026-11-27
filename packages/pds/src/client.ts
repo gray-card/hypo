@@ -1,3 +1,4 @@
+import { encodeWorkflowStage } from "@hypo/lexicon/workflow-stage";
 import { ValidationError, mapPdsError } from "./errors.js";
 import type {
   ApplyWritesInput,
@@ -91,14 +92,16 @@ export class RepoClient extends RepoReader {
   }
 
   async create<T extends RepoRecord = RepoRecord>(input: CreateInput<T>): Promise<WriteOutput> {
-    await this.validate(input.collection, input.record, input.validate);
-    return this.run("create", () => this.transport.createRecord(input));
+    const record = recordForRepository(input.collection, input.record);
+    await this.validate(input.collection, record, input.validate);
+    return this.run("create", () => this.transport.createRecord({ ...input, record }));
   }
 
   async put<T extends RepoRecord = RepoRecord>(input: PutInput<T>): Promise<WriteOutput> {
-    await this.validate(input.collection, input.record, input.validate);
+    const record = recordForRepository(input.collection, input.record);
+    await this.validate(input.collection, record, input.validate);
     try {
-      return await this.transport.putRecord(input);
+      return await this.transport.putRecord({ ...input, record });
     } catch (error) {
       throw mapPdsError(error, "put", { expectedCid: input.swapRecord ?? undefined });
     }
@@ -113,7 +116,12 @@ export class RepoClient extends RepoReader {
   }
 
   async applyWrites<T extends RepoRecord = RepoRecord>(input: ApplyWritesInput<T>): Promise<ApplyWritesOutput> {
-    for (const write of input.writes) {
+    const writes = input.writes.map((write) =>
+      write.$type === "com.atproto.repo.applyWrites#delete"
+        ? write
+        : { ...write, value: recordForRepository(write.collection, write.value) },
+    );
+    for (const write of writes) {
       if (write.$type === "com.atproto.repo.applyWrites#delete") continue;
       // applyWrites.validate controls validation at the PDS. Hypo still validates
       // known records locally even when a custom lexicon requires validate:false
@@ -121,7 +129,7 @@ export class RepoClient extends RepoReader {
       await this.validate(write.collection, write.value, undefined);
     }
     try {
-      return await this.transport.applyWrites(input);
+      return await this.transport.applyWrites({ ...input, writes });
     } catch (error) {
       throw mapPdsError(error, "applyWrites", { expectedCid: input.swapCommit });
     }
@@ -142,4 +150,16 @@ export class RepoClient extends RepoReader {
       });
     }
   }
+}
+
+function recordForRepository(collection: string, value: RepoRecord): RepoRecord {
+  const record = collection === "app.graycard.workflow.stage" ? encodeWorkflowStage(value) : value;
+  if (record.$type !== undefined && record.$type !== collection) {
+    throw new ValidationError(`Repository record type must match ${collection}`, {
+      code: "ValidationError",
+      operation: "validate",
+      issues: [{ path: "$.$type", message: `Expected ${collection}` }],
+    });
+  }
+  return record;
 }

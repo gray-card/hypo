@@ -128,6 +128,21 @@ describe("PDS access core", () => {
     );
   });
 
+  it("rejects a mismatched record type even when PDS lexicon validation is disabled", async () => {
+    const agent = fixtureAgent(fixture.origin);
+    const create = vi.spyOn(agent.com.atproto.repo, "createRecord");
+    const input = {
+      repo: REPO,
+      collection: CAMERAS,
+      record: { ...camera("field"), $type: CHEMISTRY },
+      validate: false,
+    };
+    const client = new RepoClient(new AtprotoAgentAdapter(agent));
+    await expect(client.create(input)).rejects.toMatchObject({ operation: "validate", code: "ValidationError" });
+    expect(create).not.toHaveBeenCalled();
+    await expect(create(input)).rejects.toMatchObject({ status: 400, error: "InvalidRequest" });
+  });
+
   it("atomically creates replacements, updates references, and deletes legacy records", async () => {
     fixture.seed({
       records: [
