@@ -1,6 +1,7 @@
 import DesignSystem
 import HypoLexicon
 import SwiftUI
+import UniformTypeIdentifiers
 
 #if canImport(UIKit)
     import UIKit
@@ -12,6 +13,8 @@ public struct LoggerFeatureView: View {
     private let onOpenAccountSettings: () -> Void
     @State private var isEditingLifecycle = false
     @State private var isShowingFrameBrowser = false
+    @State private var showsFrameOptions = false
+    @State private var showsRollTimeline = false
 
     public init(
         model: LoggerFeatureModel,
@@ -27,16 +30,22 @@ public struct LoggerFeatureView: View {
             ScrollView {
                 VStack(spacing: HypoTheme.Space.four) {
                     rollPanel
-                    lifecyclePanel
                     exposurePanel
-                    feedback
+                    lifecyclePanel
                 }
                 .padding(HypoTheme.Space.four)
                 .padding(.bottom, HypoTheme.Space.two)
             }
+            .scrollDismissesKeyboard(.interactively)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            logFrameBar
+            VStack(spacing: HypoTheme.Space.two) {
+                feedback
+                logFrameBar
+            }
+            .padding(.horizontal, HypoTheme.Space.four)
+            .padding(.vertical, HypoTheme.Space.two)
+            .background(.ultraThinMaterial)
         }
         .foregroundStyle(HypoTheme.ColorToken.text)
         .navigationTitle("Log frames")
@@ -67,6 +76,7 @@ public struct LoggerFeatureView: View {
                         }
                     }
                     .pickerStyle(.menu)
+                    .disabled(model.isSaving || model.isSavingLifecycle || model.isLoadingFrameDetails)
                     .accessibilityHint("Changes which roll receives new frame records.")
                 }
                 HStack(alignment: .firstTextBaseline) {
@@ -84,12 +94,9 @@ public struct LoggerFeatureView: View {
                         .font(.callout)
                         .foregroundStyle(HypoTheme.ColorToken.muted)
                 }
-                if model.canInspectFrames, model.activeRoll.exposuresUsed > 0 {
+                if model.canInspectFrames {
                     Button {
-                        Task {
-                            await model.loadFrameList()
-                            if model.error == nil { isShowingFrameBrowser = true }
-                        }
+                        isShowingFrameBrowser = true
                     } label: {
                         Label(
                             "Review logged frames",
@@ -109,53 +116,56 @@ public struct LoggerFeatureView: View {
 
     private var lifecyclePanel: some View {
         InstrumentPanel {
-            VStack(alignment: .leading, spacing: HypoTheme.Space.three) {
-                HStack {
-                    VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
-                        Text("Roll timeline")
-                            .font(.headline)
-                        Text("Dates are optional. Add only what you know.")
-                            .font(.caption)
-                            .foregroundStyle(HypoTheme.ColorToken.muted)
+            DisclosureGroup(isExpanded: $showsRollTimeline) {
+                VStack(alignment: .leading, spacing: HypoTheme.Space.three) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
+                            Text("Milestones")
+                                .font(.headline)
+                        }
+                        Spacer()
+                        Button("Edit dates") { isEditingLifecycle = true }
+                            .font(.callout.weight(.semibold))
+                            .accessibilityHint("Opens all optional roll dates.")
                     }
-                    Spacer()
-                    Button("Edit dates") { isEditingLifecycle = true }
-                        .font(.callout.weight(.semibold))
-                        .accessibilityHint("Opens all optional roll dates.")
-                }
 
-                if model.availableLifecycleActions.isEmpty {
-                    Label("Timeline complete", systemImage: "checkmark.circle")
-                        .font(.callout)
-                        .foregroundStyle(HypoTheme.ColorToken.success)
-                } else {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: HypoTheme.Space.two) {
-                            ForEach(model.availableLifecycleActions) { action in
-                                Button {
-                                    Task { try? await model.applyLifecycleAction(action) }
-                                } label: {
-                                    Label(action.title, systemImage: action.systemImage)
-                                        .font(.callout.weight(.medium))
-                                        .padding(.horizontal, HypoTheme.Space.three)
-                                        .frame(minHeight: 44)
-                                        .background(
-                                            HypoTheme.ColorToken.background,
-                                            in: Capsule()
-                                        )
-                                        .overlay {
-                                            Capsule()
-                                                .stroke(HypoTheme.ColorToken.border, lineWidth: 1)
-                                        }
+                    if model.availableLifecycleActions.isEmpty {
+                        Label("Timeline complete", systemImage: "checkmark.circle")
+                            .font(.callout)
+                            .foregroundStyle(HypoTheme.ColorToken.success)
+                    } else {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: HypoTheme.Space.two) {
+                                ForEach(model.availableLifecycleActions) { action in
+                                    Button {
+                                        Task { try? await model.applyLifecycleAction(action) }
+                                    } label: {
+                                        Label(action.title, systemImage: action.systemImage)
+                                            .font(.callout.weight(.medium))
+                                            .padding(.horizontal, HypoTheme.Space.three)
+                                            .frame(minHeight: 44)
+                                            .background(
+                                                HypoTheme.ColorToken.background,
+                                                in: Capsule()
+                                            )
+                                            .overlay {
+                                                Capsule()
+                                                    .stroke(HypoTheme.ColorToken.border, lineWidth: 1)
+                                            }
+                                    }
+                                    .buttonStyle(.plain)
+                                    .disabled(model.isSavingLifecycle)
+                                    .accessibilityLabel(action.accessibilityLabel)
+                                    .accessibilityHint("Uses the current date and time.")
                                 }
-                                .buttonStyle(.plain)
-                                .disabled(model.isSavingLifecycle)
-                                .accessibilityLabel(action.accessibilityLabel)
-                                .accessibilityHint("Uses the current date and time.")
                             }
                         }
                     }
                 }
+                .padding(.top, HypoTheme.Space.three)
+            } label: {
+                Label("Roll timeline", systemImage: "calendar")
+                    .font(.headline)
             }
         }
     }
@@ -172,61 +182,166 @@ public struct LoggerFeatureView: View {
                 .accessibilityValue("\(model.draft.frameNumber)")
 
                 ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .top, spacing: HypoTheme.Space.three) {
-                        exposureDials
-                    }
-                    VStack(spacing: HypoTheme.Space.four) { exposureDials }
+                    HStack(spacing: HypoTheme.Space.three) { quickExposureControls }
+                    VStack(spacing: HypoTheme.Space.two) { quickExposureControls }
                 }
 
-                if !model.shoots.isEmpty {
-                    Picker("Shoot", selection: shootBinding) {
-                        Text("No shoot").tag(ATURI?.none)
-                        ForEach(model.shoots) { shoot in
-                            Text(shoot.label).tag(Optional(shoot.uri))
+                DisclosureGroup(isExpanded: $showsFrameOptions) {
+                    frameOptions
+                        .padding(.top, HypoTheme.Space.three)
+                } label: {
+                    VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
+                        Label("Frame details", systemImage: "slider.horizontal.3")
+                            .font(.headline)
+                        if !frameOptionsSummary.isEmpty {
+                            Text(frameOptionsSummary)
+                                .font(.caption)
+                                .foregroundStyle(HypoTheme.ColorToken.muted)
                         }
                     }
-                    .accessibilityHint("Associates this exposure with a shoot.")
-
-                    if model.canCaptureShootLocation, model.draft.shoot != nil {
-                        Toggle(
-                            "Add location for this shoot",
-                            isOn: shootLocationBinding
-                        )
-                        .disabled(model.isRequestingLocation)
-                        .accessibilityHint(
-                            "When on, the logger requests the current location for each new frame in this shoot."
-                        )
-                    }
                 }
-
-                Toggle("Use a different EI for this frame", isOn: exposureIndexOverrideBinding)
-                    .accessibilityHint(
-                        model.activeRoll.exposureIndex.map { "The roll remains at EI \($0)." }
-                            ?? "The roll's exposure index is not recorded."
-                    )
-                    .disabled(model.activeRoll.exposureIndex == nil)
-                if model.hasExposureIndexOverride {
-                    Stepper(value: exposureIndexBinding, in: 1...204_800, step: 1) {
-                        LabeledContent("Frame EI") {
-                            Text("\(model.draft.shotAtISO ?? model.activeRoll.exposureIndex ?? 1)")
-                                .monospacedDigit()
-                        }
-                    }
-                    .accessibilityLabel("Frame exposure index")
-                    .accessibilityValue(
-                        "\(model.draft.shotAtISO ?? model.activeRoll.exposureIndex ?? 1)"
-                    )
-                }
-
-                Toggle("Multiple exposure", isOn: $model.draft.multipleExposure)
-                    .accessibilityHint("Keeps the next log on this physical frame.")
-                TextField("Note", text: $model.draft.note, axis: .vertical)
-                    .lineLimit(2...5)
-                    .textFieldStyle(.roundedBorder)
-                    .accessibilityLabel("Exposure note")
-                    .accessibilityHint("Type a note, or use the keyboard microphone to dictate one.")
+                .accessibilityIdentifier("logger.frame-options")
             }
+            .disabled(model.isSaving)
         }
+    }
+
+    private var frameOptions: some View {
+        VStack(alignment: .leading, spacing: HypoTheme.Space.three) {
+            DisclosureGroup("Exposure dials") {
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .top, spacing: HypoTheme.Space.three) { exposureDials }
+                    VStack(spacing: HypoTheme.Space.three) { exposureDials }
+                }
+                .padding(.top, HypoTheme.Space.two)
+            }
+            if !model.shoots.isEmpty {
+                Picker("Shoot", selection: shootBinding) {
+                    Text("No shoot").tag(ATURI?.none)
+                    ForEach(model.shoots) { shoot in
+                        Text(shoot.label).tag(Optional(shoot.uri))
+                    }
+                }
+                .accessibilityHint("Associates this exposure with a shoot.")
+
+                if model.canCaptureShootLocation, model.draft.shoot != nil {
+                    Toggle(
+                        "Add location for this shoot",
+                        isOn: shootLocationBinding
+                    )
+                    .disabled(model.isRequestingLocation)
+                    .accessibilityHint(
+                        "When on, the logger requests the current location for each new frame in this shoot."
+                    )
+                }
+            }
+
+            Toggle("Use a different EI for this frame", isOn: exposureIndexOverrideBinding)
+                .accessibilityHint(
+                    model.activeRoll.exposureIndex.map { "The roll remains at EI \($0)." }
+                        ?? "The roll's exposure index is not recorded."
+                )
+            if model.hasExposureIndexOverride {
+                Stepper(value: exposureIndexBinding, in: 1...204_800, step: 1) {
+                    LabeledContent("Frame EI") {
+                        Text("\(model.draft.shotAtISO ?? model.activeRoll.exposureIndex ?? 1)")
+                            .monospacedDigit()
+                    }
+                }
+                .accessibilityLabel("Frame exposure index")
+                .accessibilityValue(
+                    "\(model.draft.shotAtISO ?? model.activeRoll.exposureIndex ?? 1)"
+                )
+            }
+
+            Toggle("Multiple exposure", isOn: $model.draft.multipleExposure)
+                .accessibilityHint("Keeps the next log on this physical frame.")
+            Toggle("Set exposure date and time", isOn: usesCustomExposureDate)
+            if let date = model.draftTakenAt {
+                DatePicker(
+                    "Exposed at",
+                    selection: Binding(
+                        get: { model.draftTakenAt ?? date },
+                        set: { model.draftTakenAt = $0 }
+                    )
+                )
+            }
+            TextField("Note", text: $model.draft.note, axis: .vertical)
+                .lineLimit(2...5)
+                .textFieldStyle(.roundedBorder)
+                .accessibilityLabel("Exposure note")
+                .accessibilityHint("Type a note, or use the keyboard microphone to dictate one.")
+        }
+    }
+
+    @ViewBuilder
+    private var quickExposureControls: some View {
+        quickExposureMenu(
+            "Aperture",
+            value: "f/\(model.draft.aperture)",
+            scale: apertureScale,
+            index: apertureIndexBinding
+        )
+        quickExposureMenu(
+            "Shutter speed",
+            value: model.draft.shutterSpeed,
+            scale: shutterSpeedScale,
+            index: shutterSpeedIndexBinding
+        )
+    }
+
+    private func quickExposureMenu(
+        _ title: String,
+        value: String,
+        scale: ExposureDialScale,
+        index: Binding<Int>
+    ) -> some View {
+        Menu {
+            Picker(title, selection: index) {
+                ForEach(Array(scale.marks.enumerated()), id: \.offset) { index, mark in
+                    Text(mark.displayValue)
+                        .accessibilityLabel(mark.accessibilityValue)
+                        .tag(index)
+                }
+            }
+        } label: {
+            VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(HypoTheme.ColorToken.muted)
+                HStack {
+                    Text(value)
+                        .font(.title3.monospacedDigit().weight(.semibold))
+                    Spacer(minLength: HypoTheme.Space.two)
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption.weight(.semibold))
+                }
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+            .padding(.horizontal, HypoTheme.Space.three)
+            .padding(.vertical, HypoTheme.Space.one)
+            .background(
+                HypoTheme.ColorToken.background, in: RoundedRectangle(cornerRadius: HypoTheme.Space.two))
+        }
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
+    }
+
+    private var frameOptionsSummary: String {
+        let shoot = model.shoots.first { $0.uri == model.draft.shoot }?.label
+        let exposureIndex = model.draft.shotAtISO.map { "EI \($0)" }
+        let multiple = model.draft.multipleExposure ? "Multiple exposure" : nil
+        let note = model.draft.note.isEmpty ? nil : "Note"
+        let exposedAt = model.draftTakenAt.map { $0.formatted(date: .abbreviated, time: .shortened) }
+        return [shoot, exposureIndex, multiple, exposedAt, note].compactMap { $0 }.joined(separator: " · ")
+    }
+
+    private var usesCustomExposureDate: Binding<Bool> {
+        Binding(
+            get: { model.draftTakenAt != nil },
+            set: { model.draftTakenAt = $0 ? Date() : nil }
+        )
     }
 
     @ViewBuilder
@@ -282,9 +397,6 @@ public struct LoggerFeatureView: View {
         .disabled(model.isSaving)
         .accessibilityIdentifier("logger.log-frame")
         .accessibilityHint("Saves frame \(model.draft.frameNumber) and prepares the next frame.")
-        .padding(.horizontal, HypoTheme.Space.four)
-        .padding(.vertical, HypoTheme.Space.two)
-        .background(.ultraThinMaterial)
     }
 
     private var shootBinding: Binding<ATURI?> {
@@ -330,7 +442,7 @@ public struct LoggerFeatureView: View {
             marks: model.exposureControls.shutterSpeeds.map {
                 ExposureDialMark(
                     id: $0,
-                    displayValue: $0.hasSuffix("s") ? $0 : $0,
+                    displayValue: $0,
                     accessibilityValue: shutterAccessibilityValue($0)
                 )
             }
@@ -522,11 +634,15 @@ private struct FrameBrowserView: View {
     @Bindable var model: LoggerFeatureModel
     @Environment(\.dismiss) private var dismiss
     let onOpenAccountSettings: () -> Void
+    @State private var isPreparingExport = false
+    @State private var isExportPresented = false
+    @State private var exportFailed = false
+    @State private var csv: ExposureCSV?
 
     var body: some View {
         NavigationStack {
             Group {
-                if model.isLoadingFrameDetails {
+                if model.isLoadingFrameDetails || (model.isLoadingFrameList && model.frameSummaries.isEmpty) {
                     ProgressView("Loading frames")
                 } else if let editing = model.editingExposure {
                     editForm(editing)
@@ -536,11 +652,13 @@ private struct FrameBrowserView: View {
                     frameList
                 }
             }
+            .task { await model.loadFrameList() }
             .navigationTitle(navigationTitle)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     if model.editingExposure != nil {
                         Button("Cancel") { model.cancelEditingExposure() }
+                            .disabled(model.isSaving)
                     } else if model.selectedFrameNumber != nil {
                         Button("Frames") { model.closeSelectedFrame() }
                     } else {
@@ -553,6 +671,13 @@ private struct FrameBrowserView: View {
                             Task { await model.saveEditingExposure() }
                         }
                         .disabled(model.isSaving)
+                    }
+                } else if model.selectedFrameNumber == nil && !model.frameSummaries.isEmpty {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Export CSV", systemImage: "square.and.arrow.up") {
+                            Task { await prepareExport() }
+                        }
+                        .disabled(isPreparingExport || model.isLoadingFrameDetails)
                     }
                 }
             }
@@ -567,6 +692,29 @@ private struct FrameBrowserView: View {
                     .background(.ultraThinMaterial)
                 }
             }
+        }
+        .fileExporter(
+            isPresented: $isExportPresented,
+            document: csv,
+            contentType: .commaSeparatedText,
+            defaultFilename: "Hypo Exposures"
+        ) { result in
+            if case .failure = result { exportFailed = true }
+            csv = nil
+        }
+        .alert("Couldn’t export exposures", isPresented: $exportFailed) {
+            Button("OK", role: .cancel) {}
+        }
+    }
+
+    private func prepareExport() async {
+        isPreparingExport = true
+        defer { isPreparingExport = false }
+        do {
+            csv = ExposureCSV(exposures: try await model.exportExposures())
+            isExportPresented = true
+        } catch {
+            exportFailed = true
         }
     }
 

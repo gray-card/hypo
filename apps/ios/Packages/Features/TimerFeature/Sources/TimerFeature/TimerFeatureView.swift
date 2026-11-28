@@ -1,12 +1,12 @@
 import DesignSystem
+import Foundation
 import HypoLexicon
 import SwiftUI
 import TimerEngine
 
 /// A darkroom-safe development timer surface driven by absolute wall-clock time.
 public struct TimerFeatureView: View {
-    @Bindable private var model: TimerFeatureModel
-    @Environment(\.hypoAppearance) private var appearance
+    private let model: TimerFeatureModel
     private let onOpenAccountSettings: () -> Void
 
     public init(
@@ -18,36 +18,133 @@ public struct TimerFeatureView: View {
     }
 
     public var body: some View {
+        DevelopmentTimerScreen(model: model, onOpenAccountSettings: onOpenAccountSettings)
+            .darkroomTreatment()
+    }
+}
+
+private struct DevelopmentTimerScreen: View {
+    @Bindable var model: TimerFeatureModel
+    let onOpenAccountSettings: () -> Void
+    @Environment(\.hypoAppearance) private var appearance
+    @State private var isChoosingRecipe = false
+    @State private var confirmsCancellation = false
+    @AppStorage("hypo.timer.showElapsed") private var showsElapsed = false
+    @AppStorage("hypo.timer.fahrenheit") private var usesFahrenheit = false
+    @AppStorage("hypo.timer.autoAdvance") private var automaticallyAdvances = true
+    @AppStorage("hypo.darkroom.customRecipes") private var customRecipeData = Data()
+
+    var body: some View {
         ZStack {
             appearance.background.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: HypoTheme.Space.four) {
-                    recipePanel
-                    filmRollPanel
-                    stagePanel
-                    controls
-                    observationPanel
-                    planPanel
+                    if model.run.status == .ready {
+                        recipePanel
+                        stagePanel
+                    } else {
+                        stagePanel
+                        recipePanel
+                    }
+                    timerFeedback
+                    disclosedPanel("Film rolls", summary: model.filmRollSelectionSummary) { filmRollPanel }
+                    disclosedPanel("Processing stages") { planPanel }
+                    if model.run.status == .ready {
+                        disclosedPanel("Mix chemistry") {
+                            DilutionCalculator(recipeDilution: model.selectedRecipe.stages.first?.dilution)
+                                .id(model.selectedRecipe.id)
+                        }
+                    } else {
+                        disclosedPanel("Record observations") { observationPanel }
+                    }
                 }
                 .padding(HypoTheme.Space.four)
             }
+            .scrollDismissesKeyboard(.interactively)
         }
-        .darkroomTreatment()
+        .safeAreaInset(edge: .bottom, spacing: 0) { controls }
         .navigationTitle("Develop film")
         .toolbar {
-            ToolbarItem(placement: .automatic) {
-                HypoToolbarWordmark()
+            ToolbarItem(placement: .primaryAction) {
+                Menu("Timer options", systemImage: "ellipsis.circle") {
+                    Toggle("Show elapsed time", isOn: $showsElapsed)
+                    Toggle("Use Fahrenheit", isOn: $usesFahrenheit)
+                    if model.run.status == .ready {
+                        Toggle("Automatically start the next stage", isOn: $automaticallyAdvances)
+                    }
+                    if model.canSkip {
+                        Button("End development", role: .destructive) { confirmsCancellation = true }
+                    }
+                }
             }
         }
         .task {
             await model.restoreDurableSession()
             await model.loadRecipes()
-            while !Task.isCancelled {
-                model.refresh()
-                try? await Task.sleep(for: .seconds(0.25))
+        }
+        .sheet(isPresented: $isChoosingRecipe) {
+            DevelopmentRecipeBrowser(
+                recipes: browserRecipes,
+                isLoading: model.isLoadingRecipes,
+                selectedID: model.selectedRecipe.id,
+                onSelect: chooseRecipe,
+                onSave: saveLocalRecipe,
+                onDelete: deleteLocalRecipe
+            )
+            .darkroomTreatment()
+        }
+        .confirmationDialog("End this development session?", isPresented: $confirmsCancellation) {
+            Button("End development", role: .destructive) { model.cancel() }
+        }
+    }
+
+    private var customRecipes: [DevelopmentRecipeSelection] {
+        (try? JSONDecoder().decode([DevelopmentRecipeSelection].self, from: customRecipeData)) ?? []
+    }
+
+    private var browserRecipes: [DevelopmentRecipeSelection] {
+        customRecipes + model.availableRecipes.filter { $0.provenance.origin != .local }
+    }
+
+    private func chooseRecipe(_ recipe: DevelopmentRecipeSelection) {
+        if recipe.provenance.origin == .local {
+            model.selectLocalRecipe(recipe)
+        } else {
+            model.selectRecipe(id: recipe.id)
+        }
+    }
+
+    private func saveLocalRecipe(_ recipe: DevelopmentRecipeSelection) {
+        let updated = (customRecipes.filter { $0.id != recipe.id } + [recipe]).sorted {
+            $0.plan.name.localizedStandardCompare($1.plan.name) == .orderedAscending
+        }
+        if let data = try? JSONEncoder().encode(updated) { customRecipeData = data }
+    }
+
+    private func deleteLocalRecipe(_ recipe: DevelopmentRecipeSelection) {
+        if let data = try? JSONEncoder().encode(customRecipes.filter { $0.id != recipe.id }) {
+            customRecipeData = data
+        }
+    }
+
+    private func disclosedPanel<Content: View>(
+        _ title: String,
+        summary: String? = nil,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        let details = content()
+        return DisclosureGroup {
+            details.padding(.top, HypoTheme.Space.two)
+        } label: {
+            VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
+                Text(title).font(.headline)
+                if let summary {
+                    Text(summary).font(.caption).foregroundStyle(appearance.muted)
+                }
             }
         }
+        .padding(.vertical, HypoTheme.Space.two)
     }
 
     private var recipePanel: some View {
@@ -60,137 +157,145 @@ public struct TimerFeatureView: View {
                     sourceBadge(model.selectedRecipe.provenance.origin)
                 }
 
-                if model.run.status == .ready, model.availableRecipes.count > 1 {
-                    Picker("Development recipe", selection: recipeSelection) {
-                        ForEach(model.availableRecipes) { recipe in
-                            Text(recipe.plan.name).tag(recipe.id)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .accessibilityHint("Choose before starting the timer.")
-                } else {
-                    Text(model.selectedRecipe.plan.name)
-                        .font(.title3.weight(.semibold))
+                Text(model.selectedRecipe.plan.name)
+                    .font(.title3.weight(.semibold))
+                if model.run.status == .ready {
+                    Button("Browse recipes", systemImage: "magnifyingglass") { isChoosingRecipe = true }
+                        .buttonStyle(.bordered)
+                        .accessibilityIdentifier("timer.recipe-browser")
                 }
 
-                Text(model.selectedRecipe.provenance.sourceLabel)
-                    .font(.caption)
-                    .foregroundStyle(appearance.muted)
+                if model.selectedRecipe.provenance.origin == .catalog
+                    || model.selectedRecipe.provenance.origin == .personalDataServer
+                {
+                    Text(model.selectedRecipe.provenance.sourceLabel)
+                        .font(.caption)
+                        .foregroundStyle(appearance.muted)
+                }
                 timeBasisBadge
                 if model.isLoadingRecipes {
                     ProgressView("Checking your recipes")
                         .font(.caption)
                 }
 
-                if model.canAdjustDevelopmentTemperature,
-                    let range = model.selectedRecipe.adjustableTemperatureRange,
-                    let temperature = model.selectedRecipe.selectedTemperatureCelsius,
-                    let developmentTime = model.selectedRecipe.selectedDevelopmentDuration
+                if model.canAdjustDevelopmentTemperature || model.canUseGeneralTemperatureEstimate
+                    || model.isUsingGeneralTemperatureEstimate
                 {
-                    Divider()
+                    DisclosureGroup("Adjust temperature") { temperatureOptions }
+                }
+            }
+        }
+    }
+
+    private var temperatureOptions: some View {
+        VStack(alignment: .leading, spacing: HypoTheme.Space.two) {
+            if model.canAdjustDevelopmentTemperature,
+                let range = model.selectedRecipe.adjustableTemperatureRange,
+                let temperature = model.selectedRecipe.selectedTemperatureCelsius,
+                let developmentTime = model.selectedRecipe.selectedDevelopmentDuration
+            {
+                Divider()
+                Stepper(
+                    value: developmentTemperature,
+                    in: displayTemperature(range.lowerBound)...displayTemperature(range.upperBound),
+                    step: temperatureStep
+                ) {
+                    VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
+                        Text("Development temperature")
+                            .font(.callout.weight(.medium))
+                        Text(
+                            "\(temperatureLabel(temperature)) · \(duration(developmentTime))"
+                        )
+                        .font(.title3.monospacedDigit())
+                        .foregroundStyle(appearance.accent)
+                    }
+                }
+                .accessibilityLabel("Development temperature")
+                .accessibilityValue(
+                    "\(temperatureLabel(temperature)), \(duration(developmentTime))"
+                )
+
+                Text("Interpolated only between this recipe's published points; never extrapolated.")
+                    .font(.caption)
+                    .foregroundStyle(appearance.muted)
+            }
+
+            if model.canUseGeneralTemperatureEstimate
+                || model.isUsingGeneralTemperatureEstimate
+            {
+                Divider()
+                Toggle("Use estimated time", isOn: usesGeneralTemperatureEstimate)
+                    .font(.callout.weight(.medium))
+                    .disabled(model.run.status != .ready)
+                    .accessibilityHint(
+                        "Uses the general Ilford black-and-white compensation chart, not this recipe's manufacturer data."
+                    )
+
+                Text(
+                    "Approximate black-and-white conversion from Ilford's general chart. It is not a recommendation for this film and developer pair."
+                )
+                .font(.caption)
+                .foregroundStyle(appearance.muted)
+
+                if let estimate = model.selectedRecipe.generalTemperatureEstimate {
                     Stepper(
-                        value: developmentTemperature,
-                        in: range,
-                        step: 0.1
+                        value: estimatedDevelopmentTemperature,
+                        in: displayTemperature(
+                            model.generalTemperatureEstimateRange.lowerBound)...displayTemperature(
+                                model.generalTemperatureEstimateRange.upperBound),
+                        step: temperatureStep
                     ) {
                         VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
-                            Text("Development temperature")
+                            Text("Estimated temperature")
                                 .font(.callout.weight(.medium))
                             Text(
-                                "\(temperature.formatted(.number.precision(.fractionLength(1)))) °C · \(duration(developmentTime))"
+                                "\(temperatureLabel(estimate.targetTemperatureCelsius)) · \(duration(estimate.duration))"
                             )
                             .font(.title3.monospacedDigit())
                             .foregroundStyle(appearance.accent)
                         }
                     }
-                    .accessibilityLabel("Development temperature")
+                    .disabled(model.run.status != .ready)
+                    .accessibilityLabel("Estimated development temperature")
                     .accessibilityValue(
-                        "\(temperature.formatted(.number.precision(.fractionLength(1)))) degrees Celsius, \(duration(developmentTime))"
+                        "\(temperatureLabel(estimate.targetTemperatureCelsius)), \(duration(estimate.duration))"
                     )
-                    .accessibilityHint("Adjusts the development time in tenth-degree steps.")
-
-                    Text("Interpolated only between this recipe's published points; never extrapolated.")
-                        .font(.caption)
-                        .foregroundStyle(appearance.muted)
-                }
-
-                if model.canUseGeneralTemperatureEstimate
-                    || model.isUsingGeneralTemperatureEstimate
-                {
-                    Divider()
-                    Toggle("Use estimated time", isOn: usesGeneralTemperatureEstimate)
-                        .font(.callout.weight(.medium))
-                        .disabled(model.run.status != .ready)
-                        .accessibilityHint(
-                            "Uses the general Ilford black-and-white compensation chart, not this recipe's manufacturer data."
-                        )
 
                     Text(
-                        "Approximate black-and-white conversion from Ilford's general chart. It is not a recommendation for this film and developer pair."
+                        "Estimated from \(duration(estimate.referenceDuration)) at \(temperatureLabel(estimate.referenceTemperatureCelsius)). Rounded to 15 seconds."
                     )
-                    .font(.caption)
+                    .font(.caption.monospacedDigit())
                     .foregroundStyle(appearance.muted)
 
-                    if let estimate = model.selectedRecipe.generalTemperatureEstimate {
-                        Stepper(
-                            value: estimatedDevelopmentTemperature,
-                            in: model.generalTemperatureEstimateRange,
-                            step: 0.1
-                        ) {
-                            VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
-                                Text("Estimated temperature")
-                                    .font(.callout.weight(.medium))
-                                Text(
-                                    "\(estimate.targetTemperatureCelsius.formatted(.number.precision(.fractionLength(1)))) °C · \(duration(estimate.duration))"
-                                )
-                                .font(.title3.monospacedDigit())
-                                .foregroundStyle(appearance.accent)
-                            }
-                        }
-                        .disabled(model.run.status != .ready)
-                        .accessibilityLabel("Estimated development temperature")
-                        .accessibilityValue(
-                            "\(estimate.targetTemperatureCelsius.formatted(.number.precision(.fractionLength(1)))) degrees Celsius, \(duration(estimate.duration))"
+                    if estimate.isBelowRecommendedMinimum {
+                        Label(
+                            "Times under 5:00 risk uneven development.",
+                            systemImage: "exclamationmark.triangle.fill"
                         )
-                        .accessibilityHint(
-                            "Adjusts an approximate time in tenth-degree steps from 18 to 27 degrees Celsius."
-                        )
-
-                        Text(
-                            "Estimated from \(duration(estimate.referenceDuration)) at \(estimate.referenceTemperatureCelsius.formatted(.number.precision(.fractionLength(0...1)))) °C; rounded to 15 seconds."
-                        )
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(appearance.muted)
-
-                        if estimate.isBelowRecommendedMinimum {
-                            Label(
-                                "Times under 5:00 risk uneven development.",
-                                systemImage: "exclamationmark.triangle.fill"
-                            )
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(HypoTheme.ColorToken.danger)
-                        }
-                        if estimate.hasLargeTemperatureChange {
-                            Label(
-                                "This changes the temperature by at least 4 °C. Test before important work.",
-                                systemImage: "thermometer.medium"
-                            )
-                            .font(.caption)
-                            .foregroundStyle(appearance.muted)
-                        }
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(HypoTheme.ColorToken.danger)
                     }
-
-                    Link(
-                        "Read the Ilford compensation chart",
-                        destination: URL(
-                            string:
-                                "https://www.ilfordphoto.com/wp/wp-content/uploads/2017/03/Temperature-compensation-chart.pdf"
-                        )!
-                    )
-                    .font(.caption.weight(.medium))
+                    if estimate.hasLargeTemperatureChange {
+                        Label(
+                            "This changes the temperature by at least 4 °C. Test before important work.",
+                            systemImage: "thermometer.medium"
+                        )
+                        .font(.caption)
+                        .foregroundStyle(appearance.muted)
+                    }
                 }
+
+                Link(
+                    "Read the Ilford compensation chart",
+                    destination: URL(
+                        string:
+                            "https://www.ilfordphoto.com/wp/wp-content/uploads/2017/03/Temperature-compensation-chart.pdf"
+                    )!
+                )
+                .font(.caption.weight(.medium))
             }
         }
+        .padding(.top, HypoTheme.Space.two)
     }
 
     private var timeBasisBadge: some View {
@@ -204,8 +309,13 @@ public struct TimerFeatureView: View {
             label = "Recipe interpolation"
             systemImage = "point.3.connected.trianglepath.dotted"
         default:
-            label = "Published recipe time"
-            systemImage = "checkmark.seal"
+            label =
+                switch model.selectedRecipe.provenance.origin {
+                case .builtIn: "Preset time"
+                case .local: "Custom time"
+                case .catalog, .personalDataServer: "Recipe time"
+                }
+            systemImage = "clock"
         }
         return Label(label, systemImage: systemImage)
             .font(.caption2.weight(.semibold))
@@ -327,21 +437,25 @@ public struct TimerFeatureView: View {
                 } else {
                     Text(model.snapshot?.stage.name ?? model.run.currentStage.name)
                         .font(.title2.weight(.semibold))
-                    Text(duration(model.snapshot?.remaining ?? model.run.currentStage.duration))
+                    Text(displayedTime)
                         .font(.system(size: 64, weight: .medium, design: .rounded).monospacedDigit())
                         .minimumScaleFactor(0.55)
                         .foregroundStyle(appearance.accent)
-                        .accessibilityLabel("Time remaining")
-                        .accessibilityValue(duration(model.snapshot?.remaining ?? 0))
+                        .accessibilityLabel(showsElapsed ? "Time elapsed" : "Time remaining")
+                        .accessibilityValue(displayedTime)
 
                     ProgressView(value: model.snapshot?.progress ?? 0)
                         .tint(appearance.accent)
 
-                    if let agitation = model.snapshot?.agitation, agitation.isActive {
+                    if model.run.status == .running, let agitation = model.snapshot?.agitation,
+                        agitation.isActive
+                    {
                         Label("Agitate now", systemImage: "waveform.path")
                             .font(.headline)
                             .foregroundStyle(appearance.accent)
-                    } else if let next = model.snapshot?.agitation.nextTransitionAfter {
+                    } else if model.run.status == .running,
+                        let next = model.snapshot?.agitation.nextTransitionAfter
+                    {
                         Text("Next agitation in \(duration(next))")
                             .font(.callout.monospacedDigit())
                             .foregroundStyle(appearance.muted)
@@ -350,7 +464,7 @@ public struct TimerFeatureView: View {
 
                 if let target = observedRecipeStage?.targetTemperatureCelsius {
                     Text(
-                        "Selected temperature: \(target.formatted(.number.precision(.fractionLength(0...1)))) °C"
+                        "Selected temperature \(temperatureLabel(target))"
                     )
                     .font(.callout)
                 }
@@ -362,14 +476,33 @@ public struct TimerFeatureView: View {
         }
     }
 
+    private var displayedTime: String {
+        if showsElapsed { return duration(floor(model.snapshot?.elapsed ?? 0)) }
+        return duration(model.snapshot?.remaining ?? model.run.currentStage.duration)
+    }
+
+    private var temperatureUnit: String { usesFahrenheit ? "°F" : "°C" }
+
+    private var temperatureStep: Double { usesFahrenheit ? 0.18 : 0.1 }
+
+    private func displayTemperature(_ celsius: Double) -> Double {
+        usesFahrenheit ? celsius * 1.8 + 32 : celsius
+    }
+
+    private func celsiusTemperature(_ value: Double) -> Double {
+        usesFahrenheit ? (value - 32) / 1.8 : value
+    }
+
+    private func temperatureLabel(_ celsius: Double) -> String {
+        "\(displayTemperature(celsius).formatted(.number.precision(.fractionLength(0...1)))) \(temperatureUnit)"
+    }
+
     private var controls: some View {
-        VStack(spacing: HypoTheme.Space.three) {
+        VStack(spacing: HypoTheme.Space.two) {
             if let manual = model.activeManualStage {
-                Button("Complete \(manual.name)") {
+                timerAction("Complete \(manual.name)") {
                     model.completeManualStage(manual.id)
                 }
-                .buttonStyle(HypoPrimaryButtonStyle())
-                .frame(maxWidth: .infinity)
 
                 if manual.isOptional {
                     Button("Skip optional stage", systemImage: "forward.end") {
@@ -377,48 +510,53 @@ public struct TimerFeatureView: View {
                     }
                     .buttonStyle(.bordered)
                 }
-            } else {
-                Button(model.primaryActionTitle) {
-                    model.performPrimaryAction()
+            } else if model.canPrepareNewRun {
+                timerAction("New session") { model.prepareNewRun() }
+                    .accessibilityIdentifier("timer.new-session")
+            } else if model.run.status == .ready || model.canSkip {
+                timerAction(model.primaryActionTitle) {
+                    model.performPrimaryAction(automaticallyAdvances: automaticallyAdvances)
                 }
-                .buttonStyle(HypoPrimaryButtonStyle())
-                .frame(maxWidth: .infinity)
-                .disabled(model.run.status == .completed || model.run.status == .cancelled)
+                .accessibilityIdentifier("timer.primary-action")
 
-                HStack(spacing: HypoTheme.Space.three) {
-                    Button("Skip", systemImage: "forward.end") {
-                        model.skipStage()
+                if model.canSkip {
+                    HStack(spacing: HypoTheme.Space.three) {
+                        Button("Add 30 seconds", systemImage: "plus.circle") { model.extendStage() }
+                        Button("Skip stage", systemImage: "forward.end") { model.skipStage() }
                     }
-                    .disabled(!model.canSkip)
-
-                    Button("Add 30 seconds", systemImage: "plus.circle") {
-                        model.extendStage()
-                    }
-                    .disabled(!model.canExtend)
-
-                    Spacer()
-
-                    Button("Cancel", role: .destructive) {
-                        model.cancel()
-                    }
-                    .disabled(!model.canSkip && model.run.status != .ready)
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.bordered)
+            } else if model.isPersisting {
+                ProgressView("Saving development session…")
             }
+        }
+        .padding(.horizontal, HypoTheme.Space.four)
+        .padding(.vertical, HypoTheme.Space.two)
+        .frame(maxWidth: .infinity)
+        .background(appearance.background)
+    }
 
-            if let presentation = model.errorPresentation {
-                HypoErrorNotice(
-                    presentation,
-                    onRecovery: {
-                        if presentation.recoveryAction == .signIn {
-                            onOpenAccountSettings()
-                        } else {
-                            Task { await model.retryFailedOperation() }
-                        }
-                    },
-                    onDismiss: model.dismissError
-                )
-            }
+    private func timerAction(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title).frame(maxWidth: .infinity)
+        }
+        .buttonStyle(HypoPrimaryButtonStyle())
+    }
+
+    @ViewBuilder
+    private var timerFeedback: some View {
+        if let presentation = model.errorPresentation {
+            HypoErrorNotice(
+                presentation,
+                onRecovery: {
+                    if presentation.recoveryAction == .signIn {
+                        onOpenAccountSettings()
+                    } else {
+                        Task { await model.retryFailedOperation() }
+                    }
+                },
+                onDismiss: model.dismissError
+            )
         }
     }
 
@@ -442,12 +580,12 @@ public struct TimerFeatureView: View {
                 }
 
                 TextField(
-                    "Actual bath temperature (°C)",
+                    "Actual bath temperature (\(temperatureUnit))",
                     value: actualTemperature,
                     format: .number.precision(.fractionLength(0...2))
                 )
                 .textFieldStyle(.roundedBorder)
-                .accessibilityLabel("Actual bath temperature in degrees Celsius")
+                .accessibilityLabel("Actual bath temperature (\(temperatureUnit))")
 
                 TextField("Observed agitation", text: observedAgitation, axis: .vertical)
                     .lineLimit(1...3)
@@ -508,17 +646,10 @@ public struct TimerFeatureView: View {
             .accessibilityLabel("Recipe source: \(origin.label)")
     }
 
-    private var recipeSelection: Binding<String> {
-        Binding(
-            get: { model.selectedRecipe.id },
-            set: { model.selectRecipe(id: $0) }
-        )
-    }
-
     private var developmentTemperature: Binding<Double> {
         Binding(
-            get: { model.selectedRecipe.selectedTemperatureCelsius ?? 20 },
-            set: { model.setDevelopmentTemperature($0) }
+            get: { displayTemperature(model.selectedRecipe.selectedTemperatureCelsius ?? 20) },
+            set: { model.setDevelopmentTemperature(celsiusTemperature($0)) }
         )
     }
 
@@ -532,18 +663,20 @@ public struct TimerFeatureView: View {
     private var estimatedDevelopmentTemperature: Binding<Double> {
         Binding(
             get: {
-                model.selectedRecipe.generalTemperatureEstimate?.targetTemperatureCelsius
-                    ?? model.selectedRecipe.selectedTemperatureCelsius
-                    ?? 20
+                displayTemperature(
+                    model.selectedRecipe.generalTemperatureEstimate?.targetTemperatureCelsius
+                        ?? model.selectedRecipe.selectedTemperatureCelsius
+                        ?? 20
+                )
             },
-            set: { model.setEstimatedDevelopmentTemperature($0) }
+            set: { model.setEstimatedDevelopmentTemperature(celsiusTemperature($0)) }
         )
     }
 
     private var actualTemperature: Binding<Double?> {
         Binding(
-            get: { model.observation(for: observedStageID).actualTemperatureCelsius },
-            set: { model.setActualTemperature($0, for: observedStageID) }
+            get: { model.observation(for: observedStageID).actualTemperatureCelsius.map(displayTemperature) },
+            set: { model.setActualTemperature($0.map(celsiusTemperature), for: observedStageID) }
         )
     }
 
@@ -596,6 +729,7 @@ private extension DevelopmentRecipeOrigin {
         case .catalog: "Catalog"
         case .personalDataServer: "Your PDS"
         case .builtIn: "Built in"
+        case .local: "On this device"
         }
     }
 }

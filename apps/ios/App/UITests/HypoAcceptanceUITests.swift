@@ -131,6 +131,62 @@ final class HypoAcceptanceUITests: XCTestCase {
         XCTAssertTrue(meterTab.isSelected)
     }
 
+    func testFrameLoggerKeepsAdvancedDetailsCollapsedAndOpensHistory() {
+        let app = makeApp(fixture: "synchronization", reset: true)
+        app.launch()
+
+        let sessionsTab = app.tabBars.buttons["Sessions"]
+        XCTAssertTrue(sessionsTab.waitForExistence(timeout: 10))
+        sessionsTab.tap()
+        element("sessions.log-frames", in: app).tap()
+
+        XCTAssertTrue(element("logger.log-frame", in: app).isHittable)
+        XCTAssertTrue(app.buttons["Aperture"].isHittable)
+        XCTAssertTrue(app.buttons["Shutter speed"].isHittable)
+        XCTAssertFalse(app.switches["Multiple exposure"].exists)
+        capture(app, named: "Frame logger")
+        element("logger.frame-options", in: app).tap()
+        XCTAssertTrue(app.switches["Multiple exposure"].waitForExistence(timeout: 4))
+
+        element("logger.log-frame", in: app).tap()
+        XCTAssertTrue(app.staticTexts["Frame 1 logged"].waitForExistence(timeout: 10))
+        app.buttons["Review logged frames"].tap()
+        XCTAssertTrue(app.navigationBars["Frames"].waitForExistence(timeout: 4))
+    }
+
+    func testDarkroomRecipeSearchAndTimerControls() {
+        let app = makeApp(fixture: "synchronization", reset: true)
+        app.launch()
+
+        let sessionsTab = app.tabBars.buttons["Sessions"]
+        XCTAssertTrue(sessionsTab.waitForExistence(timeout: 10))
+        sessionsTab.tap()
+        element("sessions.develop-film", in: app).tap()
+
+        element("timer.recipe-browser", in: app).tap()
+        let search = app.textFields["timer.recipe-search"]
+        XCTAssertTrue(search.waitForExistence(timeout: 4))
+        search.tap()
+        search.typeText("zzzz no matching recipe")
+        XCTAssertTrue(app.staticTexts["No matching recipes"].waitForExistence(timeout: 10))
+        app.buttons["Close"].tap()
+
+        let primary = element("timer.primary-action", in: app)
+        XCTAssertEqual(primary.label, "Start")
+        capture(app, named: "Darkroom timer")
+        primary.tap()
+        XCTAssertEqual(primary.label, "Pause")
+        primary.tap()
+        XCTAssertEqual(primary.label, "Resume")
+    }
+
+    private func capture(_ app: XCUIApplication, named name: String) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
     func testEveryFailureStateIsActionableAndContainsNoRawDiagnostics() {
         let app = makeApp(fixture: "error-states", reset: true)
         app.launch()

@@ -10,6 +10,7 @@ public final class LoggerFeatureModel {
     public private(set) var activeRoll: ActiveRoll
     public private(set) var availableRolls: [ActiveRoll]
     public var draft: ExposureDraft
+    public var draftTakenAt: Date?
     public private(set) var exposureControls: ExposureControlOptions
     public private(set) var shoots: [ShootAssociation]
     public private(set) var locationEnabledShoots: Set<ATURI>
@@ -21,6 +22,7 @@ public final class LoggerFeatureModel {
     public private(set) var isSaving = false
     public private(set) var isSavingLifecycle = false
     public private(set) var isLoadingFrameDetails = false
+    public private(set) var isLoadingFrameList = false
     public private(set) var confirmation: String?
     public private(set) var error: LoggerError?
 
@@ -31,6 +33,7 @@ public final class LoggerFeatureModel {
     private let frameDetailStore: (any FrameDetailStoring)?
     private let locationProvider: (any ShootLocationProviding)?
     private let now: @MainActor @Sendable () -> Date
+    private var frameListRequest = UUID()
 
     public init(
         activeRoll: ActiveRoll,
@@ -98,20 +101,25 @@ public final class LoggerFeatureModel {
     }
 
     public func setExposureIndexOverrideEnabled(_ enabled: Bool) {
-        draft.shotAtISO = enabled ? activeRoll.exposureIndex : nil
+        draft.shotAtISO = enabled ? draft.shotAtISO ?? activeRoll.exposureIndex ?? 100 : nil
     }
 
     public func selectActiveRoll(_ uri: ATURI) {
-        guard let selected = availableRolls.first(where: { $0.uri == uri }) else { return }
+        guard !isSaving, !isSavingLifecycle, !isLoadingFrameDetails, uri != activeRoll.uri,
+            let selected = availableRolls.first(where: { $0.uri == uri })
+        else { return }
         activeRoll = selected
         draft.roll = selected.uri
         draft.frameNumber = selected.nextFrameNumber
         draft.camera = selected.camera
+        draft.lens = nil
         draft.shotAtISO = nil
         draft.multipleExposure = false
         draft.frameExposureIndex = nil
         draft.note = ""
         draft.meterReadings = []
+        draft.location = nil
+        draftTakenAt = nil
         frameSummaries = []
         frameDetails = []
         selectedFrameNumber = nil
@@ -120,7 +128,18 @@ public final class LoggerFeatureModel {
     }
 
     public func replaceAvailableRolls(_ rolls: [ActiveRoll], preferred uri: ATURI? = nil) {
+        guard !isSaving, !isSavingLifecycle, !isLoadingFrameDetails else { return }
+        let previous = activeRoll
         availableRolls = Self.normalizedRolls(activeRoll: activeRoll, availableRolls: rolls)
+        if let updated = availableRolls.first(where: { $0.uri == previous.uri }) {
+            activeRoll = updated
+            activeRoll.exposuresUsed = max(previous.exposuresUsed, updated.exposuresUsed)
+            if !draft.multipleExposure, draft.frameNumber == previous.nextFrameNumber {
+                draft.frameNumber = activeRoll.nextFrameNumber
+            }
+            if draft.camera == previous.camera { draft.camera = updated.camera }
+            updateSelectedRollInList()
+        }
         if let uri, availableRolls.contains(where: { $0.uri == uri }) {
             selectActiveRoll(uri)
         } else if !availableRolls.contains(where: { $0.uri == activeRoll.uri }),
@@ -189,9 +208,11 @@ public final class LoggerFeatureModel {
         isSaving = true
         defer { isSaving = false }
 
+        let submitted = draft
+        let submittedTakenAt = draftTakenAt
         do {
-            var recordDraft = draft
-            if let shoot = draft.shoot, locationEnabledShoots.contains(shoot) {
+            var recordDraft = submitted
+            if let shoot = submitted.shoot, locationEnabledShoots.contains(shoot) {
                 guard let locationProvider else {
                     throw LoggerError.locationUnavailable(
                         "Location is not available on this device."
@@ -203,21 +224,30 @@ public final class LoggerFeatureModel {
                     throw LoggerError.locationUnavailable(String(describing: error))
                 }
             }
-            let record = try recordDraft.record(createdAt: ATProtoDate(now()))
+            let createdAt = ATProtoDate(now())
+            let record = try recordDraft.record(
+                createdAt: createdAt,
+                takenAt: submittedTakenAt.map(ATProtoDate.init) ?? createdAt
+            )
             try await writer.createExposure(record: record)
-            activeRoll.exposuresUsed = max(activeRoll.exposuresUsed, draft.frameNumber)
+            activeRoll.exposuresUsed = max(activeRoll.exposuresUsed, submitted.frameNumber)
             updateSelectedRollInList()
-            confirmation = "Frame \(draft.frameNumber) logged"
+            confirmation = "Frame \(submitted.frameNumber) logged"
             error = nil
 
-            if draft.multipleExposure {
-                draft.frameExposureIndex = (draft.frameExposureIndex ?? 1) + 1
-            } else {
-                draft.frameNumber += 1
-                draft.frameExposureIndex = nil
+            if draft.frameNumber == submitted.frameNumber
+                && draft.multipleExposure == submitted.multipleExposure
+            {
+                if submitted.multipleExposure {
+                    draft.frameExposureIndex = (submitted.frameExposureIndex ?? 1) + 1
+                } else {
+                    draft.frameNumber = submitted.frameNumber + 1
+                    draft.frameExposureIndex = nil
+                }
             }
-            draft.note = ""
-            draft.meterReadings = []
+            if draft.note == submitted.note { draft.note = "" }
+            if draftTakenAt == submittedTakenAt { draftTakenAt = nil }
+            draft.meterReadings.removeAll { submitted.meterReadings.contains($0) }
         } catch let loggerError as LoggerError {
             error = loggerError
             HypoErrorReporter.record(loggerError, presentation: loggerError.presentation)
@@ -300,14 +330,14 @@ public final class LoggerFeatureModel {
         }
         guard !isLoadingFrameDetails else { return }
         isLoadingFrameDetails = true
+        selectedFrameNumber = frameNumber
+        editingExposure = nil
         defer { isLoadingFrameDetails = false }
         do {
             frameDetails = try await frameDetailStore.exposures(
                 roll: activeRoll.uri,
                 frameNumber: frameNumber
             )
-            selectedFrameNumber = frameNumber
-            editingExposure = nil
             error = nil
         } catch {
             self.error = .read(String(describing: error))
@@ -317,24 +347,38 @@ public final class LoggerFeatureModel {
     }
 
     public func loadFrameList() async {
+        await loadFrameList(refresh: true)
+    }
+
+    private func loadFrameList(refresh: Bool) async {
         guard let frameDetailStore else {
             error = .frameDetailsUnavailable
             frameSummaries = []
             return
         }
-        guard !isLoadingFrameDetails else { return }
-        isLoadingFrameDetails = true
-        defer { isLoadingFrameDetails = false }
+        let request = UUID()
+        frameListRequest = request
+        let roll = activeRoll.uri
+        isLoadingFrameList = true
+        selectedFrameNumber = nil
+        editingExposure = nil
+        defer {
+            if frameListRequest == request { isLoadingFrameList = false }
+        }
         do {
-            frameSummaries = try await frameDetailStore.frames(roll: activeRoll.uri)
-                .sorted { $0.frameNumber > $1.frameNumber }
-            selectedFrameNumber = nil
-            editingExposure = nil
+            let cached = try await frameDetailStore.cachedFrames(roll: roll)
+            guard frameListRequest == request, activeRoll.uri == roll, !Task.isCancelled else { return }
+            frameSummaries = cached.sorted { $0.frameNumber > $1.frameNumber }
             error = nil
+            if refresh {
+                let refreshed = try await frameDetailStore.frames(roll: roll)
+                guard frameListRequest == request, activeRoll.uri == roll, !Task.isCancelled else { return }
+                frameSummaries = refreshed.sorted { $0.frameNumber > $1.frameNumber }
+            }
         } catch {
+            guard frameListRequest == request, activeRoll.uri == roll, !Task.isCancelled else { return }
             self.error = .read(String(describing: error))
             HypoErrorReporter.record(error, presentation: self.error!.presentation)
-            frameSummaries = []
         }
     }
 
@@ -342,6 +386,11 @@ public final class LoggerFeatureModel {
         selectedFrameNumber = nil
         editingExposure = nil
         frameDetails = []
+    }
+
+    public func exportExposures() async throws -> [ExposureDetail] {
+        guard let frameDetailStore else { throw LoggerError.frameDetailsUnavailable }
+        return try await frameDetailStore.exposures(roll: activeRoll.uri)
     }
 
     public func beginEditing(_ exposure: ExposureDetail) {
@@ -363,11 +412,6 @@ public final class LoggerFeatureModel {
         do {
             let record = try editingExposure.updatedRecord(at: ATProtoDate(now()))
             try await frameDetailStore.updateExposure(uri: editingExposure.uri, record: record)
-            if let index = frameDetails.firstIndex(where: { $0.uri == editingExposure.uri }) {
-                frameDetails[index] = editingExposure
-            }
-            frameSummaries = try await frameDetailStore.frames(roll: activeRoll.uri)
-                .sorted { $0.frameNumber > $1.frameNumber }
             self.editingExposure = nil
             error = nil
             confirmation = "Frame \(editingExposure.draft.frameNumber) updated"
@@ -375,11 +419,15 @@ public final class LoggerFeatureModel {
             error = loggerError
             HypoErrorReporter.record(loggerError, presentation: loggerError.presentation)
             confirmation = nil
+            return
         } catch {
             self.error = userFacingWriteError(for: error)
             HypoErrorReporter.record(error, presentation: self.error!.presentation)
             confirmation = nil
+            return
         }
+        await loadFrameList(refresh: false)
+        if error == nil { await loadFrameDetails(frameNumber: editingExposure.draft.frameNumber) }
     }
 
     public func dismissError() {

@@ -397,7 +397,9 @@ public struct FrameSummary: Identifiable, Hashable, Sendable {
 /// Implementations are responsible for preserving unknown fields when applying an update.
 public protocol FrameDetailStoring: Sendable {
     func frames(roll: ATURI) async throws -> [FrameSummary]
+    func cachedFrames(roll: ATURI) async throws -> [FrameSummary]
     func exposures(roll: ATURI, frameNumber: Int) async throws -> [ExposureDetail]
+    func exposures(roll: ATURI) async throws -> [ExposureDetail]
     func updateExposure(uri: ATURI, record: Data) async throws
 }
 
@@ -405,6 +407,16 @@ public extension FrameDetailStoring {
     /// Keeps existing detail-only stores source-compatible. Production composition
     /// should implement this method to expose the roll's complete frame index.
     func frames(roll _: ATURI) async throws -> [FrameSummary] { [] }
+
+    func cachedFrames(roll: ATURI) async throws -> [FrameSummary] { try await frames(roll: roll) }
+
+    func exposures(roll: ATURI) async throws -> [ExposureDetail] {
+        var result: [ExposureDetail] = []
+        for frame in try await frames(roll: roll) {
+            result += try await exposures(roll: roll, frameNumber: frame.frameNumber)
+        }
+        return result
+    }
 }
 
 public enum LoggerError: Error, Equatable, Sendable {

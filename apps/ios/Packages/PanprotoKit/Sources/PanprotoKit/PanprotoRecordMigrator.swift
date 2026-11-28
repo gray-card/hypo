@@ -159,13 +159,30 @@ public struct PanprotoRecordMigrator: PanprotoRecordMigrating, Sendable {
                     protocolName: "atproto",
                     schema: source
                 )
-                let sourceViolations = try source.violations(in: sourceInstance)
+                let sourceViolations = atprotoRecordViolations(try source.violations(in: sourceInstance))
                 guard sourceViolations.isEmpty else {
                     throw PanprotoFault.recordViolations(sourceViolations)
                 }
 
-                let lifted = try compiled.lift(sourceInstance)
-                let targetViolations = try target.violations(in: lifted)
+                // Forward lift requires a closed input. Keep Lexicon extension fields
+                // with their owning nodes and restore them after the engine runs.
+                let extensionNodes = sourceInstance.nodes.values.filter { !$0.extraFields.isEmpty }
+                var declaredInstance = sourceInstance
+                for node in extensionNodes { declaredInstance.nodes[node.id]?.extraFields.removeAll() }
+                var lifted = try compiled.lift(declaredInstance)
+                for node in extensionNodes {
+                    let destination = node.id == sourceInstance.root ? lifted.root : node.id
+                    guard var owner = lifted.nodes[destination],
+                        node.id == sourceInstance.root || owner.anchor == node.anchor
+                    else {
+                        throw PanprotoFault.migrationOutputViolations([
+                            "An extension property lost its owning node during forward migration."
+                        ])
+                    }
+                    owner.extraFields.merge(node.extraFields, uniquingKeysWith: { migrated, _ in migrated })
+                    lifted.nodes[destination] = owner
+                }
+                let targetViolations = atprotoRecordViolations(try target.violations(in: lifted))
                 guard targetViolations.isEmpty else {
                     throw PanprotoFault.migrationOutputViolations(targetViolations)
                 }
@@ -206,13 +223,13 @@ public struct PanprotoRecordMigrator: PanprotoRecordMigrating, Sendable {
                     protocolName: "atproto",
                     schema: source
                 )
-                let sourceViolations = try source.violations(in: sourceInstance)
+                let sourceViolations = atprotoRecordViolations(try source.violations(in: sourceInstance))
                 guard sourceViolations.isEmpty else {
                     throw PanprotoFault.recordViolations(sourceViolations)
                 }
 
                 let projection = try lens.get(sourceInstance)
-                let targetViolations = try target.violations(in: projection.view)
+                let targetViolations = atprotoRecordViolations(try target.violations(in: projection.view))
                 guard targetViolations.isEmpty else {
                     throw PanprotoFault.migrationOutputViolations(targetViolations)
                 }
@@ -270,13 +287,13 @@ public struct PanprotoRecordMigrator: PanprotoRecordMigrating, Sendable {
                     protocolName: "atproto",
                     schema: target
                 )
-                let viewViolations = try target.violations(in: view)
+                let viewViolations = atprotoRecordViolations(try target.violations(in: view))
                 guard viewViolations.isEmpty else {
                     throw PanprotoFault.recordViolations(viewViolations)
                 }
 
                 let restored = try lens.put(view: view, complement: decodedComplement)
-                let restoredViolations = try source.violations(in: restored)
+                let restoredViolations = atprotoRecordViolations(try source.violations(in: restored))
                 guard restoredViolations.isEmpty else {
                     throw PanprotoFault.migrationOutputViolations(restoredViolations)
                 }
@@ -326,7 +343,7 @@ private func compatibility(
     }
 
     do {
-        let violations = try candidate.violations(in: instance)
+        let violations = atprotoRecordViolations(try candidate.violations(in: instance))
         return violations.isEmpty
             ? .compatible
             : .incompatible(reason: violations.joined(separator: "; "))

@@ -4,14 +4,17 @@ import SwiftUI
 public struct LibraryFeatureView: View {
     @Bindable private var model: LibraryFeatureModel
     private let onOpenAccountSettings: () -> Void
+    private let onOpenWeb: ((URL) -> Void)?
     private let rootCategory: LibraryCategory?
 
     public init(
         model: LibraryFeatureModel,
-        onOpenAccountSettings: @escaping () -> Void = {}
+        onOpenAccountSettings: @escaping () -> Void = {},
+        onOpenWeb: ((URL) -> Void)? = nil
     ) {
         self.model = model
         self.onOpenAccountSettings = onOpenAccountSettings
+        self.onOpenWeb = onOpenWeb
         rootCategory = nil
     }
 
@@ -22,6 +25,7 @@ public struct LibraryFeatureView: View {
     ) {
         self.model = model
         self.onOpenAccountSettings = onOpenAccountSettings
+        onOpenWeb = nil
         self.rootCategory = rootCategory
     }
 
@@ -64,12 +68,10 @@ public struct LibraryFeatureView: View {
             HypoTheme.ColorToken.background.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: HypoTheme.Space.four) {
-                    Text("Manage the equipment, materials, services, and presets you use in your work.")
-                        .font(.callout)
-                        .foregroundStyle(HypoTheme.ColorToken.muted)
                     categoryGroup("Equipment", categories: [.cameras, .lenses])
                     categoryGroup("Materials", categories: [.film, .chemistry])
                     categoryGroup("Presets", categories: [.recipes])
+                    if let onOpenWeb { webTools(open: onOpenWeb) }
                     loadFeedback
                 }
                 .padding(HypoTheme.Space.four)
@@ -80,6 +82,36 @@ public struct LibraryFeatureView: View {
         .toolbar {
             ToolbarItem(placement: .automatic) { HypoToolbarWordmark() }
         }
+    }
+
+    private func webTools(open: @escaping (URL) -> Void) -> some View {
+        DisclosureGroup {
+            VStack(alignment: .leading, spacing: HypoTheme.Space.one) {
+                webTool("Galleries", path: "galleries", open: open)
+                webTool("Rolls and scans", path: "rolls", open: open)
+                webTool("Sessions and workflows", path: "sessions", open: open)
+                webTool("Following activity", path: "following", open: open)
+                webTool("Discover setups", path: "discover", open: open)
+                webTool("All web tools", path: "", open: open)
+            }
+            .padding(.top, HypoTheme.Space.two)
+        } label: {
+            Label("Hypo Web", systemImage: "globe").font(.headline)
+        }
+        .accessibilityIdentifier("library.web-tools")
+        .padding(.vertical, HypoTheme.Space.two)
+    }
+
+    private func webTool(_ title: String, path: String, open: @escaping (URL) -> Void) -> some View {
+        Button {
+            if let url = URL(string: "https://hypo.graycard.app/\(path)") { open(url) }
+        } label: {
+            LabeledContent(title) { Image(systemName: "arrow.up.forward.app") }
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Opens in the Hypo Web browser.")
     }
 
     private func categoryGroup(

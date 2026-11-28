@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/panproto/panproto-swift.git",
       "state" : {
-        "revision" : "a11c201605afee0179a0abf27ec6e07d91c1c316",
-        "version" : "0.71.0"
+        "revision" : "1727b2e805b860d9c9bf04e207f3626b078a98b4",
+        "version" : "0.78.0"
       }
     }
   ],

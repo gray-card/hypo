@@ -70,6 +70,7 @@ public enum PanprotoFault: Error, Hashable, Sendable {
     case recordViolations([String])
     case migrationOutputViolations([String])
     case complementFingerprintMismatch(left: UInt64, right: UInt64)
+    case complementIdentityMismatch(component: String, expected: String, actual: String)
     case complementConflict(kind: String, key: String)
     case engine(
         domain: PanprotoFaultDomain,
@@ -105,6 +106,8 @@ extension PanprotoFault: CustomStringConvertible {
             "The migration output has \(violations.count) violation(s): \(violations.joined(separator: "; "))"
         case .complementFingerprintMismatch(let left, let right):
             "The complement fingerprint \(left) does not match the migration fingerprint \(right)."
+        case .complementIdentityMismatch(let component, _, _):
+            "The saved complement has a different \(component) identity."
         case .complementConflict(let kind, let key):
             "The migration complements conflict in \(kind) at \(key)."
         case .engine(let domain, let operation, let message):
@@ -132,12 +135,19 @@ extension PanprotoFault {
 
         // Panproto 0.71.0 compatibility shim. Its lens `put` path prefixes this engine fault
         // before it reaches the binding's structured-fault recognizer. Remove this fallback once
-        // the adopted binding recognizes the decimal "complement has …, lens expects …" spelling;
-        // `panproto0710DecimalFingerprintMessageIsNormalized` pins the removal condition.
+        // the adopted binding recognizes the decimal "complement has …, lens expects …" spelling.
         if let fingerprints = complementFingerprints(in: error.detail.message) {
             return .complementFingerprintMismatch(
                 left: fingerprints.complement,
                 right: fingerprints.lens
+            )
+        }
+
+        if let identities = complementIdentities(in: error.detail.message) {
+            return .complementIdentityMismatch(
+                component: identities.component,
+                expected: identities.expected,
+                actual: identities.actual
             )
         }
 
@@ -159,6 +169,18 @@ extension PanprotoFault {
         guard let complement = UInt64(suffix[..<separatorRange.lowerBound]) else { return nil }
         guard let lens = UInt64(suffix[separatorRange.upperBound...]) else { return nil }
         return (complement, lens)
+    }
+
+    private static func complementIdentities(
+        in message: String
+    ) -> (component: String, expected: String, actual: String)? {
+        guard let prefix = message.range(of: "complement identity: identity mismatch on ") else { return nil }
+        let parts = message[prefix.upperBound...].components(separatedBy: ": expected ")
+        guard parts.count == 2, !parts[0].isEmpty else { return nil }
+        let hashes = parts[1].components(separatedBy: ", found ")
+        guard hashes.count == 2, hashes.allSatisfy({ $0.count == 64 && $0.allSatisfy(\.isHexDigit) })
+        else { return nil }
+        return (parts[0], hashes[0], hashes[1])
     }
 }
 
@@ -197,7 +219,7 @@ public protocol PanprotoSchemaChecking: Sendable {
     ) async throws(PanprotoFault) -> [String]
 }
 
-/// A facade over the official Panproto 0.71.0 Swift binding.
+/// A facade over the official Panproto Swift binding.
 ///
 /// All engine work runs in one engine-isolated region. Only app-owned, sendable values cross back
 /// into application code.
@@ -329,7 +351,21 @@ func schema(from definition: Data) throws(PanprotoFault) -> SchemaHandle {
 func violations(in record: Data, schema: SchemaHandle) throws(PanprotoError) -> [String] {
     let registry = try IoRegistryHandle.builtin()
     let instance = try registry.parseInstance(record, protocolName: "atproto", schema: schema)
-    return try schema.violations(in: instance)
+    return atprotoRecordViolations(try schema.violations(in: instance))
+}
+
+func atprotoRecordViolations(_ messages: [String]) -> [String] {
+    // Lexicon records may carry extension properties. Keep the instance intact so
+    // Panproto can preserve those properties during a migration or lens round trip.
+    messages.filter { message in
+        let prefix = "attribute at node "
+        let separator = ": attribute "
+        guard message.hasPrefix(prefix), message.hasSuffix(" is not declared"),
+            let range = message.range(of: separator),
+            UInt64(message.dropFirst(prefix.count).prefix(upTo: range.lowerBound)) != nil
+        else { return true }
+        return false
+    }
 }
 
 /// The app's compile-time record of the adopted binding.

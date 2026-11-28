@@ -225,7 +225,8 @@ public final class TimerFeatureModel {
         switch run.status {
         case .ready: "Start"
         case .running: "Pause"
-        case .paused: "Resume"
+        case .paused:
+            run.pausesBetweenStages == true && run.pausedElapsed == 0 ? "Start stage" : "Resume"
         case .completed: "Done"
         case .cancelled: "Cancelled"
         }
@@ -330,11 +331,31 @@ public final class TimerFeatureModel {
             haptics.play(.failure)
             return
         }
+        prepareRun(for: recipe)
+    }
+
+    func selectLocalRecipe(_ recipe: DevelopmentRecipeSelection) {
+        guard run.status == .ready, recipe.provenance.origin == .local else { return }
+        prepareRun(for: recipe)
+    }
+
+    public var canPrepareNewRun: Bool {
+        !isPersisting && (run.status == .cancelled || (isProcessComplete && completionState == .written))
+    }
+
+    public func prepareNewRun() {
+        guard canPrepareNewRun else { return }
+        linkedFilmRolls = []
+        prepareRun(for: selectedRecipe)
+    }
+
+    private func prepareRun(for recipe: DevelopmentRecipeSelection) {
         let replacedRunID = run.id
         selectedRecipe = recipe
         run = DevelopmentTimerRun(plan: recipe.plan)
         observations = [:]
         manualStageStates = Self.initialManualStageStates(for: recipe)
+        startedAt = nil
         finishedAt = nil
         snapshot = nil
         completionState = .pending
@@ -574,14 +595,14 @@ public final class TimerFeatureModel {
         finishManualSequenceIfNeeded()
     }
 
-    public func performPrimaryAction() {
+    public func performPrimaryAction(automaticallyAdvances: Bool = true) {
         let date = now()
         let previous = run
         let previousStageIndex = run.currentStageIndex
         perform {
             switch run.status {
             case .ready:
-                try run.start(at: date)
+                try run.start(at: date, pausesBetweenStages: !automaticallyAdvances)
                 startedAt = date
             case .running:
                 try run.pause(at: date)
@@ -626,11 +647,25 @@ public final class TimerFeatureModel {
     /// Updates presentation from absolute time. A view may call this on a visual cadence;
     /// correctness does not depend on receiving every tick.
     public func refresh() {
-        let previous = run
-        let previousStageIndex = run.currentStageIndex
-        perform(persistUnchanged: false) {
-            snapshot = try run.snapshot(at: now())
-            recordNaturallyCompletedStages(from: previous, startingAt: previousStageIndex)
+        guard run.status == .running else { return }
+        do {
+            var updated = run
+            let display = try updated.snapshot(at: now())
+            if display == snapshot { return }
+            let agitationChanged = display.agitation.isActive != snapshot?.agitation.isActive
+            snapshot = display
+            guard updated.status != run.status || updated.currentStageIndex != run.currentStageIndex else {
+                if agitationChanged { reconcilePlatformPresentation() }
+                return
+            }
+            let previous = run
+            run = updated
+            recordNaturallyCompletedStages(from: previous, startingAt: previous.currentStageIndex)
+            haptics.play(run.status == .completed && activeManualStage == nil ? .timerCompleted : .timerStage)
+            reconcilePlatformPresentation()
+            queuePersistence()
+        } catch {
+            present(.persistence(String(reflecting: error)), underlying: error)
         }
     }
 
@@ -880,6 +915,7 @@ private extension DevelopmentRecipeOrigin {
         case .personalDataServer: 0
         case .catalog: 1
         case .builtIn: 2
+        case .local: 3
         }
     }
 }

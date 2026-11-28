@@ -7,6 +7,7 @@ public enum DevelopmentRecipeOrigin: String, Codable, CaseIterable, Hashable, Se
     case catalog
     case personalDataServer
     case builtIn
+    case local
 }
 
 public struct DevelopmentRecipeProvenance: Codable, Hashable, Sendable {

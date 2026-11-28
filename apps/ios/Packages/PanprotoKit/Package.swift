@@ -15,7 +15,7 @@ let package = Package(
         .package(path: "../HypoLexicon"),
         .package(
             url: "https://github.com/panproto/panproto-swift.git",
-            exact: "0.71.0"
+            exact: "0.78.0"
         ),
     ],
     targets: [

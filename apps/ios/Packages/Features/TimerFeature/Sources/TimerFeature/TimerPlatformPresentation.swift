@@ -71,7 +71,7 @@ public struct TimerPlatformPresentation: Equatable, Sendable {
                     date: boundaryDate
                 )
             )
-            guard nextIndex < run.plan.stages.count else { break }
+            guard nextIndex < run.plan.stages.count, run.pausesBetweenStages != true else { break }
             let duration =
                 run.plan.stages[nextIndex].duration
                 + run.extensionsByStage[nextIndex, default: 0]

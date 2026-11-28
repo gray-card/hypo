@@ -571,7 +571,16 @@ private actor HydratingFrameDetailStore: FrameDetailStoring {
 
     func frames(roll: ATURI) async throws -> [FrameSummary] {
         let details = try await exposureDetails(roll: roll, frameNumber: nil)
-        return Dictionary(grouping: details, by: { $0.draft.frameNumber })
+        return summarizeFrames(details)
+    }
+
+    func cachedFrames(roll: ATURI) async throws -> [FrameSummary] {
+        let details = try await cachedExposureDetails(roll: roll, frameNumber: nil)
+        return summarizeFrames(details)
+    }
+
+    private func summarizeFrames(_ details: [ExposureDetail]) -> [FrameSummary] {
+        Dictionary(grouping: details, by: { $0.draft.frameNumber })
             .map { frameNumber, exposures in
                 let latest = exposures.max {
                     ($0.takenAt?.date ?? $0.createdAt.date)
@@ -590,6 +599,10 @@ private actor HydratingFrameDetailStore: FrameDetailStoring {
 
     func exposures(roll: ATURI, frameNumber: Int) async throws -> [ExposureDetail] {
         try await exposureDetails(roll: roll, frameNumber: frameNumber)
+    }
+
+    func exposures(roll: ATURI) async throws -> [ExposureDetail] {
+        try await exposureDetails(roll: roll, frameNumber: nil)
     }
 
     func shoots() async throws -> [ShootAssociation] {
@@ -639,22 +652,8 @@ private actor HydratingFrameDetailStore: FrameDetailStoring {
             return
         }
 
-        let local = snapshot.records.first(where: { $0.uri == uri.rawValue })
-        var current: HydratedRepositoryRecord
-        do {
-            current = try await hydrator.get(
-                RecordHydrationRequest(
-                    repo: repo,
-                    collection: Self.exposureCollection,
-                    rkey: rkey,
-                    cid: local?.cid
-                )
-            )
-            try await store.apply([.upsertRecord(current.cached())])
-        } catch {
-            guard let local else {
-                throw LoggerError.write("The complete exposure record is not available offline.")
-            }
+        let current: HydratedRepositoryRecord
+        if let local = snapshot.records.first(where: { $0.uri == uri.rawValue }) {
             current = HydratedRepositoryRecord(
                 uri: local.uri,
                 cid: local.cid,
@@ -662,6 +661,15 @@ private actor HydratingFrameDetailStore: FrameDetailStoring {
                 rkey: local.rkey,
                 value: local.value
             )
+        } else {
+            current = try await hydrator.get(
+                RecordHydrationRequest(
+                    repo: repo,
+                    collection: Self.exposureCollection,
+                    rkey: rkey
+                )
+            )
+            try await store.apply([.upsertRecord(current.cached())])
         }
         let merged = try mergeExposure(original: current.value, proposed: record)
         _ = try await engine.enqueuePut(
@@ -677,7 +685,15 @@ private actor HydratingFrameDetailStore: FrameDetailStoring {
     private func exposureDetails(roll: ATURI, frameNumber: Int?) async throws
         -> [ExposureDetail]
     {
+        if let frameNumber {
+            let local = try await cachedExposureDetails(roll: roll, frameNumber: frameNumber)
+            if !local.isEmpty { return local }
+        }
         _ = try? await refresh(collection: Self.exposureCollection)
+        return try await cachedExposureDetails(roll: roll, frameNumber: frameNumber)
+    }
+
+    private func cachedExposureDetails(roll: ATURI, frameNumber: Int?) async throws -> [ExposureDetail] {
         let records = try await indexedRecords(collection: Self.exposureCollection)
         return records.compactMap { indexed in
             guard
@@ -754,7 +770,7 @@ private actor HydratingFrameDetailStore: FrameDetailStoring {
         let snapshot = try await store.snapshot()
         var records: [String: IndexedRecord] = Dictionary(
             uniqueKeysWithValues: snapshot.records.compactMap { cached -> (String, IndexedRecord)? in
-                guard cached.collection == collection, cached.uri.hasPrefix("at://") else {
+                guard cached.collection == collection, cached.uri.hasPrefix("at://\(repo)/") else {
                     return nil
                 }
                 return (cached.uri, IndexedRecord(uri: cached.uri, value: cached.value))
@@ -1711,6 +1727,8 @@ final class AppModel {
 
     let dependencies: AppDependencies
     private(set) var loggerModel: LoggerFeatureModel?
+    private var loggerAccountSubject: String?
+    private var accountRefreshID = UUID()
     let libraryModel: LibraryFeatureModel
     let meterModel: MeterFeatureModel
     let timerModel: TimerFeatureModel
@@ -1853,7 +1871,13 @@ final class AppModel {
     }
 
     fileprivate func replaceSession(_ session: OAuthSession?) {
+        accountRefreshID = UUID()
         dependencies.authenticationState.replace(with: session)
+        if loggerAccountSubject != session?.subject {
+            loggerModel = nil
+            loggerAccountSubject = nil
+            timerModel.setAvailableFilmRolls([])
+        }
         syncStatusModel.setTransportAvailability(
             session == nil ? .signInRequired : .available
         )
@@ -1865,15 +1889,22 @@ final class AppModel {
     }
 
     private func refreshAccountData(session: OAuthSession?) async {
+        let refreshID = UUID()
+        accountRefreshID = refreshID
         isLoadingAccountData = true
-        defer { isLoadingAccountData = false }
+        defer {
+            if accountRefreshID == refreshID { isLoadingAccountData = false }
+        }
         await accountLibraryProvider.replaceSession(session)
-        while libraryModel.isLoading {
+        while libraryModel.isLoading && accountRefreshID == refreshID && !Task.isCancelled {
             try? await Task.sleep(for: .milliseconds(25))
         }
+        guard accountRefreshID == refreshID, !Task.isCancelled else { return }
         await libraryModel.load()
+        guard accountRefreshID == refreshID, !Task.isCancelled else { return }
         guard let session else {
             loggerModel = nil
+            loggerAccountSubject = nil
             loggerUnavailableMessage = "Sign in to load your active rolls."
             timerModel.setAvailableFilmRolls([])
             return
@@ -1881,8 +1912,10 @@ final class AppModel {
         await refreshCalibrationProfiles(repo: session.subject)
         do {
             let rolls = try await accountLibraryProvider.activeRolls()
+            guard accountRefreshID == refreshID, !Task.isCancelled else { return }
             guard let first = rolls.first else {
                 loggerModel = nil
+                loggerAccountSubject = nil
                 loggerUnavailableMessage = "No loaded or partially exposed rolls were found."
                 timerModel.setAvailableFilmRolls([])
                 return
@@ -1893,24 +1926,31 @@ final class AppModel {
                 store: dependencies.persistenceStore,
                 hydrator: dependencies.recordHydrator
             )
-            let shoots = (try? await frameDetailStore.shoots()) ?? []
-            loggerModel = LoggerFeatureModel(
-                activeRoll: first,
-                availableRolls: rolls,
-                writer: QueuedExposureWriter(
-                    engine: dependencies.syncEngine,
-                    repo: session.subject
-                ),
-                lifecycleWriter: QueuedFilmRollLifecycleWriter(
-                    repo: session.subject,
-                    engine: dependencies.syncEngine,
-                    store: dependencies.persistenceStore,
-                    hydrator: dependencies.recordHydrator
-                ),
-                frameDetailStore: frameDetailStore,
-                locationProvider: CoreLocationShootLocationProvider(),
-                shoots: shoots
-            )
+            let shoots = try? await frameDetailStore.shoots()
+            guard accountRefreshID == refreshID, !Task.isCancelled else { return }
+            if let loggerModel, loggerAccountSubject == session.subject {
+                loggerModel.replaceAvailableRolls(rolls)
+                if let shoots { loggerModel.replaceShoots(shoots) }
+            } else {
+                loggerModel = LoggerFeatureModel(
+                    activeRoll: first,
+                    availableRolls: rolls,
+                    writer: QueuedExposureWriter(
+                        engine: dependencies.syncEngine,
+                        repo: session.subject
+                    ),
+                    lifecycleWriter: QueuedFilmRollLifecycleWriter(
+                        repo: session.subject,
+                        engine: dependencies.syncEngine,
+                        store: dependencies.persistenceStore,
+                        hydrator: dependencies.recordHydrator
+                    ),
+                    frameDetailStore: frameDetailStore,
+                    locationProvider: CoreLocationShootLocationProvider(),
+                    shoots: shoots ?? []
+                )
+                loggerAccountSubject = session.subject
+            }
             applyRequestedLoggerValues()
             timerModel.setAvailableFilmRolls(
                 rolls.map { roll in
@@ -1927,7 +1967,10 @@ final class AppModel {
                 }
             )
         } catch {
+            guard accountRefreshID == refreshID, !Task.isCancelled else { return }
+            if loggerAccountSubject == session.subject, loggerModel != nil { return }
             loggerModel = nil
+            loggerAccountSubject = nil
             loggerUnavailableMessage = "Your active rolls could not be loaded."
             timerModel.setAvailableFilmRolls([])
         }

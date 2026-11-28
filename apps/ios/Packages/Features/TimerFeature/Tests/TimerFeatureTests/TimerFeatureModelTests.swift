@@ -40,6 +40,39 @@ import TimerEngine
 }
 
 @MainActor
+@Test func displayTickLeavesTheDurableRunUnchangedWithinAStage() throws {
+    let clock = TestClock(Date(timeIntervalSince1970: 2_000))
+    let model = TimerFeatureModel(plan: try plan(), now: { clock.date })
+    model.performPrimaryAction()
+    let started = model.run
+
+    clock.date = clock.date.addingTimeInterval(25)
+    model.refresh()
+
+    #expect(model.snapshot?.remaining == 35)
+    #expect(model.run == started)
+}
+
+@MainActor
+@Test func manualStageHandoffDoesNotConsumeTimeWhileWaiting() throws {
+    let clock = TestClock(Date(timeIntervalSince1970: 2_000))
+    let model = TimerFeatureModel(plan: try plan(), now: { clock.date })
+    model.performPrimaryAction(automaticallyAdvances: false)
+
+    clock.date = clock.date.addingTimeInterval(90)
+    model.refresh()
+    #expect(model.run.currentStageIndex == 1)
+    #expect(model.run.status == .paused)
+    #expect(model.primaryActionTitle == "Start stage")
+    #expect(model.snapshot?.remaining == 60)
+
+    clock.date = clock.date.addingTimeInterval(30)
+    model.performPrimaryAction()
+    #expect(model.run.status == .running)
+    #expect(model.snapshot?.remaining == 60)
+}
+
+@MainActor
 @Test func recipeFailureUsesSafeCopyAndRetainsBuiltInRecipes() async {
     let model = TimerFeatureModel(
         recipe: TimerFeatureDefaults.blackAndWhiteRecipe(),

@@ -14,7 +14,7 @@ private let newestTestLexicon = Data(
 )
 
 @Test func usesReleasedBindingVersion() {
-    #expect(PanprotoAdoption.version == "0.71.0")
+    #expect(PanprotoAdoption.version == "0.78.0")
 }
 
 @Test func inspectsAnATProtoLexiconThroughTheOfficialEngine() async throws {
@@ -130,7 +130,7 @@ private let newestTestLexicon = Data(
         fullChainJSON: try identityChainFixture()
     )
     let record = Data(
-        #"{"$type":"app.test.record","name":"Darkroom notes","schemaVersion":"v1"}"#.utf8
+        #"{"$type":"app.test.record","name":"Darkroom notes","schemaVersion":"v1","clientExtension":5}"#.utf8
     )
     let migrator = PanprotoRecordMigrator()
 
@@ -174,12 +174,7 @@ private let newestTestLexicon = Data(
     }
 }
 
-/// Removal gate for the Panproto 0.71.0 decimal fingerprint-message compatibility shim.
-///
-/// When a later binding maps this engine spelling to `PanprotoError.Fault` itself, remove the
-/// fallback parser in `PanprotoFault.wrapping(_:)`; this test must continue to pass through the
-/// official structured-fault path.
-@Test func panproto0710DecimalFingerprintMessageIsNormalized() async throws {
+@Test func complementSourceIdentityMismatchHasATypedFault() async throws {
     let inspector = PanprotoSchemaInspector()
     let old = PanprotoSchemaRelease(
         label: "v1",
@@ -214,8 +209,9 @@ private let newestTestLexicon = Data(
             using: newestMigration
         )
         Issue.record("Expected a complement captured against v1 to be refused by v2")
-    } catch .complementFingerprintMismatch {
-        // Callers can discard the stale custody entry and project again with the correct chain.
+    } catch .complementIdentityMismatch(let component, let expected, let actual) {
+        #expect(component == "source_schema")
+        #expect(expected != actual)
     }
 }
 

@@ -297,9 +297,9 @@ if (!pin) throw new Error("panproto-swift pin is missing");
 if (pin.location !== "https://github.com/panproto/panproto-swift.git") {
   throw new Error(`unexpected panproto-swift source: ${pin.location}`);
 }
-if (pin.state?.version !== "0.71.0" ||
-    pin.state?.revision !== "a11c201605afee0179a0abf27ec6e07d91c1c316") {
-  throw new Error("panproto-swift must remain pinned to reviewed release 0.71.0");
+if (pin.state?.version !== "0.78.0" ||
+    pin.state?.revision !== "1727b2e805b860d9c9bf04e207f3626b078a98b4") {
+  throw new Error("panproto-swift must remain pinned to reviewed release 0.78.0");
 }
 ' \
     "$ios_root/Hypo.xcworkspace/xcshareddata/swiftpm/Package.resolved" \

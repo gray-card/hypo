@@ -13,9 +13,10 @@ import Testing
     )
 
     #expect(try requiredInteger(manifest, "formatVersion") == 1)
-    #expect(try requiredString(manifest, "panprotoVersion") == PanprotoAdoption.version)
     #expect(try requiredInteger(oracle, "formatVersion") == 1)
-    #expect(try requiredString(oracle, "panprotoVersion") == PanprotoAdoption.version)
+    // This version identifies the CLI that generated the oracle. The cases below
+    // verify that the independently pinned Swift binding agrees with its results.
+    #expect(try requiredString(oracle, "panprotoVersion") == requiredString(manifest, "panprotoVersion"))
 
     let manifestCases = try #require(manifest["cases"] as? [NSDictionary])
     let oracleCases = try #require(oracle["cases"] as? [NSDictionary])

@@ -4,6 +4,7 @@ import HypoLexicon
 import LoggerFeature
 import LibraryFeature
 import MeterFeature
+import SafariServices
 import SettingsFeature
 import SwiftUI
 import SyncStatusFeature
@@ -13,6 +14,7 @@ struct RootView: View {
     @Bindable var model: AppModel
     @Environment(\.scenePhase) private var scenePhase
     @State private var syncStatusIsPresented = false
+    @State private var webDestination: WebDestination?
 
     var body: some View {
         TabView(selection: $model.selectedTab) {
@@ -63,7 +65,7 @@ struct RootView: View {
                 .toolbar { appToolbar }
             }
             .tabItem {
-                Label("Rolls", systemImage: "camera.roll")
+                Label("Rolls", systemImage: "film")
                     .accessibilityIdentifier("tab.rolls")
             }
             .tag(AppModel.Tab.rolls)
@@ -71,7 +73,8 @@ struct RootView: View {
             NavigationStack {
                 LibraryFeatureView(
                     model: model.libraryModel,
-                    onOpenAccountSettings: { model.isSettingsPresented = true }
+                    onOpenAccountSettings: { model.isSettingsPresented = true },
+                    onOpenWeb: { webDestination = WebDestination(url: $0) }
                 )
                 .toolbar { appToolbar }
             }
@@ -91,8 +94,15 @@ struct RootView: View {
         .onChange(of: model.loggerModel?.activeRoll) { _, _ in
             model.publishSystemSnapshot()
         }
-        .onChange(of: model.timerModel.snapshot) { _, _ in
+        .onChange(of: model.timerModel.run) { _, _ in
             model.publishSystemSnapshot()
+        }
+        .task(id: scenePhase == .active && model.timerModel.run.status == .running) {
+            guard scenePhase == .active, model.timerModel.run.status == .running else { return }
+            while !Task.isCancelled && model.timerModel.run.status == .running {
+                model.timerModel.refresh()
+                try? await Task.sleep(for: .milliseconds(250))
+            }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
@@ -128,6 +138,10 @@ struct RootView: View {
             .hypoAppearance(.standard)
             .preferredColorScheme(.dark)
         }
+        .sheet(item: $webDestination) { destination in
+            HypoWebBrowser(url: destination.url)
+                .ignoresSafeArea()
+        }
         .safeAreaInset(edge: .top) {
             if !model.dependencies.persistenceIsDurable {
                 HypoErrorNotice(
@@ -151,13 +165,19 @@ struct RootView: View {
             ProgressView("Loading active rolls")
                 .navigationTitle("Log frames")
         } else {
+            let isSignedIn = model.settingsModel.session != nil
             ContentUnavailableView {
-                Label("Frame logging unavailable", systemImage: "camera.roll")
+                Label(isSignedIn ? "No active roll" : "Sign in to log frames", systemImage: "camera.roll")
             } description: {
                 Text(model.loggerUnavailableMessage)
             } actions: {
-                Button("Open Settings") { model.isSettingsPresented = true }
-                    .buttonStyle(.borderedProminent)
+                if isSignedIn {
+                    Button("Go to Rolls") { model.selectedTab = .rolls }
+                        .buttonStyle(.borderedProminent)
+                } else {
+                    Button("Open Settings") { model.isSettingsPresented = true }
+                        .buttonStyle(.borderedProminent)
+                }
             }
             .navigationTitle("Log frames")
         }
@@ -217,6 +237,23 @@ struct RootView: View {
     }
 }
 
+private struct WebDestination: Identifiable {
+    let url: URL
+    var id: URL { url }
+}
+
+private struct HypoWebBrowser: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context _: Context) -> SFSafariViewController {
+        let controller = SFSafariViewController(url: url)
+        controller.dismissButtonStyle = .close
+        return controller
+    }
+
+    func updateUIViewController(_: SFSafariViewController, context _: Context) {}
+}
+
 private struct SessionsHomeView: View {
     @Bindable var model: AppModel
     let onOpenAccountSettings: () -> Void
@@ -227,21 +264,20 @@ private struct SessionsHomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: HypoTheme.Space.four) {
                     if hasActiveDevelopment { activeDevelopmentPanel }
-                    Text("Start work")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     sessionAction(
                         destination: .logger,
                         title: "Log frames",
                         detail: loggerDetail,
                         systemImage: "camera.shutter.button"
                     )
-                    sessionAction(
-                        destination: .timer,
-                        title: "Develop film",
-                        detail: model.timerModel.selectedRecipe.plan.name,
-                        systemImage: "timer"
-                    )
+                    if !hasActiveDevelopment {
+                        sessionAction(
+                            destination: .timer,
+                            title: "Develop film",
+                            detail: model.timerModel.selectedRecipe.plan.name,
+                            systemImage: "timer"
+                        )
+                    }
                     if model.loggerModel == nil, !model.isLoadingAccountData {
                         Button("Manage account access", action: onOpenAccountSettings)
                             .font(.footnote.weight(.semibold))
@@ -261,6 +297,7 @@ private struct SessionsHomeView: View {
 
     private var hasActiveDevelopment: Bool {
         model.timerModel.run.status == .running || model.timerModel.run.status == .paused
+            || model.timerModel.activeManualStage != nil
     }
 
     private var loggerDetail: String {
@@ -278,7 +315,11 @@ private struct SessionsHomeView: View {
                     .foregroundStyle(HypoTheme.ColorToken.accent)
                 Text(model.timerModel.selectedRecipe.plan.name)
                     .font(.title3.weight(.semibold))
-                if let snapshot = model.timerModel.snapshot {
+                if let manual = model.timerModel.activeManualStage {
+                    Text(manual.name)
+                        .font(.callout)
+                        .foregroundStyle(HypoTheme.ColorToken.muted)
+                } else if let snapshot = model.timerModel.snapshot {
                     Text("\(snapshot.stage.name) · \(duration(snapshot.remaining)) remaining")
                         .font(.callout.monospacedDigit())
                         .foregroundStyle(HypoTheme.ColorToken.muted)

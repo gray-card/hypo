@@ -15,6 +15,7 @@ public struct DevelopmentTimerRun: Codable, Hashable, Sendable {
     public private(set) var extensionsByStage: [Int: TimeInterval]
     public private(set) var lastObservedAt: Date?
     public private(set) var completedAt: Date?
+    public private(set) var pausesBetweenStages: Bool?
 
     public init(id: UUID = UUID(), plan: TimerPlan) {
         self.id = id
@@ -32,11 +33,12 @@ public struct DevelopmentTimerRun: Codable, Hashable, Sendable {
         plan.stages[currentStageIndex]
     }
 
-    public mutating func start(at date: Date) throws(TimerError) {
+    public mutating func start(at date: Date, pausesBetweenStages: Bool = false) throws(TimerError) {
         guard status == .ready else {
             throw .invalidTransition(from: status, action: "start")
         }
         status = .running
+        self.pausesBetweenStages = pausesBetweenStages ? true : nil
         stageStartedAt = date
         lastObservedAt = date
     }
@@ -184,9 +186,15 @@ public struct DevelopmentTimerRun: Codable, Hashable, Sendable {
     private mutating func moveToNextStage(at date: Date) {
         if currentStageIndex + 1 < plan.stages.count {
             currentStageIndex += 1
-            stageStartedAt = date
-            pausedElapsed = nil
-            status = .running
+            if pausesBetweenStages == true {
+                stageStartedAt = nil
+                pausedElapsed = 0
+                status = .paused
+            } else {
+                stageStartedAt = date
+                pausedElapsed = nil
+                status = .running
+            }
         } else {
             status = .completed
             stageStartedAt = nil

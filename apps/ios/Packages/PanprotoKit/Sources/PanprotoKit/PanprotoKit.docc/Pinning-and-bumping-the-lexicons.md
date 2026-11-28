@@ -8,7 +8,7 @@ release as one tested change.
 Hypo pins three related inputs:
 
 1. The `panproto-swift` package and its engine XCFramework. PanprotoKit currently resolves the
-   exact `0.71.0` package release.
+   exact `0.78.0` package release.
 2. The Hypo lexicon release label written in a record's optional `schemaVersion` field.
 3. The reviewed chain set that relates supported lexicon releases.
 
@@ -69,25 +69,23 @@ tuple `(record URI, native CID, chain ID)`. The tuple ties the complement to (i)
 (ii) the exact source revision projected, and (iii) the migration that captured it. Do not reuse a
 complement after the source CID or chain changes.
 
-Two typed failures require a fresh projection rather than a retry with the same custody entry:
+These typed failures indicate that the caller needs a fresh projection:
 
 - `PanprotoFault/complementFingerprintMismatch(left:right:)` means the complement was captured
   against a different source schema.
+- `PanprotoFault/complementIdentityMismatch(component:expected:actual:)` identifies the part of
+  the saved complement that no longer matches the compiled migration.
 - `PanprotoFault/complementConflict(kind:key:)` means two complement entries disagree for the
   same structural key.
 
 Other parse, validation, and migration failures are also mapped to `PanprotoFault` so callers do
 not branch on Panproto engine messages.
 
-### Panproto 0.71.0 fingerprint normalization
+### Record compatibility
 
-Panproto 0.71.0 may report a lens `put` mismatch as `source fingerprint mismatch: complement has
-…, lens expects …`. That decimal spelling is not recognized by the binding's structured-fault
-parser, which expects the engine's other fingerprint form. `PanprotoFault.wrapping(_:)` therefore
-normalizes this exact message to `complementFingerprintMismatch` after first checking the official
-structured fault. The test `panproto0710DecimalFingerprintMessageIsNormalized` is the removal
-gate: when an adopted upstream binding recognizes the decimal form, delete the fallback parser and
-keep the test passing through the official structured-fault path.
+Panproto 0.78.0 reports undeclared fields during structural validation. PanprotoKit accepts these
+fields according to the AT Protocol Lexicon rules and preserves them with their owning nodes during
+forward lifts. Invalid values for declared fields still fail validation.
 
 ## Bump a release
 
