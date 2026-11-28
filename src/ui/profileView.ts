@@ -2,7 +2,7 @@
 // reachable at /<handle> (e.g. hypo.graycard.app/alice.bsky.social) or via handle search.
 // No auth, no backend.
 
-import { el, $, showView, stagger, field, getVisionConfig, loadPhase } from "./dom.js";
+import { el, $, showView, field, getVisionConfig, loadPhase } from "./dom.js";
 import { NS, catalogLabel, instanceLabel } from "../graycard.js";
 import { recordStore } from "../grain.js";
 import { renderOn, type RecordStore } from "@hypo/store";
@@ -1073,7 +1073,6 @@ export async function openProfile(handle: string): Promise<void> {
 
     if (!store.instance.camera?.length && !templates.length && !galleries.length)
       body.append(el("p", { class: "muted" }, "No public graycard records yet."));
-    stagger([...body.querySelectorAll(".card")]);
   } catch (error) {
     if (revision === profileRevision)
       body.replaceChildren(el("p", { class: "error" }, `Couldn't load @${handle}: ${errorMessage(error)}`));

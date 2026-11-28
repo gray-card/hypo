@@ -341,6 +341,17 @@ function rollsCard(services: FilmViewServices): HTMLDivElement {
       .join(" ")
       .toLowerCase();
   };
+  const metadata = new Map(
+    rolls.map((roll) => [
+      roll,
+      {
+        activity: activityTime(roll),
+        frames: framesForRoll(services.getStore(), roll.uri).length,
+        stock: stockLabel(services, roll.value.stock),
+        search: searchText(roll),
+      },
+    ]),
+  );
   const scopeButtons = new Map<string, HTMLButtonElement>();
   const scopes = [
     ["all", "All", scopeCounts.all],
@@ -367,18 +378,17 @@ function rollsCard(services: FilmViewServices): HTMLDivElement {
   );
   const render = () => {
     const query = search.value.trim().toLowerCase();
-    let filtered = rolls.filter((roll) => matchesScope(roll, scope) && (!query || searchText(roll).includes(query)));
-    filtered = [...filtered].sort((left, right) => {
+    const filtered = rolls.filter(
+      (roll) => matchesScope(roll, scope) && (!query || metadata.get(roll)!.search.includes(query)),
+    );
+    filtered.sort((left, right) => {
       if (sort.value === "status") return compareRollsByStatus(left, right, services.rollStatuses);
-      if (sort.value === "oldest") return activityTime(left) - activityTime(right);
-      if (sort.value === "stock")
-        return stockLabel(services, left.value.stock).localeCompare(stockLabel(services, right.value.stock));
-      if (sort.value === "frames")
-        return (
-          framesForRoll(services.getStore(), right.uri).length - framesForRoll(services.getStore(), left.uri).length ||
-          activityTime(right) - activityTime(left)
-        );
-      return activityTime(right) - activityTime(left);
+      const first = metadata.get(left)!;
+      const second = metadata.get(right)!;
+      if (sort.value === "oldest") return first.activity - second.activity;
+      if (sort.value === "stock") return first.stock.localeCompare(second.stock);
+      if (sort.value === "frames") return second.frames - first.frames || second.activity - first.activity;
+      return second.activity - first.activity;
     });
     const visible = filtered.slice(0, visibleCount);
     const grouped = scopes

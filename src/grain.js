@@ -40,6 +40,7 @@ export function recordStore(repo) {
     hydratedCollections.set(store, new Set());
     collectionHydrations.set(store, new Map());
     outbox.subscribeAcknowledgements(repo, async (acknowledgement) => {
+      collectionHydrations.get(store).get(acknowledgement.operation.collection)?.acknowledgements.push(acknowledgement);
       store.acknowledge(acknowledgement);
       await (await openRepositoryRecordCache()).applyAcknowledgement(acknowledgement);
     });
@@ -88,10 +89,9 @@ export function recordRkey(uri) {
 
 // Read remote ⊕ pending for one collection. A missing snapshot is populated
 // once; only `refresh: true` performs another network collection read.
-export async function listRecords(agent, repo, collection, { refresh = false } = {}) {
-  const cache = await openRepositoryRecordCache();
-  const store = recordStore(repo);
+async function hydrateRecordCollection(agent, repo, collection, store, cache, refresh) {
   const hydrated = hydratedCollections.get(store);
+  if (!refresh && hydrated.has(collection)) return;
   const hydrations = collectionHydrations.get(store);
   const active = hydrations.get(collection);
   if (active) {
@@ -102,17 +102,20 @@ export async function listRecords(agent, repo, collection, { refresh = false } =
     const hydration = {
       refresh,
       promise: null,
+      acknowledgements: [],
     };
     hydration.promise = (async () => {
-      let records = (await cache.read(repo, collection)).map(normalizeRecordView);
+      let records;
       if (refresh || !(await cache.hasSnapshot(repo, collection))) {
         try {
           records = (await repoClient(agent).listAll({ repo, collection, limit: 100 })).map(normalizeRecordView);
           await cache.replace(repo, collection, records);
         } catch (error) {
+          records ??= (await cache.read(repo, collection)).map(normalizeRecordView);
           if (!records.length && navigator.onLine !== false && error?.name !== "NetworkError") throw error;
         }
       }
+      records ??= (await cache.read(repo, collection)).map(normalizeRecordView);
       records = await Promise.all(
         records.map(async (record) => {
           try {
@@ -144,7 +147,10 @@ export async function listRecords(agent, repo, collection, { refresh = false } =
           }
         }),
       );
-      store.replaceRemote(collection, records);
+      // A response started before a write can arrive after its acknowledgement.
+      // Replay acknowledged edits after replacing the disk and memory snapshots.
+      for (const acknowledgement of hydration.acknowledgements) await cache.applyAcknowledgement(acknowledgement);
+      store.replaceRemoteCollection(collection, records, hydration.acknowledgements);
       hydrated.add(collection);
     })();
     hydrations.set(collection, hydration);
@@ -154,9 +160,29 @@ export async function listRecords(agent, repo, collection, { refresh = false } =
       if (hydrations.get(collection) === hydration) hydrations.delete(collection);
     }
   }
-  const operations = await outbox.list(repo);
-  store.replaceOperations(operations);
-  return [...store.collection(collection).value.values()];
+}
+
+export async function listRecordCollections(
+  agent,
+  repo,
+  collections,
+  { refresh = false, refreshCollections = [] } = {},
+) {
+  const store = recordStore(repo);
+  const cache = await openRepositoryRecordCache();
+  const requestedRefresh = new Set(refreshCollections);
+  await Promise.all(
+    collections.map((collection) =>
+      hydrateRecordCollection(agent, repo, collection, store, cache, refresh || requestedRefresh.has(collection)),
+    ),
+  );
+  store.replaceOperations(await outbox.list(repo));
+  return collections.map((collection) => [...store.collection(collection).value.values()]);
+}
+
+export async function listRecords(agent, repo, collection, options) {
+  const [records] = await listRecordCollections(agent, repo, [collection], options);
+  return records;
 }
 
 // BlobRef and CID class instances lose their prototypes when IndexedDB applies
@@ -173,16 +199,16 @@ export function normalizeRecordView(record) {
 }
 
 // list the user's photos, newest first (for linking film frames to photos by AT-URI).
-export async function getPhotos(agent, did) {
-  const records = await listRecords(agent, did, COLLECTIONS.photo, { refresh: true });
+export async function getPhotos(agent, did, { refresh = true } = {}) {
+  const records = await listRecords(agent, did, COLLECTIONS.photo, { refresh });
   return records
     .map((r) => ({ uri: r.uri, cid: r.cid, value: r.value }))
     .sort((a, b) => (b.value.createdAt || "").localeCompare(a.value.createdAt || ""));
 }
 
 // list the user's galleries, newest first.
-export async function getGalleries(agent, did) {
-  const records = await listRecords(agent, did, COLLECTIONS.gallery, { refresh: true });
+export async function getGalleries(agent, did, { refresh = true } = {}) {
+  const records = await listRecords(agent, did, COLLECTIONS.gallery, { refresh });
 
   return records
     .map((r) => ({
@@ -195,31 +221,38 @@ export async function getGalleries(agent, did) {
 }
 
 // load one gallery plus its ordered photos and any exif records.
-export async function getGalleryDetail(agent, did, galleryUri) {
-  // the gallery record itself (fresh, with current cid for safe swaps).
-  const gallery = (await listRecords(agent, did, COLLECTIONS.gallery, { refresh: true })).find(
-    (record) => record.uri === galleryUri,
+export async function getGalleryDetail(agent, did, galleryUri, { refresh = true } = {}) {
+  // Fetch independent collections together, retaining the CIDs for subsequent swaps.
+  const [galleries, galleryItems, exifRecords, photoRecords] = await listRecordCollections(
+    agent,
+    did,
+    [COLLECTIONS.gallery, COLLECTIONS.galleryItem, COLLECTIONS.exif, COLLECTIONS.photo],
+    { refresh },
   );
-  if (!gallery) throw new Error("Gallery record is unavailable");
+  const gallery = galleries.find((record) => record.uri === galleryUri);
+  if (!gallery) {
+    if (!refresh) return getGalleryDetail(agent, did, galleryUri, { refresh: true });
+    throw new Error("Gallery record is unavailable");
+  }
   const rkey = recordRkey(galleryUri);
 
   // all gallery.item rows, then keep only the ones pointing at this gallery.
-  const items = (await listRecords(agent, did, COLLECTIONS.galleryItem, { refresh: true }))
+  const items = galleryItems
     .filter((r) => r.value.gallery === galleryUri)
     .sort((a, b) => (a.value.position ?? 0) - (b.value.position ?? 0));
 
   // index exif records by the photo uri they describe.
   const exifByPhoto = new Map();
-  for (const r of await listRecords(agent, did, COLLECTIONS.exif, { refresh: true })) {
+  for (const r of exifRecords) {
     exifByPhoto.set(r.value.photo, { uri: r.uri, cid: r.cid, value: r.value });
   }
 
   // resolve each item's photo record.
   const photos = [];
-  const photoRecords = await listRecords(agent, did, COLLECTIONS.photo, { refresh: true });
+  const photosByUri = new Map(photoRecords.map((record) => [record.uri, record]));
   for (const item of items) {
     const photoUri = item.value.item;
-    const record = photoRecords.find((candidate) => candidate.uri === photoUri);
+    const record = photosByUri.get(photoUri);
     // A photo record might be missing/deleted. Surface a placeholder.
     const photo = record
       ? { uri: record.uri, cid: record.cid, value: record.value }
@@ -441,7 +474,8 @@ export async function saveGallery(agent, did, gallery, { title, description }) {
     record: value,
     swapRecord: gallery.cid,
   });
-  await flushRecordOperation(agent, did, operation);
+  const settled = await flushRecordOperation(agent, did, operation);
+  return { ...gallery, cid: settled.acknowledgement?.cid || gallery.cid, value };
 }
 
 // update a photo's alt text, preserving the image blob and everything else.

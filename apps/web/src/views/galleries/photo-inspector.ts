@@ -4,6 +4,7 @@ export interface InspectorPhoto {
   card: HTMLElement;
   fields: HTMLElement;
   control: HTMLElement;
+  prepare?(): void;
 }
 
 /** Keep each photo's live form mounted so navigation never discards a draft. */
@@ -28,14 +29,17 @@ export function createPhotoInspector(photos: HTMLElement, entries: InspectorPhot
       el("div", { class: "row wrap inspector-navigation", "aria-label": "Photo navigation" }, [previous, next]),
     ],
   );
+  const byCard = new Map<Element, InspectorPhoto>(entries.map((entry) => [entry.card, entry]));
   const ordered = () =>
-    entries
-      .filter((entry) => !entry.card.hidden)
-      .sort((a, b) => [...photos.children].indexOf(a.card) - [...photos.children].indexOf(b.card));
+    [...photos.children].flatMap((card) => {
+      const entry = byCard.get(card);
+      return entry && !entry.card.hidden ? [entry] : [];
+    });
   const sections = (entry: InspectorPhoto) => [
     ...entry.fields.querySelectorAll<HTMLDetailsElement>("details[data-photo-section]"),
   ];
   function open(entry: InspectorPhoto, focus = true) {
+    entry.prepare?.();
     if (!active) returnPosition = { left: window.scrollX, top: window.scrollY };
     if (active && active !== entry) {
       const expanded = new Set(
@@ -46,18 +50,20 @@ export function createPhotoInspector(photos: HTMLElement, entries: InspectorPhot
       sections(entry).forEach((detail) => {
         detail.open = expanded.has(detail.dataset.photoSection);
       });
+      active.fields.hidden = true;
+      active.card.classList.remove("photo-focused");
+      active.control.setAttribute("aria-expanded", "false");
     }
     active = entry;
     node.hidden = false;
     photos.parentElement?.classList.add("has-inspector");
-    entries.forEach((item) => {
-      item.fields.hidden = item !== entry;
-      item.card.classList.toggle("photo-focused", item === entry);
-      item.control.setAttribute("aria-expanded", String(item === entry));
-    });
-    const index = ordered().indexOf(entry);
+    entry.fields.hidden = false;
+    entry.card.classList.add("photo-focused");
+    entry.control.setAttribute("aria-expanded", "true");
+    const items = ordered();
+    const index = items.indexOf(entry);
     previous.disabled = index <= 0;
-    next.disabled = index < 0 || index === ordered().length - 1;
+    next.disabled = index < 0 || index === items.length - 1;
     title.textContent = `Photo ${entry.card.dataset.frame || index + 1}`;
     if (focus) title.focus({ preventScroll: !compact() });
   }
@@ -65,11 +71,11 @@ export function createPhotoInspector(photos: HTMLElement, entries: InspectorPhot
     const prior = active;
     node.hidden = true;
     photos.parentElement?.classList.remove("has-inspector");
-    entries.forEach((item) => {
-      item.fields.hidden = true;
-      item.card.classList.remove("photo-focused");
-      item.control.setAttribute("aria-expanded", "false");
-    });
+    if (prior) {
+      prior.fields.hidden = true;
+      prior.card.classList.remove("photo-focused");
+      prior.control.setAttribute("aria-expanded", "false");
+    }
     active = undefined;
     if (prior && restorePosition) {
       prior.control.focus({ preventScroll: true });

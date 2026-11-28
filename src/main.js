@@ -109,28 +109,28 @@ async function libraryFeature(load = {}) {
   return initializeLibrary(module);
 }
 
-async function openLibrary() {
-  return (await libraryFeature()).openLibrary();
+async function openLibrary(options) {
+  return (await libraryFeature()).openLibrary(options);
 }
 
-async function openSessions(scope) {
+async function openSessions(scope, options) {
   return (
     await libraryFeature({
       view: "sessions-view",
       target: "#sessions-body",
       message: "Loading session history…",
     })
-  ).openSessions(scope);
+  ).openSessions(scope, options);
 }
 
-async function openRolls() {
+async function openRolls(options) {
   return (
     await libraryFeature({
       view: "rolls-view",
       target: "#rolls-body",
       message: "Loading your rolls…",
     })
-  ).openRolls();
+  ).openRolls(options);
 }
 
 async function openSessionRecord(target) {
@@ -371,9 +371,9 @@ const paletteCommands = createPaletteCommands({
 
 /* ---------- primary navigation ---------- */
 const SECTIONS = {
-  setup: { view: "library-view", icon: "library", load: () => openLibrary() },
-  rolls: { view: "rolls-view", icon: "film", load: () => openRolls() },
-  sessions: { view: "sessions-view", icon: "clock", load: () => openSessions() },
+  setup: { view: "library-view", icon: "library", load: (options) => openLibrary(options) },
+  rolls: { view: "rolls-view", icon: "film", load: (options) => openRolls(options) },
+  sessions: { view: "sessions-view", icon: "clock", load: (options) => openSessions(undefined, options) },
   galleries: { view: "list-view", icon: "image", load: () => loadGalleries() },
   following: { view: "following-view", icon: "users", load: () => openFollowing() },
   discover: { view: "profile-view", icon: "compass", load: () => openProfileSearch() },
@@ -408,7 +408,7 @@ const galleryList = createGalleryListView({
     const [grain, graycard, lazy] = await Promise.all([loadGrain(), loadGraycard(), loadLazyThumbModule()]);
     return {
       getGalleries: grain.getGalleries,
-      listRecords: grain.listRecords,
+      listRecordCollections: grain.listRecordCollections,
       collections: grain.COLLECTIONS,
       ns: graycard.NS,
       lazyThumb: lazy.lazyThumb,
@@ -438,6 +438,7 @@ const appBootstrap = createAppBootstrap({
   loadOutbox: loadOutboxModule,
   loadOnboarding: loadOnboardingModule,
   libraryFeature,
+  prefetchFollowing: (viewer) => loadFollowingModule().then((module) => module.prefetchFollowing(viewer)),
   openLibraryRecord: async (target) => (await libraryFeature()).openLibraryRecordRoute(target),
   openRolls,
   openSessions,
@@ -446,6 +447,7 @@ const appBootstrap = createAppBootstrap({
   closeLibraryRecord: () => loadLibraryModule.peek()?.closeLibraryRecordRoute(),
   goSection,
   navigateSection,
+  getLibraryTab: () => $("#library-body")?.dataset.tab,
   setLibraryTab: (tab) => {
     const body = $("#library-body");
     if (body) body.dataset.tab = tab;
@@ -487,15 +489,16 @@ function setActiveSection(name) {
   });
 }
 
-async function goSection(name) {
+async function goSection(name, { refresh = true, reuse = false } = {}) {
   const s = SECTIONS[name];
-  if (!s) return;
-  if (!guardLeave()) return;
+  if (!s || !guardLeave()) return false;
+  if (reuse && activeSection === name && loadLibraryModule.peek()?.hasReadySection(name)) return true;
   destroyProfileMap(); // release the profile heatmap's WebGL context when leaving the profile view
   destroyFollowing(); // ignore a slow public-feed response after leaving Following
   showView(s.view);
   setActiveSection(name);
-  await s.load();
+  await s.load({ refresh });
+  return true;
 }
 
 async function showProfile(seg) {

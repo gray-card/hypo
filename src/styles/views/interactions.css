@@ -8,24 +8,7 @@
   animation-duration: 0.28s;
 }
 
-/* staggered entrance */
-@keyframes reveal {
-  from {
-    transform: translateY(7px);
-  }
-  to {
-    transform: none;
-  }
-}
-.reveal {
-  animation: reveal 0.34s both cubic-bezier(0.2, 0.7, 0.2, 1);
-  animation-delay: calc(var(--i, 0) * 42ms);
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .reveal {
-    animation: none;
-  }
   .skeleton {
     animation: none;
   }

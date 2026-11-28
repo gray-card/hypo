@@ -12,12 +12,9 @@ select {
   background-position: right 11px center;
 }
 
-/* spring the buttons + reveal */
+/* Press feedback */
 button:active {
   transform: translateY(1px) scale(0.99);
-}
-.reveal {
-  animation-timing-function: var(--ease-spring);
 }
 
 /* safelight ambiance (dark only) */

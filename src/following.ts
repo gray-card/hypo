@@ -85,6 +85,7 @@ interface FollowingFeedOptions {
   cached?: FollowingFeedSnapshot | null;
   now?: () => number;
   onProgress?: (progress: FollowingProgress) => void;
+  shouldReportProgress?: () => boolean;
 }
 
 interface ProfileActivityResult {
@@ -383,8 +384,12 @@ export async function loadFollowingFeed(
   const actorStats: Record<string, FollowingActorStats> = {};
   for (const profile of profiles) {
     const previous = cached.actorStats[profile.did];
+    if (previous) {
+      actorStats[profile.did] = previous;
+      continue;
+    }
     const cachedEvents = cached.events.filter((event) => event.actor.did === profile.did);
-    actorStats[profile.did] = previous || {
+    actorStats[profile.did] = {
       did: profile.did,
       recordCount: cachedEvents.length,
       latestRecordAt: cachedEvents[0]?.createdAt,
@@ -439,14 +444,12 @@ export async function loadFollowingFeed(
         consecutiveEmptyScans: result.events.length ? 0 : (previous?.consecutiveEmptyScans || 0) + 1,
       };
       snapshot.cachedAt = new Date(now()).toISOString();
-      persistSnapshot();
     }
-    options.onProgress?.({
-      done: ++done,
-      total: rankedProfiles.length,
-      profile,
-      feed: cloneSnapshot(snapshot),
-    });
+    done += 1;
+    if (done % 8 === 0) persistSnapshot();
+    if (options.onProgress && (options.shouldReportProgress?.() ?? true)) {
+      options.onProgress({ done, total: rankedProfiles.length, profile, feed: cloneSnapshot(snapshot) });
+    }
     return result;
   });
   snapshot.cachedAt = new Date(now()).toISOString();

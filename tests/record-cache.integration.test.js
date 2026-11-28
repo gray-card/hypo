@@ -3,6 +3,7 @@ import { BlobRef as AtprotoBlobRef } from "@atproto/lexicon";
 import { CID } from "multiformats/cid";
 import { listRecords, recordStore } from "../src/grain.js";
 import { NS, deleteRecord, loadStore, readStoreSnapshot, saveRecord } from "../src/graycard.js";
+import * as legacyShapes from "../src/legacyShapeMigration.ts";
 import { RECORD_NSID_LIST } from "@hypo/lexicon";
 import { openRepositoryRecordCache } from "@hypo/store";
 import { mockAgent } from "./setup.js";
@@ -175,6 +176,22 @@ describe("record-cache read policy", () => {
     });
   });
 
+  it("shares the post-migration refresh once and leaves later snapshot reads on the cache", async () => {
+    const did = "did:plc:shared-migration-refresh";
+    const agent = statefulAgent(did, NS.instance.camera, []);
+    const migration = vi.spyOn(legacyShapes, "migrateLegacyShapes").mockResolvedValue({ migrated: true });
+    try {
+      await Promise.all([readStoreSnapshot(agent, did), readStoreSnapshot(agent, did)]);
+      expect(agent.reads).toBe(RECORD_NSID_LIST.length);
+      await readStoreSnapshot(agent, did);
+      expect(agent.reads).toBe(RECORD_NSID_LIST.length);
+      await readStoreSnapshot(agent, did, { refresh: true });
+      expect(agent.reads).toBe(2 * RECORD_NSID_LIST.length);
+    } finally {
+      migration.mockRestore();
+    }
+  });
+
   it("returns remote plus pending operations without another network read", async () => {
     const did = "did:plc:remote-plus-pending";
     const collection = NS.instance.camera;
@@ -273,6 +290,40 @@ describe("record-cache read policy", () => {
       expect.objectContaining({ uri: `at://${did}/${collection}/frame-1` }),
     ]);
     expect(agent.reads).toBe(1);
+  });
+
+  it("keeps an acknowledged edit when a stale background list response arrives later", async () => {
+    const did = "did:plc:background-read-before-write";
+    const collection = NS.instance.camera;
+    const original = {
+      uri: `at://${did}/${collection}/camera`,
+      cid: "cid-original",
+      value: {
+        nickname: "Original",
+        type: `at://${did}/${NS.catalog.cameraType}/type`,
+        createdAt: "2026-08-12T00:00:00.000Z",
+      },
+    };
+    const agent = statefulAgent(did, collection, [original]);
+    await listRecords(agent, did, collection);
+    const started = Promise.withResolvers();
+    const response = Promise.withResolvers();
+    agent.com.atproto.repo.listRecords = () => {
+      started.resolve();
+      return response.promise;
+    };
+    const refresh = listRecords(agent, did, collection, { refresh: true });
+    await started.promise;
+    const updated = { ...original.value, nickname: "Edited during refresh" };
+    try {
+      await saveRecord(agent, did, collection, updated, { ...original, rkey: "camera" });
+      await expect(listRecords(agent, did, collection)).resolves.toMatchObject([{ value: updated }]);
+    } finally {
+      response.resolve({ data: { records: [original] } });
+    }
+    await expect(refresh).resolves.toMatchObject([{ cid: "cid-put-1", value: updated }]);
+    const cache = await openRepositoryRecordCache();
+    await expect(cache.read(did, collection)).resolves.toMatchObject([{ cid: "cid-put-1", value: updated }]);
   });
 });
 

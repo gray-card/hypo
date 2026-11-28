@@ -211,12 +211,14 @@ describe("gallery-list boundary", () => {
     const showView = vi.fn();
     const providers = {
       getGalleries: vi.fn(async () => [{ uri: gallery, value: { title: "Summer", description: "Lake" } }]),
-      listRecords: vi.fn(async (_agent, _did, collection) => {
-        if (collection === "gallery.item") return [{ uri: "at://item/1", value: { gallery, item: photo } }];
-        if (collection === "photo") return [{ uri: photo, value: { photo: { ref: "cover" } } }];
-        if (collection === "defaults") return [{ uri: "at://defaults/1", value: { gallery, camera: "camera" } }];
-        return [];
-      }),
+      listRecordCollections: vi.fn(async (_agent, _did, collections) =>
+        collections.map((collection) => {
+          if (collection === "gallery.item") return [{ uri: "at://item/1", value: { gallery, item: photo } }];
+          if (collection === "photo") return [{ uri: photo, value: { photo: { ref: "cover" } } }];
+          if (collection === "defaults") return [{ uri: "at://defaults/1", value: { gallery, camera: "camera" } }];
+          return [];
+        }),
+      ),
       collections: { galleryItem: "gallery.item", photo: "photo" },
       ns: {
         photo: { capture: "capture", workflow: "workflow" },
@@ -245,8 +247,8 @@ describe("gallery-list boundary", () => {
 
     expect(document.querySelector(".g-title").textContent).toBe("Summer");
     expect(document.querySelector(".cov-row").textContent).toContain("gear 1/1");
-    expect(providers.listRecords).toHaveBeenCalledTimes(6);
-    for (const call of providers.listRecords.mock.calls) expect(call[3]).toEqual({ refresh: true });
+    expect(providers.listRecordCollections).toHaveBeenCalledOnce();
+    expect(providers.listRecordCollections.mock.calls[0][3]).toEqual({ refresh: true });
     document.querySelector(".gallery-row").click();
     expect(activate).toHaveBeenCalledOnce();
     expect(showView).toHaveBeenLastCalledWith("editor-view");

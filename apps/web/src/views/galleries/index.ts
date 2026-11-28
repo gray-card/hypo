@@ -24,12 +24,12 @@ interface GalleryCoverage {
 
 interface GalleryProviders {
   getGalleries(agent: unknown, did: string): Promise<GalleryRecord[]>;
-  listRecords(
+  listRecordCollections(
     agent: unknown,
     did: string,
-    collection: string,
+    collections: string[],
     options?: { refresh?: boolean },
-  ): Promise<RepositoryRecord[]>;
+  ): Promise<RepositoryRecord[][]>;
   collections: { galleryItem: string; photo: string };
   ns: { photo: { capture: string; workflow: string }; scene: { graph: string }; gallery: { defaults: string } };
   lazyThumb(agent: unknown, did: string, blob: unknown, className: string): HTMLElement;
@@ -134,24 +134,12 @@ export function createGalleryListView(options: GalleryListOptions) {
   let covers = new Map<string, unknown>();
   let coverage = new Map<string, GalleryCoverage>();
   let providers: GalleryProviders | null = null;
+  let viewer: string | undefined;
+  let loadRevision = 0;
 
-  const openGallery = (uri: string, cover: HTMLElement | null) => {
+  const openGallery = (uri: string) => {
     options.activate();
-    const hero = $("#editor-hero") as HTMLElement | null;
-    const image = cover?.querySelector("img") as HTMLImageElement | null;
-    const startViewTransition = (document as unknown as { startViewTransition?: unknown }).startViewTransition;
-    if (hero && cover && image && typeof startViewTransition === "function") {
-      cover.style.viewTransitionName = "hero-cover";
-      hero.style.backgroundImage = `url("${image.src}")`;
-      hero.classList.remove("hidden");
-      hero.style.viewTransitionName = "hero-cover";
-      setTimeout(() => {
-        cover.style.viewTransitionName = "";
-        hero.style.viewTransitionName = "";
-      }, 700);
-    } else {
-      hero?.classList.add("hidden");
-    }
+    $("#editor-hero")?.classList.add("hidden");
     options.showView("editor-view");
     options.navigate(uri);
   };
@@ -179,10 +167,8 @@ export function createGalleryListView(options: GalleryListOptions) {
         "li",
         {
           class: "gallery-row row",
-          onclick: (event: Event) => {
-            const row = event.currentTarget as HTMLElement;
-            openGallery(gallery.uri, row.querySelector(".gallery-thumb"));
-          },
+          "data-gallery-uri": gallery.uri,
+          onclick: () => openGallery(gallery.uri),
         },
         [
           providers?.lazyThumb(session.agent, session.did, covers.get(gallery.uri), "gallery-thumb") ||
@@ -195,10 +181,6 @@ export function createGalleryListView(options: GalleryListOptions) {
         ],
       ),
     );
-    rows.forEach((row, index) => {
-      row.classList.add("reveal");
-      row.style.setProperty("--i", String(index));
-    });
     list.replaceChildren(...rows);
   };
 
@@ -209,14 +191,35 @@ export function createGalleryListView(options: GalleryListOptions) {
     const list = $("#gallery-list");
     const session = options.getSession();
     if (!status || !search || !list || !session) return;
+    const revision = ++loadRevision;
+    const isCurrent = () => loadRevision === revision && options.getSession()?.did === session.did;
     status.textContent = "";
-    const phase = loadPhase("Loading galleries from your PDS…");
-    list.replaceChildren(...skeletonRows(4), phase.node);
+    const warm = viewer === session.did;
+    const phase = warm ? null : loadPhase("Loading galleries from your PDS…");
+    if (phase) {
+      galleries = [];
+      covers = new Map();
+      coverage = new Map();
+      list.replaceChildren(...skeletonRows(4), phase.node);
+    }
     try {
       providers ||= await options.loadProviders();
-      galleries = await providers.getGalleries(session.agent, session.did);
+      const incoming = await providers.getGalleries(session.agent, session.did);
+      if (!isCurrent()) return;
+      const changed =
+        incoming.length !== galleries.length ||
+        incoming.some((gallery, index) => {
+          const previous = galleries[index];
+          return (
+            gallery.uri !== previous?.uri ||
+            gallery.value.title !== previous.value.title ||
+            gallery.value.description !== previous.value.description
+          );
+        });
+      galleries = incoming;
+      viewer = session.did;
+      phase?.clear();
       if (!galleries.length) {
-        phase.clear();
         search.classList.add("hidden");
         list.replaceChildren(
           emptyState("No galleries yet", "Create a gallery first, then reload to fix its metadata here.", options.icon),
@@ -224,27 +227,45 @@ export function createGalleryListView(options: GalleryListOptions) {
         return;
       }
       search.classList.toggle("hidden", galleries.length < 6);
-      phase.set("Checking coverage from your PDS…");
+      if (!warm || changed) render();
       try {
-        const [items, photos, captures, workflows, scenes, defaults] = await Promise.all([
-          providers.listRecords(session.agent, session.did, providers.collections.galleryItem, { refresh: true }),
-          providers.listRecords(session.agent, session.did, providers.collections.photo, { refresh: true }),
-          providers.listRecords(session.agent, session.did, providers.ns.photo.capture, { refresh: true }),
-          providers.listRecords(session.agent, session.did, providers.ns.photo.workflow, { refresh: true }),
-          providers.listRecords(session.agent, session.did, providers.ns.scene.graph, { refresh: true }),
-          providers.listRecords(session.agent, session.did, providers.ns.gallery.defaults, { refresh: true }),
-        ]);
+        const [items, photos, captures, workflows, scenes, defaults] = await providers.listRecordCollections(
+          session.agent,
+          session.did,
+          [
+            providers.collections.galleryItem,
+            providers.collections.photo,
+            providers.ns.photo.capture,
+            providers.ns.photo.workflow,
+            providers.ns.scene.graph,
+            providers.ns.gallery.defaults,
+          ],
+          { refresh: true },
+        );
+        if (!isCurrent()) return;
+        const previousCovers = covers;
         ({ covers, coverage } = deriveGalleryPresentation(items, photos, captures, workflows, scenes, defaults));
+        for (const row of list.querySelectorAll<HTMLElement>("[data-gallery-uri]")) {
+          const uri = row.dataset.galleryUri!;
+          const oldCover = previousCovers.get(uri);
+          const cover = covers.get(uri);
+          if (JSON.stringify(cover) !== JSON.stringify(oldCover)) {
+            row
+              .querySelector(".gallery-thumb")
+              ?.replaceWith(providers.lazyThumb(session.agent, session.did, cover, "gallery-thumb"));
+          }
+          row.querySelector(".cov-row")?.remove();
+          const badges = coverageNode(coverage.get(uri));
+          if (badges) row.querySelector(".gallery-rowtext")?.append(badges);
+        }
       } catch {
-        covers = new Map();
-        coverage = new Map();
+        // Gallery titles and links remain usable when coverage is unavailable.
       }
-      phase.clear();
-      render();
     } catch (error) {
+      if (!isCurrent()) return;
       console.error("Galleries could not be loaded:", error);
-      phase.clear();
-      list.replaceChildren();
+      phase?.clear();
+      if (!warm) list.replaceChildren();
       status.textContent = "Galleries could not be loaded. Check your connection and reload this page.";
     }
   };

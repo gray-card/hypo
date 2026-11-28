@@ -1,6 +1,13 @@
 // graycard.js: app.graycard.* data layer
 
-import { exifToForm, flushRecordOperation, formToExifValue, listRecords, parseAtUri, recordRkey } from "./grain.js";
+import {
+  exifToForm,
+  flushRecordOperation,
+  formToExifValue,
+  listRecordCollections,
+  parseAtUri,
+  recordRkey,
+} from "./grain.js";
 import * as outbox from "./outbox.js";
 import { prepareSchemaWrite } from "./schemaRuntime.js";
 import {
@@ -90,14 +97,15 @@ export function parseFocalLengthFromModel(model) {
 
 function mapRecords(records) {
   return records
-    .map((r) => ({
-      uri: r.uri,
-      cid: r.cid,
-      rkey: recordRkey(r.uri),
-      value: r.value,
-      schemaRuntime: r.schemaRuntime,
-    }))
-    .sort((a, b) => JSON.stringify(a.value).localeCompare(JSON.stringify(b.value)));
+    .map((record) => ({ record, sortKey: JSON.stringify(record.value) }))
+    .sort((left, right) => left.sortKey.localeCompare(right.sortKey))
+    .map(({ record }) => ({
+      uri: record.uri,
+      cid: record.cid,
+      rkey: recordRkey(record.uri),
+      value: record.value,
+      schemaRuntime: record.schemaRuntime,
+    }));
 }
 
 // A shoot's date for ordering: when it was shot (startedAt), else when the record
@@ -105,19 +113,40 @@ function mapRecords(records) {
 export const shootDateKey = (v) => v?.startedAt || v?.createdAt || "";
 export const compareShootsByDate = (a, b) => shootDateKey(b.value).localeCompare(shootDateKey(a.value));
 
+const migrationRefreshes = new WeakMap();
+
+function refreshMigratedCollections(agent, did) {
+  let repositories = migrationRefreshes.get(agent);
+  if (!repositories) {
+    repositories = new Map();
+    migrationRefreshes.set(agent, repositories);
+  }
+  if (repositories.has(did)) return repositories.get(did);
+  const refresh = listRecordCollections(agent, did, RECORD_NSID_LIST, { refresh: true }).then(
+    (collections) => {
+      repositories.set(did, null);
+      return collections;
+    },
+    (error) => {
+      repositories.delete(did);
+      throw error;
+    },
+  );
+  repositories.set(did, refresh);
+  return refresh;
+}
+
 /** Assemble a store snapshot from the collection cache unless refresh is explicit. */
 export async function readStoreSnapshot(agent, did, { refresh = false, refreshCollections = [] } = {}) {
   const migration = await migrateLegacyDeveloperRecords(agent, did);
   const developSessionMigration = await migrateDevelopSessions(agent, did);
   const filterStackMigration = await migrateFilterStacks(agent, did);
   const legacyShapeMigration = await migrateLegacyShapes(agent, did);
-  if (
+  const migrated =
     migration.migrated ||
     developSessionMigration.migrated ||
     filterStackMigration.migrated ||
-    legacyShapeMigration.migrated
-  )
-    refresh = true;
+    legacyShapeMigration.migrated;
   const catalog = {};
   const instance = {};
   const byUri = new Map();
@@ -126,11 +155,11 @@ export async function readStoreSnapshot(agent, did, { refresh = false, refreshCo
   // exhaustive list prevents a newly added or less-visible record type from
   // falling outside the shared store merely because no feature-specific array
   // was updated. Every collection is independent, so fetch them concurrently.
-  const collectionLists = await Promise.all(
-    RECORD_NSID_LIST.map((collection) =>
-      listRecords(agent, did, collection, { refresh: refresh || refreshCollections.includes(collection) }),
-    ),
-  );
+  // Migration results stay memoized for the agent. Share the post-migration
+  // refresh once instead of turning every later cached read into a full sync.
+  const migrationRefresh = migrated && refreshMigratedCollections(agent, did);
+  const collectionLists = await (migrationRefresh ||
+    listRecordCollections(agent, did, RECORD_NSID_LIST, { refresh, refreshCollections }));
   const recordsByCollection = Object.fromEntries(
     RECORD_NSID_LIST.map((collection, index) => [collection, mapRecords(collectionLists[index])]),
   );
@@ -189,6 +218,18 @@ export async function readStoreSnapshot(agent, did, { refresh = false, refreshCo
     });
   }
 
+  const exposuresByRoll = new Map();
+  for (const exposure of instance.exposure || []) {
+    const roll = exposure.value.roll;
+    if (!roll) continue;
+    const frames = exposuresByRoll.get(roll) || [];
+    frames.push(exposure);
+    exposuresByRoll.set(roll, frames);
+  }
+  for (const frames of exposuresByRoll.values()) {
+    frames.sort((left, right) => (left.value.frameNumber ?? 0) - (right.value.frameNumber ?? 0));
+  }
+
   const sceneGraphByPhoto = new Map();
   for (const r of sceneGraphRecs) {
     if (r.value.subject)
@@ -223,6 +264,7 @@ export async function readStoreSnapshot(agent, did, { refresh = false, refreshCo
     recordsByCollection,
     photoCaptureByPhoto,
     photoWorkflowByPhoto,
+    exposuresByRoll,
     sceneGraphByPhoto,
     maintenanceBySubject,
     galleryDefaultsByGallery,

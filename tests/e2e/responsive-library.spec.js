@@ -167,25 +167,32 @@ test.beforeEach(async ({ request }) => {
   await seedRollLedger(request);
 });
 
-test("opening the mobile library menu survives a refresh during the press", async ({ page }) => {
+test("opening the mobile library menu survives a refresh during the press", async ({ page, request }) => {
   test.skip(page.viewportSize().width > 719, "Requires the mobile library menu");
   await login(page);
   const mobileNavigation = page.locator(".library-navigation-mobile");
   const summary = mobileNavigation.locator("summary");
   await expect(summary).toBeVisible();
-  const originalContent = await page.locator(".library-content").elementHandle();
   const nav = page.locator("#bottom-nav");
-  await nav.getByRole("button", { name: "Rolls", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Rolls", exact: true })).toBeVisible();
 
   const refresh = Promise.withResolvers();
   await page.route(`${PDS_ORIGIN}/xrpc/com.atproto.repo.listRecords**`, async (route) => {
     await refresh.promise;
     await route.continue();
   });
+  let originalContent;
   try {
+    await createRecord(request, "app.graycard.catalog.filmStock", "refresh-during-press", {
+      $type: "app.graycard.catalog.filmStock",
+      brand: "Fixture",
+      name: "Refresh during press",
+      createdAt: "2026-01-01T00:00:00.000Z",
+    });
+    await nav.getByRole("button", { name: "Rolls", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Rolls", exact: true })).toBeVisible();
     await nav.getByRole("button", { name: "Library", exact: true }).click();
     await summary.scrollIntoViewIfNeeded();
+    originalContent = await page.locator(".library-content").elementHandle();
     const box = await summary.boundingBox();
     expect(box).not.toBeNull();
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);

@@ -5,6 +5,8 @@
 ### Patch Changes
 
 - Keep taps on the mobile Library section menu working while data refreshes.
+- Open roll, gear, session, and gallery editors from data already on the device. Keep existing lists usable while they refresh.
+- Start checking for Following updates as soon as your session is ready.
 
 ## 1.11.4
 

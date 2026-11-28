@@ -60,7 +60,15 @@ import { scopeGalleryRule } from "../../apps/web/src/views/galleries/batch-scope
 import { createPhotoInspector } from "../../apps/web/src/views/galleries/photo-inspector.ts";
 import { createFilterStackControl } from "./filterStack.js";
 
-import { instanceSelect, shootSelect, refreshStore, openAddGear } from "./library.js";
+import {
+  instanceSelect,
+  shootSelect,
+  getStore as getLibraryStore,
+  readLibraryStore,
+  reloadLibraryStore,
+  refreshStore,
+  openAddGear,
+} from "./library.js";
 import { buildProcessSessionForm, stageExtraFields } from "./processForms.js";
 import { openInspector } from "./inspect.js";
 import { gearThumb } from "../data/gearImage.js";
@@ -100,7 +108,7 @@ type WorkflowStep = {
 };
 type GroundingCandidate = { id: string; label: string; description?: string };
 type GroundingSelect = HTMLSelectElement & { _byId: Map<string, GroundingCandidate> };
-type PhotoCard = HTMLDivElement & { _photo?: GalleryPhoto; _editor?: HTMLDivElement };
+type PhotoCard = HTMLDivElement & { _photo?: GalleryPhoto; _editor?: HTMLDivElement; _prepareEditor?: () => void };
 type StoredRecord = {
   uri: string;
   cid?: string | null;
@@ -589,7 +597,7 @@ async function saveAll(): Promise<void> {
   }
   saveButton.disabled = false;
   saveButton.textContent = "Save changes";
-  ctx.store = await refreshStore();
+  if (done) ctx.store = await reloadLibraryStore();
   toast(
     failed ? `Saved ${done}, ${failed} failed` : `Saved ${done} ${done === 1 ? "edit" : "edits"}`,
     failed ? "err" : "ok",
@@ -698,7 +706,11 @@ const EXIF_VALIDATORS: Partial<Record<ExifKey, ExifValidator>> = {
   dateTimeOriginal: (v: string) => !Number.isNaN(Date.parse(v)) || "ISO 8601 date",
 };
 
+let galleryOpenRevision = 0;
+
 export async function openGallery(galleryUri: string): Promise<void> {
+  const revision = ++galleryOpenRevision;
+  const context = ctx;
   disposeEditorSignals();
   disposeEditorSignals = () => {};
   ctx.galleryUri = galleryUri;
@@ -710,9 +722,14 @@ export async function openGallery(galleryUri: string): Promise<void> {
   const phase = loadPhase("Loading gallery from your PDS…");
   body.replaceChildren(...skeletonCards(3), phase.node);
   try {
-    ctx.store = await refreshStore();
-    phase.set("Loading photos from your PDS…");
-    ctx.detail = await getGalleryDetail(ctx.agent, ctx.did, galleryUri);
+    const refresh = !getLibraryStore();
+    const [store, detail] = await Promise.all([
+      readLibraryStore({ refreshIfCold: true }),
+      getGalleryDetail(context.agent, context.did, galleryUri, { refresh }),
+    ]);
+    if (ctx !== context || revision !== galleryOpenRevision) return;
+    ctx.store = store;
+    ctx.detail = detail;
   } finally {
     phase.clear();
   }
@@ -774,7 +791,7 @@ export async function openGallery(galleryUri: string): Promise<void> {
     {
       class: "ghost small-btn",
       onclick: () => {
-        photosWrap.querySelectorAll<HTMLInputElement>(".photo-select").forEach((checkbox) => {
+        photosWrap.querySelectorAll<HTMLInputElement>(".photo-select:not(:disabled)").forEach((checkbox) => {
           checkbox.checked = true;
           checkbox.dispatchEvent(new Event("change"));
         });
@@ -801,6 +818,7 @@ export async function openGallery(galleryUri: string): Promise<void> {
       card,
       fields: card._editor!,
       control: card.querySelector<HTMLElement>("[data-grid-photo-control]")!,
+      prepare: () => card._prepareEditor?.(),
     })),
   );
   galleryHeader.addEventListener("reveal-gallery-settings", () => inspector.close(false));
@@ -870,8 +888,10 @@ function buildGalleryHeader(): HTMLDivElement {
   ctl.save = async () => {
     if (!ctl.dirty) return;
     try {
-      await saveGallery(ctx.agent, ctx.did, gallery, { title: titleInput.value, description: descInput.value });
-      gallery = (await getGalleryDetail(ctx.agent, ctx.did, ctx.galleryUri)).gallery;
+      gallery = await saveGallery(ctx.agent, ctx.did, gallery, {
+        title: titleInput.value,
+        description: descInput.value,
+      });
       ctx.detail.gallery = gallery;
       title.textContent = titleInput.value || "Untitled gallery";
       ctl.dirty = false;
@@ -969,7 +989,7 @@ function buildDefaultsCard(): HTMLDetailsElement {
         },
         defs,
       );
-      ctx.store = await refreshStore();
+      ctx.store = await reloadLibraryStore();
       defs = ctx.store.galleryDefaultsByGallery.get(ctx.galleryUri);
       ctl.dirty = false;
       status.className = "status ok";
@@ -1727,6 +1747,7 @@ function sameGearAsAbove(card: PhotoCard): void {
     toast("No photo above", "info");
     return;
   }
+  (prev as PhotoCard)._prepareEditor?.();
   const sel = (root: Element, label: string): HTMLSelectElement | null =>
     [...root.querySelectorAll<HTMLLabelElement>("label.field")]
       .find((l) => l.querySelector("span")?.textContent === label)
@@ -1772,6 +1793,67 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
   thumb.dataset.gridPhotoControl = "";
   thumb.dataset.gridPhotoLabel = photoName;
 
+  const capture = ctx.store.photoCaptureByPhoto.get(p.photo.uri);
+  const workflow = getRunForPhoto(ctx.store, p.photo.uri);
+  const readoutHost = el("div", { class: "photo-readout" }, [exifReadout(exifToForm(p.exif?.value))]);
+  const coverageHost = el("div", { class: "photo-coverage" }, [coverageBadges(p, capture, workflow)]);
+  const fields = el("div", { class: "photo-fields" });
+  const card = el("div", { class: "card photo-card", "data-frame": String(idx + 1) }, [
+    el("div", { class: "photo-head" }, [
+      reorderControl(),
+      el("input", {
+        type: "checkbox",
+        class: "photo-select",
+        disabled: !p.photo.value,
+        "aria-label": `Select ${photoName}`,
+        onchange: (e) => {
+          const checkbox = eventElement(e);
+          if (!(checkbox instanceof HTMLInputElement)) return;
+          if (checkbox.checked) selected.add(p.photo.uri);
+          else selected.delete(p.photo.uri);
+          refreshSelectBar();
+        },
+      }),
+      thumb,
+      el("div", { class: "photo-meta" }, [
+        el("div", {}, `#${idx + 1}`),
+        el(
+          "div",
+          { class: "photo-caption muted small" },
+          p.photo.value?.alt || (p.photo.value ? "Missing alt text" : "Photo unavailable"),
+        ),
+        readoutHost,
+        coverageHost,
+      ]),
+    ]),
+  ]) as PhotoCard;
+  card._photo = p;
+  card._editor = fields;
+  if (p.photo.value) {
+    card._prepareEditor = () => {
+      mountPhotoFields(p, idx, { card, thumb, photoName, fields, readoutHost, coverageHost });
+      delete card._prepareEditor;
+    };
+  } else {
+    fields.append(el("p", { class: "muted small" }, "Photo record is unavailable."));
+  }
+  return card;
+}
+
+interface PhotoFieldMount {
+  card: PhotoCard;
+  thumb: HTMLDivElement;
+  photoName: string;
+  fields: HTMLDivElement;
+  readoutHost: HTMLDivElement;
+  coverageHost: HTMLDivElement;
+}
+
+function mountPhotoFields(
+  p: GalleryPhoto,
+  idx: number,
+  { card, thumb, photoName, fields, readoutHost, coverageHost }: PhotoFieldMount,
+): void {
   let capture = ctx.store.photoCaptureByPhoto.get(p.photo.uri);
   const defaults = ctx.store.galleryDefaultsByGallery.get(ctx.galleryUri);
   const refs = resolvePhotoCapture(capture, defaults);
@@ -1874,8 +1956,6 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
 
   const status = el("span", { class: "status" });
   const wfSummary = photoWorkflowSummary(wf, ctx.store);
-  const readoutHost = el("div", { class: "photo-readout" });
-  const coverageHost = el("div", { class: "photo-coverage" }, [coverageBadges(p, capture, wf)]);
   const refreshReadout = () => {
     readoutHost.replaceChildren(exifReadout(form));
   };
@@ -2022,29 +2102,7 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
     refreshSaveBar();
   };
 
-  const card = el("div", { class: "card photo-card reveal", style: `--i:${idx}`, "data-frame": String(idx + 1) }, [
-    el("div", { class: "photo-head" }, [
-      reorderControl(),
-      el("input", {
-        type: "checkbox",
-        class: "photo-select",
-        "aria-label": `Select ${photoName}`,
-        onchange: (e) => {
-          const checkbox = eventElement(e);
-          if (!(checkbox instanceof HTMLInputElement)) return;
-          if (checkbox.checked) selected.add(p.photo.uri);
-          else selected.delete(p.photo.uri);
-          refreshSelectBar();
-        },
-      }),
-      thumb,
-      el("div", { class: "photo-meta" }, [
-        el("div", {}, `#${idx + 1}`),
-        el("div", { class: "photo-caption muted small" }, p.photo.value.alt || "Missing alt text"),
-        readoutHost,
-        coverageHost,
-      ]),
-    ]),
+  const fieldNodes = [
     el("details", { class: "form-disclosure", "data-photo-section": "gear" }, [
       el("summary", {}, "Capture and gear"),
       el(
@@ -2236,18 +2294,15 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
         onclick: async (e) => {
           if (!ctl.save) throw new Error("Photo save control is unavailable");
           const ok = await withButton(eventButton(e), status, ctl.save);
-          if (ok) ctx.store = await refreshStore();
+          if (ok) ctx.store = await reloadLibraryStore();
           else ctl.reveal?.();
         },
       },
       "Save photo",
     ),
     status,
-  ]) as PhotoCard;
-  card._photo = p;
-  const fields = el("div", { class: "photo-fields" });
-  const children = [...card.children].slice(1);
-  fields.append(...children);
+  ];
+  fields.append(...fieldNodes);
   const altField = altArea.closest(".field")!;
   fields.prepend(lazyThumb(ctx.agent, ctx.did, p.photo?.value?.photo, "inspector-preview", photoName), altField);
   const workflow = el("details", { class: "form-disclosure", "data-photo-section": "workflow" }, [
@@ -2263,7 +2318,6 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
     actions.before(more);
     more.append(actions);
   }
-  card._editor = fields;
   const saveFields = ctl.save;
   ctl.save = async () => {
     try {
@@ -2323,7 +2377,6 @@ function buildPhotoCard(p: GalleryPhoto, idx: number): PhotoCard {
     refreshSources();
   });
   guardControllerSave(ctl, fields);
-  return card;
 }
 
 export { getGalleries };

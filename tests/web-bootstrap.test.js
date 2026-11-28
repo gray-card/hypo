@@ -28,6 +28,7 @@ function bootstrapHarness({
     loadOutbox: vi.fn(async () => ({ installAutoFlush })),
     loadOnboarding: vi.fn(async () => onboarding),
     libraryFeature: vi.fn(async () => ({ getStore: () => ({ kind: "store" }) })),
+    prefetchFollowing: vi.fn(async () => undefined),
     openLibraryRecord: vi.fn(async () => undefined),
     openRolls: vi.fn(async () => undefined),
     openSessions: vi.fn(async () => undefined),
@@ -36,6 +37,7 @@ function bootstrapHarness({
     closeLibraryRecord: vi.fn(),
     goSection: vi.fn(async () => undefined),
     navigateSection: vi.fn(),
+    getLibraryTab: vi.fn(),
     setLibraryTab: vi.fn(),
     setActiveSection: vi.fn(),
     showView: vi.fn(),
@@ -103,6 +105,7 @@ describe("web bootstrap boundary", () => {
       did: "did:plc:alice",
     });
     expect(harness.services.showAuthenticated).toHaveBeenCalledWith("did:plc:alice");
+    expect(harness.services.prefetchFollowing).toHaveBeenCalledWith("did:plc:alice");
     expect(harness.services.setActiveSection).toHaveBeenCalledWith("galleries");
     expect(harness.services.showView).toHaveBeenCalledWith("editor-view");
     expect(harness.services.openGallery).toHaveBeenCalledWith("at://did:plc:alice/social.grain.gallery/summer");
@@ -228,7 +231,7 @@ describe("web bootstrap boundary", () => {
 
     expect(harness.services.closeLibraryRecord).toHaveBeenCalledOnce();
     expect(harness.services.setLibraryTab).not.toHaveBeenCalled();
-    expect(harness.services.goSection).toHaveBeenCalledWith("rolls");
+    expect(harness.services.goSection).toHaveBeenCalledWith("rolls", { refresh: false, reuse: true });
     expect(harness.services.openLibraryRecord).toHaveBeenCalledWith(target);
   });
 
@@ -241,7 +244,7 @@ describe("web bootstrap boundary", () => {
 
     expect(harness.services.closeLibraryRecord).toHaveBeenCalledOnce();
     expect(harness.services.setLibraryTab).toHaveBeenCalledWith("scanning");
-    expect(harness.services.goSection).toHaveBeenCalledWith("setup");
+    expect(harness.services.goSection).toHaveBeenCalledWith("setup", { refresh: false, reuse: false });
     expect(harness.services.openLibraryRecord).toHaveBeenCalledWith(target);
   });
 

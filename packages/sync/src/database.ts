@@ -92,6 +92,7 @@ export interface SyncDatabase {
   readonly version: number;
   get<S extends StoreName>(store: S, key: StoreKey): Promise<StoreValue<S> | undefined>;
   getAll<S extends StoreName>(store: S): Promise<Array<StoreValue<S>>>;
+  recordsForCollection(repo: string, collection: string): Promise<CachedRecord[]>;
   put<S extends StoreName>(store: S, value: StoreValue<S>): Promise<void>;
   putMany<S extends StoreName>(store: S, values: ReadonlyArray<StoreValue<S>>): Promise<void>;
   delete<S extends StoreName>(store: S, key: StoreKey): Promise<void>;
@@ -227,6 +228,15 @@ class IndexedDatabase implements SyncDatabase {
     return values as Array<StoreValue<S>>;
   }
 
+  async recordsForCollection(repo: string, collection: string): Promise<CachedRecord[]> {
+    const transaction = await this.transaction("records", "readonly");
+    const records = await requestResult(
+      transaction.objectStore("records").index("repo-collection").getAll([repo, collection]),
+    );
+    await transactionDone(transaction);
+    return records;
+  }
+
   async put<S extends StoreName>(store: S, value: StoreValue<S>): Promise<void> {
     await this.putMany(store, [value]);
   }
@@ -296,6 +306,12 @@ export class MemoryDatabase implements SyncDatabase {
 
   async getAll<S extends StoreName>(store: S): Promise<Array<StoreValue<S>>> {
     return [...this.stores[store].values()].map((value) => clone(value));
+  }
+
+  async recordsForCollection(repo: string, collection: string): Promise<CachedRecord[]> {
+    return [...this.stores.records.values()]
+      .filter((record) => record.repo === repo && record.collection === collection)
+      .map((record) => clone(record));
   }
 
   async put<S extends StoreName>(store: S, value: StoreValue<S>): Promise<void> {

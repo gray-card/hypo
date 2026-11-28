@@ -63,28 +63,21 @@ export function withTransition(mutate) {
 }
 
 export function showView(id) {
-  withTransition(() => {
-    for (const view of [
-      "login-view",
-      "list-view",
-      "library-view",
-      "rolls-view",
-      "sessions-view",
-      "editor-view",
-      "profile-view",
-      "following-view",
-    ]) {
-      $("#" + view)?.classList.toggle("hidden", view !== id);
-    }
-    window.scrollTo({ top: 0 });
-  });
-}
-
-export function stagger(nodes) {
-  nodes.forEach((node, index) => {
-    node.classList.add("reveal");
-    node.style.setProperty("--i", String(index));
-  });
+  const active = $("#" + id);
+  const changed = active?.classList.contains("hidden");
+  for (const view of [
+    "login-view",
+    "list-view",
+    "library-view",
+    "rolls-view",
+    "sessions-view",
+    "editor-view",
+    "profile-view",
+    "following-view",
+  ]) {
+    $("#" + view)?.classList.toggle("hidden", view !== id);
+  }
+  if (changed) window.scrollTo({ top: 0 });
 }
 
 // Theme-consistent autocomplete remains application-local because its ranking
