@@ -14,6 +14,7 @@ vi.mock("../src/grain.js", async (importOriginal) => ({
   getGalleryDetail: vi.fn(async () => harness.detail),
   saveGallery: vi.fn(async (_agent, _did, _gallery, fields) => {
     Object.assign(harness.detail.gallery.value, fields);
+    return harness.detail.gallery;
   }),
   savePhotoAlt: vi.fn(async () => "saved-photo-cid"),
   saveExif: vi.fn(async () => ({ uri: "at://exif", value: {} })),
@@ -21,6 +22,9 @@ vi.mock("../src/grain.js", async (importOriginal) => ({
 }));
 
 vi.mock("../src/ui/library.js", () => ({
+  getStore: vi.fn(() => harness.store),
+  readLibraryStore: vi.fn(async () => harness.store),
+  reloadLibraryStore: vi.fn(async () => harness.store),
   refreshStore: vi.fn(async () => harness.store),
   instanceSelect: vi.fn((_kind, value = "") => {
     const select = document.createElement("select");
@@ -197,6 +201,7 @@ describe("editor photo grid accessibility", () => {
       ],
     });
     await openGallery(GALLERY);
+    document.querySelector("[data-grid-photo-control]").click();
     const summary = document.querySelector(".photo-workflow-summary > summary");
     expect(summary.textContent).toContain("2/4 · Next: Edit + Output");
     summary.click();

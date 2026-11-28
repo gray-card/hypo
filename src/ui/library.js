@@ -174,37 +174,83 @@ const LIBRARY_NAVIGATION = [
 ];
 
 let ctx = null;
-let storeLoadPromise = null;
+const readyViews = new WeakMap();
+const viewLoads = new WeakMap();
 
 export function initLibrary(context) {
   recordRouteController.close();
   ctx = context;
-  storeLoadPromise = null;
 }
 
 function ensureLibraryStore({ refresh = false } = {}) {
   if (ctx?.store && !refresh) return Promise.resolve(ctx.store);
   if (!ctx?.agent || !ctx?.did) return Promise.resolve(null);
-  if (refresh) {
-    const activeContext = ctx;
-    return loadStore(activeContext.agent, activeContext.did, { refresh: true }).then((store) => {
-      if (ctx === activeContext) activeContext.store = store;
+  const context = ctx;
+  if (context.storeLoad) {
+    if (!refresh || context.storeLoad.refresh) return context.storeLoad.promise;
+    return context.storeLoad.promise.then(() => (ctx === context ? ensureLibraryStore({ refresh }) : null));
+  }
+  const promise = loadStore(context.agent, context.did, { refresh })
+    .then((store) => {
+      if (ctx === context) {
+        if (!context.store || !sameStoreRecords(context.store, store)) context.store = store;
+        return context.store;
+      }
       return store;
+    })
+    .finally(() => {
+      if (context.storeLoad?.promise === promise) context.storeLoad = null;
     });
+  context.storeLoad = { refresh, promise };
+  return promise;
+}
+
+export function readLibraryStore({ refreshIfCold = false } = {}) {
+  return ensureLibraryStore({ refresh: refreshIfCold && !ctx?.store });
+}
+
+export async function reloadLibraryStore() {
+  const context = ctx;
+  const store = await loadStore(context.agent, context.did);
+  if (ctx === context) context.store = store;
+  return store;
+}
+
+function sameStoreRecords(previous, next) {
+  if (previous === next) return true;
+  if (!previous.byUri || !next.byUri || previous.byUri.size !== next.byUri.size) return false;
+  for (const [uri, { item }] of previous.byUri) {
+    const updated = next.byUri.get(uri)?.item;
+    if (!updated || updated.cid !== item.cid) return false;
+    if (updated.value !== item.value && JSON.stringify(updated.value) !== JSON.stringify(item.value)) return false;
   }
-  if (!storeLoadPromise) {
-    const activeContext = ctx;
-    const pending = loadStore(activeContext.agent, activeContext.did)
-      .then((store) => {
-        if (ctx === activeContext) activeContext.store = store;
-        return store;
-      })
-      .finally(() => {
-        if (storeLoadPromise === pending) storeLoadPromise = null;
-      });
-    storeLoadPromise = pending;
-  }
-  return storeLoadPromise;
+  return true;
+}
+
+async function renderStoreView(body, render, refresh, key = "") {
+  const context = ctx;
+  const load = {};
+  viewLoads.set(body, load);
+  const isCurrent = () => ctx === context && viewLoads.get(body) === load;
+  const previous = context?.store;
+  if (!(await ensureSessionStore({ refresh: refresh && !previous })) || !isCurrent()) return;
+  const paint = async () => {
+    const store = context.store;
+    await render();
+    if (isCurrent()) readyViews.set(body, { context, store, key });
+  };
+  const ready = readyViews.get(body);
+  if (ready?.context !== context || ready.store !== context.store || ready.key !== key) await paint();
+  if (!refresh || !previous || !isCurrent()) return;
+  if (!(await ensureSessionStore({ refresh: true })) || !isCurrent() || previous === context.store) return;
+  const focused = document.activeElement;
+  if (!body.contains(focused) || focused.matches("summary")) await paint();
+}
+
+export function hasReadySection(section) {
+  const body = document.querySelector(section === "rolls" ? "#rolls-body" : "#library-body");
+  const content = section === "rolls" ? ".gear-section" : ".library-shell:not(.library-shell-loading)";
+  return Boolean(ctx && body?.querySelector(content) && readyViews.get(body)?.context === ctx);
 }
 
 const TECH_SCHEMA_KEYS = Object.fromEntries(
@@ -395,7 +441,7 @@ function filmViewServices(render = renderLibrary) {
     isAdvanced,
     inspect: openInspector,
     matchGear: (exif) => matchGear(exif, ctx.store),
-    getPhotos: () => getPhotos(ctx.agent, ctx.did),
+    getPhotos: (options) => getPhotos(ctx.agent, ctx.did, options),
     blobUrl: (blob) => blobUrl(ctx.agent, ctx.did, blob),
     rollStatuses: ENUMS.rollStatus,
     cassetteTypes: ENUMS.cassetteType,
@@ -407,15 +453,17 @@ function renderFilmTab(body) {
   renderFilmReserveView(body, filmViewServices());
 }
 
-export async function openRolls() {
-  if (!(await ensureSessionStore({ refresh: true }))) return;
+function renderRolls() {
   const body = document.querySelector("#rolls-body");
   if (!body) return;
-  const render = () => {
-    body.replaceChildren();
-    renderRollLibraryView(body, filmViewServices(render));
-  };
-  render();
+  body.replaceChildren();
+  renderRollLibraryView(body, filmViewServices(renderRolls));
+  readyViews.set(body, { context: ctx, store: ctx.store, key: "" });
+}
+
+export async function openRolls({ refresh = true } = {}) {
+  const body = document.querySelector("#rolls-body");
+  if (body) await renderStoreView(body, renderRolls, refresh);
 }
 
 // -- Shoots: typed view + logger wiring behind application services ------------
@@ -762,19 +810,9 @@ export async function renderLibrary(bodyElement) {
   restorePendingGearRouteFocus();
 }
 
-export async function openLibrary() {
-  // If the session was lost (or Library is opened before login), bounce to login
-  // instead of throwing on a null context.
-  if (!ctx?.agent || !ctx?.did) {
-    showView("login-view");
-    return;
-  }
-  // Reopening Library is an explicit synchronization boundary. A cache-only load
-  // can otherwise preserve a complete but stale snapshot indefinitely, hiding
-  // records written by another device or client. Refresh still falls back to the
-  // saved snapshot when the PDS is unavailable, so offline Library remains usable.
-  await ensureLibraryStore({ refresh: true });
-  await renderLibrary();
+export async function openLibrary({ refresh = true } = {}) {
+  const body = document.querySelector("#library-body");
+  if (body) await renderStoreView(body, () => renderLibrary(body), refresh, body.dataset.tab || "overview");
 }
 
 async function ensureSessionStore(options = {}) {
@@ -786,17 +824,24 @@ async function ensureSessionStore(options = {}) {
   return Boolean(store && ctx?.store === store);
 }
 
-export async function openSessions(scope = "all") {
-  if (!(await ensureSessionStore({ refresh: true }))) return;
+export async function openSessions(scope = "all", { refresh = true } = {}) {
   const body = document.querySelector("#sessions-body");
-  if (body) renderSessionsView(body, sessionViewServices(), scope);
+  if (body) await renderStoreView(body, () => renderSessionsView(body, sessionViewServices(), scope), refresh, scope);
 }
 
 export async function openSessionRecordRoute(target) {
-  if (!(await ensureSessionStore())) return;
-  const entry = findSession(ctx.store, target.kind, target.rkey);
-  if (!entry) throw new Error(`Could not find ${target.kind} session “${target.rkey}”.`);
   const body = document.querySelector("#sessions-body");
+  const context = ctx;
+  const load = {};
+  if (body) {
+    viewLoads.set(body, load);
+    readyViews.delete(body);
+  }
+  if (!(await ensureSessionStore())) return;
+  let entry = findSession(ctx.store, target.kind, target.rkey);
+  if (!entry && (await ensureSessionStore({ refresh: true }))) entry = findSession(ctx.store, target.kind, target.rkey);
+  if (ctx !== context || (body && viewLoads.get(body) !== load)) return;
+  if (!entry) throw new Error(`Could not find ${target.kind} session “${target.rkey}”.`);
   if (body) renderSessionDetail(body, entry, sessionViewServices());
 }
 
@@ -825,16 +870,13 @@ export function getStore() {
 }
 
 export function refreshStore() {
-  return loadStore(ctx.agent, ctx.did, { refresh: true }).then((s) => {
-    ctx.store = s;
-    return s;
-  });
+  return ensureLibraryStore({ refresh: true });
 }
 
 const recordRouteController = createLibraryRecordRouteController({
   getStore,
   refreshStore,
-  openRoll: (roll, onClose) => openRollDetail(roll, filmViewServices(null), { onClose }),
+  openRoll: (roll, onClose) => openRollDetail(roll, filmViewServices(renderRolls), { onClose }),
   openGear: (kind, item, onClose) => {
     const rkey = recordRkey(item);
     const restoreFocus = consumeGearRouteFocus(kind, rkey);

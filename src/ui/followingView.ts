@@ -77,12 +77,13 @@ export function clusterFollowingActivity(
   }
   const clusters: ActivityCluster[] = [];
   for (const actorEvents of byActor.values()) {
+    let previous: ActivityCluster | undefined;
     for (const event of actorEvents.sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt))) {
-      const previous = clusters.findLast((cluster) => cluster.actor.did === event.actor.did);
       if (previous && Math.abs(Date.parse(previous.createdAt) - Date.parse(event.createdAt)) <= windowMs) {
         previous.events.push(event);
       } else {
-        clusters.push({ actor: event.actor, createdAt: event.createdAt, events: [event] });
+        previous = { actor: event.actor, createdAt: event.createdAt, events: [event] };
+        clusters.push(previous);
       }
     }
   }
@@ -463,13 +464,14 @@ function refreshFollowing(
   did: string,
   cached: FollowingFeedSnapshot | null,
   cache: FollowingFeedCacheStore,
-  listener: (progress: FollowingProgress) => void,
+  listener?: (progress: FollowingProgress) => void,
 ): Promise<FollowingFeedSnapshot> {
   if (!runningRefresh || runningRefresh.did !== did) {
     const listeners = new Set<(progress: FollowingProgress) => void>();
     const promise = loadFollowingFeed(did, {
       cache,
       cached,
+      shouldReportProgress: () => listeners.size > 0,
       onProgress: (progress) => listeners.forEach((notify) => notify(progress)),
     });
     const current = { did, promise, listeners };
@@ -480,6 +482,7 @@ function refreshFollowing(
     void promise.then(clear, clear);
   }
   const current = runningRefresh;
+  if (!listener) return current.promise;
   current.listeners.add(listener);
   return current.promise.finally(() => current.listeners.delete(listener));
 }
@@ -487,6 +490,12 @@ function refreshFollowing(
 function isFresh(feed: FollowingFeedSnapshot | null): boolean {
   const completed = feed?.refreshCompletedAt ? Date.parse(feed.refreshCompletedAt) : Number.NaN;
   return Number.isFinite(completed) && Date.now() - completed < FEED_FRESH_MS;
+}
+
+export async function prefetchFollowing(did: string): Promise<FollowingFeedSnapshot> {
+  const cache = await openFollowingFeedCache();
+  const cached = await cache.read(did).catch(() => null);
+  return refreshFollowing(did, cached, cache);
 }
 
 export async function openFollowing({
@@ -505,28 +514,37 @@ export async function openFollowing({
   const cached = await cache.read(did).catch(() => null);
   if (revision !== followingRevision) return;
   const sameViewer = host.dataset.followingViewer === did;
+  const shouldRefresh = forceRefresh || runningRefresh?.did === did || !isFresh(cached);
   host.dataset.followingViewer = did;
   if (cached) {
     renderFollowing(host, cached, navigateProfile, {
       status: isFresh(cached)
         ? "Showing the copy saved on this device. It was checked recently."
         : "Showing the copy saved on this device while Hypo checks likely updates first.",
-      refreshing: !isFresh(cached) || forceRefresh,
+      refreshing: shouldRefresh,
     });
   } else if (!sameViewer || !host.querySelector(".following-feed")) {
     const status = el("p", { class: "muted small", role: "status" }, "Combining your Grain and Bluesky follows…");
     host.replaceChildren(el("div", { class: "card following-loading" }, status));
   }
-  if (!forceRefresh && isFresh(cached)) {
+  if (!shouldRefresh) {
     refresh.disabled = false;
     return;
   }
+  let frame: number | undefined;
+  let progress: FollowingProgress;
   try {
-    const feed = await refreshFollowing(did, cached, cache, ({ done, total, profile, feed: progressFeed }) => {
+    const feed = await refreshFollowing(did, cached, cache, (update) => {
       if (revision !== followingRevision) return;
-      renderFollowing(host, progressFeed, navigateProfile, {
-        status: `Checking updates… ${done} / ${total} · @${profile.handle}`,
-        refreshing: true,
+      progress = update;
+      frame ??= requestAnimationFrame(() => {
+        frame = undefined;
+        if (revision !== followingRevision) return;
+        const { done, total, profile, feed: progressFeed } = progress;
+        renderFollowing(host, progressFeed, navigateProfile, {
+          status: `Checking updates… ${done} / ${total} · @${profile.handle}`,
+          refreshing: true,
+        });
       });
     });
     if (revision !== followingRevision) return;
@@ -552,6 +570,7 @@ export async function openFollowing({
       );
     }
   } finally {
+    if (frame !== undefined) cancelAnimationFrame(frame);
     if (revision === followingRevision) refresh.disabled = false;
   }
 }

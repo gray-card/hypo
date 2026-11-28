@@ -1,5 +1,6 @@
 import { TID } from "@atproto/common-web";
 import { confirmModal, dateField, el, field, localInputToIso, openModal, toast } from "@hypo/ui";
+import { lazyThumbnail } from "@hypo/ui/lazy-thumb";
 import { openAddFrame, syncRollExposureCount } from "./film-frame.ts";
 import { filmStockLabel, framesForRoll, reserveQuantity } from "./film-helpers.ts";
 import type { FilmRecord, FilmValue, FilmViewServices } from "./film-types.ts";
@@ -225,7 +226,7 @@ function rollPhotoList(
     }
     if (!photosByUri) {
       try {
-        photosByUri = new Map((await services.getPhotos()).map((photo) => [photo.uri, photo]));
+        photosByUri = new Map((await services.getPhotos({ refresh: false })).map((photo) => [photo.uri, photo]));
       } catch {
         photosByUri = new Map();
       }
@@ -234,19 +235,10 @@ function rollPhotoList(
     for (const [uri, capture] of linked) {
       const frameNumber = capture.value.frameIndex;
       const photo = photosByUri.get(uri);
-      const thumb = el("span", {
-        class: "roll-photo-thumb",
-        style:
-          "width:34px;height:34px;border-radius:5px;background-color:var(--surface-2,#222);background-size:cover;background-position:center;flex:0 0 auto",
+      const thumb = lazyThumbnail(() => (photo ? services.blobUrl(photo.value.photo) : Promise.resolve(null)), {
+        className: "roll-photo-thumb",
+        alt: "",
       });
-      if (photo) {
-        services
-          .blobUrl(photo.value.photo)
-          .then((url) => {
-            if (url) thumb.style.backgroundImage = `url(${url})`;
-          })
-          .catch(() => {});
-      }
       node.append(
         el("div", { class: "frame-row row between" }, [
           el("span", { class: "row", style: "gap:8px;align-items:center" }, [
@@ -561,11 +553,10 @@ export function openRollDetail(
           occurrences.read(),
         );
       }
-      if (["exposed", "at-lab", "developing", "developed", "scanned", "archived"].includes(record.status)) {
-        await services.reloadStore();
-        await services.advanceWorkflowStage?.("capture", [roll.uri]);
-      }
       await refreshFilm(services);
+      if (["exposed", "at-lab", "developing", "developed", "scanned", "archived"].includes(record.status)) {
+        if (await services.advanceWorkflowStage?.("capture", [roll.uri])) services.renderLibrary();
+      }
     },
     { onClose: options.onClose },
   );

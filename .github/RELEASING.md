@@ -10,6 +10,8 @@ Hypo releases are immutable `v*` tags on the current `main` commit. Every fully 
 4. Review the production and development dependency audit results under [the dependency audit policy](./SECURITY_AUDIT_POLICY.md).
 5. Merge the version pull request and wait for both CI and the **Deploy GitHub Pages** job on `main` to pass.
 
+The **Interaction performance (Chromium)** check exercises warm navigation, editors, and a roll save while collection reads are held pending. Its artifact contains per-action timings, request counts, and a CPU profile for Chrome DevTools.
+
 ## Ship the release
 
 From an up-to-date local `main`, create and push the matching tag:

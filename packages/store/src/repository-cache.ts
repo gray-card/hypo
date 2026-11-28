@@ -15,8 +15,7 @@ export class RepositoryRecordCache {
   ) {}
 
   async read<T = unknown>(repo: string, collection: string): Promise<StoredRecord<T>[]> {
-    return (await this.database.getAll("records"))
-      .filter((record) => record.repo === repo && record.collection === collection)
+    return (await this.database.recordsForCollection(repo, collection))
       .sort((left, right) => left.uri.localeCompare(right.uri))
       .map((record) => ({ uri: record.uri, cid: record.cid, value: record.record as T }));
   }
@@ -39,9 +38,7 @@ export class RepositoryRecordCache {
       });
     }
 
-    const current = (await this.database.getAll("records")).filter(
-      (record) => record.repo === repo && record.collection === collection,
-    );
+    const current = await this.database.recordsForCollection(repo, collection);
     await this.database.batch([
       ...current
         .filter((record) => !incoming.has(record.uri))

@@ -7,7 +7,8 @@ export function reserveQuantity(value: FilmValue | null | undefined): number {
 }
 
 export function framesForRoll(store: FilmStore, rollUri: string): FilmRecord[] {
-  return [...(store.instance.exposure || [])]
+  if (store.exposuresByRoll) return [...(store.exposuresByRoll.get(rollUri) || [])];
+  return (store.instance.exposure || [])
     .filter((frame) => frame.value.roll === rollUri)
     .sort((left, right) => (left.value.frameNumber ?? 0) - (right.value.frameNumber ?? 0));
 }

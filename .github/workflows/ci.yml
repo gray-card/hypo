@@ -145,6 +145,30 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  interaction-performance:
+    name: Interaction performance (Chromium)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Profile and check interaction budgets
+        run: npx playwright test --project=performance
+      - name: Upload interaction measurements and CPU profile
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: interaction-performance
+          path: |
+            test-results/**/interaction-metrics.json
+            test-results/**/interaction-profile.cpuprofile
+          if-no-files-found: error
+          retention-days: 14
+
   production-build:
     name: Production builds, budgets, and Lighthouse
     runs-on: ubuntu-latest
@@ -206,6 +230,7 @@ jobs:
       - unit-tests
       - browser-tests
       - mobile-browser-tests
+      - interaction-performance
       - production-build
       - dependency-audit
     runs-on: ubuntu-latest
@@ -217,6 +242,7 @@ jobs:
           UNIT_RESULT: ${{ needs.unit-tests.result }}
           BROWSER_RESULT: ${{ needs.browser-tests.result }}
           MOBILE_RESULT: ${{ needs.mobile-browser-tests.result }}
+          PERFORMANCE_RESULT: ${{ needs.interaction-performance.result }}
           BUILD_RESULT: ${{ needs.production-build.result }}
           AUDIT_RESULT: ${{ needs.dependency-audit.result }}
         run: |
@@ -226,6 +252,7 @@ jobs:
             "$UNIT_RESULT" \
             "$BROWSER_RESULT" \
             "$MOBILE_RESULT" \
+            "$PERFORMANCE_RESULT" \
             "$BUILD_RESULT" \
             "$AUDIT_RESULT"
           do

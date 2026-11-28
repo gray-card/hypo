@@ -43,7 +43,14 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      testIgnore: "**/interaction-performance.spec.js",
       use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "performance",
+      testMatch: "**/interaction-performance.spec.js",
+      timeout: 60_000,
+      use: { ...devices["Desktop Chrome"], reducedMotion: "no-preference" },
     },
     {
       name: "mobile-chromium",

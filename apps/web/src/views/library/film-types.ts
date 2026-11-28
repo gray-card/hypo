@@ -10,6 +10,7 @@ export interface FilmStore {
   readonly catalog: Readonly<Record<string, readonly FilmRecord[] | undefined>>;
   readonly instance: Readonly<Record<string, readonly FilmRecord[] | undefined>>;
   readonly byUri?: ReadonlyMap<string, { layer?: string; kind?: string; item: FilmRecord }>;
+  readonly exposuresByRoll?: ReadonlyMap<string, readonly FilmRecord[]>;
   readonly photoCaptureByPhoto?: ReadonlyMap<string, FilmRecord>;
   readonly workflowTemplates?: readonly FilmRecord[];
   readonly developSessions?: readonly FilmRecord[];
@@ -65,7 +66,7 @@ export interface FilmViewServices {
   isAdvanced(): boolean;
   inspect(record: FilmRecord): void;
   matchGear(exif: FilmValue): FilmValue;
-  getPhotos(): Promise<readonly FilmRecord[]>;
+  getPhotos(options?: { refresh?: boolean }): Promise<readonly FilmRecord[]>;
   blobUrl(blob: unknown): Promise<string | null | undefined>;
   readonly rollStatuses: readonly string[];
   readonly cassetteTypes: readonly string[];

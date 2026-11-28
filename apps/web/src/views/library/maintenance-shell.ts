@@ -149,10 +149,4 @@ export async function renderLibraryShell(
   }
   if (mobileNavigation.parentElement !== body) body.append(mobileNavigation);
   body.append(el("div", { class: "library-shell" }, [desktopNavigation, content]));
-
-  const cards = [...content.querySelectorAll<HTMLElement>(":scope > .card")];
-  cards.forEach((card, index) => {
-    card.classList.add("reveal");
-    card.style.setProperty("--i", String(index));
-  });
 }

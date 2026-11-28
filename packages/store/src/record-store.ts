@@ -206,8 +206,15 @@ export class RecordStore {
     this.remoteState.value = next;
   }
 
-  replaceRemoteCollection<T>(collection: string, records: Iterable<StoredRecord<T>>): void {
-    this.replaceRemote(collection, records);
+  replaceRemoteCollection<T>(
+    collection: string,
+    records: Iterable<StoredRecord<T>>,
+    acknowledgements: readonly Acknowledgement[] = [],
+  ): void {
+    batch(() => {
+      this.replaceRemote(collection, records);
+      for (const acknowledgement of acknowledgements) this.acknowledge(acknowledgement);
+    });
   }
 
   upsertRemote(record: RemoteRecordInput): void;

@@ -61,6 +61,11 @@ interface LibraryFeature {
   getStore(): unknown;
 }
 
+interface SectionOptions {
+  refresh?: boolean;
+  reuse?: boolean;
+}
+
 interface OnboardingModule {
   needsOnboarding(store: unknown, did: string): boolean;
   openOnboarding(options: {
@@ -83,14 +88,19 @@ export interface AppBootstrapServices {
   loadOutbox(): Promise<OutboxModule>;
   loadOnboarding(): Promise<OnboardingModule>;
   libraryFeature(): Promise<LibraryFeature>;
+  prefetchFollowing(did: string): Promise<unknown>;
   openLibraryRecord(target: LibraryRecordTarget): Promise<unknown>;
   openRolls(): Promise<unknown>;
   openSessions(scope?: string): Promise<unknown>;
   openSessionRecord(target: { kind: string; rkey: string }): Promise<unknown>;
   openSessionAction(action: "resume-development"): Promise<unknown>;
   closeLibraryRecord(): unknown;
-  goSection(section: "setup" | "rolls" | "sessions" | "galleries" | "following" | "discover"): unknown;
+  goSection(
+    section: "setup" | "rolls" | "sessions" | "galleries" | "following" | "discover",
+    options?: SectionOptions,
+  ): unknown;
   navigateSection(section: string): unknown;
+  getLibraryTab(): string | undefined;
   setLibraryTab(tab: string): void;
   setActiveSection(section: string): void;
   showView(view: string): void;
@@ -145,16 +155,18 @@ export function createAppBootstrap(services: AppBootstrapServices) {
   let disposeAutoFlush = (): void => {};
   let onboardingActive = false;
   let onboardingOpening: Promise<unknown> | null = null;
+  let previousRouteName: string | undefined;
 
   const stopAutoFlush = (): void => {
     disposeAutoFlush();
     disposeAutoFlush = () => {};
   };
 
-  const setupRoute = (tab?: string): unknown => {
+  const setupRoute = (tab?: string, options?: SectionOptions): unknown => {
     if (!services.session().agent) return services.showLoggedOut();
+    const reuse = options?.reuse && (!tab || services.getLibraryTab() === tab);
     if (tab) services.setLibraryTab(tab);
-    return services.goSection("setup");
+    return options ? services.goSection("setup", { ...options, reuse }) : services.goSection("setup");
   };
 
   const recordRouteMatches = (target: LibraryRecordTarget): boolean => {
@@ -166,19 +178,30 @@ export function createAppBootstrap(services: AppBootstrapServices) {
   const setupRecordRoute = async (target: LibraryRecordTarget): Promise<unknown> => {
     if (!services.session().agent) return services.showLoggedOut();
     if (target.type === "roll") {
-      await services.goSection("rolls");
+      if ((await services.goSection("rolls", { refresh: false, reuse: true })) === false) return;
       if (recordRouteMatches(target)) return services.openLibraryRecord(target);
       return;
     }
-    await setupRoute(libraryTabForRecord(target));
+    if ((await setupRoute(libraryTabForRecord(target), { refresh: false, reuse: true })) === false) return;
     if (recordRouteMatches(target)) return services.openLibraryRecord(target);
   };
 
-  const routeHandlers: Record<string, (route: AppRoute) => unknown> = {
-    home: () => setupRoute(),
-    rolls: () => (services.session().agent ? services.goSection("rolls") : services.showLoggedOut()),
+  const routeHandlers: Record<string, (route: AppRoute, previous?: string) => unknown> = {
+    home: (_route, previous) =>
+      setupRoute(undefined, previous === "gear" ? { refresh: false, reuse: true } : undefined),
+    rolls: (_route, previous) =>
+      services.session().agent
+        ? previous === "roll"
+          ? services.goSection("rolls", { refresh: false, reuse: true })
+          : services.goSection("rolls")
+        : services.showLoggedOut(),
     galleries: () => (services.session().agent ? services.goSection("galleries") : services.showLoggedOut()),
-    sessions: () => (services.session().agent ? services.goSection("sessions") : services.showLoggedOut()),
+    sessions: (_route, previous) =>
+      services.session().agent
+        ? previous === "session"
+          ? services.goSection("sessions", { refresh: false })
+          : services.goSection("sessions")
+        : services.showLoggedOut(),
     sessionsScope: (route) => {
       if (!services.session().agent) return services.showLoggedOut();
       services.setActiveSection("sessions");
@@ -189,13 +212,13 @@ export function createAppBootstrap(services: AppBootstrapServices) {
       if (!services.session().agent) return services.showLoggedOut();
       services.setActiveSection("sessions");
       services.showView("sessions-view");
-      await services.openSessions();
       return services.openSessionRecord({
         kind: route.params.kind as string,
         rkey: route.params.rkey as string,
       });
     },
-    library: (route) => setupRoute(route.params.tab),
+    library: (route, previous) =>
+      setupRoute(route.params.tab, previous === "gear" ? { refresh: false, reuse: true } : undefined),
     gallery: (route) => {
       const session = services.session();
       if (!session.agent) return services.showLoggedOut();
@@ -226,9 +249,11 @@ export function createAppBootstrap(services: AppBootstrapServices) {
   const renderRoute = async (route: AppRoute): Promise<void> => {
     const revision = ++routeRenderRevision;
     const handler = routeHandlers[route.name] || routeHandlers.notFound;
+    const previous = previousRouteName;
+    previousRouteName = route.name;
     try {
       services.closeLibraryRecord();
-      await handler(route);
+      await handler(route, previous);
     } catch (error) {
       if (revision !== routeRenderRevision) return;
       services.showFeatureLoadError(routeErrorTarget(route), error);
@@ -287,6 +312,9 @@ export function createAppBootstrap(services: AppBootstrapServices) {
     const revision = ++autoFlushRevision;
     stopAutoFlush();
     services.setSession({ agent, did });
+    void services
+      .prefetchFollowing(did)
+      .catch((error: unknown) => logger.warn("Following refresh could not start:", logDetail(error)));
     services
       .loadOutbox()
       .then(({ installAutoFlush }) => {
@@ -304,6 +332,7 @@ export function createAppBootstrap(services: AppBootstrapServices) {
 
   const onLoggedOut = (): unknown => {
     autoFlushRevision += 1;
+    previousRouteName = undefined;
     stopAutoFlush();
     return services.showLoggedOut();
   };
