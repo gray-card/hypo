@@ -82,7 +82,7 @@ export async function renderLibraryShell(
   services: LibraryShellServices,
 ): Promise<void> {
   const body = bodyElement || ($("#library-body") as HTMLElement);
-  const navigationOpen = body.querySelector<HTMLDetailsElement>(".library-navigation-mobile")?.open || false;
+  const existingNavigation = body.querySelector<HTMLDetailsElement>(":scope > .library-navigation-mobile");
   if (!services.hasStore()) {
     const phase = loadPhase("Loading your library from your PDS…");
     body.replaceChildren(...librarySkeleton(), phase.node);
@@ -92,24 +92,37 @@ export async function renderLibraryShell(
       phase.clear();
     }
   }
-  body.replaceChildren();
   const items = navigationItems(services.navigationGroups);
   const knownTabs = new Set(items.map((item) => item.id));
   let tab = LEGACY_TABS[body.dataset.tab || ""] || body.dataset.tab || services.defaultTab;
   if (!knownTabs.has(tab)) tab = services.defaultTab;
   body.dataset.tab = tab;
 
+  // Keep the native summary attached so a refresh cannot interrupt a press in progress.
+  const mobileLabel = existingNavigation?.querySelector("summary > strong") ?? el("strong");
+  const mobileNavigation =
+    existingNavigation ??
+    el("details", { class: "library-navigation-mobile" }, [
+      el("summary", {}, [el("span", { class: "muted small" }, "Library section"), mobileLabel]),
+    ]);
+  const currentLabel = items.find((item) => item.id === tab)?.label || "Library";
+  if (mobileLabel.textContent !== currentLabel) mobileLabel.textContent = currentLabel;
+
   const select = (next: string) => {
     mobileNavigation.open = false;
     body.dataset.tab = next;
     void renderLibraryShell(body, services);
   };
-  const currentLabel = items.find((item) => item.id === tab)?.label || "Library";
   const desktopNavigation = libraryNavigation(services.navigationGroups, tab, select, "library-navigation");
-  const mobileNavigation = el("details", { class: "library-navigation-mobile", open: navigationOpen }, [
-    el("summary", {}, [el("span", { class: "muted small" }, "Library section"), el("strong", {}, currentLabel)]),
-    libraryNavigation(services.navigationGroups, tab, select, "library-navigation library-navigation-menu"),
-  ]);
+  const mobileMenu = libraryNavigation(
+    services.navigationGroups,
+    tab,
+    select,
+    "library-navigation library-navigation-menu",
+  );
+  const existingMenu = mobileNavigation.querySelector(":scope > .library-navigation-menu");
+  if (existingMenu) existingMenu.replaceWith(mobileMenu);
+  else mobileNavigation.append(mobileMenu);
   const content = el("div", { class: "library-content" });
   const search = el("input", {
     type: "search",
@@ -131,7 +144,11 @@ export async function renderLibraryShell(
   else if (tab === "rules") services.renderBatchRules(content);
   else if (tab === "quality") services.renderDataQuality(content);
 
-  body.append(mobileNavigation, el("div", { class: "library-shell" }, [desktopNavigation, content]));
+  for (const child of [...body.childNodes]) {
+    if (child !== mobileNavigation) child.remove();
+  }
+  if (mobileNavigation.parentElement !== body) body.append(mobileNavigation);
+  body.append(el("div", { class: "library-shell" }, [desktopNavigation, content]));
 
   const cards = [...content.querySelectorAll<HTMLElement>(":scope > .card")];
   cards.forEach((card, index) => {

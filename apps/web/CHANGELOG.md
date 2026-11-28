@@ -1,5 +1,11 @@
 # @hypo/web
 
+## 1.11.5
+
+### Patch Changes
+
+- Keep taps on the mobile Library section menu working while data refreshes.
+
 ## 1.11.4
 
 ### Patch Changes
