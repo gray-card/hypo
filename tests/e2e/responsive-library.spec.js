@@ -167,6 +167,37 @@ test.beforeEach(async ({ request }) => {
   await seedRollLedger(request);
 });
 
+test("opening the mobile library menu survives a refresh during the press", async ({ page }) => {
+  test.skip(page.viewportSize().width > 719, "Requires the mobile library menu");
+  await login(page);
+  const mobileNavigation = page.locator(".library-navigation-mobile");
+  const summary = mobileNavigation.locator("summary");
+  await expect(summary).toBeVisible();
+  const originalContent = await page.locator(".library-content").elementHandle();
+  const nav = page.locator("#bottom-nav");
+  await nav.getByRole("button", { name: "Rolls", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Rolls", exact: true })).toBeVisible();
+
+  const refresh = Promise.withResolvers();
+  await page.route(`${PDS_ORIGIN}/xrpc/com.atproto.repo.listRecords**`, async (route) => {
+    await refresh.promise;
+    await route.continue();
+  });
+  try {
+    await nav.getByRole("button", { name: "Library", exact: true }).click();
+    await summary.scrollIntoViewIfNeeded();
+    const box = await summary.boundingBox();
+    expect(box).not.toBeNull();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+  } finally {
+    refresh.resolve();
+  }
+  await page.waitForFunction((content) => !content.isConnected, originalContent);
+  await page.mouse.up();
+  await expect(mobileNavigation.getByRole("button", { name: "Chemistry", exact: true })).toBeVisible();
+});
+
 for (const theme of ["dark", "light"]) {
   test(`${theme}: resource, roll, and session surfaces stay inside the viewport`, async ({
     page,

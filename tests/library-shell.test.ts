@@ -3,7 +3,7 @@ import { renderLibraryShell, type LibraryShellServices } from "../apps/web/src/v
 
 beforeEach(() => document.body.replaceChildren());
 
-it("preserves an open mobile menu across refresh and closes it when selecting a section", async () => {
+it("keeps the mobile menu attached across refresh and closes it when selecting a section", async () => {
   const body = document.createElement("div");
   document.body.append(body);
   const services: LibraryShellServices = {
@@ -30,10 +30,12 @@ it("preserves an open mobile menu across refresh and closes it when selecting a 
   };
   await renderLibraryShell(body, services);
   const original = body.querySelector<HTMLDetailsElement>(".library-navigation-mobile")!;
+  const summary = original.querySelector("summary");
   original.open = true;
   await renderLibraryShell(body, services);
   const refreshed = body.querySelector<HTMLDetailsElement>(".library-navigation-mobile")!;
-  expect(refreshed).not.toBe(original);
+  expect(refreshed).toBe(original);
+  expect(refreshed.querySelector("summary")).toBe(summary);
   expect(refreshed.open).toBe(true);
   const chemistry = [...refreshed.querySelectorAll("button")].find((button) => button.textContent === "Chemistry")!;
   chemistry.click();
